@@ -12,8 +12,9 @@ This procedure is expected to become the basis for repeating Kane Fabric across 
 
 A reconstruction begins with:
 
-- a clean supported Debian CT;
-- documented LXC requirements;
+- a conformant supported Debian CT;
+- an executable host/deployment conformance gate where the deployment environment defines one;
+- documented Fabric-specific runtime requirements;
 - required base packages;
 - an accepted county seed or equivalent initial acquisition evidence;
 - versioned source/county profiles;
@@ -22,12 +23,19 @@ A reconstruction begins with:
 
 Hidden state on an old orchestrator is not an acceptable dependency.
 
+Host conformance and Kane Fabric application requirements are separate layers. A Fabric repository must not redefine a shared host standard merely because it happens to run on that host.
+
 ## 3. Kane County reference reconstruction
 
-The initial Kane County reconstruction uses:
+The initial Kane County reconstruction uses CT102 on `srv-b`.
 
-- Debian 12 CT;
-- `nesting=1,keyctl=1` for the current Proxmox/LXC environment;
+For this deployment, shared CT properties are governed by the host-level `ct-baseline.sh` check. CT102 was recorded conformant with CT100 and CT101 on 2026-08-18.
+
+Kane-specific reconstruction requirements include:
+
+- Debian 12 as required by the current host baseline;
+- `nesting=1` as required by the host baseline;
+- `keyctl=1` currently present on CT102 but not a Kane Fabric platform requirement unless a workload such as Docker requires it;
 - locale `en_US.UTF-8`;
 - Python 3;
 - SQLite runtime and CLI;
@@ -43,24 +51,32 @@ The Kane Condo reference repository and data are reconstruction evidence. They a
 
 ## 4. Reconstruction stages
 
-### Stage A — Infrastructure baseline
+### Stage A — Infrastructure and host conformance
 
-Verify:
+First prove that the CT conforms to the deployment host's executable standard.
 
-- supported Debian release;
-- CT feature flags;
-- networking;
-- timezone;
-- locale;
-- storage;
-- systemd health;
-- package updates;
+On `srv-b`, run the host-level `ct-baseline.sh` gate. It covers the shared properties that must remain uniform across CT100, CT101 and CT102, including container mode, network placement/isolation, Debian release, locale, timezone, required host-standard tools/admin access, mail prohibition, and systemd health.
+
+The governing rule is:
+
+> A property not checked by the host baseline is not part of the shared host standard.
+
+Then verify Kane Fabric-specific requirements not owned by that baseline:
+
+- `/var/lib/kane-fabric` storage and layout;
+- package updates required by the current work;
 - Python;
 - SQLite;
 - Git;
-- TLS CA bundle.
+- reconstruction evidence locations;
+- Fabric-specific test gates.
 
-Every infrastructure defect found here must be documented because it is likely to recur on future county nodes.
+Every infrastructure defect found here must be classified correctly:
+
+- shared host defect -> host conformance standard/failure log;
+- Kane Fabric-specific defect -> Kane Fabric reconstruction record.
+
+This prevents another county or project from rediscovering host properties independently.
 
 ### Stage B — Evidence installation
 
@@ -135,15 +151,29 @@ Once authoritative database reconstruction is proven:
 - publish to an edge-node implementation;
 - verify operation while the county Fabric node is unavailable.
 
-## 5. Transfer discipline
+## 5. Conformance lifecycle
+
+On hosts that provide an executable baseline, conformance is not a one-time provisioning event.
+
+For `srv-b`, rerun the host baseline:
+
+- before work when host/container state may have changed;
+- after relevant CT or firewall changes;
+- after host reboot;
+- before backup work;
+- as part of restore verification.
+
+Conformance is a precondition for backup. Restoration must re-establish conformance before an application-level restore is accepted.
+
+## 6. Transfer discipline
 
 Cross-machine file transfer is not part of the architectural contract.
 
 For the current environment, large reconstruction bundles are moved manually as tarballs using Webmin download/upload, then verified by SHA-256 before extraction.
 
-The bootstrap process must not depend on SSH or `scp` availability.
+The bootstrap process must not depend on SSH or `scp` availability between machines.
 
-## 6. Evidence versus active state
+## 7. Evidence versus active state
 
 Keep these categories separate:
 
@@ -158,12 +188,12 @@ audit/                   active reconstruction and operation audit output
 render/                   compiled substrate/subscription outputs
 ```
 
-## 7. Repetition goal
+## 8. Repetition goal
 
 The desired future county bootstrap should approach:
 
 ```text
-clean Debian CT
+conformant supported CT
     +
 Kane Fabric software
     +
@@ -175,3 +205,5 @@ reconstructable county Fabric node
 ```
 
 Kane County is the first proof of that equation.
+
+The deployment host may vary from county to county. Therefore the Fabric contract requires a conformant supported environment, while the exact executable host-standard implementation remains deployment-owned.
