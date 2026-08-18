@@ -28,21 +28,33 @@ Purpose: prove that the county pipeline can be reproduced from declared inputs r
 
 ### Batch 001 — Environment acceptance
 
-Record and verify the CT bootstrap contract:
+Record and verify two separate layers:
 
-- Debian version;
-- LXC feature flags;
-- locale;
+**Host-level conformance**, owned by `srv-b` and asserted by its executable `ct-baseline.sh` check:
+
+- autostart and unprivileged LXC state;
+- required LXC features;
+- single service-bridge interface and LAN isolation;
+- Debian 12;
+- generated locale;
 - timezone;
-- networking;
-- storage;
-- Python;
-- SQLite;
-- Git;
-- CA certificates;
-- systemd health.
+- required host-standard tools and admin access;
+- no container mail agent and effective SMTP egress block;
+- systemd health;
+- applicable host firewall and monitoring requirements.
 
-Acceptance: the clean CT passes the documented baseline without locale or namespace defects.
+**Kane Fabric-specific environment requirements**:
+
+- data storage and layout;
+- Python;
+- SQLite runtime and CLI;
+- Git;
+- reconstruction evidence locations;
+- project-specific test gates.
+
+Acceptance: the host-level baseline exits zero for CT102 and all Kane Fabric-specific environment checks pass. Kane Fabric must not maintain a competing definition of host conformance.
+
+Known accepted host result on 2026-08-18: CT100, CT101 and CT102 conform with `62 passed, 0 failed, 3 informational`.
 
 ### Batch 002 — Reconstruction evidence contract
 
@@ -210,7 +222,7 @@ Work includes:
 
 - separate county-specific profile/data from generic Fabric software;
 - declare required initial source contracts;
-- codify infrastructure bootstrap;
+- codify infrastructure bootstrap while allowing each deployment host to own its own executable conformance standard;
 - automate only after manual reconstruction is proven;
 - produce deterministic acceptance reports;
 - test a second county without changing core architecture.
@@ -218,7 +230,7 @@ Work includes:
 Target model:
 
 ```text
-clean Debian CT
+conformant supported CT
 + Kane Fabric software
 + county/source profile
 + accepted seed or initial harvest
