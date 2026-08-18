@@ -1,0 +1,52 @@
+# Operating-system/editor noise
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Local environment/secrets
+.env
+.env.*
+*.key
+*.pem
+
+# Databases and geographic source data
+*.gpkg
+*.sqlite
+*.sqlite3
+*.db
+*.geojson
+*.fgb
+*.pmtiles
+*.mbtiles
+
+# Generated Kane Fabric artifacts
+*.krf
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.zst
+
+# Reconstruction / operational workspaces
+seed/
+reconstruction-inputs/
+reconstruction-code/
+staging/
+rollback/
+audit/
+render/
+harvests/
+deployment/
+
+# Local logs and temporary files
+*.log
+*.tmp
+*.bak
