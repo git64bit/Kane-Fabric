@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-import os
 import shutil
 import sqlite3
 import sys
@@ -12,12 +11,6 @@ from pathlib import Path
 
 DATABASE = Path(__file__).resolve().parents[1]
 TOOLS = DATABASE / "tools"
-DONOR = Path(
-    os.environ.get(
-        "KANE_FABRIC_DONOR_TOOLS",
-        "/var/lib/kane-fabric/reconstruction-code/kane-condo-0.4/database/tools",
-    )
-)
 
 sys.path.insert(0, str(TOOLS))
 
@@ -34,7 +27,6 @@ def canonical_bytes(value: object) -> bytes:
     return (json.dumps(value, sort_keys=True, separators=(",", ":")) + "\n").encode()
 
 
-@unittest.skipUnless(DONOR.is_dir(), "frozen Kane Condo 0.4 donor is not available")
 class FabricPromotionTests(unittest.TestCase):
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory()
@@ -298,10 +290,10 @@ class FabricPromotionTests(unittest.TestCase):
         candidate_database = directory / PROMOTION.DATABASE_FILENAME
         shutil.copyfile(self.active, candidate_database)
         prepared_sha = PROMOTION.sha256_file(candidate_database)
-        event_created = PROMOTION.DONOR._promote_release_rows(
+        event_created = PROMOTION._promote_release_rows(
             candidate_database, plan, prepared_sha
         )
-        PROMOTION.DONOR._verify_promoted_state(
+        PROMOTION._verify_promoted_state(
             candidate_database,
             {**plan, "prepared_candidate_sha256": prepared_sha},
         )
