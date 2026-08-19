@@ -118,12 +118,10 @@ class FabricReconciliationTests(unittest.TestCase):
         )
 
     def test_identity_seed_and_reconciliation_without_classification_tables(self) -> None:
-        seeded = PROJECT.seed_project_buildings(
+        PROJECT.seed_project_buildings(
             self.database,
             "fabric-buildings-accepted-reconcile-fixture",
         )
-        self.assertEqual(1, seeded["project_building_count"])
-        self.assertEqual(1, seeded["mapping_count"])
 
         connection = sqlite3.connect(self.database)
         try:
@@ -133,12 +131,20 @@ class FabricReconciliationTests(unittest.TestCase):
                     "SELECT name FROM sqlite_master WHERE type = 'table'"
                 )
             }
+            project_count = connection.execute(
+                "SELECT COUNT(*) FROM project_building"
+            ).fetchone()[0]
+            mapping_count = connection.execute(
+                "SELECT COUNT(*) FROM project_building_source_mapping"
+            ).fetchone()[0]
             building_key = connection.execute(
                 "SELECT building_key FROM project_building"
             ).fetchone()[0]
         finally:
             connection.close()
 
+        self.assertEqual(1, project_count)
+        self.assertEqual(1, mapping_count)
         self.assertTrue(building_key.startswith("kcb-"))
         self.assertNotIn("building_classification_current", tables)
         self.assertNotIn("building_classification_event", tables)
