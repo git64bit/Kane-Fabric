@@ -184,6 +184,21 @@ class FabricCandidateComparisonTests(unittest.TestCase):
         )
 
     def test_candidate_registration_and_comparison_are_deterministic(self) -> None:
+        profile, registry_sha = CANDIDATE.load_building_profile()
+        self.assertEqual("buildings", profile["dataset_key"])
+        self.assertEqual(
+            CANDIDATE.SOURCE_PROFILES.APPROVED_REGISTRY_SHA256,
+            registry_sha,
+        )
+        self.assertEqual(
+            CANDIDATE.SOURCE_PROFILES.PROFILE_DIR,
+            CANDIDATE.DONOR.PROFILE_DIR,
+        )
+        self.assertEqual(
+            DATABASE / "source-profiles",
+            CANDIDATE.DONOR.PROFILE_DIR,
+        )
+
         harvested = CANDIDATE.harvest_candidate(
             self.staging,
             requester=self.fake,
