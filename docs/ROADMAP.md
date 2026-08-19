@@ -24,9 +24,15 @@ Exit gate:
 
 ## Milestone 1 — Reconstruct Kane County on a clean Fabric node
 
+**Status: RELEASED — 2026-08-18**
+
+Release record: `docs/MILESTONE_1_RELEASE.md`
+
 Purpose: prove that the county pipeline can be reproduced from declared inputs rather than copied from hidden orchestrator state.
 
-### Batch 001 — Environment acceptance
+Milestone 1 was released after clean-node reconstruction through deterministic project-building reconciliation. The promotion/rollback replay originally listed as Batch 009 was not executed before release and is carried forward explicitly as Milestone 2 Entry Gate 001. This scope amendment preserves the unperformed proof rather than claiming it passed.
+
+### Batch 001 — Environment acceptance — COMPLETE
 
 Record and verify two separate layers:
 
@@ -54,23 +60,21 @@ Record and verify two separate layers:
 
 Acceptance: the host-level baseline exits zero for CT102 and all Kane Fabric-specific environment checks pass. Kane Fabric must not maintain a competing definition of host conformance.
 
-Known accepted host result on 2026-08-18: CT100, CT101 and CT102 conform with `62 passed, 0 failed, 3 informational`.
+Accepted host result on 2026-08-18: CT100, CT101 and CT102 conform with `62 passed, 0 failed, 3 informational`.
 
-### Batch 002 — Reconstruction evidence contract
+### Batch 002 — Reconstruction evidence contract — COMPLETE
 
 Record the immutable Kane County seed, historical reference database, staged candidate evidence, and their SHA-256 identities outside Git.
 
 Acceptance: evidence is distinguishable from active Fabric state and can be verified before use.
 
-### Batch 003 — Historical software reproducibility
+### Batch 003 — Historical software reproducibility — COMPLETE
 
 Run the exact Kane Condo `0.4` database test suite on the clean Kane Fabric CT.
 
-Known initial result: 374 tests pass on the reconstructed environment.
+Accepted result: 374 tests pass on the reconstructed environment; the historical checkout remains clean.
 
-Acceptance: exact historical baseline is reproducible and the checkout remains clean.
-
-### Batch 004 — Read-only reference validation
+### Batch 004 — Read-only reference validation — COMPLETE
 
 Use the reconstructed 0.4 toolchain to:
 
@@ -80,54 +84,100 @@ Use the reconstructed 0.4 toolchain to:
 - perform live lightweight source-status checks;
 - prove the reference database hash is unchanged.
 
-Acceptance: current Kane County endpoints can be evaluated from the new CT without mutating accepted evidence.
+Accepted result: all five official source profiles reported `Up to date`; the 649027584-byte historical promoted reference remained at SHA-256 `164200d4d7262874dcc03239c8258446a4d7bb81ce84daf46dc4937d6c97fe86`.
 
-### Batch 005 — Fresh working database reconstruction
+### Batch 005 — Fresh working database reconstruction — COMPLETE
 
 Create a new working database from the immutable accepted seed and declared migrations/import contracts.
 
 Do not install the final Kane Condo database as active Fabric state.
 
-Acceptance: the reconstructed database represents the expected accepted starting county state and passes database validation.
+Accepted result: a fresh working database was reconstructed from the immutable donor and passed semantic comparison with the historical seed-import contract.
 
-### Batch 006 — Candidate replay
+### Batch 006 — Candidate replay — COMPLETE
 
 Using the staged Kane reconstruction evidence, replay:
 
-- boundary candidate validation/registration;
 - building candidate validation/registration;
 - road candidate validation/registration;
-- coordinated water candidate validation/registration.
+- coordinated water candidate validation/registration;
+- county boundary candidate validation/registration.
 
-Acceptance: staged evidence validates independently on the new node and accepted state is unchanged merely by registration.
+Accepted result: one accepted and one candidate release exist for each of the five datasets. Registration did not promote accepted geography.
 
-### Batch 007 — Deterministic comparison replay
+Active working database at the end of Batch 006:
+
+```text
+/var/lib/kane-fabric/database/kane-county-reconstructed.gpkg
+size    355217408 bytes
+SHA256  ff67edcb0a732d87f3dc3bb3cf7fda91a03fea4ef8e16fb527f88283894c0a97
+```
+
+### Batch 007 — Deterministic comparison replay — COMPLETE
 
 Reproduce accepted-versus-candidate comparison results.
 
-Acceptance: semantic comparison outputs agree with the historical reference audit for all source groups.
+Accepted result: two fresh CT102 comparison runs were byte-for-byte repeatable and matched historical Batch 022 comparison artifacts exactly for buildings, boundary, roads, and coordinated water. The active database remained byte-identical throughout comparison.
 
-### Batch 008 — Geographic identity reconciliation replay
+### Batch 008 — Geographic identity reconciliation replay — COMPLETE
 
 Reconstruct the building project-identity reconciliation on an external candidate database.
 
-Acceptance: stable identities and historical application-relevant mappings are preserved according to the donor contract, with no unexplained ambiguity.
+Accepted result:
 
-### Batch 009 — Promotion and rollback replay
+```text
+ready_for_promotion       true
+ambiguity_count           0
+mapped_source_count       208324
+unmapped_source_count     0
+continuation mappings     208324
+replacement mappings      0
+additions                 0
+disappearances            0
+new project buildings     0
+classification changes    0
+```
 
-Prepare, validate, and atomically promote the reconstructed county state; prove rollback behavior.
+Reconciliation artifact:
 
-Acceptance:
+```text
+/var/lib/kane-fabric/staging/reconciliation/kane-buildings-reconciliation-20250730-2bfb38f11c7d
+candidate DB SHA256  9e59c2ad2bd6d6962894faebd98ffc31620b48f711b091f0c376e2707c488ae9
+reconciliation SHA256 1d81b3287cee5c0ed47f6aa5092d8dee2b7aab382095749494f630f601a06a62
+```
 
-- failed/interrupted promotion cannot destroy accepted state;
-- reconstructed promoted state is semantically equivalent to the historical 0.4 reference;
-- rollback restores the prior accepted release set.
+### Original Batch 009 — Promotion and rollback replay — CARRIED TO MILESTONE 2
 
-Milestone 1 exit gate: Kane County's complete authoritative database refresh pipeline has been reproduced on CT102 from declared inputs.
+This proof was part of the original Milestone 1 plan but was not executed before the Milestone 1 release.
+
+It is now Milestone 2 Entry Gate 001 and remains mandatory before extraction changes authoritative database behavior.
+
+Milestone 1 exit statement: Kane County's authoritative database pipeline has been independently reconstructed from declared inputs through deterministic comparison and project-identity reconciliation on CT102. Promotion/rollback replay remains explicitly pending as the next milestone's entry gate.
 
 ## Milestone 2 — Extract Kane Fabric geographic core
 
-Purpose: separate reusable county geography from Kane Condo application semantics.
+**Status: READY TO START**
+
+Handoff: `docs/MILESTONE_2_HANDOFF.md`
+
+Purpose: first close the carried promotion/rollback proof, then separate reusable county geography from Kane Condo application semantics.
+
+### Entry Gate 001 — Promotion and rollback replay
+
+Carry forward the original Milestone 1 Batch 009 against the newly reconstructed reconciliation artifact.
+
+Acceptance:
+
+- prepare and validate promotion from the reconstructed reconciliation candidate;
+- atomically promote the reconstructed county state;
+- failed/interrupted promotion cannot destroy accepted state;
+- reconstructed promoted state is semantically equivalent to the historical 0.4 reference;
+- rollback restores the prior accepted release set;
+- immutable reconstruction evidence remains unchanged.
+
+Do not begin behavior-changing geographic-core extraction until this gate passes.
+
+### Core extraction work
 
 Work includes:
 
@@ -138,7 +188,7 @@ Work includes:
 - preserve deterministic tests;
 - create Kane Fabric-owned database migrations and command entry points.
 
-Exit gate: Kane Fabric can build/refresh Kane County without depending on Kane Condo names or classification semantics.
+Exit gate: Kane Fabric can build/refresh Kane County without depending on Kane Condo names or classification semantics, and promotion/rollback behavior remains proven under Kane Fabric ownership.
 
 ## Milestone 3 — Compile shared substrate
 
