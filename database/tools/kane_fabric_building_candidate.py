@@ -8,12 +8,14 @@ from typing import Sequence
 from kane_fabric_compat import FABRIC_GEOMETRY, load_donor, load_sibling
 
 SOURCE_PROFILES = load_sibling("kane_fabric_source_profiles")
+SOURCE_STATUS = load_sibling("kane_fabric_source_status")
 PROVENANCE = load_sibling("kane_fabric_provenance")
 BUILDINGS = load_sibling("kane_fabric_buildings")
 DONOR = load_donor("kane_building_candidate")
 
 DONOR.PROFILE_DIR = SOURCE_PROFILES.PROFILE_DIR
 DONOR.kane_source_profiles = SOURCE_PROFILES
+DONOR.kane_source_status = SOURCE_STATUS
 DONOR.kane_geometry = FABRIC_GEOMETRY
 DONOR.kane_provenance = PROVENANCE
 DONOR.kane_buildings = BUILDINGS
