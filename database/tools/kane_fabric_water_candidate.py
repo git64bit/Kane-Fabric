@@ -1,0 +1,40 @@
+#!/usr/bin/env python3
+"""Kane Fabric coordinated water-candidate entry point."""
+
+from __future__ import annotations
+
+from typing import Sequence
+
+from kane_fabric_compat import FABRIC_GEOMETRY, load_donor, load_sibling
+
+PROVENANCE = load_sibling("kane_fabric_provenance")
+MAP_LAYERS = load_sibling("kane_fabric_map_layers")
+ROAD_CANDIDATE = load_sibling("kane_fabric_road_candidate")
+DONOR = load_donor("kane_water_candidate")
+
+DONOR.kane_geometry = FABRIC_GEOMETRY
+DONOR.kane_provenance = PROVENANCE
+DONOR.kane_map_layers = MAP_LAYERS
+DONOR.kane_road_candidate = ROAD_CANDIDATE
+if hasattr(DONOR, "PROTECTED_TABLES"):
+    DONOR.PROTECTED_TABLES = tuple(
+        table for table in DONOR.PROTECTED_TABLES
+        if not table.startswith("building_classification_")
+    )
+
+WaterCandidateError = DONOR.WaterCandidateError
+harvest_candidate = DONOR.harvest_candidate
+validate_candidate = DONOR.validate_candidate
+register_candidate = DONOR.register_candidate
+candidate_info = DONOR.candidate_info
+load_water_profiles = DONOR.load_water_profiles
+canonical_bytes = DONOR.canonical_bytes
+build_parser = DONOR.build_parser
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    return int(DONOR.main(argv))
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
