@@ -134,6 +134,19 @@ class FabricPromotionTests(unittest.TestCase):
         descriptor_path.write_bytes(canonical_bytes(descriptor))
         PROVENANCE.record_descriptor(self.active, descriptor_path)
 
+    def _import_release(
+        self,
+        dataset_key: str,
+        release_key: str,
+        source: Path,
+    ) -> None:
+        if dataset_key == "buildings":
+            BUILDINGS.import_buildings(self.active, release_key, source)
+        elif dataset_key == "county-boundary":
+            BOUNDARY.import_boundary(self.active, release_key, source)
+        else:
+            MAP_LAYERS.import_map_layers(self.active, [(release_key, source)])
+
     def _build_release_fixture(self) -> None:
         polygon_old = {
             "type": "Polygon",
@@ -165,76 +178,61 @@ class FabricPromotionTests(unittest.TestCase):
         }
 
         specifications = (
-            ("buildings", "buildings", polygon_old, polygon_new, "building-1"),
             ("county-boundary", "boundary", polygon_old, polygon_new, "boundary-1"),
             ("roads", "roads", line_old, line_new, "road-1"),
             ("water-creeks", "water", line_old, line_new, "creek-1"),
             ("water-fox-river", "water", polygon_old, polygon_new, "river-1"),
+            ("buildings", "buildings", polygon_old, polygon_new, "building-1"),
         )
 
         old_sources: dict[str, Path] = {}
         new_sources: dict[str, Path] = {}
+        data_kinds: dict[str, str] = {}
+
         for dataset_key, data_kind, old_geometry, new_geometry, feature_id in specifications:
             old_key = f"fabric-{dataset_key}-accepted"
             new_key = f"fabric-{dataset_key}-candidate"
             self.previous_keys[dataset_key] = old_key
             self.candidate_keys[dataset_key] = new_key
-            old_source = self._geojson(
+            data_kinds[dataset_key] = data_kind
+            old_sources[dataset_key] = self._geojson(
                 f"{dataset_key}-old.geojson", old_geometry, feature_id
             )
-            new_source = self._geojson(
+            new_sources[dataset_key] = self._geojson(
                 f"{dataset_key}-new.geojson", new_geometry, feature_id
             )
-            old_sources[dataset_key] = old_source
-            new_sources[dataset_key] = new_source
+
+        # Keep every intermediate database state valid. Each accepted release is
+        # fully populated before another accepted release is introduced.
+        for dataset_key, _data_kind, _old_geometry, _new_geometry, _feature_id in specifications:
             self._record_release(
                 dataset_key=dataset_key,
-                data_kind=data_kind,
-                release_key=old_key,
+                data_kind=data_kinds[dataset_key],
+                release_key=self.previous_keys[dataset_key],
                 lifecycle="accepted",
-                source=old_source,
+                source=old_sources[dataset_key],
             )
-            self._record_release(
-                dataset_key=dataset_key,
-                data_kind=data_kind,
-                release_key=new_key,
-                lifecycle="candidate",
-                source=new_source,
+            self._import_release(
+                dataset_key,
+                self.previous_keys[dataset_key],
+                old_sources[dataset_key],
             )
 
-        BUILDINGS.import_buildings(
-            self.active, self.previous_keys["buildings"], old_sources["buildings"]
-        )
-        BUILDINGS.import_buildings(
-            self.active, self.candidate_keys["buildings"], new_sources["buildings"]
-        )
-        BOUNDARY.import_boundary(
-            self.active,
-            self.previous_keys["county-boundary"],
-            old_sources["county-boundary"],
-        )
-        BOUNDARY.import_boundary(
-            self.active,
-            self.candidate_keys["county-boundary"],
-            new_sources["county-boundary"],
-        )
-        MAP_LAYERS.import_map_layers(
-            self.active,
-            [
-                (self.previous_keys["roads"], old_sources["roads"]),
-                (self.candidate_keys["roads"], new_sources["roads"]),
-                (self.previous_keys["water-creeks"], old_sources["water-creeks"]),
-                (self.candidate_keys["water-creeks"], new_sources["water-creeks"]),
-                (
-                    self.previous_keys["water-fox-river"],
-                    old_sources["water-fox-river"],
-                ),
-                (
-                    self.candidate_keys["water-fox-river"],
-                    new_sources["water-fox-river"],
-                ),
-            ],
-        )
+        # Candidate releases may exist without becoming authoritative, but store
+        # their feature rows immediately so the completed fixture is fully valid.
+        for dataset_key, _data_kind, _old_geometry, _new_geometry, _feature_id in specifications:
+            self._record_release(
+                dataset_key=dataset_key,
+                data_kind=data_kinds[dataset_key],
+                release_key=self.candidate_keys[dataset_key],
+                lifecycle="candidate",
+                source=new_sources[dataset_key],
+            )
+            self._import_release(
+                dataset_key,
+                self.candidate_keys[dataset_key],
+                new_sources[dataset_key],
+            )
 
         PROJECT.seed_project_buildings(self.active, self.previous_keys["buildings"])
         connection = sqlite3.connect(self.active)
