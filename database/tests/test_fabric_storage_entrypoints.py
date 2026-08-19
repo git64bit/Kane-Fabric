@@ -3,7 +3,6 @@ from __future__ import annotations
 import hashlib
 import importlib.util
 import json
-import os
 import subprocess
 import sys
 import tempfile
@@ -12,12 +11,6 @@ from pathlib import Path
 
 DATABASE = Path(__file__).resolve().parents[1]
 TOOLS = DATABASE / "tools"
-DONOR = Path(
-    os.environ.get(
-        "KANE_FABRIC_DONOR_TOOLS",
-        "/var/lib/kane-fabric/reconstruction-code/kane-condo-0.4/database/tools",
-    )
-)
 
 SPEC = importlib.util.spec_from_file_location(
     "kane_fabric_db_storage_test", TOOLS / "kane_fabric_db.py"
@@ -32,7 +25,6 @@ def canonical_bytes(value: object) -> bytes:
     return json.dumps(value, sort_keys=True, separators=(",", ":")).encode("utf-8")
 
 
-@unittest.skipUnless(DONOR.is_dir(), "frozen Kane Condo 0.4 donor is not available")
 class FabricStorageEntrypointTests(unittest.TestCase):
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory()
@@ -42,14 +34,11 @@ class FabricStorageEntrypointTests(unittest.TestCase):
         DB.init_database(self.database)
 
     def command(self, script: str, *arguments: object) -> dict[str, object]:
-        env = dict(os.environ)
-        env["KANE_FABRIC_DONOR_TOOLS"] = str(DONOR)
         result = subprocess.run(
             ["bash", str(DATABASE / script), *(str(value) for value in arguments)],
             check=False,
             capture_output=True,
             text=True,
-            env=env,
         )
         if result.returncode != 0:
             self.fail(
