@@ -7,6 +7,7 @@ from typing import Sequence
 
 from kane_fabric_compat import FABRIC_GEOMETRY, load_donor, load_sibling
 
+SOURCE_STATUS = load_sibling("kane_fabric_source_status")
 BUILDINGS = load_sibling("kane_fabric_buildings")
 MAP_LAYERS = load_sibling("kane_fabric_map_layers")
 BOUNDARY = load_sibling("kane_fabric_boundary")
@@ -17,6 +18,7 @@ BOUNDARY_CANDIDATE = load_sibling("kane_fabric_boundary_candidate")
 DONOR = load_donor("kane_candidate_compare")
 
 DONOR.kane_geometry = FABRIC_GEOMETRY
+DONOR.kane_source_status = SOURCE_STATUS
 DONOR.kane_buildings = BUILDINGS
 DONOR.kane_map_layers = MAP_LAYERS
 DONOR.kane_boundary = BOUNDARY
