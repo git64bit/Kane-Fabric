@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-import os
 import sqlite3
 import sys
 import tempfile
@@ -12,12 +11,6 @@ from typing import Any, Mapping
 
 DATABASE = Path(__file__).resolve().parents[1]
 TOOLS = DATABASE / "tools"
-DONOR = Path(
-    os.environ.get(
-        "KANE_FABRIC_DONOR_TOOLS",
-        "/var/lib/kane-fabric/reconstruction-code/kane-condo-0.4/database/tools",
-    )
-)
 
 sys.path.insert(0, str(TOOLS))
 import kane_fabric_building_candidate as CANDIDATE  # noqa: E402
@@ -97,7 +90,6 @@ class FakeArcGIS:
         }
 
 
-@unittest.skipUnless(DONOR.is_dir(), "frozen Kane Condo 0.4 donor is not available")
 class FabricCandidateComparisonTests(unittest.TestCase):
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory()
@@ -187,16 +179,16 @@ class FabricCandidateComparisonTests(unittest.TestCase):
         profile, registry_sha = CANDIDATE.load_building_profile()
         self.assertEqual("buildings", profile["dataset_key"])
         self.assertEqual(
-            CANDIDATE.SOURCE_PROFILES.APPROVED_REGISTRY_SHA256,
+            CANDIDATE.kane_source_profiles.APPROVED_REGISTRY_SHA256,
             registry_sha,
         )
         self.assertEqual(
-            CANDIDATE.SOURCE_PROFILES.PROFILE_DIR,
-            CANDIDATE.DONOR.PROFILE_DIR,
+            DATABASE / "source-profiles",
+            CANDIDATE.kane_source_profiles.PROFILE_DIR,
         )
         self.assertEqual(
             DATABASE / "source-profiles",
-            CANDIDATE.DONOR.PROFILE_DIR,
+            CANDIDATE.PROFILE_DIR,
         )
 
         harvested = CANDIDATE.harvest_candidate(
