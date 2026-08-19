@@ -7,11 +7,14 @@ from typing import Sequence
 
 from kane_fabric_compat import FABRIC_GEOMETRY, load_donor, load_sibling
 
+SOURCE_PROFILES = load_sibling("kane_fabric_source_profiles")
 PROVENANCE = load_sibling("kane_fabric_provenance")
 MAP_LAYERS = load_sibling("kane_fabric_map_layers")
 ROAD_CANDIDATE = load_sibling("kane_fabric_road_candidate")
 DONOR = load_donor("kane_water_candidate")
 
+DONOR.PROFILE_DIR = SOURCE_PROFILES.PROFILE_DIR
+DONOR.kane_source_profiles = SOURCE_PROFILES
 DONOR.kane_geometry = FABRIC_GEOMETRY
 DONOR.kane_provenance = PROVENANCE
 DONOR.kane_map_layers = MAP_LAYERS
