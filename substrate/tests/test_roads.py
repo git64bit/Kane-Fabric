@@ -236,8 +236,8 @@ class RoadComponentTests(unittest.TestCase):
 
         stored = self._stored_feature("road-1")
         self.assertEqual(
-            stored.coordinates,
-            detail["road-1"]["geometry"]["coordinates"],
+            canonical_bytes(stored.coordinates),
+            canonical_bytes(detail["road-1"]["geometry"]["coordinates"]),
         )
         self.assertEqual(
             stored.geometry_type,
