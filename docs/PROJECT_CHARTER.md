@@ -11,7 +11,8 @@ The foundational reconstruction objective has been proven through Milestones 1 a
 The governing companion documents are:
 
 - `docs/CIVIC_INFRASTRUCTURE_PRINCIPLES.md`;
-- `docs/MULTI_COUNTY_DESIGN.md`.
+- `docs/MULTI_COUNTY_DESIGN.md`;
+- `docs/DEVELOPMENT_PROCESS.md`.
 
 ## 2. Fixed principles
 
@@ -40,6 +41,21 @@ Kane County remains the sole required operational reference deployment for curre
 Generic concepts should use generic identities. Kane-specific source facts should remain in Kane/source profiles, Kane evidence, or clearly Kane-specific deployment entry points.
 
 No second-county implementation, placeholders, stubs, or speculative national framework are required merely to satisfy this principle. See `docs/MULTI_COUNTY_DESIGN.md`.
+
+### Development execution authority
+
+GitHub `main`, the Proxmox host, CT102, and Kane Fabric operational data have different authority roles and must not be confused.
+
+For the Kane reference deployment:
+
+- GitHub `main` is the software/contracts Single Source of Truth;
+- `srv-b` owns Proxmox/LXC control and host conformance;
+- CT102 `kane-fabric` is the real Kane Fabric execution environment;
+- `/var/lib/kane-fabric` inside CT102 contains operational county state and evidence.
+
+Routine Kane Fabric commands are executed in CT102 through the authorized `srv-b` host-to-LXC path using `pct exec 102 -- ...`. An Assistant sandbox is not a substitute for CT102 acceptance, and the user is not the default terminal relay for routine Assistant-driven development.
+
+The detailed process and capability-failure rules are defined in `docs/DEVELOPMENT_PROCESS.md`.
 
 ### Browser-first client
 
