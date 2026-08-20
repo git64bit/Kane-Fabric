@@ -2,6 +2,58 @@
 
 > **Historical handoff. Milestone 2 was released on 2026-08-20.** This document preserves the starting state and instructions that governed the extraction. Do not treat pending language below as current project status. The authoritative completion record is `docs/MILESTONE_2_RELEASE.md`, and the current next milestone is Milestone 3 in `docs/ROADMAP.md`.
 
+## Post-release repository cleanup incident
+
+Milestone 2 implementation was carried on `ms2/geographic-core-extraction` even though the user had not requested a branch-based workflow. That choice created avoidable cleanup work after the milestone was complete. Future Assistants must not repeat it.
+
+The branch eventually ended 92 commits ahead of `main` and 0 behind. Because `main` was exactly the merge base, the release was integrated by a clean fast-forward to:
+
+```text
+9440c31283a000f0b3ce30e57035446ad45c7ce3
+```
+
+The branch itself was not the only problem. The CT102 checkout at `/tmp/kane-fabric-ms2` had been configured as a single-branch checkout whose `remote.origin.fetch` covered only `ms2/geographic-core-extraction`. After the remote fast-forward, this caused several misleading local failures:
+
+- `git switch main` failed because no local `main` existed;
+- an explicit fetch created `origin/main`, but Git still did not recognize it as a normal trackable remote branch because the configured fetch refspec remained single-branch;
+- the checkout showed `README.md` and four MS-2 documentation files as modified/added while still on an older MS-2 branch commit, even though those worktree files were byte-for-byte identical to the already-merged remote `main` content;
+- attempting `git push origin --delete ms2/geographic-core-extraction` from CT102 prompted for GitHub credentials and failed because CT102 intentionally did not have GitHub write credentials.
+
+The safe recovery sequence was:
+
+1. fetch `origin/main` explicitly;
+2. prove the apparent local changes were identical to `origin/main` with `git diff --quiet origin/main --` before discarding anything;
+3. reset the checkout to `origin/main`;
+4. restore the normal remote fetch refspec:
+
+   ```text
+   +refs/heads/*:refs/remotes/origin/*
+   ```
+
+5. create local `main` tracking `origin/main`;
+6. remove the merged local MS-2 branch;
+7. delete the merged remote MS-2 branch outside CT102, then `git fetch origin --prune`.
+
+Final accepted repository state on CT102:
+
+```text
+local branch   main
+local HEAD     9440c31283a000f0b3ce30e57035446ad45c7ce3
+upstream       origin/main
+remote refs    origin/main only
+working tree   clean
+```
+
+Operational rule from this incident:
+
+- **Work directly on `main` for this repository unless the user explicitly requests a feature branch, pull request, or other branch workflow.**
+- Do not silently convert the checkout to a single-branch fetch configuration.
+- Before changing branch/refspec state, inspect `git branch -vv`, `git status`, and `remote.origin.fetch`.
+- Never discard apparent worktree changes until they have been compared with the intended authoritative ref.
+- Do not ask the user to install or enter GitHub write credentials on CT102 merely to clean up a branch created by the Assistant. Use the connected GitHub integration when it supports the write; if a required GitHub operation is unavailable there, state that limitation directly and use the smallest manual GitHub UI action necessary.
+
+This cleanup incident affected repository mechanics only. It did not invalidate the Milestone 2 release evidence or alter the immutable Kane County seed, historical oracle, closeout report, or released geographic-core implementation.
+
 This document is the starting context for the Assistant taking over Milestone 2.
 
 Read this file first, then read:
