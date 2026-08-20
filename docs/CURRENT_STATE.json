@@ -3,7 +3,8 @@
   "observed_date": "2026-08-20",
   "project": {
     "repository": "git64bit/Kane-Fabric",
-    "branch": "main"
+    "branch": "main",
+    "accepted_candidate_branch": "assistant/read-authority-boundary"
   },
   "deployment": {
     "proxmox_host": "srv-b",
@@ -40,34 +41,47 @@
     },
     "legacy_database_observation": {
       "path": "/var/lib/kane-fabric/database/kane-county-reconstructed.gpkg",
-      "sha256": "a80cf0dff6005818e40a63e101f825aed9b9775f0b77cdfd39a69283b195921b",
       "status": "donor-shaped-historical-working-database-not-ms3-authoritative",
-      "migration_count": 8,
-      "migration_8": {
-        "filename": "0008_refresh_promotion.sql",
-        "sha256": "a17e84ee9ebb5fbb21f217af4794b23099c8dedb4397f368f591e9c75969cd33",
-        "matched_frozen_donor_path": "/var/lib/kane-fabric/reconstruction-code/kane-condo-0.4/database/migrations/0008_refresh_promotion.sql"
-      }
+      "migration_count": 8
     },
-    "ms3_baseline_overview": {
-      "path": "/var/lib/kane-fabric/render/ms3-baseline/county-overview.json",
-      "sha256": "f0995177625e28adc39e0ddd842ea22fbc1935239d6d1f7d54f377edde62e942",
-      "byte_length": 1670,
-      "format": "kane-fabric-substrate-overview",
-      "version": 1,
-      "boundary_release_key": "kane-county-boundary-20230509-73cb32426b22",
-      "boundary_content_sha256": "73cb32426b22bcf73f08c6356d4e39eb72d878192d1bdc33385b87af0193bfc6",
-      "source_vertex_count": 378,
-      "vertex_count": 19
+    "milestone_3_publication": {
+      "status": "accepted",
+      "substrate_content_sha256": "fe417a02222669d9b81c72dc717ab0178b54b1c13cd0d3e8510c6b4f25224bcc",
+      "total_byte_length": 7201386,
+      "components": {
+        "county-overview.json": {
+          "byte_length": 1670,
+          "sha256": "f0995177625e28adc39e0ddd842ea22fbc1935239d6d1f7d54f377edde62e942"
+        },
+        "roads-lod.kfs": {
+          "byte_length": 4014272,
+          "sha256": "4c897db58a55961d76e720d3905b57a76fe199f5396c876b57e56ecaeaaee4d2"
+        },
+        "water-lod.kfs": {
+          "byte_length": 3183647,
+          "sha256": "dc4786b2904869fc5f910fa0d1b1a5767f1204fda99f34b2745f1ef7088f7f89"
+        },
+        "substrate-manifest.json": {
+          "byte_length": 1797,
+          "sha256": "1143324ace2dd7c47ad5f79e0763fdf978be5447527095e9e6f96d46b3fd1d13"
+        }
+      },
+      "evidence_root": "/var/lib/kane-fabric/render/ms3-evidence",
+      "release_record": "docs/MILESTONE_3_RELEASE.md",
+      "closeout_candidate_head": "a3a24268f8bba6088206e63a420a214761c7c679"
     }
   },
   "milestone": {
-    "current": 3,
-    "name": "Compile Shared Substrate",
-    "phase": "ms3-003-road-lod-implementation",
-    "first_real_environment_gate": "accepted",
-    "gate_steps_complete": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
-    "next_work_item": "MS3-003"
+    "current": 4,
+    "name": "Subscription contract",
+    "phase": "ms3-accepted-awaiting-repository-publication",
+    "previous_milestone": {
+      "number": 3,
+      "name": "Compile Shared Substrate",
+      "status": "accepted",
+      "gate_steps_complete": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+    },
+    "next_work_item": "MS4-001"
   },
   "accepted_tests": {
     "database": {
@@ -81,9 +95,16 @@
     "substrate": {
       "command": "bash substrate/run-tests.sh",
       "environment": "CT102",
-      "repository_head": "2ab4835b05d04e0156c53726738a238af5acd2a6",
-      "passed": 19,
+      "repository_head": "51a451d0a8c8c88d7c66afd8ce100edc964d581b",
+      "passed": 43,
       "failed": 0,
+      "observed_date": "2026-08-20"
+    },
+    "ms3_closeout": {
+      "environment": "CT102",
+      "candidate_head": "a3a24268f8bba6088206e63a420a214761c7c679",
+      "result": "passed",
+      "marker": "MS3-011 MILESTONE 3 CLOSEOUT PASSED",
       "observed_date": "2026-08-20"
     }
   },
@@ -104,7 +125,9 @@
       "dataset_key": "roads",
       "release_key": "kane-roads-20250730-028e3c1dc7a6",
       "content_sha256": "028e3c1dc7a6eede26ed3295d8c17ff524a15d7f1eadb13747836fae777e1eb3",
-      "feature_count": 27675
+      "feature_count": 27675,
+      "harvest_object_count": 27675,
+      "inventory_note": "accepted harvest contains 27675 objects; a later live source inventory exposed 27676 object IDs and correctly triggered new_source_detected"
     },
     {
       "dataset_key": "water-creeks",
@@ -121,17 +144,24 @@
   ],
   "known_remote_branches": [
     {
+      "name": "assistant/read-authority-boundary",
+      "status": "accepted-milestone-3-candidate-not-published-to-main",
+      "merge_authorized": false
+    },
+    {
       "name": "ms3-substrate-contract",
       "head": "9b583fb7ab18b6d5e00e4643d4cbfe15f305e8cc",
       "fully_contained_in_main": true,
       "deletion_authorized": false
     }
   ],
-  "next_safe_action": "Implement and validate MS3-003 road LOD/container generation from the stable Fabric-native database. Do not rediscover CT102, the checkout path, or the operational database unless the session-start checker reports a mismatch.",
+  "next_safe_action": "Milestone 3 is accepted. Do not reopen MS3 discovery. Publishing assistant/read-authority-boundary to main requires explicit user authorization; do not create a PR, merge, or write main without it. After repository publication, begin MS4-001 subscription-contract work.",
   "state_policy": {
     "stable_facts_are_not_rediscovered_each_session": true,
     "live_state_must_be_verified_before_mutation": true,
     "accepted_tests_are_not_rerun_without_an_invalidating_change": true,
-    "documentation_updates_are_batched_at_material_checkpoints": true
+    "documentation_updates_are_batched_at_material_checkpoints": true,
+    "root_unlicense_must_not_change_for_dependencies": true,
+    "retained_third_party_must_be_vendored_before_final_project_release": true
   }
 }
