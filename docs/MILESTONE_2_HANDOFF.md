@@ -1,5 +1,7 @@
 # Milestone 2 Handoff — Extract Kane Fabric Geographic Core
 
+> **Historical handoff. Milestone 2 was released on 2026-08-20.** This document preserves the starting state and instructions that governed the extraction. Do not treat pending language below as current project status. The authoritative completion record is `docs/MILESTONE_2_RELEASE.md`, and the current next milestone is Milestone 3 in `docs/ROADMAP.md`.
+
 This document is the starting context for the Assistant taking over Milestone 2.
 
 Read this file first, then read:
