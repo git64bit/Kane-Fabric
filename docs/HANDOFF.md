@@ -143,6 +143,44 @@ The historical checkout path used during MS-2 was:
 
 It is not a permanent path contract. Discover the actual current checkout on CT102 before using it.
 
+### Current live CT102 checkout observation — 2026-08-20
+
+The first Milestone 3 live discovery pass confirmed that the historical path still exists and is currently the Kane Fabric checkout:
+
+```text
+CT102 status      running
+hostname          kane-fabric
+OS                Debian GNU/Linux 12 (bookworm)
+checkout path     /tmp/kane-fabric-ms2
+origin            https://github.com/git64bit/Kane-Fabric.git
+branch            main
+local HEAD        9440c31283a000f0b3ce30e57035446ad45c7ce3
+upstream          origin/main
+worktree          clean
+fetch refspec     +refs/heads/*:refs/remotes/origin/*
+```
+
+A fetch-only inspection then updated remote refs without changing local `main` and observed:
+
+```text
+origin/main       8d56d97555533d4795b477e7b193139ae6ad850d
+local divergence  0 ahead / 32 behind
+merge base        9440c31283a000f0b3ce30e57035446ad45c7ce3
+```
+
+This proves the local checkout is a clean fast-forward candidate. At the time of this record it had **not yet been fast-forwarded**, so no current Milestone 3 CT tests can be claimed from this checkout.
+
+The fetch also revealed this remote branch:
+
+```text
+origin/ms3-substrate-contract
+HEAD  9b583fb7ab18b6d5e00e4643d4cbfe15f305e8cc
+```
+
+GitHub comparison confirms that `9b583fb...` is fully contained in `main`: `main` is 10 commits ahead, 0 behind, and `9b583fb...` is the merge base. The remote branch is therefore merged/stale state rather than independent current development. No deletion has been authorized or performed as part of this observation.
+
+Because `/tmp/kane-fabric-ms2` has now been observed live, it may be used for the immediate Milestone 3 baseline sequence. It remains an observed deployment path, not a permanent architectural path contract; future sessions must still verify it before relying on it.
+
 ## 6. Repository map
 
 ### Geographic database core — `database/`
@@ -580,12 +618,17 @@ At the time this handoff was repaired, repository code and synthetic tests exist
 
 **No accepted record yet proves the current Milestone 3 repository state was synchronized and executed inside CT102.**
 
-The next real-environment gate is therefore not “keep coding until road/water are finished.” First establish the real baseline:
+The live baseline has now established the first three discovery conditions:
 
-1. access `srv-b` and verify CT102 is running;
-2. discover the actual Kane Fabric checkout inside CT102;
-3. inspect repo identity, branch, upstream, worktree, and fetch refspec;
-4. synchronize/verify it against current GitHub `main` without discarding unexplained local state;
+1. CT102 is running — **observed**;
+2. the actual Kane Fabric checkout is `/tmp/kane-fabric-ms2` — **observed**;
+3. repo identity, `main`, upstream, clean worktree, and normal all-branches fetch refspec are sane — **observed**.
+
+After `git fetch --prune origin`, local `main` was observed at `9440c312...`, exactly 32 commits behind and 0 ahead of `origin/main` at `8d56d975...`. The next safe operation is a verified fast-forward of that clean checkout. No Milestone 3 tests or real-data compilation should be claimed before synchronization and execution.
+
+The remaining real-environment gate is:
+
+4. synchronize/verify the checkout against current GitHub `main` without discarding unexplained local state;
 5. run `bash database/run-tests.sh` inside CT102;
 6. run `bash substrate/run-tests.sh` inside CT102;
 7. identify the actual current accepted/working Kane County Fabric database;
@@ -706,6 +749,8 @@ A new Assistant should not:
 - copy large operational GeoPackages into Git;
 - duplicate the host-owned `ct-baseline.sh` as a repository authority;
 - keep rerunning already accepted gates without a concrete invalidating change.
+
+The live 2026-08-20 observation confirms `/tmp/kane-fabric-ms2` is the current checkout **for that observation**. The prohibition above means do not assume the path remains current in a later session without verification.
 
 ## 21. Definition of a good future handoff
 
