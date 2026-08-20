@@ -103,6 +103,63 @@ class PackageCompilerTests(unittest.TestCase):
             )
         )
 
+    def test_zlib_mismatch_fails_before_package_destination_mutation(self) -> None:
+        guarded_parent = self.root / "guarded-parent"
+        guarded_package = guarded_parent / "active-substrate"
+
+        with mock.patch.object(
+            PACKAGE.COMPRESSION,
+            "require_accepted_zlib",
+            side_effect=RuntimeError("simulated zlib mismatch"),
+        ) as guard, mock.patch.object(
+            PACKAGE, "recover_interrupted_activation"
+        ) as recover:
+            with self.assertRaisesRegex(RuntimeError, "simulated zlib mismatch"):
+                PACKAGE.build_package(self.database, guarded_package)
+
+        guard.assert_called_once_with()
+        recover.assert_not_called()
+        self.assertFalse(guarded_parent.exists())
+
+    def test_direct_staged_build_zlib_mismatch_writes_nothing(self) -> None:
+        stage = self.root / "direct-stage"
+        stage.mkdir()
+
+        with mock.patch.object(
+            PACKAGE.COMPRESSION,
+            "require_accepted_zlib",
+            side_effect=RuntimeError("simulated zlib mismatch"),
+        ) as guard, mock.patch.object(
+            PACKAGE.OVERVIEW, "build_overview"
+        ) as overview:
+            with self.assertRaisesRegex(RuntimeError, "simulated zlib mismatch"):
+                PACKAGE._build_staged_package(self.database, stage)
+
+        guard.assert_called_once_with()
+        overview.assert_not_called()
+        self.assertEqual([], list(stage.iterdir()))
+
+    def test_zlib_mismatch_preserves_existing_active_package(self) -> None:
+        PACKAGE.build_package(self.database, self.package)
+        previous = self._package_bytes()
+
+        with mock.patch.object(
+            PACKAGE.COMPRESSION,
+            "require_accepted_zlib",
+            side_effect=RuntimeError("simulated zlib mismatch"),
+        ):
+            with self.assertRaisesRegex(RuntimeError, "simulated zlib mismatch"):
+                PACKAGE.build_package(self.database, self.package)
+
+        self.assertEqual(previous, self._package_bytes())
+        self.assertFalse(PACKAGE._backup_path(self.package).exists())
+        self.assertFalse(
+            any(
+                path.name.startswith(PACKAGE._staging_prefix(self.package))
+                for path in self.root.iterdir()
+            )
+        )
+
     def test_failed_post_activation_validation_restores_previous_complete_package(self) -> None:
         PACKAGE.build_package(self.database, self.package)
         previous = self._package_bytes()
