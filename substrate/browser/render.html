@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Kane Fabric substrate rendering proof</title>
+  <style>
+    html, body { margin: 0; padding: 0; background: white; }
+    #map { display: block; width: 1024px; height: 768px; }
+    #result { white-space: pre-wrap; font-family: monospace; }
+  </style>
+</head>
+<body data-status="running">
+  <canvas id="map" width="1024" height="768"></canvas>
+  <pre id="result">running</pre>
+  <script type="module">
+    import { renderSubstrate } from "./kane-fabric-renderer.js";
+
+    const resultElement = document.getElementById("result");
+    const canvas = document.getElementById("map");
+
+    function countNonWhitePixels(context, width, height) {
+      const pixels = context.getImageData(0, 0, width, height).data;
+      let count = 0;
+      for (let offset = 0; offset < pixels.length; offset += 4) {
+        if (
+          pixels[offset] !== 255 ||
+          pixels[offset + 1] !== 255 ||
+          pixels[offset + 2] !== 255 ||
+          pixels[offset + 3] !== 255
+        ) {
+          count += 1;
+        }
+      }
+      return count;
+    }
+
+    try {
+      const parameters = new URLSearchParams(location.search);
+      const base = parameters.get("base") || "/substrate/";
+      const expected = parameters.get("content");
+      const stats = await renderSubstrate(canvas, base, {
+        roadLevel: "orientation",
+        waterLevel: "overview",
+      });
+      if (expected && stats.substrate_content_sha256 !== expected) {
+        throw new Error(
+          `substrate content identity is ${stats.substrate_content_sha256}; expected ${expected}`,
+        );
+      }
+      const context = canvas.getContext("2d", { willReadFrequently: true });
+      const nonWhitePixels = countNonWhitePixels(context, canvas.width, canvas.height);
+      if (nonWhitePixels <= 0) {
+        throw new Error("Canvas contains no rendered non-background pixels");
+      }
+      const result = {
+        canvas: {
+          height: canvas.height,
+          non_white_pixel_count: nonWhitePixels,
+          width: canvas.width,
+        },
+        renderer: stats,
+        status: "browser-canvas-render-passed",
+      };
+      document.body.dataset.status = "passed";
+      resultElement.textContent = JSON.stringify(result);
+    } catch (error) {
+      document.body.dataset.status = "failed";
+      resultElement.textContent = JSON.stringify({
+        message: String(error?.stack || error),
+        status: "browser-canvas-render-failed",
+      });
+    }
+  </script>
+</body>
+</html>
