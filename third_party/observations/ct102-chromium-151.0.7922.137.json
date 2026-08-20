@@ -1,0 +1,11 @@
+{
+  "environment": "CT102 Debian 12",
+  "key": "chromium",
+  "license_file": "/usr/share/doc/chromium/copyright",
+  "license_file_sha256": "5e759c74a792b9d6c81107c21346f3d671347a02e843c2818a24900b6f63d3fd",
+  "package": "chromium 151.0.7922.137-1~deb12u1",
+  "purpose": "development-only real-browser Canvas and selective HTTP range acceptance for MS3-009/MS3-010",
+  "role": "development-test-runtime",
+  "status": "observed-development-only-not-vendored",
+  "version": "Chromium 151.0.7922.137 built on Debian GNU/Linux 12 (bookworm)"
+}
