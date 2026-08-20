@@ -144,8 +144,11 @@
       "license": "MIT for Node.js core plus bundled third-party licenses/notices",
       "license_impact": "does-not-relicense-kane-fabric",
       "pin": {
-        "observed_debian_candidate": "18.20.4+dfsg-1~deb12u2",
-        "status": "not-installed-not-finally-selected"
+        "observed_debian_package": "nodejs 18.20.4+dfsg-1~deb12u2; libnode108 18.20.4+dfsg-1~deb12u2",
+        "observed_environment": "CT102 Debian 12 development-only browser compatibility runtime",
+        "observed_license_file_sha256": "ef9c2da380ec82aa2c960a24652561ce37323a0aec60eb0d5a6cfd12f4e089c8",
+        "observed_version": "v18.20.4",
+        "status": "observed-development-only-not-vendored"
       },
       "reason": "Development-only execution of the MS3 browser Web-API compatibility probe; no npm packages",
       "role": "development-test-runtime",
