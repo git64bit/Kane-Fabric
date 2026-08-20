@@ -198,11 +198,11 @@ Exit gate: **PASSED**. Kane Fabric can initialize and refresh Kane County throug
 
 ## Milestone 3 — Compile shared substrate
 
-**Status: IN PROGRESS**
+**Status: RELEASED — 2026-08-20**
 
-Current cross-milestone handoff: `docs/HANDOFF.md`
+Release record: `docs/MILESTONE_3_RELEASE.md`
 
-Milestone-specific handoff: `docs/MILESTONE_3_HANDOFF.md`
+Historical handoff: `docs/MILESTONE_3_HANDOFF.md`
 
 Design baseline: `docs/MILESTONE_3_DESIGN.md`
 
@@ -210,33 +210,47 @@ Frozen wire contract: `docs/SUBSTRATE_FORMAT_V1.md`
 
 Purpose: produce the first Kane Fabric shared geographic distribution.
 
-Initial substrate:
+Released substrate:
 
 - county/jurisdiction boundary and overview context;
 - roads;
 - water.
 
-Current implementation state:
+Accepted implementation state:
 
-- MS3-001 v1 contract primitives — repository implementation present;
-- MS3-002 deterministic jurisdiction overview — repository implementation present;
-- first real CT102 Milestone 3 execution/immutability gate — **not yet accepted**;
-- road LOD, water LOD, manifest, package activation, browser proof, and edge-compatibility proof — not yet complete.
+- MS3-001 v1 contract primitives — complete;
+- MS3-002 deterministic jurisdiction overview — complete;
+- MS3-003 road LOD/container — complete;
+- MS3-004 water LOD/container — complete;
+- MS3-005 manifest — complete;
+- MS3-006 package compiler/activation — complete;
+- MS3-007 deterministic real proof — complete;
+- MS3-008 browser selective loader — complete;
+- MS3-009 real browser rendering — complete;
+- MS3-010 bounded edge compatibility proof — complete;
+- MS3-011 release closeout — complete.
 
-Repository implementation does not count as CT102 acceptance. The next safe action is the real baseline gate recorded in `docs/HANDOFF.md` and `docs/MILESTONE_3_HANDOFF.md` before road LOD implementation proceeds as accepted real-environment-backed work.
+Accepted substrate content identity:
 
-Work includes:
+```text
+fe417a02222669d9b81c72dc717ab0178b54b1c13cd0d3e8510c6b4f25224bcc
+```
 
-- define deterministic substrate package format;
-- define LOD strategy;
-- define package identity/hash rules;
-- compile Kane County substrate;
-- validate browser-side loading, decompression, and rendering;
-- keep the package access pattern compatible with the ESP32-S3/ESP-IDF reference edge.
+Repository publication:
 
-Exit gate: a browser can open Kane County and navigate the shared substrate independently of any one application subscription, with reproducible package identities and an edge-practical selective access pattern.
+```text
+assistant/read-authority-boundary
+  fast-forward merged to main
+  published main head 84293aeb381db596f4c3233473c350fda6c5426d
+```
+
+Exit gate: **PASSED**. A normal browser can open Kane County, selectively read and validate the immutable substrate, render boundary/roads/water independently of application subscription state, and consume the same access pattern through a bounded reference server representative of the future ESP32-S3 edge constraint.
+
+Completed ESP32-S3/ESP-IDF firmware remains a Milestone 5 responsibility.
 
 ## Milestone 4 — Subscription contract
+
+**Status: READY — MS4-001 NEXT**
 
 Purpose: define how applications add domain-specific geographic data without owning the substrate.
 
