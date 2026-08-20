@@ -14,6 +14,7 @@ import tempfile
 import unittest
 import zlib
 from pathlib import Path
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[2]
 DATABASE_TOOLS = ROOT / "database" / "tools"
@@ -199,6 +200,19 @@ class RoadComponentTests(unittest.TestCase):
         self.assertTrue(info["valid"])
         self.assertEqual(6, info["feature_count"])
         self.assertEqual(before, sha256_file(self.database))
+
+    def test_zlib_mismatch_fails_before_loading_or_output(self) -> None:
+        with mock.patch.object(
+            ROADS.COMPRESSION,
+            "require_accepted_zlib",
+            side_effect=RuntimeError("simulated zlib mismatch"),
+        ) as guard, mock.patch.object(ROADS, "load_accepted_roads") as loader:
+            with self.assertRaisesRegex(RuntimeError, "simulated zlib mismatch"):
+                ROADS.build_component(self.database, self.output)
+
+        guard.assert_called_once_with()
+        loader.assert_not_called()
+        self.assertFalse(self.output.exists())
 
     def test_membership_is_monotonic_and_uses_frozen_shares(self) -> None:
         ROADS.build_component(self.database, self.output)
