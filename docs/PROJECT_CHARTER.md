@@ -2,11 +2,44 @@
 
 ## 1. Purpose
 
-Kane Fabric is a reusable county-scale geographic substrate and subscription platform.
+Kane Fabric is public civic infrastructure for maintaining and distributing authoritative county-scale geographic state.
 
-Its first implementation is Kane County, Illinois. The architectural goal is broader: the same reconstruction, acquisition, validation, compilation, publication, and browser-serving model must be capable of being instantiated for many U.S. counties without inventing a new system each time.
+Its first implementation is Kane County, Illinois. Kane County is the reference deployment, not the conceptual namespace of the software. New reusable contracts must anticipate operation across U.S. counties and county-equivalent jurisdictions without requiring a redesign for each jurisdiction.
+
+The foundational reconstruction objective has been proven through Milestones 1 and 2. Reconstructability remains mandatory, but the forward objective is now to preserve authentic public-infrastructure properties while maintaining current accepted county geography and building portable substrate, subscription, browser, and edge contracts.
+
+The governing companion documents are:
+
+- `docs/CIVIC_INFRASTRUCTURE_PRINCIPLES.md`;
+- `docs/MULTI_COUNTY_DESIGN.md`.
 
 ## 2. Fixed principles
+
+### Civic infrastructure
+
+Kane Fabric is deliberately released under the repository `LICENSE` using The Unlicense/public-domain dedication.
+
+The project must remain usable, adaptable, redistributable, independently operable, and available to commerce, government, nonprofit organizations, researchers, communities, and individuals without requiring continuing permission from the original project.
+
+Kane Fabric must not make political, religious, commercial, governmental, philosophical, or intellectual-ideological affiliation a condition of use.
+
+These are architectural objectives, not incidental licensing choices. See `docs/CIVIC_INFRASTRUCTURE_PRINCIPLES.md`.
+
+### Current authoritative geography
+
+Maintaining an up-to-date accepted county geographic database is a primary operational objective.
+
+Freshness does not mean automatically trusting the newest upstream response. Kane Fabric preserves source provenance, detects likely changes, harvests candidates, validates and compares them, reconciles durable geographic identity where required, and changes accepted state only through explicit promotion.
+
+When an upstream source is unavailable or a candidate fails validation, the previously accepted state remains authoritative until a valid replacement is promoted.
+
+### Multi-county design horizon
+
+Kane County remains the sole required operational reference deployment for current work, but new reusable namespaces, database tokens, package identities, manifests, and protocol contracts must not unnecessarily assume Kane County.
+
+Generic concepts should use generic identities. Kane-specific source facts should remain in Kane/source profiles, Kane evidence, or clearly Kane-specific deployment entry points.
+
+No second-county implementation, placeholders, stubs, or speculative national framework are required merely to satisfy this principle. See `docs/MULTI_COUNTY_DESIGN.md`.
 
 ### Browser-first client
 
@@ -75,13 +108,24 @@ Kane Fabric may inherit proven mechanisms from Kane Condo, including:
 
 Kane Fabric must not inherit condo-specific assumptions merely because they exist in the donor repository.
 
-## 4. Reconstructability requirement
+## 4. Reconstructability — proven foundation
 
 A county node is not considered reproducible merely because an existing machine can be copied.
 
-The project must demonstrate that the full county pipeline can be reconstructed from declared inputs on a clean supported Debian CT.
+Milestones 1 and 2 proved the Kane County reconstruction chain from declared inputs and extracted the geographic core into Kane Fabric ownership. The release records are `docs/MILESTONE_1_RELEASE.md` and `docs/MILESTONE_2_RELEASE.md`.
 
-Every prerequisite discovered during Kane County reconstruction becomes candidate bootstrap documentation or automation for future counties.
+That proof changes the development emphasis; it does not retire the requirement.
+
+Future work must continue to preserve:
+
+- declared inputs rather than hidden orchestrator state;
+- immutable seed/reference evidence where applicable;
+- deterministic validation and comparison;
+- explicit accepted-versus-candidate state;
+- safe promotion and rollback;
+- the ability to rebuild a supported Fabric node without copying an opaque existing machine.
+
+Reconstruction is now a maintained invariant supporting the broader public-infrastructure objective.
 
 ## 5. Data boundary
 
@@ -108,18 +152,16 @@ External storage holds:
 - compiled render/subscription packages;
 - audit bundles too large or unsuitable for source control.
 
-## 6. Initial success condition
+The public-domain status of Kane Fabric software does not automatically determine the legal status of external geographic data. Source provenance and external rights remain separate boundaries.
 
-The first major success condition is a clean Kane Fabric CT that can independently:
+## 6. Forward development objective
 
-1. validate its environment;
-2. validate the inherited Kane County seed and reference evidence;
-3. execute the proven database test suite;
-4. validate official source profiles;
-5. detect current upstream source status;
-6. reconstruct an authoritative working database from declared inputs;
-7. replay candidate validation, comparison, reconciliation, promotion, and rollback;
-8. compile browser-consumable geographic packages;
-9. publish those packages through a stable edge/browser contract.
+After Milestone 2, new work should be evaluated against three continuing questions:
 
-Only after this is demonstrated should Kane-specific procedures be generalized aggressively for other counties.
+1. Does it preserve Kane Fabric as authentic, independently usable public infrastructure?
+2. Does it strengthen or preserve the ability to maintain current, validated, authoritative county geographic state?
+3. If the concept is geographically generic, does its durable namespace and contract avoid unnecessary Kane County coupling?
+
+The project does not need to implement the nation in order to answer the third question correctly.
+
+Kane County remains the proving deployment. The architecture should make a future second jurisdiction primarily a matter of jurisdiction/source contracts and evidence where the existing geographic model applies, rather than a fork of the core system.
