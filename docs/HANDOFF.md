@@ -1,86 +1,98 @@
 # Kane Fabric — Current Handoff
 
-This is the **current operational handoff** for a new Assistant or developer. Start here.
+This is the current operational handoff for a new Assistant or developer. Start here.
 
-Historical milestone handoffs remain useful evidence, but they are not sufficient onboarding documents and may preserve procedures that are no longer current. When this file conflicts with a historical handoff, this file plus the governing documents named below control current work.
+Historical milestone handoffs and release records remain evidence, but they are not current implementation instructions. When a historical document conflicts with this file, `docs/CURRENT_STATE.json`, or a governing contract, use the current documents.
 
 ## 1. What this project is
 
-Kane Fabric is public civic infrastructure for maintaining and distributing authoritative county-scale geographic state through a browser-first **substrate + subscriptions** architecture.
+Kane Fabric is public civic infrastructure for maintaining authoritative county-scale geographic state and distributing it through a browser-first **substrate + subscriptions + logical geographic partitions** architecture.
 
-Kane County, Illinois is the reference deployment. It is not meant to be baked into reusable wire-format, database, or protocol concepts when those concepts are geographically generic.
+Kane County, Illinois is the reference deployment. It must not be baked into reusable wire-format, partition, subscription, database, or protocol concepts where those concepts are geographically generic.
 
-The system has three long-lived roles:
+The long-lived model is:
 
 ```text
+official geographic sources
+        ↓
 County Fabric node
   authoritative geographic control plane/compiler
         ↓
-compiled immutable substrate/subscription artifacts
+accepted geographic state
         ↓
-replaceable edge nodes
-  low-cost HTTP/storage data plane
+immutable county substrate
++ logical partition definitions
++ application subscription generations
+        ↓
+replaceable edge nodes / mirrors / caches
+  physical storage and HTTP serving
         ↓
 Browser
-  durable client: validate, fetch, decompress, render, pan/zoom, compose
+  validate, selectively fetch, decompress, compose, render
 ```
 
-The shared substrate is civic geographic context. The initial substrate is:
+The authoritative GeoPackage is an internal control-plane implementation. The compiled publication and explicit partition/subscription contracts are the durable external interface.
 
-- jurisdiction/county boundary and overview context;
-- roads;
-- water.
+## 2. Read order
 
-Application-specific state belongs in subscriptions. Buildings may be geographic identities in Fabric, but Condo classifications, Mechanical Compiler qualifications/capabilities/workflows, Retail state, and similar domain semantics are not shared-substrate ownership.
+For current work read:
 
-Kane Fabric grew from the frozen Kane Condo `0.4` implementation. Kane Condo is now a historical regression/design oracle only; normal Kane Fabric geographic-core runtime must not depend on the donor checkout.
+1. `docs/HANDOFF.md` — current system mental model;
+2. `docs/CURRENT_STATE.json` — compact machine-readable current checkpoint;
+3. `docs/DEVELOPMENT_PROCESS.md` — execution/repository authority;
+4. `README.md` — public project/status summary;
+5. `docs/PROJECT_CHARTER.md` — fixed project principles;
+6. `docs/ARCHITECTURE.md` — system roles/boundaries;
+7. `docs/DATA_OWNERSHIP.md` — geographic/application ownership boundary;
+8. `docs/ROADMAP.md` — milestone sequence;
+9. `docs/MILESTONE_4_DESIGN.md` — current milestone design;
+10. `docs/ESP32_EDGE_REFERENCE.md` — deferred MS-5 hardware boundary.
 
-## 2. Read-order and authority
+Use prior release records when exact historical evidence is needed:
 
-A new Assistant should read, in this order:
+- `docs/MILESTONE_1_RELEASE.md`;
+- `docs/MILESTONE_2_RELEASE.md`;
+- `docs/MILESTONE_3_RELEASE.md`.
 
-1. `docs/HANDOFF.md` — this current state/mental model;
-2. `docs/DEVELOPMENT_PROCESS.md` — execution, repository, CT, operational-state authority;
-3. `README.md` — public project/status summary;
-4. `docs/PROJECT_CHARTER.md` — fixed project principles;
-5. `docs/ARCHITECTURE.md` — system roles and boundaries;
-6. `docs/DATA_OWNERSHIP.md` — data/application ownership boundaries;
-7. `docs/ROADMAP.md` — milestone sequence and released gates;
-8. current milestone documents, presently `docs/MILESTONE_3_DESIGN.md`, `docs/MILESTONE_3_HANDOFF.md`, and `docs/SUBSTRATE_FORMAT_V1.md`;
-9. prior release records when exact historical evidence is needed: `docs/MILESTONE_1_RELEASE.md` and `docs/MILESTONE_2_RELEASE.md`.
+Do not reconstruct current state from an old milestone handoff.
 
-Do **not** read one old handoff and assume it describes the current execution model.
+## 3. Separate authorities
 
-At the beginning of each session, read the actual current GitHub `main`; do not trust an embedded commit SHA as proof that the repository has not advanced.
-
-At the start of the handoff repair that produced this document, `main` was:
-
-```text
-0c2c5bb636d56da4afc130d05d86fdd0a9ff7092
-```
-
-This SHA is historical context only. The live `main` ref is authoritative.
-
-## 3. Four separate authorities
-
-Do not collapse these into one machine or one source of truth:
+Do not collapse these into one source of truth:
 
 | Authority | Owns |
 | --- | --- |
-| GitHub `git64bit/Kane-Fabric`, branch `main` | software, migrations, profiles, tests, contracts, documentation, small deterministic manifests |
+| GitHub `git64bit/Kane-Fabric`, `main` | software, migrations, profiles, tests, contracts, documentation, small deterministic manifests |
 | Proxmox host `srv-b` | LXC lifecycle, host conformance, host firewall/network policy, host-to-container execution |
 | CT102 `kane-fabric` | real Kane Fabric runtime/test/compiler environment |
-| `/var/lib/kane-fabric` inside CT102 | operational databases, immutable evidence, staging, rollback, audit, render/substrate artifacts |
+| `/var/lib/kane-fabric` in CT102 | operational databases, immutable evidence, staging, rollback, audit, generated substrate artifacts |
 
-An Assistant sandbox is **not CT102**. A sandbox test can find a bug, but it cannot be reported as CT102 acceptance.
+An Assistant sandbox is not CT102 and cannot substitute for CT102 acceptance.
 
-The host-owned conformance definition is not in this repository. On `srv-b`, `/usr/local/sbin/ct-baseline.sh` is the executable baseline authority. Kane Fabric must not create a competing host baseline inside the repository.
+The host-owned conformance definition is `/usr/local/sbin/ct-baseline.sh` on `srv-b`. Kane Fabric must not create a competing repository definition of host conformance.
 
 CT100 and CT101 are Mechanical Compiler infrastructure. Do not repurpose them for Kane Fabric.
 
-## 4. Development execution model
+## 4. Repository and execution model
 
-The normal runtime path is:
+Repository:
+
+```text
+git64bit/Kane-Fabric
+branch: main
+```
+
+Normal development is on `main` unless the user explicitly requests a branch/PR workflow.
+
+The Milestone 3 development branch `assistant/read-authority-boundary` was fast-forward merged into `main`; the accepted MS-3 publication entered `main` at:
+
+```text
+84293aeb381db596f4c3233473c350fda6c5426d
+```
+
+The branch has not been deleted because deletion was not authorized.
+
+Normal runtime path:
 
 ```bash
 pct status 102
@@ -88,340 +100,76 @@ pct exec 102 -- COMMAND ...
 pct exec 102 -- bash -lc '...'
 ```
 
-Run Proxmox/LXC and host-policy work on `srv-b`. Run Kane Fabric Git inspection, tests, database tools, source work, and compilation inside CT102 through `pct exec`.
+Run Proxmox/LXC and host-policy work on `srv-b`. Run Kane Fabric tests, database tools, source work, compilation, and real acceptance inside CT102.
 
-If the current Assistant session exposes an authorized execution channel to `srv-b`, use it. If no such channel is exposed, state that execution capability is missing and do not pretend a sandbox is equivalent.
+CT102 does not need GitHub write credentials. Repository writes use the connected GitHub integration.
 
-Historical nuance: during Milestones 1 and 2 the user explicitly executed bounded command groups on `srv-b` and pasted results back. That was a real workflow used to obtain accepted evidence. It must not be erased from history. For current work, `docs/DEVELOPMENT_PROCESS.md` defines Assistant-executed `srv-b → pct exec 102` as the normal model when that execution capability exists. User command relay is an explicit/manual exception, not something to silently assume.
-
-Do not install Git on the Proxmox host merely to work around repository workflow. Git operations belong in CT102 or through the authorized GitHub integration.
-
-CT102 intentionally does not need GitHub **write** credentials. Repository publication should use the connected GitHub integration. Do not ask the user to enter GitHub credentials in CT102 to clean up Assistant-created branches or to publish routine changes.
-
-## 5. Repository workflow — important incident history
-
-Work directly on `main` unless the user explicitly requests a branch or PR workflow.
-
-Milestone 2 was unnecessarily developed on `ms2/geographic-core-extraction`. That branch choice also left the CT102 checkout configured with a single-branch fetch refspec. After MS-2 was fast-forwarded into `main`, this caused:
-
-- no local `main` branch;
-- `git switch main` failure;
-- an `origin/main` ref that was initially not recognized as a normal tracking branch because the fetch refspec still only covered MS-2;
-- apparent modified/added release documents while the checkout was still based on the older branch commit, even though those files were byte-identical to remote `main`;
-- a failed attempt to delete the remote branch from CT102 because CT102 had no GitHub write credential.
-
-The recovery first proved the apparent local changes were byte-identical to `origin/main`, then reset, restored the normal refspec, created local `main`, and removed the merged branch locally/remotely.
-
-The accepted final cleanup state observed on CT102 was:
-
-```text
-local branch   main
-local HEAD     9440c31283a000f0b3ce30e57035446ad45c7ce3
-upstream       origin/main
-remote refs    origin/main only
-working tree   clean
-```
-
-That remains historical MS-2 cleanup evidence. The current live MS-3 observation is recorded below.
-
-Before changing checkout state, inspect:
-
-```bash
-git status --short --branch
-git branch -vv
-git config --get-all remote.origin.fetch
-git remote -v
-```
-
-Never discard apparent local work until it has been compared with the intended authoritative ref.
-
-The historical checkout path used during MS-2 was:
+The currently recorded checkout path is:
 
 ```text
 /tmp/kane-fabric-ms2
 ```
 
-It is not a permanent path contract. Discover the actual current checkout on CT102 before using it.
+This is an observed deployment path, not an architectural contract. Use `docs/CURRENT_STATE.json` and `development/kane-fabric-dev-state.sh` to verify it before state-changing work.
 
-### Current live CT102 checkout observation — 2026-08-20
+## 5. Authoritative database and geographic lifecycle
 
-The first Milestone 3 live discovery pass confirmed that the historical path still exists and is currently the Kane Fabric checkout:
-
-```text
-CT102 status      running
-hostname          kane-fabric
-OS                Debian GNU/Linux 12 (bookworm)
-checkout path     /tmp/kane-fabric-ms2
-origin            https://github.com/git64bit/Kane-Fabric.git
-branch            main
-local HEAD        9440c31283a000f0b3ce30e57035446ad45c7ce3
-upstream          origin/main
-worktree          clean
-fetch refspec     +refs/heads/*:refs/remotes/origin/*
-```
-
-A fetch-only inspection then updated remote refs without changing local `main` and observed:
+Current authoritative Kane County Fabric database:
 
 ```text
-origin/main       8d56d97555533d4795b477e7b193139ae6ad850d
-local divergence  0 ahead / 32 behind
-merge base        9440c31283a000f0b3ce30e57035446ad45c7ce3
+/var/lib/kane-fabric/database/kane-county-fabric.gpkg
+bytes   355180544
+SHA256  31e362b696a37f1b9c45ae355c5669511a3128c17a651108a62e20d1cedebd67
+migrations 7
 ```
 
-That proved the local checkout was a clean fast-forward candidate.
-
-The fetch also revealed this remote branch:
+Historical donor-shaped database:
 
 ```text
-origin/ms3-substrate-contract
-HEAD  9b583fb7ab18b6d5e00e4643d4cbfe15f305e8cc
+/var/lib/kane-fabric/database/kane-county-reconstructed.gpkg
 ```
 
-GitHub comparison confirms that `9b583fb...` is fully contained in `main`: `main` is 10 commits ahead, 0 behind, and `9b583fb...` is the merge base. The remote branch is therefore merged/stale state rather than independent current development. No deletion has been authorized or performed as part of this observation.
+is not current authority.
 
-A guarded fast-forward was then executed from `srv-b` through `pct exec 102`. Preconditions required local `main`, a clean worktree, the expected GitHub origin, `HEAD` as an ancestor of `origin/main`, and zero local commits ahead. The fetch immediately before the fast-forward moved `origin/main` to the then-current handoff state and produced a 0-ahead / 34-behind relationship. The fast-forward completed cleanly:
+The geographic lifecycle is fundamental:
 
 ```text
-checkout path     /tmp/kane-fabric-ms2
-branch            main
-local HEAD        4eaa85a1fd34fd426703560fe216f55f46636a79
-origin/main       4eaa85a1fd34fd426703560fe216f55f46636a79
-upstream          origin/main
-worktree          clean
-fetch refspec     +refs/heads/*:refs/remotes/origin/*
-post-FF state     synchronized
-```
-
-This is the last observed synchronized CT102 repository state. The handoff update that records it necessarily advances GitHub `main` again, so a future command must compare live refs rather than assuming CT102 remains byte-for-byte at repository HEAD. The synchronization evidence itself remains valid for `4eaa85a1...`.
-
-Because `/tmp/kane-fabric-ms2` has now been observed live, it may be used for the immediate Milestone 3 baseline sequence. It remains an observed deployment path, not a permanent architectural path contract; future sessions must still verify it before relying on it.
-
-## 6. Repository map
-
-### Geographic database core — `database/`
-
-Kane Fabric owns a native SQLite/GeoPackage geographic core.
-
-Important entry points:
-
-```text
-database/kane-fabric-db.sh
-database/kane-fabric-provenance.sh
-database/kane-fabric-boundary.sh
-database/kane-fabric-map-layers.sh
-database/kane-fabric-buildings.sh
-database/kane-fabric-project-buildings.sh
-
-database/kane-fabric-building-candidate.sh
-database/kane-fabric-road-candidate.sh
-database/kane-fabric-water-candidate.sh
-database/kane-fabric-boundary-candidate.sh
-
-database/kane-fabric-candidate-compare.sh
-database/kane-fabric-building-reconcile.sh
-database/kane-fabric-promotion.sh
-
-database/kane-fabric-seed-import.sh
-database/kane-fabric-ms2-closeout.sh
-```
-
-Core Python modules under `database/tools/`:
-
-```text
-kane_fabric_db.py                 DB init/migrate/validate/info
-kane_fabric_geometry.py           EPSG:4326 geometry + GeoPackage/WKB mechanics
-kane_fabric_provenance.py         county/agency/dataset/harvest/file/release lineage
-kane_fabric_source_profiles.py    deterministic source-profile registry
-kane_fabric_source_status.py      read-only upstream freshness/status inspection
-kane_fabric_boundary.py           accepted/candidate boundary storage/validation
-kane_fabric_map_layers.py         roads + water storage/validation
-kane_fabric_buildings.py          official building footprint storage/validation
-kane_fabric_project_buildings.py  durable geographic building identity/mappings
-kane_fabric_building_candidate.py building harvest/validate/register
-kane_fabric_road_candidate.py     road harvest/validate/register
-kane_fabric_water_candidate.py    coordinated water harvest/validate/register
-kane_fabric_boundary_candidate.py boundary harvest/validate/register
-kane_fabric_candidate_compare.py  deterministic accepted-vs-candidate comparison
-kane_fabric_building_reconcile.py building identity continuity/reconciliation
-kane_fabric_promotion.py          prepare/validate/promote/rollback
-kane_fabric_seed_import.py        verified Fabric-native bootstrap from immutable seed
-kane_fabric_ms2_closeout.py       historical MS-1 evidence replay through native core
-```
-
-The old donor compatibility shim was removed. Do not reintroduce donor runtime loading as a shortcut.
-
-Migrations are `database/migrations/0001` through `0007`:
-
-```text
-0001_geopackage_core.sql
-0002_administrative_provenance.sql
-0003_county_boundary.sql
-0004_roads_water_storage.sql
-0005_official_building_storage.sql
-0006_geographic_building_identity.sql
-0007_refresh_promotion.sql
-```
-
-Source contracts are under `database/source-profiles/` and currently cover exactly:
-
-```text
-county-boundary
-buildings
-roads
-water-creeks
-water-fox-river
-```
-
-The source-profile registry identity reproduced from MS-1 is:
-
-```text
-e95c9d0486f65035146cb0a2a9580e4148c853a78c4f9e44e2420f59ef654e12
-```
-
-Database regression entry point:
-
-```bash
-bash database/run-tests.sh
-```
-
-The accepted MS-2 native suite result before closeout was 16 tests passed, 0 failures.
-
-### Milestone 3 substrate — `substrate/`
-
-Current repository implementation contains:
-
-```text
-substrate/README.md
-substrate/run-tests.sh
-substrate/kane-fabric-overview.sh
-substrate/tools/kane_fabric_substrate.py
-substrate/tools/kane_fabric_overview.py
-substrate/tests/test_substrate_contract.py
-substrate/tests/test_overview.py
-```
-
-Substrate regression entry point:
-
-```bash
-bash substrate/run-tests.sh
-```
-
-Overview compiler entry point:
-
-```bash
-bash substrate/kane-fabric-overview.sh build DATABASE county-overview.json
-```
-
-As of the repository state audited for this handoff, **the generic v1 contract primitives and county overview compiler exist, but road LOD, water LOD, manifest/package compiler/activation, browser loader/renderer, and edge-compatibility proof are not yet complete implementations**.
-
-Do not infer completion from the fact that `docs/SUBSTRATE_FORMAT_V1.md` already specifies those future components.
-
-## 7. Geographic database lifecycle — mental model
-
-This sequence is fundamental:
-
-```text
-official source profile
-        ↓
-read-only source-status check
-        ↓
-complete candidate harvest
-        ↓
-offline candidate validation
-        ↓
-register candidate provenance
-        ↓
-deterministic accepted-vs-candidate comparison
-        ↓
-building identity reconciliation where required
-        ↓
+source profile
+  ↓
+source status
+  ↓
+candidate harvest
+  ↓
+candidate validation
+  ↓
+candidate registration
+  ↓
+deterministic comparison
+  ↓
+reconciliation where required
+  ↓
 promotion preparation + validation
-        ↓
-explicit atomic promotion
-        ↓
-rollback evidence retained
+  ↓
+EXPLICIT atomic promotion
+  ↓
+accepted geographic state
+  ↓
+READ-ONLY publication/subscription/partition compilation
 ```
 
-Important consequences:
+Consequences:
 
-- **Source status is read-only.** It detects likely upstream change; it does not update accepted geography.
-- **Harvested evidence is not accepted state.** A candidate can exist externally and/or be registered in provenance without becoming authoritative.
-- **Registration is not promotion.** It records candidate lineage only.
-- **Comparison is deterministic and read-oriented.** It must not silently promote.
-- **Building reconciliation is separate from comparison.** It determines continuity of durable geographic building identities when official source identifiers/geometry change.
-- **Promotion is the authority-changing step.** It is explicit, preconditioned, backed up, atomically replaced, post-verified, and automatically restored on verification failure.
-- **Rollback is explicit and audited.**
-- **Substrate compilation consumes accepted geography read-only.** It must never hide a geographic promotion inside a build.
+- source status is read-only;
+- candidate registration is not acceptance;
+- a newer source is not automatically authoritative;
+- comparison is not acceptance;
+- reconciliation is not acceptance;
+- compilation/partitioning must never promote geography;
+- explicit promotion is the authority-changing operation.
 
-This pipeline is a core project invariant, not a historical implementation detail.
+## 6. Accepted Kane County reference state
 
-## 8. Durable building identity nuance
-
-Kane Fabric owns persistent geographic building identity because applications need references that survive official source refreshes.
-
-For behavior-preserving MS-2 compatibility, the physical schema still uses donor-era table names:
-
-```text
-project_building
-project_building_source_mapping
-```
-
-Those names do **not** mean the records are Condo application state. Migration `0006_geographic_building_identity.sql` explicitly defines them as Kane Fabric geographic identities and records that the old table names were retained for compatibility.
-
-Current building keys retain the historical deterministic form:
-
-```text
-kcb-<64 lowercase hex characters>
-identity algorithm: sha256-release-feature-v1
-```
-
-Lifecycle values:
-
-```text
-active
-inactive
-retired
-```
-
-Mapping relationships include:
-
-```text
-initial
-continuation
-replacement
-split
-merge
-reappearance
-manual
-```
-
-Do not rename this physical schema casually. A neutral naming cleanup was intentionally deferred during behavior-preserving extraction.
-
-## 9. Classification/application boundary
-
-Kane Fabric geographic operation does **not** require the Kane Condo application-classification tables:
-
-```text
-building_classification_current
-building_classification_event
-```
-
-Nor does the core own Condo classification values such as:
-
-```text
-unclassified
-other
-condominium
-apartments
-```
-
-Application tables may coexist with Fabric state, but they are not prerequisites for geographic DB validation, reconciliation, promotion, or seed bootstrap.
-
-Mechanical Compiler remains a separate application. A future Industry subscription may reference Fabric geography; it does not make Kane Fabric the authoritative owner of Mechanical Compiler participant, qualification, capability, workflow, or federation state.
-
-## 10. Kane County reference-data invariants
-
-Reference jurisdiction identity currently used by the Fabric core:
+Jurisdiction:
 
 ```text
 country_code  US
@@ -431,169 +179,54 @@ county_key    kane-county-il
 name          Kane County
 ```
 
-Retained accepted geographic counts proven by MS-1/MS-2 evidence:
+Accepted releases:
 
 ```text
-county boundary     1
-buildings       208324
-roads            27675
-water creeks       555
-Fox River             1
-water total          556
+buildings          208324
+county boundary         1
+roads                 27675
+water creeks            555
+Fox River                 1
+water total              556
 ```
 
-Roads have a deliberate source exclusion:
+### Road source-status correction
+
+The accepted road release contains 27,675 features and the accepted harvest object inventory is also 27,675.
+
+A later live official source inventory exposed 27,676 object IDs. That correctly produces `new_source_detected` because the live inventory changed.
+
+Do **not** repeat the earlier explanation that the accepted release deliberately removed one of 27,676 objects for missing geometry. That explanation was disproven by the accepted harvest inventory.
+
+Water provenance remains coordinated across `water-creeks` and `water-fox-river`; do not invent a single upstream water source identity.
+
+## 7. Durable building identity and application ownership
+
+Kane Fabric owns persistent geographic building identity because applications need references that survive official-source refreshes.
+
+For behavior-preserving compatibility, physical tables still include donor-era names such as:
 
 ```text
-source object inventory  27676
-retained                 27675
-excluded                     1
-reason: missing geometry
+project_building
+project_building_source_mapping
 ```
 
-That exclusion is contract behavior. Do not “fix” the count to 27,676 unless the upstream evidence and source contract intentionally change.
+Those names do not make the records Condo application state.
 
-Water is coordinated across two accepted datasets (`water-creeks` and `water-fox-river`); do not collapse provenance into an invented single source.
-
-## 11. Milestone 1 and 2 immutable/regression evidence
-
-Immutable accepted seed:
+Kane Fabric geographic operation does not require application classification tables such as:
 
 ```text
-/var/lib/kane-fabric/seed/kane-county.gpkg
-size    324886528 bytes
-SHA256  7fe2198b00b2d0dee9470eda3864b43b6f7b3b0ff3b236ce7c579ddc077f389a
+building_classification_current
+building_classification_event
 ```
 
-Historical promoted Kane Condo oracle:
+Mechanical Compiler remains a separate application. An Industry subscription may reference Fabric geography; Kane Fabric does not become authoritative for Mechanical Compiler participant, qualification, capability, workflow, or federation state.
 
-```text
-/var/lib/kane-fabric/reconstruction-inputs/kane-condo-data/database/kane-condo.gpkg
-size    649027584 bytes
-SHA256  164200d4d7262874dcc03239c8258446a4d7bb81ce84daf46dc4937d6c97fe86
-```
+## 8. Milestone 3 — released baseline substrate
 
-Historical donor software reference:
+Milestone 3 is complete and must not be reopened as routine discovery.
 
-```text
-/var/lib/kane-fabric/reconstruction-code/kane-condo-0.4
-tag     0.4
-commit  63582fb05c509d53870835d25612c87b56800d10
-```
-
-MS-1 proved 374 donor tests passed on the clean reconstruction environment. Do not edit the frozen donor checkout when using it as historical evidence.
-
-Historical staged candidates used as regression evidence:
-
-```text
-buildings
-/var/lib/kane-fabric/reconstruction-inputs/kane-condo-data/staging/buildings/kane-buildings-candidate-20250730-608ac1b48564
-
-roads
-/var/lib/kane-fabric/reconstruction-inputs/kane-condo-data/staging/roads/kane-roads-candidate-20250730-c83a588170f3
-
-water
-/var/lib/kane-fabric/reconstruction-inputs/kane-condo-data/staging/water/kane-water-context-candidate-20250717-25d02c084002
-
-boundary
-/var/lib/kane-fabric/reconstruction-inputs/kane-condo-data/staging/boundary/kane-county-boundary-candidate-20230509-ecc3b0990d4c
-```
-
-Exact deterministic comparison hashes reproduced by Fabric native code:
-
-```text
-buildings  23916019e762740a4ebe773cdfab916ace4c4d505521407fd6c513b382108d28
-boundary   6ffa83d940347e7ffeeb10e3c631625af75de7f12ef95729ab1ebb75b5879f95
-roads      7b3bf1ddaef1a40948d57edf0c465199316216510e0a1a78cb2dc0a552f59d3b
-water      a1b0ac3f1504e4e6de199e694f794c83643f02139ed37f9a38c0d65d638f88f3
-```
-
-## 12. Milestone 2 closeout — decisive proof
-
-MS-2 native historical closeout workspace:
-
-```text
-/var/lib/kane-fabric/staging/ms2-closeout-074dc07cd572
-```
-
-Final report:
-
-```text
-/var/lib/kane-fabric/staging/ms2-closeout-074dc07cd572/ms2-closeout.json
-closeout SHA256  fee3194b432566fc0cf4af09b8e9e80eb6efd9945e0894e96ecbb2aa22ce9f4c
-valid            true
-```
-
-Fabric-native seed bootstrap produced:
-
-```text
-SHA256  31e362b696a37f1b9c45ae355c5669511a3128c17a651108a62e20d1cedebd67
-boundary 1
-buildings 208324
-roads 27675
-water 556
-confirmed initial building mappings 208324
-application classification tables none
-```
-
-Native reconciliation result:
-
-```text
-reconciliation key       kane-buildings-reconciliation-20250730-94704f9c0869
-reconciliation SHA256    498ee2fa00f7767d9e83437dca6dd330ffd555ca7122c8d5c06ecc36c85991a7
-candidate DB SHA256      9236c0d684965c810a4e2fdfc4ac6771471ef234e623e9a7b636a12f68548926
-mapped sources           208324
-unmapped                 0
-ambiguities              0
-continuations            208324
-redraws/replacements/additions/disappearances 0
-ready for promotion      true
-```
-
-Native promotion/rollback proof:
-
-```text
-promotion key          kane-fabric-promotion-843b52cd0a19
-promotion plan SHA256  843b52cd0a1926bd4ce74c57e889f5ec5a7e726fcac38dce6df6939d82e4509b
-promoted DB SHA256     736ab4d1ff357675af9b1e2e358aae12afb617bf7000499171e1f83759e48f98
-manual rollback        proved
-```
-
-The closeout verified the immutable seed and historical oracle were byte-identical before/after and reported zero forbidden donor-runtime references.
-
-This is why MS-2 is closed. Do not rerun it as routine acceptance and do not reintroduce Kane Condo runtime dependencies.
-
-## 13. Operational-state paths
-
-Inside CT102, `/var/lib/kane-fabric/` is external operational state:
-
-```text
-seed/                    immutable seed evidence
-reconstruction-inputs/   frozen historical evidence
-reconstruction-code/     frozen historical software reference
-database/                active/working Fabric databases
-staging/                 candidate/reconciliation/promotion/closeout work
-rollback/                rollback evidence
-audit/                   audit reports
-render/                   generated rendering/substrate artifacts
-```
-
-Large GeoPackages, harvested source data, staging directories, rollback DBs, and generated packages do not belong in Git.
-
-A historically recorded working database was:
-
-```text
-/var/lib/kane-fabric/database/kane-county-reconstructed.gpkg
-SHA256  ff67edcb0a732d87f3dc3bb3cf7fda91a03fea4ef8e16fb527f88283894c0a97
-```
-
-That is a historical identity, **not a guaranteed current observation**. Before MS-3 compiles real data, inspect CT102 and determine the actual current accepted/working database path and hash.
-
-## 14. Milestone 3 — exact current boundary
-
-Milestone 3 goal: compile a deterministic, browser-consumable shared substrate for boundary/context, roads, and water, independently of any application subscription.
-
-The frozen v1 package shape is:
+Canonical external publication:
 
 ```text
 county-overview.json
@@ -602,107 +235,177 @@ water-lod.kfs
 substrate-manifest.json
 ```
 
-The `.kfs` road/water containers use:
+Accepted substrate content SHA-256:
 
 ```text
-8-byte magic/version
-8-byte big-endian canonical-index length
-canonical JSON index
-contiguous zlib-wrapped DEFLATE chunks
+fe417a02222669d9b81c72dc717ab0178b54b1c13cd0d3e8510c6b4f25224bcc
 ```
 
-Important current design constraints:
-
-- deterministic bytes for identical accepted state + format/profile versions;
-- explicit jurisdiction identity; never infer jurisdiction from filename, host, SSID, or physical device;
-- accepted-release provenance in every relevant artifact;
-- compilation opens the authoritative GeoPackage read-only;
-- browser performs validation/decompression/rendering;
-- package/index/chunk access must remain practical for ESP32-S3 + ESP-IDF HTTP serving;
-- bounded reads/selective byte-range access are a format constraint now, even though final edge firmware is a later milestone;
-- buildings and application semantics are excluded from the shared substrate.
-
-Kane-specific LOD policy is source policy, not a universal Fabric rule:
-
-- roads: orientation/context/detail use deterministic coordinate-length thresholds because authoritative functional class is not retained;
-- water: overview/context/detail use coordinated Fox River/creek policy because no generic hydrologic importance hierarchy is available from the accepted sources.
-
-## 15. Milestone 3 verification status — do not overclaim
-
-At the time this handoff was repaired, repository code and synthetic tests existed for the v1 contract primitives and overview generator.
-
-**The full first Milestone 3 CT102 gate is not yet accepted.**
-
-The live baseline has established the repository/environment portion:
-
-1. CT102 is running — **observed**;
-2. the actual Kane Fabric checkout is `/tmp/kane-fabric-ms2` — **observed**;
-3. repo identity, `main`, upstream, clean worktree, and normal all-branches fetch refspec are sane — **observed**;
-4. a guarded fast-forward synchronized CT102 to the then-current GitHub `main` at `4eaa85a1fd34fd426703560fe216f55f46636a79` without discarding local state — **observed**.
-
-The documentation commit recording that observation moves GitHub `main` again, so the next live command must fetch and verify the small documentation-only delta before running tests. This does not invalidate the synchronization evidence at `4eaa85a1...`.
-
-The remaining real-environment gate is:
-
-5. run `bash database/run-tests.sh` inside CT102;
-6. run `bash substrate/run-tests.sh` inside CT102;
-7. identify the actual current accepted/working Kane County Fabric database;
-8. hash it before overview compilation;
-9. build `county-overview.json` from that real database;
-10. validate overview jurisdiction/release identity against the database;
-11. hash the DB afterward and prove it was unchanged.
-
-Only after that gate is accepted should MS3-003 road LOD work proceed as real-environment-backed development.
-
-If the current Assistant has no `srv-b` execution channel, say so and leave these steps unverified. Do not convert repository-only work into a false CT acceptance result.
-
-## 16. Milestone 3 implementation order
-
-The active design order is:
+Component identities:
 
 ```text
-MS3-001  v1 contract                     present in repository
-MS3-002  jurisdiction overview           implementation present; CT102 gate not yet accepted
-MS3-003  road LOD/container              next after real baseline gate
-MS3-004  coordinated water LOD/container
-MS3-005  substrate manifest
-MS3-006  reproducible compiler + atomic package activation
-MS3-007  repeated real Kane County deterministic build/measurement proof
-MS3-008  browser selective loader/validator/decompressor
-MS3-009  browser boundary/road/water rendering + navigation
-MS3-010  bounded edge-access compatibility proof
-MS3-011  release evidence and milestone closeout
+county-overview.json
+  1670 bytes
+  f0995177625e28adc39e0ddd842ea22fbc1935239d6d1f7d54f377edde62e942
+
+roads-lod.kfs
+  4014272 bytes
+  4c897db58a55961d76e720d3905b57a76fe199f5396c876b57e56ecaeaaee4d2
+
+water-lod.kfs
+  3183647 bytes
+  dc4786b2904869fc5f910fa0d1b1a5767f1204fda99f34b2745f1ef7088f7f89
+
+substrate-manifest.json
+  1797 bytes
+  1143324ace2dd7c47ad5f79e0763fdf978be5447527095e9e6f96d46b3fd1d13
+```
+
+Milestone 3 proved:
+
+- deterministic real Kane County publication bytes;
+- selective indexed `.kfs` byte-range access;
+- browser SHA-256 validation;
+- browser DEFLATE decompression;
+- real Chromium Canvas rendering;
+- no application subscription data required for baseline rendering;
+- bounded reference-server reads compatible with constrained-edge design;
+- authoritative database byte identity unchanged by compilation/render proof.
+
+See `docs/MILESTONE_3_RELEASE.md` for exact evidence.
+
+## 9. Milestone 4 — exact current boundary
+
+Current milestone:
+
+**Milestone 4 — Subscriptions + Geographic Scoping/Partition Identity**
+
+Design authority:
+
+```text
+docs/MILESTONE_4_DESIGN.md
+```
+
+The new architectural progression is:
+
+```text
+MS-3  county substrate + selective chunks       COMPLETE
+  ↓
+MS-4  subscriptions + geographic partitions     CURRENT
+  ↓
+MS-5  ESP32-S3 physical edge implementation     DEFERRED
+```
+
+A geographic partition is a deterministic jurisdiction-scoped area used for selection, composition, storage planning, replication, and serving.
+
+Initial partition classes:
+
+- whole jurisdiction;
+- municipality/incorporated place when an accepted boundary definition exists;
+- township/equivalent administrative subdivision when an accepted boundary definition exists;
+- explicit bounded region;
+- deterministic composite scope where justified.
+
+Municipalities and townships are useful named scopes but are not the only mechanism. Roads, water, buildings, service areas, and domain data may cross them.
+
+Partition boundaries are distribution boundaries, not authority or ownership boundaries. Cross-boundary objects retain one logical identity and may be referenced/replicated in several partitions.
+
+The Milestone 3 county publication remains canonical. MS-4 does not create separate authoritative town databases. Partitions select/reference relevant substrate chunks/ranges and subscription objects.
+
+A partition identity must not depend on:
+
+- ESP32 serial/device identity;
+- hostname;
+- SSID;
+- IP address;
+- physical storage path.
+
+## 10. Milestone 4 implementation order
+
+Current planned order:
+
+```text
+MS4-001  partition descriptor and deterministic identity contract
+MS4-002  administrative/bounded scope normalization and inclusion rules
+MS4-003  substrate partition selection manifest/reference model
+MS4-004  subscription manifest and independent generation contract
+MS4-005  geographic identity references and ownership/rights boundary
+MS4-006  Condo proof subscription
+MS4-007  Industry / Mechanical Compiler proof subscription
+MS4-008  browser composition of substrate + multiple scoped subscriptions
+MS4-009  multi-partition / cross-boundary composition proof
+MS4-010  edge-placement compatibility proof without ESP-IDF implementation
+MS4-011  release evidence and milestone closeout
 ```
 
 Do not mark an item complete merely because its design text exists.
 
-## 17. Testing/acceptance discipline
+## 11. ESP32-S3 / ESP-IDF boundary
 
-Use the least expensive useful test first, but make claims only at the level actually run:
+ESP32-S3 remains the minimum initial edge reference, but actual ESP-IDF integration remains Milestone 5.
+
+Milestone 4 is hardware-aware but firmware-independent. It must define logical partitions/subscriptions that make focused edge placement practical without implementing:
+
+- ESP-IDF firmware;
+- ESP-IDF HTTP handlers;
+- flash/SD-card layout;
+- Wi-Fi AP/STA behavior;
+- firmware update/recovery.
+
+Milestone 5 owns those physical/runtime decisions and maps MS-3/MS-4 logical identities onto actual devices.
+
+If ESP-IDF is retained for release, the exact SDK/toolchain must be license-reviewed, pinned, and vendored according to the dependency policy.
+
+## 12. Dependency and licensing policy
+
+Kane Fabric-authored code must remain under the repository's existing Unlicense.
+
+A dependency is not acceptable if it forces Kane Fabric-authored code to change license.
+
+Third-party implementations retained as project-controlled runtime/build/test/firmware dependencies must be pinned and vendored before final release. Browser Web APIs and ordinary target-platform interfaces are contracts, not automatically bundled project implementations.
+
+Node.js and Chromium used for Milestone 3 acceptance are currently development-only tooling. Their use does not make them runtime dependencies of the substrate or edge node.
+
+See:
+
+```text
+docs/DEPENDENCY_POLICY.md
+third_party/manifest.json
+```
+
+## 13. Testing and evidence discipline
+
+Make claims only at the level actually tested:
 
 ```text
 repository/static review
-        ↓
-synthetic unit tests
-        ↓
-full regression tests inside CT102
-        ↓
-real Kane County read-only/derived-data gate in CT102
-        ↓
-explicit candidate/reconciliation/promotion gate when required
-        ↓
-release evidence with exact hashes/counts
+  ↓
+synthetic/unit tests
+  ↓
+full regression tests in CT102
+  ↓
+real Kane County read-only/derived-data proof
+  ↓
+explicit authority-changing gate when required
+  ↓
+release evidence with exact identities
 ```
 
-Avoid repeated verification churn. Once a concrete implementation slice has passed its defined acceptance gate, accept it and move to the next slice unless a later change invalidates that evidence.
+Accepted gates are not rerun merely because a new Assistant arrived. Rerun when an implementation/environment/dependency change invalidates the prior evidence or a contradictory observation appears.
 
-Do not add gratuitous source-level/synthetic closeout tests when real milestone evidence already proves the required behavior.
+Large operational artifacts remain outside Git under `/var/lib/kane-fabric`.
 
-When a real test fails, diagnose the exact failure and patch the repository; do not fall back to donor wrappers or bypass the authority model.
+## 14. Shell and operational discipline
 
-## 18. Shell and operational discipline
+Never inject bare:
 
-Do not inject bare `set -euo pipefail` into an interactive root shell. Put strict mode inside a bounded subprocess, for example:
+```bash
+set -euo pipefail
+```
+
+into the user's interactive `srv-b` root shell. It can terminate the interactive shell after an assertion failure.
+
+Strict mode is safe inside a bounded child command, for example:
 
 ```bash
 pct exec 102 -- bash -lc '
@@ -711,75 +414,40 @@ pct exec 102 -- bash -lc '
 '
 ```
 
-When the user is explicitly performing a manual command relay, give one bounded command group at a time and wait for its output before issuing the next destructive/state-changing group.
+When the user is explicitly performing a manual command relay, give one bounded command group at a time and wait for its output before issuing the next state-changing group.
 
-For large cross-machine artifacts, the established transfer workflow is:
+Do not copy large operational GeoPackages into Git.
+
+## 15. What not to do
+
+Do not:
+
+- revive Kane Condo as an active project/runtime dependency;
+- expose the internal GeoPackage schema as the durable external client interface;
+- silently promote candidate geography during source status, comparison, compilation, subscription work, or partition work;
+- make a town/township partition its own geographic authority;
+- make physical edge placement part of partition or subscription identity;
+- clip/change feature identity merely because a feature crosses a partition boundary;
+- move ESP-IDF implementation into Milestone 4 without an explicit project scope decision;
+- repeat the disproven 27,676-to-27,675 missing-geometry road explanation;
+- collapse the two accepted water source datasets into fake single-source provenance;
+- treat `project_building` physical names as application ownership;
+- require the frozen donor checkout at normal Fabric runtime;
+- claim CT102 acceptance from an Assistant sandbox;
+- repurpose CT100/CT101;
+- create feature branches unless requested;
+- delete historical branches without authorization;
+- change the root Unlicense to accommodate a dependency.
+
+## 16. Next safe action
+
+Milestone 3 is released on `main`.
+
+The next implementation item is:
 
 ```text
-create tarball
-→ Webmin download/upload
-→ verify SHA-256 locally
-→ extract/use
+MS4-001
+partition descriptor and deterministic identity contract
 ```
 
-Do not prescribe SCP/SSH transfer as the default unless the user explicitly asks or the deployment policy changes.
-
-Containers do not send mail in the host model; SMTP egress is blocked at the host. Do not treat lack of a container MTA as a project defect.
-
-`nesting=1` is a proven shared requirement for the Debian unprivileged CT pattern on this host. `keyctl=1` is not a universal Kane Fabric architectural requirement; retain it only where the workload justifies it.
-
-## 19. Public-infrastructure and multi-county forward constraints
-
-New work after MS-2 must preserve three broad objectives:
-
-1. Kane Fabric remains authentic independently usable public civic infrastructure;
-2. accepted county geography remains current only through the explicit provenance/candidate/comparison/reconciliation/promotion safeguards;
-3. new durable generic identities avoid unnecessary Kane County coupling.
-
-Kane Fabric is released under the repository `LICENSE` using The Unlicense/public-domain dedication. That software status does not automatically make third-party geographic source data public domain; provenance/rights remain separate.
-
-Kane County is the only required current operational jurisdiction. Do not create speculative nationwide infrastructure or fake second-county stubs merely to claim portability.
-
-ESP32-S3 is the current minimum reference edge. It constrains package/access design now but does not define the permanent architecture.
-
-## 20. What not to do
-
-A new Assistant should not:
-
-- revive Kane Condo development;
-- require the frozen donor checkout at Fabric runtime;
-- silently import Condo classification semantics into geographic core/substrate;
-- treat `project_building` physical names as proof of application ownership;
-- “fix” the deliberate one-road exclusion without new authoritative evidence;
-- collapse two water source datasets into fake single-source provenance;
-- assume a historical database hash is the current active DB without observing CT102;
-- assume `/tmp/kane-fabric-ms2` is the current checkout;
-- create a feature branch unless the user requested one;
-- restrict `remote.origin.fetch` to one branch without an explicit reason;
-- ask for GitHub write credentials in CT102 merely to publish or clean up Assistant changes;
-- run Git on `srv-b` as a substitute for the CT/repository model;
-- claim CT102 tests passed when only a sandbox test ran;
-- hide accepted-state promotion inside a test, source-status check, or substrate compilation;
-- repurpose CT100/CT101;
-- copy large operational GeoPackages into Git;
-- duplicate the host-owned `ct-baseline.sh` as a repository authority;
-- keep rerunning already accepted gates without a concrete invalidating change.
-
-The live 2026-08-20 observation confirms `/tmp/kane-fabric-ms2` is the current checkout **for that observation**. The prohibition above means do not assume the path remains current in a later session without verification.
-
-## 21. Definition of a good future handoff
-
-This file must be maintained as the stable current handoff path.
-
-At every milestone boundary, update it to state:
-
-- current milestone and exact implementation boundary;
-- current repository module map if it changed materially;
-- which gates actually ran inside CT102 and their accepted evidence;
-- last **observed** CT102 checkout/path/state, clearly distinguished from repository `main`;
-- last observed active/working database path/hash when relevant, clearly distinguished from historical evidence;
-- new invariants, deliberate exceptions, and deferred compatibility names;
-- any execution capability that was unavailable;
-- the exact next safe development action.
-
-A successor should be able to understand the system and resume safely from this file plus the named governing documents without needing private conversation memory.
+Begin from `docs/MILESTONE_4_DESIGN.md` after the normal live checkout preconditions are verified. Do not start ESP-IDF firmware work; that remains Milestone 5.
