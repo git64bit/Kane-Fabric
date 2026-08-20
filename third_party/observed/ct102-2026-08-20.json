@@ -1,0 +1,60 @@
+{
+  "authoritative_database_sha256": "31e362b696a37f1b9c45ae355c5669511a3128c17a651108a62e20d1cedebd67",
+  "environment": {
+    "container": "CT102",
+    "os": "Debian GNU/Linux 12 (bookworm)"
+  },
+  "license_files": {
+    "/usr/share/doc/libsqlite3-0/copyright": "78e9df8f8153c91c762ec970b82d224ac4d30f05aa7773e7e17e268141e53873",
+    "/usr/share/doc/libssl3/copyright": "6a7da622fe0637a334d2a8fc470852d2ffb77d9a2b2f930f854e32a41ad6ef35",
+    "/usr/share/doc/python3.11/copyright": "f1cbf908e1daa8789b389fdcf17811ed36b675d736b39a103591399861350382",
+    "/usr/share/doc/zlib1g/copyright": "9e5b96d63773a5d177ba264254390f792be07e41748ebd94730981c6cac31cc6"
+  },
+  "native_linkage": {
+    "/usr/bin/python3": [
+      "libm.so.6",
+      "libz.so.1",
+      "libexpat.so.1",
+      "libc.so.6"
+    ],
+    "/usr/lib/python3.11/lib-dynload/_sqlite3.cpython-311-x86_64-linux-gnu.so": [
+      "libsqlite3.so.0",
+      "libc.so.6",
+      "libm.so.6"
+    ],
+    "/usr/lib/python3.11/lib-dynload/_ssl.cpython-311-x86_64-linux-gnu.so": [
+      "libssl.so.3",
+      "libcrypto.so.3",
+      "libc.so.6"
+    ]
+  },
+  "native_module_origins": {
+    "_sqlite3": "/usr/lib/python3.11/lib-dynload/_sqlite3.cpython-311-x86_64-linux-gnu.so",
+    "_ssl": "/usr/lib/python3.11/lib-dynload/_ssl.cpython-311-x86_64-linux-gnu.so",
+    "zlib": "built-in"
+  },
+  "observed_date": "2026-08-20",
+  "packages": {
+    "ca-certificates": "20250419~deb12u1",
+    "libc6": "2.36-9+deb12u14",
+    "libpython3.11-stdlib": "3.11.2-6+deb12u8",
+    "libsqlite3-0": "3.40.1-2+deb12u2",
+    "libssl3": "3.0.20-1~deb12u2",
+    "python3": "3.11.2-1+b1",
+    "python3.11": "3.11.2-6+deb12u8",
+    "zlib1g": "1:1.2.13.dfsg-1"
+  },
+  "policy_gate": {
+    "mode": "development",
+    "root_license_sha256": "6b0382b16279f26ff69014300541967a356a666eb0b91b422f6862f6b7dad17e",
+    "valid": true
+  },
+  "runtime": {
+    "cpython": "3.11.2 (main, May 12 2026, 05:17:27) [GCC 12.2.0]",
+    "openssl": "OpenSSL 3.0.20 7 Apr 2026",
+    "sqlite": "3.40.1",
+    "zlib_compile": "1.2.13",
+    "zlib_runtime": "1.2.13"
+  },
+  "schema_version": 1
+}
