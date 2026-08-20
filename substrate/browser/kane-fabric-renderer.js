@@ -30,6 +30,22 @@ function validateBounds(bounds, label = "bounds") {
   return values;
 }
 
+function resolveSubstrateBaseUrl(baseUrl) {
+  const text = String(baseUrl);
+  const directory = text.endsWith("/") ? text : `${text}/`;
+  try {
+    return new URL(directory).href;
+  } catch (error) {
+    const documentUrl = globalThis.location?.href;
+    if (!documentUrl) {
+      throw new SubstrateError(
+        `relative substrate base URL requires a browser document location: ${error.message}`,
+      );
+    }
+    return new URL(directory, documentUrl).href;
+  }
+}
+
 export function createViewportProjection(bounds, width, height, padding = DEFAULT_PADDING) {
   const [minX, minY, maxX, maxY] = validateBounds(bounds, "viewport bounds");
   finiteNumber(width, "canvas width");
@@ -186,7 +202,8 @@ export async function renderSubstrate(
   } = {},
 ) {
   const ctx = canvasContext(canvas);
-  const metadata = await loadSubstrateMetadata(baseUrl, { fetchImpl });
+  const substrateBaseUrl = resolveSubstrateBaseUrl(baseUrl);
+  const metadata = await loadSubstrateMetadata(substrateBaseUrl, { fetchImpl });
   const fitBounds = validateBounds(metadata.overview.fit.bounds, "overview fit bounds");
   const renderBounds = bounds === null ? fitBounds : validateBounds(bounds, "render bounds");
   const projection = createViewportProjection(renderBounds, canvas.width, canvas.height, padding);
@@ -196,8 +213,8 @@ export async function renderSubstrate(
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   const boundaryRingCount = drawBoundary(ctx, metadata.overview, projection);
-  const roads = await openFlatComponent(baseUrl, metadata.manifest, "roads", { fetchImpl });
-  const water = await openFlatComponent(baseUrl, metadata.manifest, "water", { fetchImpl });
+  const roads = await openFlatComponent(substrateBaseUrl, metadata.manifest, "roads", { fetchImpl });
+  const water = await openFlatComponent(substrateBaseUrl, metadata.manifest, "water", { fetchImpl });
 
   const stats = {
     boundary_ring_count: boundaryRingCount,
