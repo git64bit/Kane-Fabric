@@ -75,8 +75,24 @@
   },
   "milestone": {
     "current": 4,
-    "name": "Subscription contract",
-    "phase": "ms4-ready",
+    "name": "Subscriptions + Geographic Scoping/Partition Identity",
+    "phase": "ms4-partition-contract-design",
+    "design": "docs/MILESTONE_4_DESIGN.md",
+    "scope": {
+      "subscriptions": true,
+      "geographic_partition_identity": true,
+      "administrative_scopes": [
+        "municipality",
+        "township-or-equivalent"
+      ],
+      "generic_scopes": [
+        "whole-jurisdiction",
+        "bounded-region",
+        "deterministic-composite"
+      ],
+      "partition_is_physical_device_identity": false,
+      "esp_idf_implementation_deferred_to_milestone": 5
+    },
     "previous_milestone": {
       "number": 3,
       "name": "Compile Shared Substrate",
@@ -84,7 +100,7 @@
       "published_main_head": "84293aeb381db596f4c3233473c350fda6c5426d",
       "gate_steps_complete": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
     },
-    "next_work_item": "MS4-001"
+    "next_work_item": "MS4-001 partition descriptor and deterministic identity contract"
   },
   "accepted_tests": {
     "database": {
@@ -158,7 +174,7 @@
       "deletion_authorized": false
     }
   ],
-  "next_safe_action": "Milestone 3 is released on main. Do not reopen MS3 discovery. Begin MS4-001 subscription-contract work from current main after verifying the normal live checkout preconditions. Do not delete historical branches without explicit authorization.",
+  "next_safe_action": "Milestone 3 is released on main. Do not reopen MS3 discovery. Begin MS4-001 by defining the deterministic geographic partition descriptor and identity contract from docs/MILESTONE_4_DESIGN.md after verifying normal live checkout preconditions. Keep ESP-IDF implementation in Milestone 5. Do not delete historical branches without explicit authorization.",
   "state_policy": {
     "stable_facts_are_not_rediscovered_each_session": true,
     "live_state_must_be_verified_before_mutation": true,
