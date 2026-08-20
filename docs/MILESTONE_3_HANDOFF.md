@@ -75,7 +75,7 @@ local divergence  0 ahead / 32 behind
 merge base        9440c31283a000f0b3ce30e57035446ad45c7ce3
 ```
 
-Therefore the checkout is a clean fast-forward candidate; it had not yet been fast-forwarded when this observation was recorded.
+That proved the checkout was a clean fast-forward candidate.
 
 The fetch also revealed a remaining remote branch:
 
@@ -85,6 +85,22 @@ HEAD  9b583fb7ab18b6d5e00e4643d4cbfe15f305e8cc
 ```
 
 That commit is fully contained in `main`: GitHub comparison shows `main` 10 commits ahead of `9b583fb...`, 0 behind, with `9b583fb...` as the merge base. The branch is therefore merged/stale state, not divergent development. No branch deletion was authorized or performed when this handoff entry was written.
+
+A guarded fast-forward was then executed on CT102. Preconditions required local `main`, a clean worktree, the expected GitHub origin, `HEAD` as an ancestor of `origin/main`, and zero local commits ahead. After fetching the handoff updates, the fast-forward result was:
+
+```text
+checkout path     /tmp/kane-fabric-ms2
+branch            main
+local HEAD        4eaa85a1fd34fd426703560fe216f55f46636a79
+origin/main       4eaa85a1fd34fd426703560fe216f55f46636a79
+upstream          origin/main
+worktree          clean
+fetch refspec     +refs/heads/*:refs/remotes/origin/*
+pre-FF divergence 0 ahead / 34 behind
+post-FF state     synchronized
+```
+
+Therefore CT102 was explicitly synchronized to the then-current GitHub `main` at `4eaa85a1...` without discarding local state. Documentation commits made after that observation may move GitHub `main` again; a successor must compare live refs rather than treating `4eaa85a1...` as a permanent authority token.
 
 The checkout path `/tmp/kane-fabric-ms2` is now a **current observed path**, but it remains a deployment observation rather than a conceptual/path contract. Future sessions must still verify it before relying on it.
 
@@ -253,32 +269,34 @@ Repository review and synthetic regression-test code exist.
 
 The first real CT102 Milestone 3 execution gate has **not yet been accepted**.
 
-The initial discovery portion of that gate has now been observed live:
+The discovery and synchronization portion of that gate has now been observed live:
 
 - CT102 is running;
 - CT102 identity is `kane-fabric` on Debian 12;
 - the Kane Fabric checkout was found at `/tmp/kane-fabric-ms2`;
-- it is a clean local `main` with the correct origin and normal all-branches fetch refspec;
-- after `git fetch --prune origin`, local `main` was exactly 32 commits behind and 0 ahead of `origin/main` at `8d56d975...`;
-- no worktree changes were present.
+- it is local `main` with the correct origin and normal all-branches fetch refspec;
+- the worktree was clean and had zero commits ahead of `origin/main`;
+- a guarded `--ff-only` synchronization succeeded;
+- CT102 reached `4eaa85a1fd34fd426703560fe216f55f46636a79`, equal to `origin/main` at the end of that operation;
+- the worktree remained clean.
 
-The checkout has **not yet been fast-forwarded** in the accepted record, so synchronization, tests, real database discovery, and overview compilation remain pending.
+This satisfies baseline steps 1 through 4 for the repository snapshot actually synchronized. Because maintaining these handoff files itself creates later documentation commits, live `main` must be compared again before the next command group; that does not invalidate the observed synchronization result.
 
 Do not claim that substrate tests, Kane County overview generation, or database immutability proof passed on the real environment merely because the code exists in GitHub or because a sandbox test passes.
 
-The first CT102 gate must prove:
+The first CT102 gate now requires:
 
 1. CT102 is running — **observed**;
 2. the actual Kane Fabric checkout is found and understood — **observed**;
 3. checkout repo identity, `main`, upstream, worktree, and fetch refspec are sane — **observed**;
-4. checkout is synchronized/verified against current GitHub `main` without discarding unexplained state — **next pending step**;
-5. `bash database/run-tests.sh` passes inside CT102;
-6. `bash substrate/run-tests.sh` passes inside CT102;
-7. the actual current Kane County working/accepted Fabric database is identified from live CT state;
-8. its SHA-256 is recorded before compilation;
-9. `county-overview.json` is built from that real database;
-10. overview jurisdiction and accepted-boundary release identity match the database;
-11. the database SHA-256 is unchanged after compilation.
+4. checkout synchronized/verified against the then-current GitHub `main` without discarding unexplained state — **observed at `4eaa85a1...`**;
+5. `bash database/run-tests.sh` passes inside CT102 — **pending**;
+6. `bash substrate/run-tests.sh` passes inside CT102 — **pending**;
+7. the actual current Kane County working/accepted Fabric database is identified from live CT state — **pending**;
+8. its SHA-256 is recorded before compilation — **pending**;
+9. `county-overview.json` is built from that real database — **pending**;
+10. overview jurisdiction and accepted-boundary release identity match the database — **pending**;
+11. the database SHA-256 is unchanged after compilation — **pending**.
 
 The exact working database path and hash must be observed on CT102 rather than inferred from an old milestone handoff.
 
