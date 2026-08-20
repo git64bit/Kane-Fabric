@@ -2,33 +2,33 @@
 
 ## Status
 
-Milestone 3 format contract.
+Milestone 3 durable wire-format contract.
 
-This document freezes the first browser-consumable shared-substrate wire format before the implementation is extracted from the historical Kane Condo renderer.
+This contract defines the first browser-consumable Kane Fabric shared substrate before road/water implementation is extracted from the historical Kane Condo renderer.
 
-The v1 substrate contains only public geographic context:
+The v1 substrate contains only civic geographic context:
 
 - jurisdiction boundary/context;
 - roads;
 - water.
 
-Buildings, classifications, qualifications, workflows, Mechanical Compiler state, and other application/subscription semantics are not part of this substrate format.
+Buildings, categories, classifications, qualifications, workflows, Mechanical Compiler state, and other application/subscription semantics are outside this format and do not inherit Kane Fabric's public-domain status merely because they are composed with it.
 
-## Design requirements
+Kane County, Illinois is the reference deployment. It is not the namespace of the wire contract.
 
-The format must satisfy all of the following:
+## Requirements
+
+V1 must provide:
 
 - deterministic bytes for identical accepted geographic state and format/profile versions;
-- explicit jurisdiction identity rather than an implicit Kane County assumption;
+- explicit jurisdiction identity;
+- accepted-release provenance;
 - validation before rendering or activation;
-- bounded-memory browser access;
-- practical serving from an ESP32-S3 running Kane Fabric firmware on ESP-IDF;
+- bounded-memory browser and ESP32-S3 access;
 - no server-side rendering requirement;
 - no authoritative database mutation during compilation;
-- no dependency on the original Kane Fabric operator or a private registry;
-- clean separation between public civic-infrastructure artifacts and separately owned application/subscription artifacts.
-
-Kane County, Illinois is the v1 reference implementation. It is not the namespace of the wire contract.
+- no private registry or continuing permission requirement;
+- clean separation between the public substrate and separately owned subscriptions.
 
 ## Package layout
 
@@ -43,39 +43,34 @@ substrate-manifest.json
 
 `kfs` means Kane Fabric substrate. It identifies the software/project format, not Kane County.
 
-The package directory is an activation unit. A publisher must stage and validate the complete package before replacing the currently activated directory.
-
-A later edge-serving layout may expose the same immutable files through content-addressed object paths without changing their bytes or logical identities.
+The complete directory is an activation unit. Components are generated and validated in staging before the activated package is replaced.
 
 ## Jurisdiction identity
 
-Every component and the package manifest must carry the jurisdiction identity explicitly.
-
-For the current U.S. implementation the required jurisdiction object is:
+Every component and manifest carries jurisdiction identity explicitly. The current authoritative Kane Fabric database uses:
 
 ```json
 {
-  "country_code": "US",
-  "state_code": "IL",
-  "fips_code": "17089",
-  "county_key": "kane-county",
-  "name": "Kane County"
+  "country_code":"US",
+  "state_code":"IL",
+  "fips_code":"17089",
+  "county_key":"kane-county-il",
+  "name":"Kane County"
 }
 ```
 
 For v1:
 
-- `country_code` is the two-letter uppercase country code stored by the Fabric database;
-- `state_code` is the two-letter uppercase state/territory code stored by the Fabric database;
-- `fips_code` is the five-digit U.S. county/county-equivalent FIPS code and is the durable cross-package jurisdiction code;
+- `fips_code` is the durable U.S. county/county-equivalent code used across packages;
 - `county_key` is a Fabric project identifier and is not a substitute for FIPS identity;
-- `name` is descriptive display metadata and is never a durable primary key.
+- `name` is descriptive display metadata, not a primary key;
+- jurisdiction must never be inferred from filename, host, directory, Wi-Fi SSID, or physical edge device.
 
-A browser, cache, edge node, or application must not infer jurisdiction from a filename, host name, path, Wi-Fi SSID, or physical device.
+The design horizon includes U.S. county-equivalent jurisdictions even where the local name is not "county".
 
 ## Canonical JSON
 
-All v1 JSON metadata and chunk record payloads use the canonical byte convention inherited from the proven Kane Condo implementation:
+All v1 JSON metadata and uncompressed chunk records use the proven deterministic convention:
 
 ```python
 json.dumps(
@@ -87,22 +82,13 @@ json.dumps(
 ).encode("utf-8")
 ```
 
-Consequences:
+Therefore canonical structures use UTF-8, no BOM, sorted object keys, no insignificant whitespace, and no NaN/Infinity. Content-addressed structures must not contain machine paths, hostnames, process IDs, random UUIDs, filesystem timestamps, or local-time values.
 
-- UTF-8 only;
-- no BOM;
-- object keys sorted lexicographically by the generator;
-- no insignificant whitespace;
-- no NaN or Infinity values;
-- no machine-specific paths, hostnames, process IDs, random UUIDs, filesystem timestamps, or local-time values in content-addressed structures.
-
-Validators reconstruct this canonical representation after parsing and reject metadata whose bytes are not canonical.
-
-The v1 compatibility suite will provide fixed byte/hash test vectors before Milestone 3 release. Those vectors, rather than implementation language, are the final interoperability authority for canonical serialization.
+Validators reserialize parsed metadata and reject noncanonical bytes. Fixed byte/hash test vectors are part of the v1 compatibility suite.
 
 ## Flat-container framing
 
-`roads-lod.kfs` and `water-lod.kfs` use the same generic framing:
+`roads-lod.kfs` and `water-lod.kfs` use:
 
 ```text
 8 bytes   magic/version
@@ -111,70 +97,84 @@ N bytes   canonical UTF-8 JSON index
 ...       contiguous zlib-compressed canonical JSON chunks
 ```
 
-The v1 magic values are:
+Magic values:
 
 ```text
 roads   KFSR001\n
 water   KFSW001\n
 ```
 
-Each magic value is exactly eight ASCII bytes.
+Each magic is exactly eight ASCII bytes. The fixed 16-byte prefix lets a constrained reader discover index length without loading or scanning the component.
 
-The eight-byte index length is retained from the proven donor format so readers can discover the complete index with bounded initial I/O and without scanning the component.
-
-Chunk offsets recorded in the index are relative to the first byte of the payload area immediately following the index.
-
-Payload chunks are contiguous. There may be no overlap, unexplained gap, or trailing unindexed payload data.
+Chunk offsets are relative to the first payload byte after the index. Payload chunks must be contiguous, non-overlapping, and fully indexed; trailing unindexed payload bytes are invalid.
 
 ## Compression
 
-Every v1 chunk uses zlib-wrapped DEFLATE.
-
-The index records:
+Every v1 chunk uses zlib-wrapped DEFLATE and the index records:
 
 ```json
 "compression":"zlib-deflate"
 ```
 
-The compiler currently uses deterministic zlib compression at level 9.
-
-The wire contract is the resulting compressed bytes and their SHA-256 identities, not a requirement that a browser or future implementation use the same compression library internally.
-
-A later format version may introduce another codec only after measured browser and edge-device evidence justifies the additional complexity.
+The compiler begins with deterministic zlib level 9 because that behavior was proven by Kane Condo. A later codec requires a new format decision justified by measured browser/edge evidence.
 
 ## Chunk descriptor
 
-Every compressed chunk descriptor contains at least:
+Every chunk records at least:
 
-```json
-{
-  "bounds":[-88.0,41.0,-87.0,42.0],
-  "feature_count":1,
-  "length":1234,
-  "offset":0,
-  "payload_sha256":"<64 lowercase hex>",
-  "records_sha256":"<64 lowercase hex>",
-  "uncompressed_length":5678
-}
+```text
+bounds
+feature_count
+offset
+length
+uncompressed_length
+payload_sha256
+records_sha256
 ```
 
-The exact geographic bounds vary by layer and level.
+`payload_sha256` hashes the compressed bytes exactly as stored. `records_sha256` hashes the canonical uncompressed JSON record bytes. Features are not split merely to satisfy a target chunk count, so chunk boundaries cannot create geographic seams.
 
-Definitions:
+## Component identities
 
-- `offset`: byte offset relative to the payload area;
-- `length`: compressed byte length;
-- `uncompressed_length`: canonical JSON record byte length after decompression;
-- `payload_sha256`: SHA-256 of the compressed bytes exactly as stored;
-- `records_sha256`: SHA-256 of the canonical uncompressed record bytes;
-- `feature_count`: number of whole geographic feature records contained by the chunk;
-- `bounds`: EPSG:4326 bounds of the records represented by the chunk.
+The road component uses:
 
-Features are not split merely to meet a target chunk count. Chunk boundaries must not create geographic seams.
+```text
+format  kane-fabric-substrate-roads
+version 1
+magic   KFSR001\n
+path    roads-lod.kfs
+```
 
-## Component index common fields
+The water component uses:
 
-Every `.kfs` component index contains these common fields:
+```text
+format  kane-fabric-substrate-water
+version 1
+magic   KFSW001\n
+path    water-lod.kfs
+```
+
+The overview uses:
+
+```text
+format  kane-fabric-substrate-overview
+version 1
+path    county-overview.json
+```
+
+The manifest uses:
+
+```text
+format  kane-fabric-substrate-manifest
+version 1
+path    substrate-manifest.json
+```
+
+Role, relative path, format, and version are bound together and must not be swapped independently.
+
+## Common `.kfs` index
+
+Every flat component index contains at least:
 
 ```json
 {
@@ -187,50 +187,29 @@ Every `.kfs` component index contains these common fields:
 }
 ```
 
-The road format key is:
+It also carries the accepted source-release identities required to prove the authoritative geographic state from which it was compiled.
 
-```text
-kane-fabric-substrate-roads
-```
-
-The water format key is:
-
-```text
-kane-fabric-substrate-water
-```
-
-The component index also records all accepted source-release identities needed to prove which authoritative geographic state produced the component.
-
-A component whose jurisdiction or source-release identity does not agree with its enclosing manifest must be rejected even if its internal hashes are otherwise correct.
+A structurally valid component is still rejected if its jurisdiction or release lineage disagrees with the enclosing manifest.
 
 ## County overview
 
-`county-overview.json` is canonical UTF-8 JSON rather than a `.kfs` container because it is intentionally small and must be available immediately for browser viewport framing.
-
-Its format key is:
-
-```text
-kane-fabric-substrate-overview
-```
-
-and its version is `1`.
-
-It contains at least:
+`county-overview.json` remains small canonical JSON for immediate viewport fitting and coarse boundary drawing. It contains:
 
 - jurisdiction identity;
-- EPSG:4326 SRS identity;
-- exact accepted boundary bounds;
-- deterministic center;
+- EPSG:4326 identity;
+- exact accepted boundary bounds and deterministic center;
 - accepted boundary release identity;
-- deterministic simplified exterior boundary rings;
-- source and output vertex counts;
-- simplification-policy identity and applied tolerance.
+- simplified exterior rings;
+- source/output vertex counts;
+- explicit simplification-policy identity and applied tolerance.
 
-Exact package bounds come from accepted source geometry, not the simplified overview geometry.
+Exact fit bounds come from accepted source geometry, never the simplified outline.
 
-## Road levels
+For Kane County v1 the proven starting simplification policy is Ramer-Douglas-Peucker with tolerance `max_extent / 2048`. The applied policy is explicit metadata, not a universal jurisdiction rule.
 
-The generic v1 road level keys are:
+## Road LOD
+
+Generic v1 level keys are:
 
 ```text
 orientation
@@ -238,21 +217,17 @@ context
 detail
 ```
 
-The level names describe browser/display purpose, not an assumed road classification scheme.
+The Kane road source does not retain authoritative functional road classification, so Kane v1 reuses the proven deterministic source policy:
 
-For Kane County v1, membership follows the previously proven Kane source policy because the accepted source does not retain an official functional road class:
+- `orientation`: longest features sufficient for 35% of coordinate-length score;
+- `context`: longest features sufficient for 75%;
+- `detail`: all accepted road features with exact accepted coordinates.
 
-- `orientation`: longest features sufficient to cover 35% of deterministic coordinate-length score;
-- `context`: longest features sufficient to cover 75%;
-- `detail`: every accepted road feature.
+This is Kane source policy. Another jurisdiction with authoritative road class may choose membership using that source semantics while still producing the same generic component contract.
 
-The Kane policy is recorded explicitly in component metadata. It is not the definition of road importance for another jurisdiction.
+## Water LOD
 
-The level sets are monotonic and the detail level retains exact accepted source coordinates.
-
-## Water levels
-
-The generic v1 water level keys are:
+Generic v1 level keys are:
 
 ```text
 overview
@@ -260,41 +235,23 @@ context
 detail
 ```
 
-For Kane County v1, membership follows the previously proven coordinated Fox River/creek policy:
+Kane v1 reuses the coordinated Fox River/creek policy:
 
-- `overview`: all accepted Fox River features and no creeks;
-- `context`: all accepted Fox River features plus enough longest creeks to cover 60% of deterministic creek coordinate-length score;
-- `detail`: every accepted Fox River and creek feature.
+- `overview`: all accepted Fox River features, no creeks;
+- `context`: all Fox River features plus longest creeks sufficient for 60% of creek coordinate-length score;
+- `detail`: every accepted Fox River and creek feature with exact accepted coordinates.
 
-This is Kane County source policy and is recorded as such. It is not a generic hydrologic classification claim.
+This is Kane source policy, not a universal hydrologic classification.
 
-## Chunk ordering
+## Ordering and chunk policy
 
-Within a level, v1 may use deterministic 16-bit Morton ordering based on feature center/bounds followed by stable source-feature identity as a tie breaker.
+V1 may use deterministic 16-bit Morton ordering followed by stable source identity as a tie breaker. Morton order is an invisible storage-locality mechanism, never a user-facing grid, cell, sector, or geographic identity.
 
-Morton order is an internal storage-locality mechanism only. It must not become a user-facing geographic identity, grid, sector, cell, or administrative partition.
+Kane implementation begins with a maximum of 256 whole features per detailed chunk because historical real-data benchmarks support it. The applied policy is recorded in metadata and is not a universal county constant.
 
-The initial Kane implementation begins with a maximum of 256 whole features per detailed chunk because that value has existing real-data benchmark evidence. The applied chunking policy is recorded in the component index and is not a universal county constant.
+## Manifest and content identity
 
-## Substrate manifest
-
-`substrate-manifest.json` is canonical UTF-8 JSON with:
-
-```text
-format   kane-fabric-substrate-manifest
-version  1
-```
-
-It contains at least:
-
-- jurisdiction identity;
-- authoritative Fabric database audit identity;
-- exactly one accepted release identity for each required substrate dataset;
-- component descriptors;
-- deterministic substrate content identity;
-- optional isolated build/publication time metadata.
-
-The required component roles, in order, are:
+`substrate-manifest.json` inventories exactly these component roles, in order:
 
 ```text
 county_overview
@@ -302,7 +259,7 @@ roads
 water
 ```
 
-Each descriptor contains:
+Each component descriptor carries:
 
 ```text
 role
@@ -313,11 +270,15 @@ byte_length
 sha256
 ```
 
-Absolute paths are prohibited.
+The manifest also records jurisdiction identity, authoritative database audit identity, required accepted releases, and:
 
-## Accepted-release inventory
+```text
+substrate_content_sha256
+```
 
-Each required accepted source release recorded by the manifest contains at least:
+The content hash is computed from canonical jurisdiction identity, accepted-release inventory, and ordered component descriptors. Build/publication time is excluded from this identity.
+
+Each accepted release descriptor contains at least:
 
 ```text
 dataset_key
@@ -326,142 +287,93 @@ content_sha256
 feature_count
 ```
 
-Compilation fails if a required dataset has zero accepted releases, multiple accepted releases, or stored feature inventory inconsistent with accepted release metadata.
+Compilation fails if a required dataset has zero or multiple accepted releases, or if accepted-release metadata disagrees with stored feature inventory. A candidate never enters the substrate merely because it is newer.
 
-Candidate state never enters a published substrate merely because it is newer.
+## ESP32-S3 / ESP-IDF constraint
 
-## Substrate content identity
+ESP32-S3 edge serving is part of the architecture now even though firmware implementation is scheduled later.
 
-The manifest carries:
-
-```text
-substrate_content_sha256
-```
-
-This is the SHA-256 of canonical content-identity metadata containing:
-
-1. jurisdiction identity;
-2. ordered accepted-release inventory;
-3. ordered component descriptors.
-
-Build/publication timestamps are excluded from this hash.
-
-Therefore identical accepted geographic state compiled under the same v1 format/profile rules produces the same substrate content identity regardless of build time or machine.
-
-## ESP32-S3 / ESP-IDF serving constraint
-
-The v1 files are designed so the ESP32-S3 never needs to load an entire county component into RAM merely to serve it.
-
-The intended browser access pattern for `.kfs` files is:
+V1 is designed so an ESP32-S3 does not need whole-county component residency in RAM. The intended access pattern is:
 
 ```text
 GET manifest / overview
         ↓
-read fixed 16-byte component prefix
+read fixed 16-byte `.kfs` prefix
         ↓
 read canonical index
         ↓
-select required chunks
+select needed chunks
         ↓
-read only selected compressed byte ranges
+read selected compressed byte ranges
         ↓
 browser validates + decompresses + renders
 ```
 
-Milestone 5 will freeze the HTTP edge contract, but Milestone 3 requires the format to remain compatible with a small ESP-IDF URI handler that can:
+Milestone 5 will freeze and prove the Kane Fabric ESP-IDF HTTP contract. Milestone 3 must keep the bytes compatible with a small URI handler that can read request headers, set response headers, seek persistent storage, and stream bounded buffers.
 
-- read request headers;
-- serve a whole immutable file when requested;
-- serve a single explicit byte range from persistent storage;
-- set ordinary HTTP response headers;
-- stream bounded buffers rather than allocate the requested object in full.
+The anticipated server behavior supports ordinary single byte-range requests with `206 Partial Content`, `Content-Range`, `Content-Length`, and `Accept-Ranges: bytes`. HTTP range behavior is not part of `.kfs` content identity.
 
-The anticipated range response uses normal HTTP semantics (`206 Partial Content`, `Content-Range`, `Content-Length`, and `Accept-Ranges: bytes`). Range-serving behavior is an edge-server contract, not part of the `.kfs` byte identity.
+The ESP32-S3 is the initial minimum reference edge, not the permanent definition of an edge node.
 
-A future edge implementation may use different hardware or server software while serving the same immutable v1 files.
+## Browser decompression
 
-## Browser decompression constraint
+V1 retains zlib-wrapped DEFLATE so a modern browser can use the standards-based Compression Streams API with `DecompressionStream("deflate")`; no bundled decompression library is required by the browser contract.
 
-V1 deliberately retains zlib-wrapped DEFLATE because the browser can decompress this format using the standards-based Compression Streams API (`DecompressionStream("deflate")`) without bundling a third-party decompression library.
-
-Browser code must still validate the recorded compressed payload SHA-256 and the decompressed canonical-record SHA-256 at the appropriate validation boundary.
-
-## Size discipline
-
-Milestone 3 must measure actual Kane County component/index/chunk sizes and browser access behavior before declaring final edge acceptance.
-
-V1 implementations must use bounded reads and must fail clearly rather than silently truncating offsets or lengths on a constrained platform.
-
-No county-wide component may depend on whole-file RAM residency.
-
-If a future jurisdiction produces a component too large for practical seek/range serving on the reference edge, the correct response is an explicit later sharding/versioning design, not hidden truncation or an implicit requirement for desktop-class hardware.
+The browser still validates compressed and decompressed SHA-256 identities at the required boundary.
 
 ## Validation failures
 
 A v1 validator rejects at least:
 
 - wrong magic or unsupported format/version;
-- malformed UTF-8 or malformed JSON;
-- noncanonical JSON metadata;
+- malformed or noncanonical UTF-8 JSON;
 - truncated prefix, index, or payload;
-- invalid index length;
-- duplicate or unknown required level identities where the component contract forbids them;
-- noncontiguous, overlapping, or out-of-bounds payload offsets;
+- invalid/overlapping/noncontiguous offsets;
 - trailing unindexed payload bytes;
-- invalid zlib payload;
+- invalid zlib data;
 - compressed or uncompressed length disagreement;
-- compressed-payload SHA-256 disagreement;
-- canonical-record SHA-256 disagreement;
-- malformed geographic bounds;
+- payload or record hash mismatch;
+- malformed bounds;
 - jurisdiction mismatch;
 - accepted-release mismatch;
-- component descriptor byte-length or SHA-256 mismatch;
-- missing, duplicated, or swapped required package components;
-- component bytes generated from another accepted authoritative state.
+- component byte-length/hash mismatch;
+- missing, duplicate, or swapped required components;
+- components generated from a different accepted authoritative state.
 
-## Activation rule
+## Build and activation
 
-Compilation is staged outside the active publication directory.
+A complete compiler run:
 
-The compiler:
-
-1. validates required accepted geographic state;
-2. generates all three components into staging;
-3. validates each component;
-4. generates the manifest from staged bytes;
-5. validates the complete package;
-6. compares reproducibility when required by the milestone gate;
+1. opens one authoritative Fabric GeoPackage read-only;
+2. validates required accepted substrate releases;
+3. generates all components in staging;
+4. validates every component;
+5. generates and validates the manifest;
+6. performs required reproducibility comparison;
 7. atomically activates the complete directory;
-8. restores the previous complete package if activation fails.
+8. restores the prior complete directory if activation fails.
 
-The compiler never mutates authoritative database state as a side effect of substrate generation.
+Substrate compilation never mutates authoritative database state.
 
-## Rights and ownership boundary
+## Rights boundary
 
-This format is part of the Kane Fabric civic-infrastructure layer and is intended to remain usable independently of any application subscription.
+The v1 substrate, compiler, browser substrate code, and Kane Fabric ESP32-S3 edge firmware belong to the Kane Fabric civic-infrastructure layer.
 
-A later subscription may reference the substrate and may be served by the same physical ESP32-S3, but co-location does not transfer ownership or licensing between layers.
-
-Public Kane Fabric substrate and edge firmware do not force building categories, qualifications, workflows, Mechanical Compiler state, or other separately owned application semantics into the public domain.
-
-Likewise, a restricted or proprietary subscription does not acquire ownership of the underlying public Kane Fabric substrate.
+A subscription may be stored on the same edge and composed in the same browser without acquiring or transferring rights. Public Kane Fabric does not force categories, qualifications, workflows, Mechanical Compiler state, or other separately owned application data into the public domain. Conversely, a restricted or proprietary subscription does not acquire ownership of the public substrate.
 
 ## Compatibility rule
 
-V1 readers must reject unknown major format versions rather than guessing.
+V1 readers reject unknown major format versions rather than guessing. Framing, compression, offset, hash, or required-semantic changes require a new version.
 
-A future extension may add optional metadata only when old v1 readers can safely ignore it without changing the meaning or identity of required fields. Any framing, compression, offset, hash, or required-semantic change requires a new format version.
+## Release gate
 
-## Implementation gate
+Milestone 3 cannot release until tests prove:
 
-No Milestone 3 generator should be considered released until tests prove:
-
-- deterministic v1 bytes from fixed fixtures;
 - fixed canonical JSON/hash vectors;
-- correct framing and offset validation;
-- corruption/truncation rejection;
-- explicit jurisdiction mismatch rejection;
-- accepted-release mismatch rejection;
-- repeated Kane County builds produce identical component bytes;
-- the browser can selectively obtain and decompress required chunks;
-- the format can be served with bounded memory from the ESP32-S3 reference architecture.
+- deterministic component bytes;
+- framing/offset/hash validation and corruption rejection;
+- explicit jurisdiction and release mismatch rejection;
+- repeated Kane County builds are byte-identical;
+- browser selective loading and zlib decompression;
+- browser rendering of boundary, roads, and water without a subscription;
+- bounded-memory serving compatibility with the ESP32-S3 reference architecture.
