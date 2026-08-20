@@ -1,0 +1,111 @@
+{
+  "platform_contracts": [
+    {
+      "key": "linux-posix-runtime",
+      "kind": "target-platform-interface",
+      "vendored": false
+    },
+    {
+      "key": "browser-web-apis",
+      "interfaces": [
+        "fetch",
+        "http-single-byte-range",
+        "webcrypto-sha256",
+        "decompressionstream-deflate"
+      ],
+      "kind": "target-platform-interface",
+      "vendored": false
+    },
+    {
+      "key": "official-geographic-source-services",
+      "kind": "external-authoritative-source-interface",
+      "policy": "profile-pinned-and-fail-closed-on-drift",
+      "vendored": false
+    }
+  ],
+  "root_license": {
+    "path": "LICENSE",
+    "policy": "must-remain-existing-unlicense",
+    "sha256": "6b0382b16279f26ff69014300541967a356a666eb0b91b422f6862f6b7dad17e"
+  },
+  "schema_version": 1,
+  "standards": [
+    {
+      "document": "OGC 12-128r19",
+      "key": "ogc-geopackage",
+      "kind": "external-standard",
+      "license": "OGC document terms",
+      "version": "1.4.0",
+      "wire_or_storage_contract": true
+    }
+  ],
+  "third_party": [
+    {
+      "key": "cpython",
+      "license": "PSF-2.0 plus licenses carried by the selected CPython distribution",
+      "license_impact": "does-not-relicense-kane-fabric",
+      "pin": {
+        "status": "runtime-version-not-yet-recorded"
+      },
+      "reason": "Current Kane Fabric database, harvesting, compiler, validation, and test runtime",
+      "role": "runtime-build-test",
+      "vendoring_requirement": "required-if-retained"
+    },
+    {
+      "key": "sqlite",
+      "license": "public-domain",
+      "license_impact": "does-not-relicense-kane-fabric",
+      "pin": {
+        "status": "runtime-version-not-yet-recorded"
+      },
+      "reason": "Authoritative GeoPackage database engine behind Python sqlite3",
+      "role": "runtime-library",
+      "vendoring_requirement": "required-if-retained"
+    },
+    {
+      "key": "zlib",
+      "license": "Zlib",
+      "license_impact": "does-not-relicense-kane-fabric",
+      "pin": {
+        "status": "runtime-version-not-yet-recorded"
+      },
+      "reason": "Deterministic zlib-wrapped DEFLATE compiler implementation for v1 .kfs payloads",
+      "role": "runtime-library",
+      "vendoring_requirement": "required-if-retained"
+    },
+    {
+      "key": "openssl",
+      "license": "Apache-2.0 for OpenSSL 3.0 and later; exact selected release must remain 3.x-or-later unless separately reviewed",
+      "license_impact": "does-not-relicense-kane-fabric",
+      "pin": {
+        "status": "runtime-version-not-yet-recorded"
+      },
+      "reason": "TLS implementation behind Python HTTPS harvesting when CPython ssl uses OpenSSL",
+      "role": "runtime-library",
+      "vendoring_requirement": "required-if-retained"
+    },
+    {
+      "key": "nodejs",
+      "license": "MIT for Node.js core plus bundled third-party licenses/notices",
+      "license_impact": "does-not-relicense-kane-fabric",
+      "pin": {
+        "observed_debian_candidate": "18.20.4+dfsg-1~deb12u2",
+        "status": "not-installed-not-finally-selected"
+      },
+      "reason": "Development-only execution of the MS3 browser Web-API compatibility probe; no npm packages",
+      "role": "development-test-runtime",
+      "vendoring_requirement": "required-if-retained"
+    },
+    {
+      "key": "esp-idf",
+      "license": "Apache-2.0 core plus exact-release third-party firmware/tooling licenses",
+      "license_impact": "does-not-relicense-kane-fabric-subject-to-selected-component-review",
+      "pin": {
+        "status": "future-release-not-yet-selected"
+      },
+      "reason": "Future ESP32-S3 firmware SDK/toolchain",
+      "role": "firmware-sdk-toolchain",
+      "vendoring_requirement": "required-before-firmware-release"
+    }
+  ]
+}
