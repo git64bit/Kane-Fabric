@@ -248,61 +248,91 @@ Exit gate: **PASSED**. A normal browser can open Kane County, selectively read a
 
 Completed ESP32-S3/ESP-IDF firmware remains a Milestone 5 responsibility.
 
-## Milestone 4 — Subscription contract
+## Milestone 4 — Subscriptions + geographic scoping/partition identity
 
-**Status: READY — MS4-001 NEXT**
+**Status: IN PROGRESS — MS4-001 NEXT**
 
-Purpose: define how applications add domain-specific geographic data without owning the substrate.
+Design baseline: `docs/MILESTONE_4_DESIGN.md`
 
-Initial subscriptions:
+Purpose: define how applications add independently versioned domain-specific geographic state without owning the public substrate, and define deterministic logical geographic partitions so substrate/subscription content can be addressed, composed, stored, replicated, and later served in focused areas smaller than the whole county.
 
-- Condo as historical proof/application extraction;
+Initial proof subscriptions:
+
+- Condo as the historical application extraction path;
 - Industry as the Mechanical Compiler integration path.
 
-Work includes:
+Partition scope classes should support at least:
 
-- subscription manifest contract;
-- geographic identity references;
-- independent generations;
-- composition with substrate;
-- application ownership boundaries;
-- filtering/visibility semantics.
+- whole jurisdiction;
+- municipality/incorporated place when an accepted boundary definition exists;
+- township or equivalent administrative subdivision when an accepted boundary definition exists;
+- explicit bounded region;
+- deterministic composite scopes where justified.
 
-Exit gate: one browser session can compose the Kane substrate with at least two independently defined logical subscriptions.
+Municipality and township are named convenience scopes, not the only partition mechanism and not semantic ownership boundaries. Roads, water, buildings, and application objects may cross them while retaining one logical identity.
+
+Core work:
+
+```text
+MS4-001  partition descriptor and deterministic identity contract
+MS4-002  administrative/bounded scope normalization and inclusion rules
+MS4-003  substrate partition selection manifest/reference model
+MS4-004  subscription manifest and independent generation contract
+MS4-005  geographic identity references and ownership/rights boundary
+MS4-006  Condo proof subscription
+MS4-007  Industry / Mechanical Compiler proof subscription
+MS4-008  browser composition of substrate + multiple scoped subscriptions
+MS4-009  multi-partition / cross-boundary composition proof
+MS4-010  edge-placement compatibility proof without ESP-IDF implementation
+MS4-011  release evidence and milestone closeout
+```
+
+Important boundary: the Milestone 3 county publication remains canonical. MS4 partitions select/reference relevant substrate chunks/ranges and subscription objects; they do not create separate authoritative town/township databases and do not change accepted geography.
+
+Physical edge placement is also outside the logical identity contract. One partition may live on one node, share a node, span nodes, or be replicated without changing partition/subscription identity.
+
+Exit gate: one browser session can consume the accepted Kane substrate and compose at least two independently versioned logical subscriptions through explicit geographic partitions, including deterministic cross-boundary behavior, without depending on which physical edge device stores the bytes.
 
 ## Milestone 5 — Edge serving contract
 
-Purpose: move compiled geographic distribution onto replaceable low-cost edge hardware.
+Purpose: map the logical substrate/partition/subscription contracts onto replaceable low-cost edge hardware.
 
-Initial reference implementation: ESP32-S3-class device.
+Initial reference implementation: ESP32-S3-class device using ESP-IDF.
+
+Milestone 5, not Milestone 4, owns the actual ESP-IDF implementation.
 
 Work includes:
 
-- HTTP serving contract;
-- storage layout;
+- select, pin, license-review, and vendor the ESP-IDF/toolchain if retained;
+- map logical partitions/subscriptions onto physical storage;
+- HTTP serving contract and byte-range behavior;
+- storage layout and capacity planning;
 - manifest/object verification;
-- package activation;
+- package/partition/subscription activation;
 - local browser access;
 - AP/STA deployment experiments;
 - optional upstream synchronization transport;
-- node replacement/recovery.
+- node replacement/recovery;
+- proof that focused partition placement makes useful service practical on constrained hardware.
 
-Exit gate: the browser can consume the last activated Kane substrate/subscription generation from edge hardware while the county Fabric CT is unavailable.
+Exit gate: a browser can consume the last activated substrate/partition/subscription generations from ESP32-S3 reference hardware while the county Fabric CT is unavailable, without changing the logical identities established in MS-3/MS-4.
 
 ## Milestone 6 — Multi-node distribution
 
-Purpose: prove that logical datasets are independent of individual edge devices.
+Purpose: prove that logical partitions and subscriptions are independent of individual edge devices and can be placed, sharded, or replicated across a set of nodes.
 
 Experiments:
 
-- multiple subscriptions on one node;
-- one subscription sharded across nodes;
+- several geographic partitions on one node;
+- one partition/subscription generation distributed across nodes;
+- overlapping administrative/bounded scopes;
 - replication of critical objects;
 - coordinator/proxy versus direct multi-origin browser fetching;
 - CORS/CSP implications;
-- node discovery and replacement.
+- node discovery and replacement;
+- loss of one node without changing logical partition/subscription identity.
 
-Exit gate: loss or replacement of one physical edge node does not force a change to logical subscription identity or browser application semantics.
+Exit gate: loss or replacement of one physical edge node does not force a change to logical partition identity, subscription identity, or browser application semantics.
 
 ## Milestone 7 — Generic county bootstrap
 
