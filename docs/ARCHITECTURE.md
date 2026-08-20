@@ -24,6 +24,8 @@ Responsibilities:
 - synchronize edge nodes;
 - provide explicit geographic contracts to applications such as Mechanical Compiler.
 
+The authoritative GeoPackage and its SQL schema are internal control-plane implementation details. External consumers do not use the database as the Kane Fabric API.
+
 ### Browser
 
 The browser is the primary user client.
@@ -38,7 +40,7 @@ Responsibilities:
 - compose substrate and one or more subscriptions;
 - perform user interaction defined by consuming applications.
 
-The browser should not need county-wide migration, harvesting, reconciliation, or compilation capabilities.
+The browser should not need county-wide migration, harvesting, reconciliation, compilation capabilities, or knowledge of the authoritative database schema.
 
 ### Edge nodes
 
@@ -53,9 +55,29 @@ Responsibilities may include:
 - hash/signature verification;
 - activation of a manifest generation;
 - caching, sharding, or replication;
-- optional upstream synchronization through HTTPS, WireGuard, or future transport.
+- optional upstream synchronization through HTTPS, WireGuard, federation, or future transport.
 
 ESP32-S3 is the minimum initial reference implementation, not a permanent platform dependency.
+
+### External consumption boundary
+
+The durable external interface is the compiled baseline geography publication, not the internal database or compiler API.
+
+The same immutable baseline must be consumable by:
+
+- web applications;
+- microcontrollers and constrained edge devices;
+- caches and mirrors;
+- independent applications;
+- federated peers and synchronization protocols.
+
+Consumers use explicit jurisdiction identity, publication/component format versions, accepted-release descriptors, hashes, lengths, indices, chunks, and manifest/content identities. They must not depend on SQLite table names, migration numbers, CT paths, Python module names, or other control-plane internals.
+
+Transport may change without changing the geographic contract. HTTPS, byte-range HTTP, local filesystem/object storage, removable media, edge-node serving, and federated replication may all carry the same publication bytes and identities.
+
+Federation wraps discovery, availability, synchronization, or replication around the baseline publication. It does not define a second geographic schema and does not require peers to share Kane Fabric's internal database implementation.
+
+The normative external-consumption contract is `docs/BASELINE_GEOGRAPHY_DISTRIBUTION.md`. The current substrate wire format is `docs/SUBSTRATE_FORMAT_V1.md`.
 
 ## 2. Geographic composition
 
@@ -105,11 +127,22 @@ For Mechanical Compiler, this means:
 - Mechanical Compiler references Kane Fabric identities through an explicit interface;
 - neither database is silently treated as a writable extension of the other.
 
+The application consumes published Kane Fabric geographic contracts. It does not become coupled to the control-plane GeoPackage schema merely because it references Fabric geography.
+
 ## 4. Package direction
 
-The architecture should evolve toward immutable, verifiable package generations.
+The architecture evolves toward immutable, verifiable package generations.
 
-A likely model is content-addressed storage:
+The Milestone 3 substrate v1 contract freezes the first concrete baseline publication shape:
+
+```text
+county-overview.json
+roads-lod.kfs
+water-lod.kfs
+substrate-manifest.json
+```
+
+Content-addressed object storage may be used underneath or around those publication identities, for example:
 
 ```text
 objects/<prefix>/<sha256>
@@ -126,19 +159,24 @@ A manifest can identify:
 - dependencies;
 - signatures or trust metadata.
 
-This model is a design direction, not yet a frozen wire format.
+Object-storage layout is a transport/storage choice. It must preserve the publication bytes and identities defined by the current wire contract.
 
 ## 5. Transport boundary
 
 Local browser operation must not depend on an upstream control-plane connection.
 
-Possible transports between the county Fabric node and edge nodes include:
+Possible transports between county Fabric nodes, edge nodes, mirrors, federated peers, and consumers include:
 
 - HTTPS;
+- byte-range HTTP;
 - WireGuard-carried services;
-- future transports satisfying the same synchronization contract.
+- filesystem or object synchronization;
+- federated discovery/replication protocols;
+- future transports satisfying the same publication contract.
 
 WireGuard is optional infrastructure, not a browser requirement.
+
+No transport is allowed to silently change the meaning or content identity of the baseline geography it carries.
 
 ## 6. Failure model
 
@@ -149,7 +187,9 @@ The design should preserve useful operation through common failures:
 - interrupted promotion -> prior accepted database remains recoverable;
 - Fabric node temporarily unavailable -> edge nodes may continue serving the last activated generation;
 - one edge node lost -> subscriptions may be restored, relocated, or replicated without changing logical identities;
-- browser platform changes -> standards-based HTTP/browser contract limits client-specific rebuilding.
+- one transport unavailable -> another transport may carry the same immutable publication;
+- browser platform changes -> standards-based HTTP/browser contract limits client-specific rebuilding;
+- federated peer implementation differs internally -> interoperability remains possible at the publication boundary.
 
 ## 7. Non-goals of the initial architecture
 
@@ -161,6 +201,8 @@ The initial architecture does not require:
 - a native Windows application;
 - PostgreSQL/PostGIS solely for architectural fashion;
 - Docker as a prerequisite;
+- exposing the authoritative GeoPackage schema as an external API;
+- requiring federated peers to run Kane Fabric's internal database implementation;
 - a revival of the old Kane Condo/County Field Map grid or VOID workflow.
 
 Any such dependency must be justified by a concrete later requirement.
