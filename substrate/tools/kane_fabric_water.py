@@ -40,6 +40,10 @@ CONTRACT = _load_module(
     "_kane_fabric_water_contract",
     Path(__file__).resolve().with_name("kane_fabric_substrate.py"),
 )
+COMPRESSION = _load_module(
+    "_kane_fabric_water_compression",
+    Path(__file__).resolve().with_name("kane_fabric_compression.py"),
+)
 FABRIC_READ = _load_module(
     "_kane_fabric_water_read",
     ROOT / "database" / "tools" / "kane_fabric_read.py",
@@ -477,6 +481,7 @@ def _expected_policy():
 
 
 def build_component(database: Path, output: Path):
+    COMPRESSION.require_accepted_zlib()
     database = database.resolve()
     output = output.resolve()
     if database == output:
