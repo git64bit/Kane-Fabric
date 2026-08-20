@@ -13,6 +13,7 @@ import tempfile
 import unittest
 import zlib
 from pathlib import Path
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[2]
 DATABASE_TOOLS = ROOT / "database" / "tools"
@@ -238,6 +239,19 @@ class WaterComponentTests(unittest.TestCase):
         self.assertTrue(info["valid"])
         self.assertEqual(7, info["feature_count"])
         self.assertEqual(before, sha256_file(self.database))
+
+    def test_zlib_mismatch_fails_before_loading_or_output(self) -> None:
+        with mock.patch.object(
+            WATER.COMPRESSION,
+            "require_accepted_zlib",
+            side_effect=RuntimeError("simulated zlib mismatch"),
+        ) as guard, mock.patch.object(WATER, "load_accepted_water") as loader:
+            with self.assertRaisesRegex(RuntimeError, "simulated zlib mismatch"):
+                WATER.build_component(self.database, self.output)
+
+        guard.assert_called_once_with()
+        loader.assert_not_called()
+        self.assertFalse(self.output.exists())
 
     def test_membership_matches_frozen_fox_creek_policy(self) -> None:
         WATER.build_component(self.database, self.output)
