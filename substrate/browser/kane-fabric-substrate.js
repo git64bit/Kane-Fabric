@@ -1,14 +1,19 @@
 // Kane Fabric v1 browser substrate loader.
 //
-// This module deliberately separates metadata discovery from payload reads:
-// manifest/overview use ordinary GETs, while .kfs components use exact HTTP
-// byte ranges for the fixed prefix, canonical index, and selected chunks.
+// Small JSON files use ordinary GET. Flat .kfs components use exact byte-range
+// requests for the fixed prefix, canonical index, and selected compressed
+// chunks. The loader never needs whole .kfs residency in memory.
 
 export const VERSION = 1;
 export const SRS_ID = 4326;
 export const MANIFEST_PATH = "substrate-manifest.json";
 
-const COMPONENTS = {
+const ROLE_ORDER = ["county_overview", "roads", "water"];
+const ROLE_CONTRACT = {
+  county_overview: {
+    path: "county-overview.json",
+    format: "kane-fabric-substrate-overview",
+  },
   roads: {
     path: "roads-lod.kfs",
     format: "kane-fabric-substrate-roads",
@@ -20,10 +25,7 @@ const COMPONENTS = {
     magic: "KFSW001\n",
   },
 };
-
 const MANIFEST_FORMAT = "kane-fabric-substrate-manifest";
-const OVERVIEW_FORMAT = "kane-fabric-substrate-overview";
-const ROLE_ORDER = ["county_overview", "roads", "water"];
 
 export class SubstrateError extends Error {
   constructor(message) {
@@ -53,63 +55,179 @@ function requireSha256(value, label) {
   return value;
 }
 
-function canonicalString(value) {
-  if (value === null) return "null";
-  if (typeof value === "string") return JSON.stringify(value);
-  if (typeof value === "boolean") return value ? "true" : "false";
-  if (typeof value === "number") {
-    if (!Number.isFinite(value)) {
-      throw new SubstrateError("Canonical JSON cannot contain non-finite numbers");
+function codePointCompare(first, second) {
+  const a = Array.from(first, (value) => value.codePointAt(0));
+  const b = Array.from(second, (value) => value.codePointAt(0));
+  const count = Math.min(a.length, b.length);
+  for (let index = 0; index < count; index += 1) {
+    if (a[index] !== b[index]) return a[index] - b[index];
+  }
+  return a.length - b.length;
+}
+
+class CanonicalJsonParser {
+  constructor(text, label) {
+    this.text = text;
+    this.label = label;
+    this.position = 0;
+  }
+
+  fail(message) {
+    throw new SubstrateError(`${this.label} is not canonical JSON: ${message}`);
+  }
+
+  parse() {
+    const canonical = this.value();
+    if (this.position !== this.text.length) this.fail("trailing bytes");
+    if (canonical !== this.text) this.fail("noncanonical structure or key ordering");
+  }
+
+  value() {
+    const char = this.text[this.position];
+    if (char === "{") return this.object();
+    if (char === "[") return this.array();
+    if (char === '"') return this.string().raw;
+    if (char === "t" && this.text.startsWith("true", this.position)) {
+      this.position += 4;
+      return "true";
     }
-    return JSON.stringify(value);
+    if (char === "f" && this.text.startsWith("false", this.position)) {
+      this.position += 5;
+      return "false";
+    }
+    if (char === "n" && this.text.startsWith("null", this.position)) {
+      this.position += 4;
+      return "null";
+    }
+    return this.number();
   }
-  if (Array.isArray(value)) {
-    return `[${value.map(canonicalString).join(",")}]`;
+
+  string() {
+    const start = this.position;
+    this.position += 1;
+    let escaped = false;
+    while (this.position < this.text.length) {
+      const char = this.text[this.position];
+      this.position += 1;
+      if (escaped) {
+        escaped = false;
+        continue;
+      }
+      if (char === "\\") {
+        escaped = true;
+        continue;
+      }
+      if (char === '"') {
+        const raw = this.text.slice(start, this.position);
+        let value;
+        try {
+          value = JSON.parse(raw);
+        } catch (error) {
+          this.fail(`invalid string token: ${error.message}`);
+        }
+        if (JSON.stringify(value) !== raw) {
+          this.fail("noncanonical string escape");
+        }
+        return { raw, value };
+      }
+      if (char.charCodeAt(0) < 0x20) this.fail("unescaped control character");
+    }
+    this.fail("unterminated string");
   }
-  if (typeof value === "object") {
-    const keys = Object.keys(value).sort();
-    return `{${keys
-      .map((key) => `${JSON.stringify(key)}:${canonicalString(value[key])}`)
-      .join(",")}}`;
+
+  number() {
+    const rest = this.text.slice(this.position);
+    const match = /^-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?/.exec(rest);
+    if (!match) this.fail(`unexpected token at byte ${this.position}`);
+    const raw = match[0];
+    this.position += raw.length;
+    const value = Number(raw);
+    if (!Number.isFinite(value)) this.fail("non-finite number");
+    return raw;
   }
-  throw new SubstrateError(`Canonical JSON cannot contain ${typeof value}`);
+
+  array() {
+    this.position += 1;
+    const values = [];
+    if (this.text[this.position] === "]") {
+      this.position += 1;
+      return "[]";
+    }
+    while (true) {
+      values.push(this.value());
+      const char = this.text[this.position];
+      if (char === "]") {
+        this.position += 1;
+        return `[${values.join(",")}]`;
+      }
+      if (char !== ",") this.fail("array separator is invalid");
+      this.position += 1;
+    }
+  }
+
+  object() {
+    this.position += 1;
+    const entries = [];
+    const seen = new Set();
+    if (this.text[this.position] === "}") {
+      this.position += 1;
+      return "{}";
+    }
+    while (true) {
+      if (this.text[this.position] !== '"') this.fail("object key is not a string");
+      const key = this.string();
+      if (seen.has(key.value)) this.fail("duplicate object key");
+      seen.add(key.value);
+      if (this.text[this.position] !== ":") this.fail("object key/value separator is invalid");
+      this.position += 1;
+      entries.push({ key: key.value, keyRaw: key.raw, value: this.value() });
+      const char = this.text[this.position];
+      if (char === "}") {
+        this.position += 1;
+        const ordered = [...entries].sort((a, b) => codePointCompare(a.key, b.key));
+        return `{${ordered.map((entry) => `${entry.keyRaw}:${entry.value}`).join(",")}}`;
+      }
+      if (char !== ",") this.fail("object separator is invalid");
+      this.position += 1;
+    }
+  }
 }
 
-export function canonicalJsonBytes(value) {
-  return new TextEncoder().encode(canonicalString(value));
-}
-
-function equalBytes(first, second) {
-  if (first.byteLength !== second.byteLength) return false;
-  for (let index = 0; index < first.byteLength; index += 1) {
-    if (first[index] !== second[index]) return false;
-  }
-  return true;
-}
-
-export async function sha256Hex(bytes) {
-  const input = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
-  const digest = new Uint8Array(await crypto.subtle.digest("SHA-256", input));
-  return Array.from(digest, (value) => value.toString(16).padStart(2, "0")).join("");
-}
-
-function parseCanonicalJson(bytes, label) {
+function decodeCanonicalJson(bytes, label) {
   let text;
   try {
     text = new TextDecoder("utf-8", { fatal: true }).decode(bytes);
   } catch (error) {
     throw new SubstrateError(`${label} is not valid UTF-8: ${error.message}`);
   }
-  let value;
+  new CanonicalJsonParser(text, label).parse();
   try {
-    value = JSON.parse(text);
+    return JSON.parse(text);
   } catch (error) {
     throw new SubstrateError(`${label} is not valid JSON: ${error.message}`);
   }
-  if (!equalBytes(bytes, canonicalJsonBytes(value))) {
-    throw new SubstrateError(`${label} is not canonical JSON`);
+}
+
+function stableSemanticString(value) {
+  if (value === null || typeof value !== "object") return JSON.stringify(value);
+  if (Array.isArray(value)) return `[${value.map(stableSemanticString).join(",")}]`;
+  return `{${Object.keys(value)
+    .sort(codePointCompare)
+    .map((key) => `${JSON.stringify(key)}:${stableSemanticString(value[key])}`)
+    .join(",")}}`;
+}
+
+function sameSemanticJson(first, second) {
+  return stableSemanticString(first) === stableSemanticString(second);
+}
+
+export async function sha256Hex(bytes) {
+  const input = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
+  if (!globalThis.crypto?.subtle) {
+    throw new SubstrateError("Web Crypto SHA-256 is unavailable");
   }
-  return value;
+  const digest = new Uint8Array(await globalThis.crypto.subtle.digest("SHA-256", input));
+  return Array.from(digest, (value) => value.toString(16).padStart(2, "0")).join("");
 }
 
 function baseDirectoryUrl(baseUrl) {
@@ -131,14 +249,8 @@ async function fetchWhole(url, fetchImpl) {
 
 function parseContentRange(value) {
   const match = /^bytes (\d+)-(\d+)\/(\d+)$/.exec(value || "");
-  if (!match) {
-    throw new SubstrateError("Range response has invalid Content-Range");
-  }
-  return {
-    start: Number(match[1]),
-    end: Number(match[2]),
-    total: Number(match[3]),
-  };
+  if (!match) throw new SubstrateError("Range response has invalid Content-Range");
+  return { start: Number(match[1]), end: Number(match[2]), total: Number(match[3]) };
 }
 
 export async function fetchExactRange(
@@ -150,32 +262,27 @@ export async function fetchExactRange(
   requireInteger(start, "range start");
   requireInteger(end, "range end");
   if (end < start) throw new SubstrateError("range end precedes range start");
-
-  const response = await fetchImpl(url, {
-    headers: { Range: `bytes=${start}-${end}` },
-  });
+  const response = await fetchImpl(url, { headers: { Range: `bytes=${start}-${end}` } });
   if (response.status !== 206) {
     throw new SubstrateError(`Range GET ${url} returned HTTP ${response.status}; expected 206`);
   }
-  const contentRange = parseContentRange(response.headers.get("Content-Range"));
-  if (contentRange.start !== start || contentRange.end !== end) {
+  const range = parseContentRange(response.headers.get("Content-Range"));
+  if (range.start !== start || range.end !== end) {
     throw new SubstrateError("Range response does not match requested byte interval");
   }
-  if (expectedTotal !== null && contentRange.total !== expectedTotal) {
-    throw new SubstrateError(
-      `Range response total is ${contentRange.total}; expected ${expectedTotal}`,
-    );
+  if (expectedTotal !== null && range.total !== expectedTotal) {
+    throw new SubstrateError(`Range response total is ${range.total}; expected ${expectedTotal}`);
   }
   const expectedLength = end - start + 1;
-  const declaredLength = response.headers.get("Content-Length");
-  if (declaredLength !== null && Number(declaredLength) !== expectedLength) {
+  const headerLength = response.headers.get("Content-Length");
+  if (headerLength !== null && Number(headerLength) !== expectedLength) {
     throw new SubstrateError("Range response Content-Length is inconsistent");
   }
   const bytes = new Uint8Array(await response.arrayBuffer());
   if (bytes.byteLength !== expectedLength) {
     throw new SubstrateError("Range response body length is inconsistent");
   }
-  return { bytes, total: contentRange.total };
+  return { bytes, total: range.total };
 }
 
 function validateJurisdiction(value) {
@@ -188,11 +295,7 @@ function validateJurisdiction(value) {
   return item;
 }
 
-function sameJson(first, second) {
-  return canonicalString(first) === canonicalString(second);
-}
-
-function validateRelease(value) {
+function releaseIdentity(value) {
   const item = requireObject(value, "accepted release");
   if (typeof item.dataset_key !== "string" || !item.dataset_key) {
     throw new SubstrateError("accepted release dataset_key is invalid");
@@ -202,17 +305,18 @@ function validateRelease(value) {
   }
   requireSha256(item.content_sha256, "accepted release content_sha256");
   requireInteger(item.feature_count, "accepted release feature_count");
-  return item;
+  return {
+    content_sha256: item.content_sha256,
+    dataset_key: item.dataset_key,
+    feature_count: item.feature_count,
+    release_key: item.release_key,
+  };
 }
 
 function releaseByDataset(manifest, datasetKey) {
-  const matches = manifest.accepted_releases.filter(
-    (item) => item.dataset_key === datasetKey,
-  );
+  const matches = manifest.accepted_releases.filter((item) => item.dataset_key === datasetKey);
   if (matches.length !== 1) {
-    throw new SubstrateError(
-      `manifest accepted release count for ${datasetKey} is ${matches.length}; expected 1`,
-    );
+    throw new SubstrateError(`manifest accepted release count for ${datasetKey} is ${matches.length}; expected 1`);
   }
   return matches[0];
 }
@@ -227,32 +331,31 @@ function descriptorByRole(manifest, role) {
 
 function validateManifest(document) {
   const manifest = requireObject(document, "substrate manifest");
-  if (manifest.format !== MANIFEST_FORMAT || manifest.version !== VERSION) {
-    throw new SubstrateError("substrate manifest format/version is unsupported");
-  }
-  if (manifest.srs_id !== SRS_ID) {
-    throw new SubstrateError("substrate manifest SRS is unsupported");
+  if (manifest.format !== MANIFEST_FORMAT || manifest.version !== VERSION || manifest.srs_id !== SRS_ID) {
+    throw new SubstrateError("substrate manifest format/version/SRS is unsupported");
   }
   validateJurisdiction(manifest.jurisdiction);
   requireSha256(manifest.substrate_content_sha256, "substrate_content_sha256");
   if (!Array.isArray(manifest.accepted_releases)) {
     throw new SubstrateError("substrate manifest accepted_releases must be an array");
   }
-  manifest.accepted_releases.forEach(validateRelease);
+  manifest.accepted_releases = manifest.accepted_releases.map(releaseIdentity);
   if (!Array.isArray(manifest.components)) {
     throw new SubstrateError("substrate manifest components must be an array");
   }
   const roles = manifest.components.map((item) => item.role);
-  if (!sameJson(roles, ROLE_ORDER)) {
+  if (!sameSemanticJson(roles, ROLE_ORDER)) {
     throw new SubstrateError("substrate manifest component role order is invalid");
   }
   for (const descriptor of manifest.components) {
     requireObject(descriptor, "component descriptor");
+    const contract = ROLE_CONTRACT[descriptor.role];
+    if (!contract || descriptor.path !== contract.path || descriptor.format !== contract.format) {
+      throw new SubstrateError(`component descriptor for ${descriptor.role} violates v1 role contract`);
+    }
+    if (descriptor.version !== VERSION) throw new SubstrateError("component version is unsupported");
     requireInteger(descriptor.byte_length, "component byte_length", 1);
     requireSha256(descriptor.sha256, "component sha256");
-    if (descriptor.version !== VERSION) {
-      throw new SubstrateError("component version is unsupported");
-    }
   }
   return manifest;
 }
@@ -260,99 +363,69 @@ function validateManifest(document) {
 export async function loadManifest(baseUrl, { fetchImpl = fetch } = {}) {
   const url = componentUrl(baseUrl, MANIFEST_PATH);
   const bytes = await fetchWhole(url, fetchImpl);
-  const document = parseCanonicalJson(bytes, "substrate manifest");
-  return { bytes, document: validateManifest(document), url };
+  return { bytes, document: validateManifest(decodeCanonicalJson(bytes, "substrate manifest")), url };
 }
 
 export async function loadOverview(baseUrl, manifest, { fetchImpl = fetch } = {}) {
   const descriptor = descriptorByRole(manifest, "county_overview");
   const url = componentUrl(baseUrl, descriptor.path);
   const bytes = await fetchWhole(url, fetchImpl);
-  if (bytes.byteLength !== descriptor.byte_length) {
-    throw new SubstrateError("county overview byte length disagrees with manifest");
+  if (bytes.byteLength !== descriptor.byte_length || (await sha256Hex(bytes)) !== descriptor.sha256) {
+    throw new SubstrateError("county overview bytes disagree with manifest");
   }
-  if ((await sha256Hex(bytes)) !== descriptor.sha256) {
-    throw new SubstrateError("county overview SHA-256 disagrees with manifest");
+  const document = requireObject(decodeCanonicalJson(bytes, "county overview"), "county overview");
+  if (document.format !== ROLE_CONTRACT.county_overview.format || document.version !== VERSION || document.srs_id !== SRS_ID) {
+    throw new SubstrateError("county overview format/version/SRS is unsupported");
   }
-  const document = requireObject(
-    parseCanonicalJson(bytes, "county overview"),
-    "county overview",
-  );
-  if (document.format !== OVERVIEW_FORMAT || document.version !== VERSION) {
-    throw new SubstrateError("county overview format/version is unsupported");
-  }
-  if (document.srs_id !== SRS_ID) {
-    throw new SubstrateError("county overview SRS is unsupported");
-  }
-  if (!sameJson(document.jurisdiction, manifest.jurisdiction)) {
+  if (!sameSemanticJson(document.jurisdiction, manifest.jurisdiction)) {
     throw new SubstrateError("county overview jurisdiction disagrees with manifest");
   }
-  const source = validateRelease(document.source);
-  if (!sameJson(source, releaseByDataset(manifest, "county-boundary"))) {
+  const sourceRelease = releaseIdentity(document.source);
+  if (!sameSemanticJson(sourceRelease, releaseByDataset(manifest, "county-boundary"))) {
     throw new SubstrateError("county overview release lineage disagrees with manifest");
   }
   return { bytes, document, url };
 }
 
 function validateBounds(value, label) {
-  if (!Array.isArray(value) || value.length !== 4) {
-    throw new SubstrateError(`${label} bounds must contain four numbers`);
+  if (!Array.isArray(value) || value.length !== 4 || !value.every((item) => typeof item === "number" && Number.isFinite(item))) {
+    throw new SubstrateError(`${label} bounds must contain four finite numbers`);
   }
-  if (!value.every((item) => typeof item === "number" && Number.isFinite(item))) {
-    throw new SubstrateError(`${label} bounds contain a non-finite number`);
-  }
-  if (value[0] > value[2] || value[1] > value[3]) {
-    throw new SubstrateError(`${label} bounds are invalid`);
-  }
+  if (value[0] > value[2] || value[1] > value[3]) throw new SubstrateError(`${label} bounds are invalid`);
   return value;
 }
 
-function validateFlatIndex(index, manifest, role, descriptor) {
-  const spec = COMPONENTS[role];
+function validateFlatIndex(index, manifest, role) {
+  const contract = ROLE_CONTRACT[role];
   const document = requireObject(index, `${role} index`);
-  if (document.format !== spec.format || document.version !== VERSION) {
-    throw new SubstrateError(`${role} index format/version is unsupported`);
+  if (document.format !== contract.format || document.version !== VERSION || document.srs_id !== SRS_ID || document.compression !== "zlib-deflate") {
+    throw new SubstrateError(`${role} index format/version/SRS/compression is unsupported`);
   }
-  if (document.srs_id !== SRS_ID || document.compression !== "zlib-deflate") {
-    throw new SubstrateError(`${role} index SRS/compression is unsupported`);
-  }
-  if (!sameJson(document.jurisdiction, manifest.jurisdiction)) {
+  if (!sameSemanticJson(document.jurisdiction, manifest.jurisdiction)) {
     throw new SubstrateError(`${role} jurisdiction disagrees with manifest`);
   }
-
   if (role === "roads") {
-    const source = validateRelease(document.source);
-    if (!sameJson(source, releaseByDataset(manifest, "roads"))) {
+    if (!sameSemanticJson(releaseIdentity(document.source), releaseByDataset(manifest, "roads"))) {
       throw new SubstrateError("road release lineage disagrees with manifest");
     }
   } else {
     if (!Array.isArray(document.sources) || document.sources.length !== 2) {
       throw new SubstrateError("water index must contain exactly two accepted sources");
     }
-    const sources = document.sources.map(validateRelease);
-    const expected = [
-      releaseByDataset(manifest, "water-creeks"),
-      releaseByDataset(manifest, "water-fox-river"),
-    ];
-    if (!sameJson(sources, expected)) {
-      throw new SubstrateError("water release lineage disagrees with manifest");
-    }
+    const actual = document.sources.map(releaseIdentity);
+    const expected = [releaseByDataset(manifest, "water-creeks"), releaseByDataset(manifest, "water-fox-river")];
+    if (!sameSemanticJson(actual, expected)) throw new SubstrateError("water release lineage disagrees with manifest");
   }
-
   if (!Array.isArray(document.levels) || document.levels.length === 0) {
     throw new SubstrateError(`${role} index has no levels`);
   }
-
   let expectedOffset = 0;
   for (const level of document.levels) {
     requireObject(level, `${role} level`);
-    if (typeof level.key !== "string" || !level.key) {
-      throw new SubstrateError(`${role} level key is invalid`);
+    if (typeof level.key !== "string" || !level.key || !Array.isArray(level.chunks) || level.chunks.length === 0) {
+      throw new SubstrateError(`${role} level metadata is invalid`);
     }
-    if (!Array.isArray(level.chunks) || level.chunks.length === 0) {
-      throw new SubstrateError(`${role} level ${level.key} has no chunks`);
-    }
-    let observedFeatures = 0;
+    let featureCount = 0;
     for (const chunk of level.chunks) {
       requireObject(chunk, `${role} chunk`);
       validateBounds(chunk.bounds, `${role} chunk`);
@@ -362,155 +435,94 @@ function validateFlatIndex(index, manifest, role, descriptor) {
       requireInteger(chunk.uncompressed_length, `${role} chunk uncompressed_length`, 1);
       requireSha256(chunk.payload_sha256, `${role} chunk payload_sha256`);
       requireSha256(chunk.records_sha256, `${role} chunk records_sha256`);
-      if (chunk.offset !== expectedOffset) {
-        throw new SubstrateError(`${role} chunk payload offsets are not contiguous`);
-      }
+      if (chunk.offset !== expectedOffset) throw new SubstrateError(`${role} chunk payload offsets are not contiguous`);
       expectedOffset += chunk.length;
-      observedFeatures += chunk.feature_count;
+      featureCount += chunk.feature_count;
     }
-    if (observedFeatures !== level.feature_count) {
+    if (featureCount !== level.feature_count) {
       throw new SubstrateError(`${role} level ${level.key} feature_count is inconsistent`);
     }
-  }
-  if (descriptor.byte_length <= 16 + expectedOffset) {
-    // An index must exist between the fixed prefix and the payload area.
-    throw new SubstrateError(`${role} component byte length is inconsistent`);
   }
   return { document, payloadLength: expectedOffset };
 }
 
-function magicText(bytes) {
-  return new TextDecoder("ascii", { fatal: true }).decode(bytes);
-}
-
-export async function openFlatComponent(
-  baseUrl,
-  manifest,
-  role,
-  { fetchImpl = fetch } = {},
-) {
-  const spec = COMPONENTS[role];
-  if (!spec) throw new SubstrateError(`unsupported flat component role: ${role}`);
+export async function openFlatComponent(baseUrl, manifest, role, { fetchImpl = fetch } = {}) {
+  const contract = ROLE_CONTRACT[role];
+  if (!contract?.magic) throw new SubstrateError(`unsupported flat component role: ${role}`);
   const descriptor = descriptorByRole(manifest, role);
-  if (descriptor.path !== spec.path || descriptor.format !== spec.format) {
-    throw new SubstrateError(`${role} manifest descriptor does not match v1 role contract`);
-  }
   const url = componentUrl(baseUrl, descriptor.path);
-
-  const prefixResult = await fetchExactRange(url, 0, 15, {
-    expectedTotal: descriptor.byte_length,
-    fetchImpl,
-  });
-  const prefix = prefixResult.bytes;
-  if (magicText(prefix.slice(0, 8)) !== spec.magic) {
-    throw new SubstrateError(`${role} component magic/version is invalid`);
-  }
+  const prefix = (await fetchExactRange(url, 0, 15, { expectedTotal: descriptor.byte_length, fetchImpl })).bytes;
+  const magic = new TextDecoder("ascii", { fatal: true }).decode(prefix.slice(0, 8));
+  if (magic !== contract.magic) throw new SubstrateError(`${role} component magic/version is invalid`);
   const view = new DataView(prefix.buffer, prefix.byteOffset, prefix.byteLength);
-  const indexLengthBig = view.getBigUint64(8, false);
-  if (indexLengthBig > BigInt(Number.MAX_SAFE_INTEGER)) {
-    throw new SubstrateError(`${role} index length exceeds browser-safe integer range`);
-  }
-  const indexLength = Number(indexLengthBig);
+  const lengthBig = view.getBigUint64(8, false);
+  if (lengthBig > BigInt(Number.MAX_SAFE_INTEGER)) throw new SubstrateError(`${role} index is too large`);
+  const indexLength = Number(lengthBig);
   if (indexLength <= 0 || 16 + indexLength >= descriptor.byte_length) {
     throw new SubstrateError(`${role} index length is invalid`);
   }
-
-  const indexResult = await fetchExactRange(url, 16, 15 + indexLength, {
-    expectedTotal: descriptor.byte_length,
-    fetchImpl,
-  });
-  const index = parseCanonicalJson(indexResult.bytes, `${role} index`);
-  const validated = validateFlatIndex(index, manifest, role, descriptor);
+  const indexBytes = (await fetchExactRange(url, 16, 15 + indexLength, { expectedTotal: descriptor.byte_length, fetchImpl })).bytes;
+  const validated = validateFlatIndex(decodeCanonicalJson(indexBytes, `${role} index`), manifest, role);
   const payloadStart = 16 + indexLength;
   if (payloadStart + validated.payloadLength !== descriptor.byte_length) {
     throw new SubstrateError(`${role} indexed payload does not cover the component exactly`);
   }
-
-  return {
-    descriptor,
-    index: validated.document,
-    payloadStart,
-    role,
-    url,
-  };
+  return { descriptor, index: validated.document, payloadStart, role, url };
 }
 
 function intersects(first, second) {
-  return !(
-    first[2] < second[0] ||
-    first[0] > second[2] ||
-    first[3] < second[1] ||
-    first[1] > second[3]
-  );
+  return !(first[2] < second[0] || first[0] > second[2] || first[3] < second[1] || first[1] > second[3]);
 }
 
 export function chunksForLevel(component, levelKey, bounds = null) {
   const level = component.index.levels.find((item) => item.key === levelKey);
-  if (!level) {
-    throw new SubstrateError(`${component.role} component has no ${levelKey} level`);
-  }
+  if (!level) throw new SubstrateError(`${component.role} component has no ${levelKey} level`);
   if (bounds === null) return level.chunks;
   validateBounds(bounds, "viewport");
   return level.chunks.filter((chunk) => intersects(chunk.bounds, bounds));
 }
 
 async function decompressDeflate(bytes) {
-  if (typeof DecompressionStream !== "function") {
-    throw new SubstrateError("Browser does not provide DecompressionStream");
+  if (typeof globalThis.DecompressionStream !== "function") {
+    throw new SubstrateError("DecompressionStream is unavailable");
   }
-  const stream = new Blob([bytes])
-    .stream()
-    .pipeThrough(new DecompressionStream("deflate"));
+  const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream("deflate"));
   return new Uint8Array(await new Response(stream).arrayBuffer());
 }
 
 export async function readChunk(component, chunk, { fetchImpl = fetch } = {}) {
   const start = component.payloadStart + chunk.offset;
   const end = start + chunk.length - 1;
-  const result = await fetchExactRange(component.url, start, end, {
+  const compressed = (await fetchExactRange(component.url, start, end, {
     expectedTotal: component.descriptor.byte_length,
     fetchImpl,
-  });
-  if ((await sha256Hex(result.bytes)) !== chunk.payload_sha256) {
+  })).bytes;
+  if ((await sha256Hex(compressed)) !== chunk.payload_sha256) {
     throw new SubstrateError(`${component.role} compressed chunk SHA-256 mismatch`);
   }
-  const recordsBytes = await decompressDeflate(result.bytes);
-  if (recordsBytes.byteLength !== chunk.uncompressed_length) {
-    throw new SubstrateError(`${component.role} uncompressed chunk length mismatch`);
+  const recordsBytes = await decompressDeflate(compressed);
+  if (recordsBytes.byteLength !== chunk.uncompressed_length || (await sha256Hex(recordsBytes)) !== chunk.records_sha256) {
+    throw new SubstrateError(`${component.role} uncompressed chunk identity mismatch`);
   }
-  if ((await sha256Hex(recordsBytes)) !== chunk.records_sha256) {
-    throw new SubstrateError(`${component.role} uncompressed chunk SHA-256 mismatch`);
-  }
-  const document = requireObject(
-    parseCanonicalJson(recordsBytes, `${component.role} chunk records`),
-    `${component.role} chunk records`,
-  );
+  const document = requireObject(decodeCanonicalJson(recordsBytes, `${component.role} chunk records`), `${component.role} chunk records`);
   if (!Array.isArray(document.features) || document.features.length !== chunk.feature_count) {
     throw new SubstrateError(`${component.role} chunk feature_count is inconsistent`);
   }
   return document.features;
 }
 
-export async function* streamLevelChunks(
-  component,
-  levelKey,
-  { bounds = null, fetchImpl = fetch } = {},
-) {
-  const chunks = chunksForLevel(component, levelKey, bounds);
-  for (const chunk of chunks) {
-    const features = await readChunk(component, chunk, { fetchImpl });
-    yield { chunk, features };
+export async function* streamLevelChunks(component, levelKey, { bounds = null, fetchImpl = fetch } = {}) {
+  for (const chunk of chunksForLevel(component, levelKey, bounds)) {
+    yield { chunk, features: await readChunk(component, chunk, { fetchImpl }) };
   }
 }
 
 export async function loadSubstrateMetadata(baseUrl, { fetchImpl = fetch } = {}) {
-  const manifestResult = await loadManifest(baseUrl, { fetchImpl });
-  const overviewResult = await loadOverview(baseUrl, manifestResult.document, {
-    fetchImpl,
-  });
+  const manifest = await loadManifest(baseUrl, { fetchImpl });
+  const overview = await loadOverview(baseUrl, manifest.document, { fetchImpl });
   return {
     baseUrl: baseDirectoryUrl(baseUrl),
-    manifest: manifestResult.document,
-    overview: overviewResult.document,
+    manifest: manifest.document,
+    overview: overview.document,
   };
 }
