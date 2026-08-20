@@ -75,6 +75,8 @@
       "license": "Zlib",
       "license_impact": "does-not-relicense-kane-fabric",
       "pin": {
+        "expected_compile_version": "1.2.13",
+        "expected_runtime_version": "1.2.13",
         "observed_compile_version": "1.2.13",
         "observed_debian_package": "zlib1g 1:1.2.13.dfsg-1",
         "observed_environment": "CT102 Debian 12 via Python zlib; module is built-in and /usr/bin/python3 links libz.so.1",
