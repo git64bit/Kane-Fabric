@@ -12,11 +12,15 @@ Kane Fabric grew out of Kane Condo 0.4. Kane Condo proved the county-scale brows
 
 A clean Kane Fabric CT independently reconstructed the Kane County pipeline from declared inputs through candidate replay, exact deterministic comparison, and project-building reconciliation. The release evidence is recorded in `docs/MILESTONE_1_RELEASE.md`.
 
-The promotion/rollback replay originally planned as Milestone 1 Batch 009 was not executed before that release. It is intentionally carried forward as **Milestone 2 Entry Gate 001** rather than being treated as completed.
+**Milestone 2 — Extract Kane Fabric Geographic Core: RELEASED (2026-08-20).**
 
-**Milestone 2 — Extract Kane Fabric Geographic Core: READY TO START.**
+Kane Fabric now owns the geographic database migrations and implementation, source contracts, seed/bootstrap import, provenance, storage, durable geographic building identity, candidate engines, deterministic comparison, reconciliation, and atomic promotion/rollback. The geographic core operates without Kane Condo classification tables and without the frozen Kane Condo checkout as a runtime dependency.
 
-The standalone handoff for the next Assistant is `docs/MILESTONE_2_HANDOFF.md`.
+The decisive historical closeout replay reproduced all Milestone 1 comparison hashes, reconciled all 208,324 building identities with zero ambiguities, promoted and rolled back the five-dataset refresh, and left the immutable seed and historical promoted oracle unchanged. The release evidence is recorded in `docs/MILESTONE_2_RELEASE.md`.
+
+**Milestone 3 — Compile Shared Substrate: NEXT.**
+
+Milestone 3 defines and compiles the first deterministic browser-consumable shared Kane County substrate for county boundary/context, roads, and water.
 
 ## Platform model
 
@@ -46,7 +50,7 @@ Subscriptions provide application-specific geographic state. Initial examples in
 
 A subscription is a logical dataset, not a physical device. One edge node may carry several subscriptions; one subscription may be sharded or replicated across several nodes.
 
-## Reconstruction result
+## Reconstruction and extraction result
 
 Milestone 1 deliberately reconstructed the Kane County pipeline on a clean Debian CT rather than installing the historical promoted database as active state.
 
@@ -58,9 +62,7 @@ Starting inputs included:
 - staged source evidence and accepted operational reference artifacts;
 - versioned source profiles.
 
-The reconstruction proved that the county node can independently rebuild the required database state, validate and register candidate sources, reproduce historical comparison decisions exactly, and preserve project-building identity through reconciliation without relying on undocumented state left behind on the original orchestrator.
-
-Milestone 2 begins by proving promotion and rollback against that reconstructed state, then extracts the reusable geographic implementation into Kane Fabric ownership.
+Milestone 2 then extracted those proven geographic behaviors into Kane Fabric ownership and replayed the immutable Milestone 1 evidence through the native core. Kane Condo `0.4` remains a historical regression oracle rather than an operational dependency.
 
 ## Repository boundary
 
@@ -68,4 +70,4 @@ Large county databases, harvests, staging artifacts, rollback copies, render pac
 
 Git contains the software, county/source contracts, tests, documentation, schemas, and repeatable procedures required to reproduce those external artifacts.
 
-See `docs/` for the project charter, architecture, reconstruction model, data ownership, infrastructure baseline, release record, Milestone 2 handoff, and roadmap.
+See `docs/` for the project charter, architecture, reconstruction model, data ownership, infrastructure baseline, Milestone 1 and Milestone 2 release records, historical handoff, and roadmap.
