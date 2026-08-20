@@ -27,6 +27,10 @@ PROHIBITED_RESOLUTION_FILES = {
     "poetry.lock",
     "uv.lock",
 }
+ZLIB_EXPECTED_FIELDS = (
+    "expected_compile_version",
+    "expected_runtime_version",
+)
 
 
 def sha256_file(path: Path) -> str:
@@ -50,6 +54,10 @@ def iter_project_package_json() -> list[Path]:
         for path in ROOT.rglob("package.json")
         if "vendor" not in path.relative_to(ROOT).parts
     )
+
+
+def _valid_expected_version(value: object) -> bool:
+    return isinstance(value, str) and bool(value.strip()) and value == value.strip()
 
 
 def validate(mode: str) -> dict[str, object]:
@@ -94,12 +102,17 @@ def validate(mode: str) -> dict[str, object]:
             pin = item.get("pin")
             if not isinstance(pin, dict) or not pin.get("status"):
                 errors.append(f"{key}: pin status is missing")
-            elif mode == "release" and requirement.startswith("required"):
-                if pin.get("status") != "vendored":
-                    errors.append(f"{key}: release gate requires vendored status")
-                for field in ("version", "source_sha256", "vendor_path"):
-                    if not pin.get(field):
-                        errors.append(f"{key}: release gate missing pin.{field}")
+            else:
+                if key == "zlib":
+                    for field in ZLIB_EXPECTED_FIELDS:
+                        if not _valid_expected_version(pin.get(field)):
+                            errors.append(f"zlib: pin.{field} is missing or invalid")
+                if mode == "release" and requirement.startswith("required"):
+                    if pin.get("status") != "vendored":
+                        errors.append(f"{key}: release gate requires vendored status")
+                    for field in ("version", "source_sha256", "vendor_path"):
+                        if not pin.get(field):
+                            errors.append(f"{key}: release gate missing pin.{field}")
 
     for package_path in iter_project_package_json():
         try:
