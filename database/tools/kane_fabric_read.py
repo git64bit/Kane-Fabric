@@ -3,17 +3,20 @@
 
 This module is the read-side interface for compilers and other consumers. It
 owns read-only SQLite connection mode, accepted-release selection, inventory
-checks, and geometry validation so downstream code does not duplicate SQL or
-schema knowledge.
+checks, geometry validation, and a compact authority summary so downstream
+code and development sessions do not duplicate SQL or infer authority from
+raw database facts.
 """
 
 from __future__ import annotations
 
+import argparse
+import json
 import sqlite3
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Mapping
+from typing import Mapping, Sequence
 
 TOOLS = Path(__file__).resolve().parent
 if str(TOOLS) not in sys.path:
@@ -115,6 +118,142 @@ def _accepted_release(
             "name": str(row["jurisdiction_name"]),
         },
     )
+
+
+def authority_summary(database: Path) -> dict[str, object]:
+    """Return a cheap read-only summary of geographic authority and its meaning.
+
+    This deliberately does not perform full geometry validation. It is intended
+    for session-start reasoning and other cheap checks. Call the existing Fabric
+    validators, or the validated layer loaders below, before making stronger
+    claims about stored geometry.
+    """
+
+    database = database.resolve()
+    connection = _readonly(database)
+    try:
+        jurisdictions = [
+            {
+                "country_code": str(row["country_code"]),
+                "state_code": str(row["state_code"]),
+                "fips_code": str(row["fips_code"]),
+                "county_key": str(row["county_key"]),
+                "name": str(row["name"]),
+            }
+            for row in connection.execute(
+                "SELECT county_key, name, state_code, country_code, fips_code "
+                "FROM county ORDER BY county_key"
+            )
+        ]
+        accepted_rows = connection.execute(
+            "SELECT d.dataset_key, d.data_kind, sr.release_key, sr.content_sha256, "
+            "sr.feature_count, sr.source_published_at, h.object_count "
+            "FROM source_release sr "
+            "JOIN dataset d ON d.dataset_id = sr.dataset_id "
+            "JOIN harvest_run h ON h.harvest_run_id = sr.harvest_run_id "
+            "WHERE sr.lifecycle_status = 'accepted' "
+            "ORDER BY d.dataset_key"
+        ).fetchall()
+        candidate_rows = connection.execute(
+            "SELECT d.dataset_key, COUNT(*) AS candidate_count "
+            "FROM source_release sr "
+            "JOIN dataset d ON d.dataset_id = sr.dataset_id "
+            "WHERE sr.lifecycle_status = 'candidate' "
+            "GROUP BY d.dataset_key ORDER BY d.dataset_key"
+        ).fetchall()
+    except sqlite3.Error as exc:
+        raise RuntimeError(f"Unable to read Fabric authority state: {exc}") from exc
+    finally:
+        connection.close()
+
+    if not accepted_rows:
+        raise RuntimeError("Fabric database has no accepted geographic releases")
+
+    candidate_counts = {
+        str(row["dataset_key"]): int(row["candidate_count"])
+        for row in candidate_rows
+    }
+    accepted_releases: list[dict[str, object]] = []
+    for row in accepted_rows:
+        feature_count = int(row["feature_count"])
+        object_count = row["object_count"]
+        if object_count is not None:
+            object_count = int(object_count)
+            if object_count < feature_count:
+                raise RuntimeError(
+                    f"Accepted {row['dataset_key']} harvest object_count is smaller "
+                    "than accepted feature_count"
+                )
+            retained_delta: int | None = object_count - feature_count
+        else:
+            retained_delta = None
+
+        if retained_delta is None:
+            inventory_relation = "harvest_inventory_not_recorded"
+        elif retained_delta == 0:
+            inventory_relation = "matches_harvest_inventory"
+        else:
+            inventory_relation = "retains_fewer_features_than_harvest_inventory"
+
+        accepted_releases.append(
+            {
+                "dataset_key": str(row["dataset_key"]),
+                "data_kind": str(row["data_kind"]),
+                "release_key": str(row["release_key"]),
+                "content_sha256": str(row["content_sha256"]),
+                "feature_count": feature_count,
+                "harvest_object_count": object_count,
+                "retained_feature_delta": retained_delta,
+                "inventory_relation": inventory_relation,
+                "source_published_at": row["source_published_at"],
+                "candidate_release_count": candidate_counts.get(
+                    str(row["dataset_key"]), 0
+                ),
+            }
+        )
+
+    return {
+        "format": "kane-fabric-authority-summary",
+        "version": 1,
+        "mode": "read-only",
+        "authority": "accepted-geographic-state",
+        "validation_scope": "lifecycle-and-release-metadata-only",
+        "database": str(database),
+        "jurisdictions": jurisdictions,
+        "accepted_release_count": len(accepted_releases),
+        "accepted_releases": accepted_releases,
+        "interpretation": {
+            "accepted_release_rule": (
+                "Only a source release with lifecycle_status=accepted is authoritative "
+                "Kane Fabric geographic state."
+            ),
+            "candidate_rule": (
+                "Candidate registration records staged provenance and does not change "
+                "accepted geographic authority."
+            ),
+            "freshness_rule": (
+                "A newer upstream response or candidate is not authoritative until an "
+                "explicit validated promotion changes accepted state."
+            ),
+            "inventory_rule": (
+                "A positive harvest-versus-retained feature delta can be deliberate "
+                "source-contract behavior, such as rejected missing geometry; do not "
+                "diagnose corruption from that delta alone. Check source profile/status."
+            ),
+            "compiler_rule": (
+                "Substrate compilation reads accepted state and must not promote or "
+                "otherwise mutate geographic authority."
+            ),
+            "validation_rule": (
+                "This summary is intentionally cheap. Use Fabric validators or the "
+                "validated feature loaders before claiming geometry/storage validity."
+            ),
+            "contradiction_rule": (
+                "If this output contradicts the recorded current checkpoint, inspect only "
+                "the contradicted area before any state-changing work."
+            ),
+        },
+    }
 
 
 def load_accepted_map_layer(database: Path, dataset_key: str) -> AcceptedFeatureSet:
@@ -250,3 +389,32 @@ def load_accepted_boundary(database: Path, dataset_key: str = "county-boundary")
         features=(feature,),
         extent=feature.bounds,
     )
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(description=__doc__)
+    subparsers = parser.add_subparsers(dest="command", required=True)
+    authority = subparsers.add_parser(
+        "authority",
+        help="report accepted geographic authority and interpretation rules",
+    )
+    authority.add_argument("database", type=Path)
+    return parser
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    args = build_parser().parse_args(argv)
+    try:
+        if args.command == "authority":
+            result = authority_summary(args.database)
+        else:
+            raise RuntimeError(f"Unknown command: {args.command}")
+    except (OSError, RuntimeError, sqlite3.Error) as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 1
+    print(json.dumps(result, indent=2, sort_keys=True, ensure_ascii=False))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
