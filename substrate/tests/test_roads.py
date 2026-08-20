@@ -145,6 +145,18 @@ class RoadComponentTests(unittest.TestCase):
             records.extend(document["features"])
         return records
 
+    def _stored_geometry(self, feature_id: str):
+        connection = sqlite3.connect(f"file:{self.database.resolve()}?mode=ro", uri=True)
+        try:
+            row = connection.execute(
+                "SELECT geometry FROM source_map_feature WHERE source_feature_id = ?",
+                (feature_id,),
+            ).fetchone()
+        finally:
+            connection.close()
+        self.assertIsNotNone(row)
+        return GEOMETRY.decode_geopackage_geometry(row[0])
+
     def test_build_is_deterministic_valid_and_read_only(self) -> None:
         before = sha256_file(self.database)
         first = ROADS.build_component(self.database, self.output)
@@ -193,9 +205,14 @@ class RoadComponentTests(unittest.TestCase):
             record["id"]: record for record in self._level_records("orientation")
         }
 
+        stored = self._stored_geometry("road-1")
         self.assertEqual(
-            [[-87.98, 41.51], [-87.975, 41.510001], [-87.97, 41.51]],
+            stored.coordinates,
             detail["road-1"]["geometry"]["coordinates"],
+        )
+        self.assertEqual(
+            stored.geometry_type,
+            detail["road-1"]["geometry"]["type"],
         )
         self.assertEqual(
             2, len(orientation["road-1"]["geometry"]["coordinates"])
