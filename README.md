@@ -8,6 +8,14 @@ Kane Fabric is deliberately released under the repository `LICENSE` using The Un
 
 Kane Fabric grew out of Kane Condo 0.4. Kane Condo proved the county-scale browser map, source-profile registry, update detection, candidate harvesting, deterministic comparison, project-identity reconciliation, atomic promotion and rollback, render-package generation, and browser-side rendering model. Kane Condo is frozen at tag `0.4`; Kane Fabric begins from those proven results without remaining condo-specific.
 
+## Start here for current development
+
+**New Assistants and developers must start with `docs/HANDOFF.md`.**
+
+That file is the stable current operational handoff. It contains the repository map, geographic database lifecycle, execution environment, external evidence/state layout, MS-1/MS-2 regression identities, compatibility nuances, current Milestone 3 implementation boundary, real-environment verification state, and the exact next safe development action.
+
+Do not try to reconstruct current state from a historical milestone handoff alone. `docs/MILESTONE_1_RELEASE.md` and `docs/MILESTONE_2_RELEASE.md` are release evidence; `docs/MILESTONE_2_HANDOFF.md` is historical; `docs/MILESTONE_3_HANDOFF.md` is milestone-specific. `docs/HANDOFF.md` is the maintained cross-milestone entry point.
+
 ## Development and execution process
 
 `docs/DEVELOPMENT_PROCESS.md` is the current authority for how project work is executed.
@@ -114,4 +122,4 @@ Git contains the software, county/source contracts, tests, documentation, schema
 
 The public-domain status of Kane Fabric software does not automatically determine the legal status of third-party geographic data. External source provenance remains a separate boundary.
 
-See `docs/` for the development process, project charter, civic infrastructure principles, multi-county design horizon, architecture, reconstruction model, data ownership, infrastructure baseline, Milestone 1 and Milestone 2 release records, historical handoff, and roadmap.
+See `docs/HANDOFF.md` first for current development state, then `docs/DEVELOPMENT_PROCESS.md`, the project charter, civic infrastructure principles, multi-county design horizon, architecture, reconstruction model, data ownership, infrastructure baseline, milestone release records, current milestone design/handoff, and roadmap.
