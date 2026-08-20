@@ -156,39 +156,45 @@ Milestone 1 exit statement: Kane County's authoritative database pipeline has be
 
 ## Milestone 2 — Extract Kane Fabric geographic core
 
-**Status: READY TO START**
+**Status: RELEASED — 2026-08-20**
 
-Handoff: `docs/MILESTONE_2_HANDOFF.md`
+Release record: `docs/MILESTONE_2_RELEASE.md`
+
+Historical handoff: `docs/MILESTONE_2_HANDOFF.md`
 
 Purpose: first close the carried promotion/rollback proof, then separate reusable county geography from Kane Condo application semantics.
 
-### Entry Gate 001 — Promotion and rollback replay
+### Entry Gate 001 — Promotion and rollback replay — COMPLETE
 
-Carry forward the original Milestone 1 Batch 009 against the newly reconstructed reconciliation artifact.
+The carried Milestone 1 promotion/rollback proof passed before behavior-changing extraction proceeded. The reconstructed state was prepared, semantically compared with the immutable promoted oracle, atomically activated, automatically restored after injected post-verification failure, explicitly rolled back, and all historical evidence remained unchanged.
 
-Acceptance:
+### Core extraction work — COMPLETE
 
-- prepare and validate promotion from the reconstructed reconciliation candidate;
-- atomically promote the reconstructed county state;
-- failed/interrupted promotion cannot destroy accepted state;
-- reconstructed promoted state is semantically equivalent to the historical 0.4 reference;
-- rollback restores the prior accepted release set;
-- immutable reconstruction evidence remains unchanged.
+Kane Fabric now owns:
 
-Do not begin behavior-changing geographic-core extraction until this gate passes.
+- geographic GeoPackage migrations and validation;
+- provenance, boundary, roads/water, and building storage;
+- durable geographic building identities;
+- source-profile registry and source status;
+- building, road, coordinated-water, and boundary candidate engines;
+- deterministic candidate comparison;
+- building reconciliation;
+- atomic promotion and rollback;
+- verified Kane County seed/bootstrap import.
 
-### Core extraction work
+The geographic core does not require Condo classification tables or semantics. The frozen Kane Condo `0.4` checkout remains a regression oracle only and is not a runtime dependency.
 
-Work includes:
+### Historical closeout — COMPLETE
 
-- rename/generalize county data concepts;
-- separate stable geographic identity from Condo-specific project identity where necessary;
-- define generic source/county profiles;
-- retain proven provenance, candidate, comparison, promotion, and rollback behavior;
-- preserve deterministic tests;
-- create Kane Fabric-owned database migrations and command entry points.
+The native Fabric core replayed the immutable Milestone 1 Kane County evidence and reproduced all four historical comparison hashes exactly. Reconciliation mapped all 208,324 building identities with zero ambiguities and zero unmapped sources. Native Fabric promotion succeeded and explicit rollback restored the prior accepted release set. The immutable seed and historical promoted oracle remained byte-identical.
 
-Exit gate: Kane Fabric can build/refresh Kane County without depending on Kane Condo names or classification semantics, and promotion/rollback behavior remains proven under Kane Fabric ownership.
+Closeout report SHA-256:
+
+```text
+fee3194b432566fc0cf4af09b8e9e80eb6efd9945e0894e96ecbb2aa22ce9f4c
+```
+
+Exit gate: **PASSED**. Kane Fabric can initialize and refresh Kane County through Fabric-owned names and entry points without depending on Kane Condo application classifications or the historical Kane Condo runtime.
 
 ## Milestone 3 — Compile shared substrate
 
