@@ -58,9 +58,9 @@ The decisive historical closeout replay reproduced all Milestone 1 comparison ha
 
 Reconstructability is therefore a proven foundation and remains a required invariant rather than the principal forward development objective.
 
-**Milestone 3 — Compile Shared Substrate: NEXT.**
+**Milestone 3 — Compile Shared Substrate: IN PROGRESS.**
 
-Milestone 3 defines and compiles the first deterministic browser-consumable shared Kane County substrate for county boundary/context, roads, and water. New durable package, manifest, database, and protocol identities must distinguish generic Fabric concepts from Kane County-specific source facts. See `docs/MULTI_COUNTY_DESIGN.md`.
+The v1 substrate wire contract and the deterministic jurisdiction-overview implementation are present in the repository. Road/water LOD components, manifest/package activation, browser loading/rendering, and edge-compatibility proof remain ahead. The first real CT102 Milestone 3 execution gate has not yet been accepted; repository implementation must not be confused with real-environment acceptance. See `docs/HANDOFF.md` and `docs/MILESTONE_3_HANDOFF.md` for the exact boundary.
 
 ## Governing forward objectives
 
