@@ -6,12 +6,13 @@ Kane Fabric is public civic infrastructure for maintaining and distributing auth
 
 Its first implementation is Kane County, Illinois. Kane County is the reference deployment, not the conceptual namespace of the software. New reusable contracts must anticipate operation across U.S. counties and county-equivalent jurisdictions without requiring a redesign for each jurisdiction.
 
-The foundational reconstruction objective has been proven through Milestones 1 and 2. Reconstructability remains mandatory, but the forward objective is now to preserve authentic public-infrastructure properties while maintaining current accepted county geography and building portable substrate, subscription, browser, and edge contracts.
+The foundational reconstruction objective has been proven through Milestones 1 and 2. Reconstructability remains mandatory, but the forward objective is now to preserve authentic public-infrastructure properties while maintaining current accepted county geography and building portable substrate, subscription, browser, edge, and federation-facing distribution contracts.
 
 The governing companion documents are:
 
 - `docs/CIVIC_INFRASTRUCTURE_PRINCIPLES.md`;
 - `docs/MULTI_COUNTY_DESIGN.md`;
+- `docs/BASELINE_GEOGRAPHY_DISTRIBUTION.md`;
 - `docs/DEVELOPMENT_PROCESS.md`.
 
 ## 2. Fixed principles
@@ -33,6 +34,24 @@ Maintaining an up-to-date accepted county geographic database is a primary opera
 Freshness does not mean automatically trusting the newest upstream response. Kane Fabric preserves source provenance, detects likely changes, harvests candidates, validates and compares them, reconciles durable geographic identity where required, and changes accepted state only through explicit promotion.
 
 When an upstream source is unavailable or a candidate fails validation, the previously accepted state remains authoritative until a valid replacement is promoted.
+
+### Baseline geography is the durable external interface
+
+Kane Fabric compiles accepted county geography into immutable baseline publications that can be consumed independently of the authoritative database implementation.
+
+The same baseline geography must be usable by:
+
+- web applications;
+- microcontrollers and constrained edge nodes;
+- local caches and mirrors;
+- independent software implementations;
+- federated peers and synchronization protocols.
+
+The authoritative GeoPackage, SQL schema, migrations, CT paths, and internal Python APIs are control-plane implementation details. They are not the external Kane Fabric consumer interface.
+
+External consumers depend on explicit jurisdiction, format/version, accepted-release, component, hash, chunk, manifest, and content identities. Transport may vary while those bytes and identities remain stable.
+
+Federation may advertise, locate, synchronize, relay, cache, or replicate baseline geography without requiring every peer to share Kane Fabric's internal database schema. See `docs/BASELINE_GEOGRAPHY_DISTRIBUTION.md`.
 
 ### Multi-county design horizon
 
@@ -63,6 +82,8 @@ The browser is the enduring user platform. Windows, Linux, Android, and future b
 
 HTTP, HTML, CSS, and JavaScript form the durable user-interface boundary.
 
+The browser consumes compiled Kane Fabric baseline/subscription publications. It does not query the authoritative county database schema directly.
+
 ### One county Fabric node
 
 A county Fabric deployment begins with one authoritative Debian CT unless a later requirement proves that another service boundary is necessary.
@@ -88,6 +109,8 @@ ESP-class hardware is an edge data plane, not the source of geographic truth.
 
 The initial reference hardware is ESP32-S3-class equipment. The architecture must not depend on that specific processor. Faster future devices should satisfy the same contracts without requiring browser or package redesign.
 
+An edge node serves, caches, validates, synchronizes, or consumes the same compiled baseline publication contract used elsewhere. It does not require the authoritative GeoPackage implementation merely to participate in distribution.
+
 ### Substrate plus subscriptions
 
 Kane Fabric separates shared geographic context from application-specific overlays.
@@ -105,6 +128,8 @@ Kane Fabric owns geographic state.
 Applications such as Mechanical Compiler own their own authoritative application state and may reference Kane Fabric geographic identities through explicit contracts.
 
 Neither system silently assumes ownership of the other's authoritative objects.
+
+Applications consume the published Kane Fabric geographic contract rather than becoming dependent on the control-plane database schema.
 
 ## 3. Kane Condo inheritance
 
@@ -165,19 +190,20 @@ External storage holds:
 - staging artifacts;
 - reconciliation databases;
 - rollback copies;
-- compiled render/subscription packages;
+- compiled substrate/subscription packages;
 - audit bundles too large or unsuitable for source control.
 
 The public-domain status of Kane Fabric software does not automatically determine the legal status of external geographic data. Source provenance and external rights remain separate boundaries.
 
 ## 6. Forward development objective
 
-After Milestone 2, new work should be evaluated against three continuing questions:
+After Milestone 2, new work should be evaluated against four continuing questions:
 
 1. Does it preserve Kane Fabric as authentic, independently usable public infrastructure?
 2. Does it strengthen or preserve the ability to maintain current, validated, authoritative county geographic state?
-3. If the concept is geographically generic, does its durable namespace and contract avoid unnecessary Kane County coupling?
+3. Can independent consumers use the compiled baseline without knowledge of the authoritative database internals?
+4. If the concept is geographically generic, does its durable namespace and contract avoid unnecessary Kane County coupling?
 
-The project does not need to implement the nation in order to answer the third question correctly.
+The project does not need to implement the nation in order to answer the fourth question correctly.
 
 Kane County remains the proving deployment. The architecture should make a future second jurisdiction primarily a matter of jurisdiction/source contracts and evidence where the existing geographic model applies, rather than a fork of the core system.
