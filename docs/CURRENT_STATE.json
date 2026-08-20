@@ -17,31 +17,57 @@
       "branch": "main",
       "upstream": "origin/main",
       "fetch_refspec": "+refs/heads/*:refs/remotes/origin/*",
-      "last_observed_head": "2ab4835b05d04e0156c53726738a238af5acd2a6",
+      "last_observed_head": "bb2346c9fc29b6fb4ac38d1e812eef74bc160960",
       "last_observed_worktree": "clean"
     }
   },
   "operational_state": {
     "root": "/var/lib/kane-fabric",
     "database": {
-      "path": null,
-      "sha256": null,
-      "status": "pending-ms3-live-identification"
+      "path": "/var/lib/kane-fabric/database/kane-county-fabric.gpkg",
+      "sha256": "31e362b696a37f1b9c45ae355c5669511a3128c17a651108a62e20d1cedebd67",
+      "byte_length": 355180544,
+      "migration_count": 7,
+      "status": "current-observed-fabric-native-working-database",
+      "accepted_release_count": 5,
+      "jurisdiction": {
+        "country_code": "US",
+        "state_code": "IL",
+        "fips_code": "17089",
+        "county_key": "kane-county-il",
+        "name": "Kane County"
+      }
+    },
+    "legacy_database_observation": {
+      "path": "/var/lib/kane-fabric/database/kane-county-reconstructed.gpkg",
+      "sha256": "a80cf0dff6005818e40a63e101f825aed9b9775f0b77cdfd39a69283b195921b",
+      "status": "donor-shaped-historical-working-database-not-ms3-authoritative",
+      "migration_count": 8,
+      "migration_8": {
+        "filename": "0008_refresh_promotion.sql",
+        "sha256": "a17e84ee9ebb5fbb21f217af4794b23099c8dedb4397f368f591e9c75969cd33",
+        "matched_frozen_donor_path": "/var/lib/kane-fabric/reconstruction-code/kane-condo-0.4/database/migrations/0008_refresh_promotion.sql"
+      }
+    },
+    "ms3_baseline_overview": {
+      "path": "/var/lib/kane-fabric/render/ms3-baseline/county-overview.json",
+      "sha256": "f0995177625e28adc39e0ddd842ea22fbc1935239d6d1f7d54f377edde62e942",
+      "byte_length": 1670,
+      "format": "kane-fabric-substrate-overview",
+      "version": 1,
+      "boundary_release_key": "kane-county-boundary-20230509-73cb32426b22",
+      "boundary_content_sha256": "73cb32426b22bcf73f08c6356d4e39eb72d878192d1bdc33385b87af0193bfc6",
+      "source_vertex_count": 378,
+      "vertex_count": 19
     }
   },
   "milestone": {
     "current": 3,
     "name": "Compile Shared Substrate",
-    "phase": "first-real-environment-baseline-gate",
-    "gate_steps_complete": [
-      1,
-      2,
-      3,
-      4,
-      5,
-      6
-    ],
-    "next_gate_step": 7
+    "phase": "ms3-003-road-lod-implementation",
+    "first_real_environment_gate": "accepted",
+    "gate_steps_complete": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+    "next_work_item": "MS3-003"
   },
   "accepted_tests": {
     "database": {
@@ -61,6 +87,38 @@
       "observed_date": "2026-08-20"
     }
   },
+  "accepted_releases": [
+    {
+      "dataset_key": "buildings",
+      "release_key": "kane-buildings-20250730-086f09eba5ad",
+      "content_sha256": "086f09eba5ad5b21eea1b6c9a8158eaf8c509a258c53509d115eaf1d19a7f799",
+      "feature_count": 208324
+    },
+    {
+      "dataset_key": "county-boundary",
+      "release_key": "kane-county-boundary-20230509-73cb32426b22",
+      "content_sha256": "73cb32426b22bcf73f08c6356d4e39eb72d878192d1bdc33385b87af0193bfc6",
+      "feature_count": 1
+    },
+    {
+      "dataset_key": "roads",
+      "release_key": "kane-roads-20250730-028e3c1dc7a6",
+      "content_sha256": "028e3c1dc7a6eede26ed3295d8c17ff524a15d7f1eadb13747836fae777e1eb3",
+      "feature_count": 27675
+    },
+    {
+      "dataset_key": "water-creeks",
+      "release_key": "kane-water-creeks-20250717-249c70f01dbc",
+      "content_sha256": "249c70f01dbca57f90f22acf254b8d0ffe71bc5f5bf92f5e70103250f1ed1f5d",
+      "feature_count": 555
+    },
+    {
+      "dataset_key": "water-fox-river",
+      "release_key": "kane-water-fox-river-20250717-905d93f928d2",
+      "content_sha256": "905d93f928d2f4e4c9c8257c32e2639f29cb398984681a15149ad4a756b7f1a2",
+      "feature_count": 1
+    }
+  ],
   "known_remote_branches": [
     {
       "name": "ms3-substrate-contract",
@@ -69,7 +127,7 @@
       "deletion_authorized": false
     }
   ],
-  "next_safe_action": "Identify the actual current accepted/working Kane County Fabric database in CT102, record its path and SHA-256, build county-overview.json from it, validate jurisdiction/release identity, and prove the database SHA-256 is unchanged.",
+  "next_safe_action": "Implement and validate MS3-003 road LOD/container generation from the stable Fabric-native database. Do not rediscover CT102, the checkout path, or the operational database unless the session-start checker reports a mismatch.",
   "state_policy": {
     "stable_facts_are_not_rediscovered_each_session": true,
     "live_state_must_be_verified_before_mutation": true,
