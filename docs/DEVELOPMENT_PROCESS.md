@@ -8,6 +8,8 @@ It exists because repository history proved that correct code is not enough if a
 
 This is the current development-process authority. Historical milestone handoffs describe the process used at that time and do not override this document.
 
+`docs/HANDOFF.md` is the separate **current operational-state authority** for a successor: it records the repository map, current milestone boundary, last observed CT/runtime state, external evidence identities, compatibility nuances, accepted gates, and next safe action. Process belongs here; current state belongs there. Both must be maintained.
+
 ## Authority map
 
 Kane Fabric deliberately separates four authorities:
@@ -66,6 +68,8 @@ The Assistant may continue repository analysis, documentation, design work, and 
 
 The user may explicitly choose to perform a command manually, but that is an exception initiated or accepted by the user, not the default development process.
 
+Historical note: Milestones 1 and 2 did use an explicit user-operated command-relay pattern for many accepted gates. The Assistant supplied bounded command groups for `srv-b`, the user executed them, and returned exact output. That evidence remains valid. The historical fact must be preserved in release/handoff records, while current sessions follow the normal execution model above whenever an authorized `srv-b` execution channel is available.
+
 ## Repository workflow
 
 The GitHub repository is the software Single Source of Truth.
@@ -73,8 +77,9 @@ The GitHub repository is the software Single Source of Truth.
 Before substantive work:
 
 1. read current `main` rather than relying only on a prior handoff;
-2. inspect the current milestone and governing documents;
-3. verify that the repository has not advanced since the proposed change was prepared.
+2. read `docs/HANDOFF.md` and the current milestone documents;
+3. inspect the current governing documents;
+4. verify that the repository has not advanced since the proposed change was prepared.
 
 For this repository, work directly on `main` unless the user explicitly requests a feature branch, pull request, or other branch workflow.
 
@@ -106,7 +111,7 @@ At the start of a real CT102 execution session, determine the current Kane Fabri
 - its worktree state is understood before update/reset operations;
 - its fetch refspec is not unexpectedly restricted.
 
-Once a stable canonical checkout path is deliberately established for current operations, record it in the current milestone/release documentation. Do not infer one from an old milestone.
+Once a stable canonical checkout path is deliberately established for current operations, record it in `docs/HANDOFF.md` and the current milestone/release documentation. Do not infer one from an old milestone.
 
 ## Host commands versus CT commands
 
@@ -139,7 +144,7 @@ Do not duplicate the host's `ct-baseline.sh` inside the repository or CT as an a
 The normal implementation loop is:
 
 ```text
-read current GitHub main
+read current GitHub main + docs/HANDOFF.md
         ↓
 make the smallest coherent software/contract change
         ↓
@@ -157,7 +162,7 @@ run the real-data gate required by the milestone
         ↓
 verify authoritative/evidence state was changed only when the operation intended it
         ↓
-record accepted evidence in the repository when a milestone gate requires it
+record accepted evidence + current state in docs/HANDOFF.md when the gate matters
 ```
 
 A local or synthetic test can catch defects earlier, but it does not replace the CT102 gate when the claim concerns the real Kane Fabric environment or real Kane County state.
@@ -179,6 +184,8 @@ Project scripts may contain their own `set -euo pipefail` because they execute i
 
 Quote paths and data deliberately. Do not embed untrusted source values into shell command text.
 
+If the user is explicitly executing a manual command relay, provide one bounded command group at a time for state-changing or diagnostic work so returned output can be evaluated before the next operation.
+
 ## Operational data boundary
 
 `/var/lib/kane-fabric` is operational state, not source-control authority.
@@ -189,14 +196,12 @@ The expected categories remain:
 seed/                    immutable initial seed evidence
 reconstruction-inputs/   imported historical reconstruction evidence
 reconstruction-code/     historical reference software
- database/               active/working Kane Fabric databases
-staging/                  candidate/reconciliation/promotion work
-rollback/                 rollback evidence
+database/                active/working Kane Fabric databases
+staging/                 candidate/reconciliation/promotion work
+rollback/                rollback evidence
 audit/                    audit/reconstruction reports
 render/                   compiled substrate/subscription artifacts
 ```
-
-The leading space before `database/` above is not semantically significant; paths are rooted directly under `/var/lib/kane-fabric`.
 
 Large GeoPackages, harvested GeoJSON, candidate directories, reconciliation databases, rollback copies, and compiled packages remain outside Git.
 
@@ -246,6 +251,8 @@ Use the least expensive useful test first, but make acceptance claims only at th
 6. release evidence and exact hashes/counts recorded in documentation.
 
 A result at level 1 or 2 must not be described as level 3 or 4 acceptance.
+
+Once a bounded implementation slice passes its defined acceptance gate, accept it and move forward unless a later change invalidates that evidence. Do not create repeated verification churn merely to reconfirm an already accepted unchanged slice.
 
 ## Source refresh discipline
 
@@ -300,23 +307,32 @@ Co-location does not transfer application ownership or authority.
 
 ## Handoff rule
 
-Every future milestone handoff must state or reference:
+`docs/HANDOFF.md` is the stable current handoff path and must be updated throughout development, not created only at release time.
+
+Every material current-state update and every future milestone handoff must state or reference:
 
 - `docs/DEVELOPMENT_PROCESS.md` as the execution-process authority;
-- the current GitHub `main` identity;
+- the current milestone and implementation boundary;
+- the current GitHub `main` identity when recorded, with a warning to re-read live `main`;
 - the current CT102 checkout path if a stable path has been deliberately established;
+- the last **observed** CT102 checkout branch/head/upstream/worktree state, distinct from GitHub state;
 - the current active/working database path and whether its recorded hash is historical evidence or current observed state;
 - which real-environment gates have actually been executed;
-- any execution capability that was unavailable rather than silently replaced by user command relay.
+- which repository/synthetic tests exist but have not yet been run in CT102;
+- deliberate compatibility names, exclusions, source-policy exceptions, and other non-obvious invariants introduced or discovered;
+- any execution capability that was unavailable rather than silently replaced by user command relay;
+- the exact next safe development action.
 
-Historical handoffs may preserve obsolete procedures for forensic value, but they must not be treated as current execution instructions when they conflict with this document.
+Milestone-specific handoffs must update `docs/HANDOFF.md` as well as their milestone file. A successor should not need private conversation memory to reconstruct the repository or workflow.
 
-## Current correction
+Historical handoffs may preserve obsolete procedures for forensic value, but they must not be treated as current execution instructions when they conflict with this document or `docs/HANDOFF.md`.
+
+## Current correction history
 
 The Milestone 2 handoff contains the historical sentence:
 
 > The user performs infrastructure commands on `srv-b` and returns output.
 
-That sentence describes the interaction pattern used during that historical work. It is superseded for current development by this document.
+That sentence describes the interaction pattern actually used during that historical work. It is not deleted from history. For current development, the normal rule is: **the Assistant/development process executes routine commands through the authorized `srv-b` → `pct exec 102` path when that capability exists; the user is not the default terminal relay.**
 
-The current rule is: **the Assistant/development process executes routine commands through the authorized `srv-b` → `pct exec 102` path; the user is not the default terminal relay.**
+The MS-2 branch/refspec cleanup incident and the broader handoff failure that followed are documented in `docs/HANDOFF.md`. They are process lessons, not merely historical trivia: future work must preserve a clean `main` workflow and a maintained, self-sufficient current handoff.
