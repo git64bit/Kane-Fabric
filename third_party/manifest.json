@@ -45,7 +45,9 @@
       "license": "PSF-2.0 plus licenses carried by the selected CPython distribution",
       "license_impact": "does-not-relicense-kane-fabric",
       "pin": {
+        "observed_debian_package": "python3.11 3.11.2-6+deb12u8",
         "observed_environment": "CT102 Debian 12",
+        "observed_license_file_sha256": "f1cbf908e1daa8789b389fdcf17811ed36b675d736b39a103591399861350382",
         "observed_version": "3.11.2 (main, May 12 2026, 05:17:27) [GCC 12.2.0]",
         "status": "observed-ct102-not-vendored"
       },
@@ -58,7 +60,9 @@
       "license": "public-domain",
       "license_impact": "does-not-relicense-kane-fabric",
       "pin": {
+        "observed_debian_package": "libsqlite3-0 3.40.1-2+deb12u2",
         "observed_environment": "CT102 Debian 12 via Python sqlite3",
+        "observed_license_file_sha256": "78e9df8f8153c91c762ec970b82d224ac4d30f05aa7773e7e17e268141e53873",
         "observed_version": "3.40.1",
         "status": "observed-ct102-not-vendored"
       },
@@ -72,7 +76,9 @@
       "license_impact": "does-not-relicense-kane-fabric",
       "pin": {
         "observed_compile_version": "1.2.13",
-        "observed_environment": "CT102 Debian 12 via Python zlib",
+        "observed_debian_package": "zlib1g 1:1.2.13.dfsg-1",
+        "observed_environment": "CT102 Debian 12 via Python zlib; module is built-in and /usr/bin/python3 links libz.so.1",
+        "observed_license_file_sha256": "9e5b96d63773a5d177ba264254390f792be07e41748ebd94730981c6cac31cc6",
         "observed_runtime_version": "1.2.13",
         "status": "observed-ct102-not-vendored"
       },
@@ -85,12 +91,52 @@
       "license": "Apache-2.0 for OpenSSL 3.0 and later; exact selected release must remain 3.x-or-later unless separately reviewed",
       "license_impact": "does-not-relicense-kane-fabric",
       "pin": {
+        "observed_debian_package": "libssl3 3.0.20-1~deb12u2",
         "observed_environment": "CT102 Debian 12 via Python ssl",
+        "observed_license_file_sha256": "6a7da622fe0637a334d2a8fc470852d2ffb77d9a2b2f930f854e32a41ad6ef35",
         "observed_version": "OpenSSL 3.0.20 7 Apr 2026",
         "status": "observed-ct102-not-vendored"
       },
       "reason": "TLS implementation behind Python HTTPS harvesting when CPython ssl uses OpenSSL",
       "role": "runtime-library",
+      "vendoring_requirement": "required-if-retained"
+    },
+    {
+      "key": "glibc",
+      "license": "LGPL-2.1-or-later for GNU C Library with separately licensed files; exact vendored source license inventory must be retained",
+      "license_impact": "does-not-relicense-kane-fabric-when-kept-as-separate-runtime-library-and-lgpl-obligations-are-met",
+      "pin": {
+        "observed_debian_package": "libc6 2.36-9+deb12u14",
+        "observed_environment": "CT102 Debian 12 dynamic runtime for CPython and native extensions",
+        "status": "observed-ct102-not-vendored"
+      },
+      "reason": "Observed C runtime underneath CPython, sqlite3, and ssl native modules",
+      "role": "runtime-library",
+      "vendoring_requirement": "required-if-retained"
+    },
+    {
+      "key": "expat",
+      "license": "MIT",
+      "license_impact": "does-not-relicense-kane-fabric",
+      "pin": {
+        "observed_environment": "CT102 Debian 12; /usr/bin/python3 dynamically links libexpat.so.1",
+        "status": "observed-linked-version-not-yet-recorded"
+      },
+      "reason": "Observed XML parser dependency of the current CPython runtime",
+      "role": "runtime-library",
+      "vendoring_requirement": "required-if-retained"
+    },
+    {
+      "key": "ca-certificates",
+      "license": "aggregate trust-store data with certificate-specific notices; exact selected bundle provenance and redistribution terms must be retained",
+      "license_impact": "does-not-relicense-kane-fabric",
+      "pin": {
+        "observed_debian_package": "ca-certificates 20250419~deb12u1",
+        "observed_environment": "CT102 Debian 12 system trust store",
+        "status": "observed-ct102-not-vendored"
+      },
+      "reason": "HTTPS certificate trust used by official-source harvesting unless a Kane Fabric trust bundle is selected",
+      "role": "runtime-trust-data",
       "vendoring_requirement": "required-if-retained"
     },
     {
