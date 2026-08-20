@@ -10,11 +10,23 @@ Kane Fabric grew out of Kane Condo 0.4. Kane Condo proved the county-scale brows
 
 ## Start here for current development
 
-**New Assistants and developers must start with `docs/HANDOFF.md`.**
+**New Assistants and developers start with `docs/HANDOFF.md`, then `docs/CURRENT_STATE.json`, `docs/SESSION_START.md`, and `docs/DEVELOPMENT_PROCESS.md`.**
 
-That file is the stable current operational handoff. It contains the repository map, geographic database lifecycle, execution environment, external evidence/state layout, MS-1/MS-2 regression identities, compatibility nuances, current Milestone 3 implementation boundary, real-environment verification state, and the exact next safe development action.
+`docs/HANDOFF.md` is the durable system handoff: architecture, database lifecycle, evidence identities, compatibility nuances, and milestone context.
 
-Do not try to reconstruct current state from a historical milestone handoff alone. `docs/MILESTONE_1_RELEASE.md` and `docs/MILESTONE_2_RELEASE.md` are release evidence; `docs/MILESTONE_2_HANDOFF.md` is historical; `docs/MILESTONE_3_HANDOFF.md` is milestone-specific. `docs/HANDOFF.md` is the maintained cross-milestone entry point.
+`docs/CURRENT_STATE.json` is the compact machine-readable latest observed checkpoint: current CT checkout path/state, accepted test gates, operational database identity when established, and the exact next safe action.
+
+`docs/SESSION_START.md` defines the low-churn resume path. Stable deployment facts are not rediscovered every session. Use the recorded checkout path first and run:
+
+```bash
+bash development/kane-fabric-dev-state.sh
+```
+
+inside CT102. Use `--deep` only when database hashes/full validation are actually required.
+
+Do not reconstruct current state from historical milestone handoffs alone. `docs/MILESTONE_1_RELEASE.md` and `docs/MILESTONE_2_RELEASE.md` are release evidence; `docs/MILESTONE_2_HANDOFF.md` is historical; `docs/MILESTONE_3_HANDOFF.md` is milestone-specific.
+
+Accepted CT tests are not rerun merely because a new Assistant arrived. Rerun only after an invalidating implementation/environment change or contradictory live observation. Documentation/state updates are batched at material checkpoints rather than committed after every command group.
 
 ## Development and execution process
 
@@ -40,7 +52,7 @@ operational county state and evidence
 
 Routine Kane Fabric commands are executed inside CT102 through the authorized `srv-b` host-to-LXC path. The user's role is not to serve as the normal terminal relay for Assistant-driven development.
 
-An Assistant sandbox is not CT102 and cannot substitute for CT102 acceptance. If a session does not expose an authorized execution channel to `srv-b`, that is an execution-capability gap and must be stated explicitly; real-environment gates remain unverified rather than being delegated to the user by default.
+An Assistant sandbox is not CT102 and cannot substitute for CT102 acceptance. If a session does not expose an authorized execution channel to `srv-b`, that is an execution-capability gap and must be stated explicitly; real-environment gates remain unverified unless the user explicitly accepts a bounded manual relay exception.
 
 Historical milestone handoffs preserve historical procedures but do not override `docs/DEVELOPMENT_PROCESS.md` when their execution instructions conflict with it.
 
@@ -60,7 +72,9 @@ Reconstructability is therefore a proven foundation and remains a required invar
 
 **Milestone 3 — Compile Shared Substrate: IN PROGRESS.**
 
-The v1 substrate wire contract and the deterministic jurisdiction-overview implementation are present in the repository. Road/water LOD components, manifest/package activation, browser loading/rendering, and edge-compatibility proof remain ahead. The first real CT102 Milestone 3 execution gate has not yet been accepted; repository implementation must not be confused with real-environment acceptance. See `docs/HANDOFF.md` and `docs/MILESTONE_3_HANDOFF.md` for the exact boundary.
+The v1 substrate wire contract and deterministic jurisdiction-overview implementation are present. CT102 has now accepted the current database regression suite (16/16) and substrate regression suite (19/19) at the recorded checkpoint in `docs/CURRENT_STATE.json`. The remaining first real-data gate is to identify the live accepted/working Kane County database, compile the overview from it, validate jurisdiction/release identity, and prove the source database is byte-unchanged.
+
+Road/water LOD components, manifest/package activation, browser loading/rendering, and edge-compatibility proof remain ahead. See `docs/CURRENT_STATE.json` and `docs/MILESTONE_3_HANDOFF.md` for the exact boundary.
 
 ## Governing forward objectives
 
@@ -122,4 +136,4 @@ Git contains the software, county/source contracts, tests, documentation, schema
 
 The public-domain status of Kane Fabric software does not automatically determine the legal status of third-party geographic data. External source provenance remains a separate boundary.
 
-See `docs/HANDOFF.md` first for current development state, then `docs/DEVELOPMENT_PROCESS.md`, the project charter, civic infrastructure principles, multi-county design horizon, architecture, reconstruction model, data ownership, infrastructure baseline, milestone release records, current milestone design/handoff, and roadmap.
+See `docs/HANDOFF.md` for the durable system context, `docs/CURRENT_STATE.json` for the latest operational checkpoint, `docs/SESSION_START.md` for the fast resume path, and `docs/DEVELOPMENT_PROCESS.md` for execution rules. Then read the current milestone design/handoff and roadmap as needed.
