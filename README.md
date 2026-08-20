@@ -8,6 +8,34 @@ Kane Fabric is deliberately released under the repository `LICENSE` using The Un
 
 Kane Fabric grew out of Kane Condo 0.4. Kane Condo proved the county-scale browser map, source-profile registry, update detection, candidate harvesting, deterministic comparison, project-identity reconciliation, atomic promotion and rollback, render-package generation, and browser-side rendering model. Kane Condo is frozen at tag `0.4`; Kane Fabric begins from those proven results without remaining condo-specific.
 
+## Development and execution process
+
+`docs/DEVELOPMENT_PROCESS.md` is the current authority for how project work is executed.
+
+The critical execution boundary is:
+
+```text
+GitHub main
+software/contracts SSOT
+        ↓
+srv-b
+Proxmox/LXC control plane
+        ↓
+pct exec 102 -- ...
+        ↓
+CT102 kane-fabric
+real Kane Fabric execution environment
+        ↓
+/var/lib/kane-fabric
+operational county state and evidence
+```
+
+Routine Kane Fabric commands are executed inside CT102 through the authorized `srv-b` host-to-LXC path. The user's role is not to serve as the normal terminal relay for Assistant-driven development.
+
+An Assistant sandbox is not CT102 and cannot substitute for CT102 acceptance. If a session does not expose an authorized execution channel to `srv-b`, that is an execution-capability gap and must be stated explicitly; real-environment gates remain unverified rather than being delegated to the user by default.
+
+Historical milestone handoffs preserve historical procedures but do not override `docs/DEVELOPMENT_PROCESS.md` when their execution instructions conflict with it.
+
 ## Project status
 
 **Milestone 1 — Kane County Reconstruction Proof: RELEASED (2026-08-18).**
@@ -86,4 +114,4 @@ Git contains the software, county/source contracts, tests, documentation, schema
 
 The public-domain status of Kane Fabric software does not automatically determine the legal status of third-party geographic data. External source provenance remains a separate boundary.
 
-See `docs/` for the project charter, civic infrastructure principles, multi-county design horizon, architecture, reconstruction model, data ownership, infrastructure baseline, Milestone 1 and Milestone 2 release records, historical handoff, and roadmap.
+See `docs/` for the development process, project charter, civic infrastructure principles, multi-county design horizon, architecture, reconstruction model, data ownership, infrastructure baseline, Milestone 1 and Milestone 2 release records, historical handoff, and roadmap.
