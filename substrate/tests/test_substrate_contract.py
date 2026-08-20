@@ -68,6 +68,24 @@ class SubstrateContractTests(unittest.TestCase):
         with self.assertRaises(contract.SubstrateContractError):
             contract.validate_jurisdiction(bad)
 
+    def test_fixed_prefix_exposes_index_length_without_payload_read(self):
+        index = {
+            "compression": "zlib-deflate",
+            "format": contract.ROAD_FORMAT,
+            "jurisdiction": JURISDICTION,
+            "levels": [],
+            "srs_id": 4326,
+            "version": 1,
+        }
+        data = contract.encode_container_prefix(contract.ROAD_MAGIC, index)
+        self.assertEqual(
+            contract.decode_index_length(
+                data[: contract.PREFIX_LENGTH],
+                expected_magic=contract.ROAD_MAGIC,
+            ),
+            len(data) - contract.PREFIX_LENGTH,
+        )
+
     def test_container_prefix_round_trip(self):
         index = {
             "compression": "zlib-deflate",
@@ -242,6 +260,21 @@ class SubstrateContractTests(unittest.TestCase):
                 releases,
                 components,
             )
+
+    def test_component_role_cannot_claim_another_format(self):
+        descriptor = {
+            "role": "roads",
+            "path": "roads-lod.kfs",
+            "format": contract.WATER_FORMAT,
+            "version": 1,
+            "byte_length": 200,
+            "sha256": "5" * 64,
+        }
+        with self.assertRaisesRegex(
+            contract.SubstrateContractError,
+            "format does not match role roads",
+        ):
+            contract.validate_component_descriptor(descriptor)
 
 
 if __name__ == "__main__":
