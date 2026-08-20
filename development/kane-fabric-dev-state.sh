@@ -53,6 +53,30 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
+def authority_summary(path: Path) -> dict[str, object]:
+    reader = subprocess.run(
+        [
+            "bash",
+            str(repo / "database" / "kane-fabric-read.sh"),
+            "authority",
+            str(path),
+        ],
+        cwd=repo,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    result: dict[str, object] = {"exit": reader.returncode}
+    if reader.stdout.strip():
+        try:
+            result["result"] = json.loads(reader.stdout)
+        except json.JSONDecodeError:
+            result["stdout"] = reader.stdout.strip()
+    if reader.stderr.strip():
+        result["stderr"] = reader.stderr.strip()
+    return result
+
+
 def current_database_summary(path: Path) -> dict[str, object]:
     summary: dict[str, object] = {
         "path": str(path),
@@ -79,24 +103,12 @@ def current_database_summary(path: Path) -> dict[str, object]:
             "source_release",
             "schema_migration",
         }.issubset(tables)
-        if summary["looks_like_fabric"]:
-            counties = [
-                dict(row)
-                for row in connection.execute(
-                    "SELECT county_key, name, state_code, country_code, fips_code "
-                    "FROM county ORDER BY county_key"
-                )
-            ]
-            accepted_release_count = int(
-                connection.execute(
-                    "SELECT COUNT(*) FROM source_release WHERE lifecycle_status='accepted'"
-                ).fetchone()[0]
-            )
-            summary["counties"] = counties
-            summary["accepted_release_count"] = accepted_release_count
         connection.close()
     except sqlite3.Error as exc:
         summary["sqlite_error"] = str(exc)
+
+    if summary.get("looks_like_fabric") is True:
+        summary["authority"] = authority_summary(path)
 
     if mode == "deep":
         summary["sha256"] = sha256_file(path)
@@ -194,6 +206,19 @@ else:
         "candidates": candidates,
     }
 
+configured = database.get("configured")
+authority_readable = True
+if isinstance(configured, dict):
+    authority = configured.get("authority")
+    authority_readable = (
+        configured.get("exists") is True
+        and configured.get("looks_like_fabric") is True
+        and isinstance(authority, dict)
+        and authority.get("exit") == 0
+        and isinstance(authority.get("result"), dict)
+        and authority["result"].get("authority") == "accepted-geographic-state"
+    )
+
 checks = {
     "repo_path_matches_recorded": str(repo) == recorded_checkout.get("path"),
     "origin_matches_recorded": origin == recorded_checkout.get("origin"),
@@ -201,6 +226,7 @@ checks = {
     "upstream_matches_recorded": upstream == recorded_checkout.get("upstream"),
     "worktree_clean": not status_porcelain,
     "fetch_refspec_matches_recorded": recorded_checkout.get("fetch_refspec") in fetch_refspecs,
+    "configured_database_authority_readable": authority_readable,
 }
 
 result = {
@@ -245,4 +271,6 @@ if not checks["worktree_clean"]:
     raise SystemExit(7)
 if not checks["fetch_refspec_matches_recorded"]:
     raise SystemExit(8)
+if not checks["configured_database_authority_readable"]:
+    raise SystemExit(9)
 PY
