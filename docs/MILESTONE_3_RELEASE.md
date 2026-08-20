@@ -2,9 +2,9 @@
 
 Release acceptance date: 2026-08-20
 
-Status: **ACCEPTED ON `assistant/read-authority-boundary`**
+Status: **RELEASED ON `main`**
 
-Repository publication note: this release record is on the isolated development branch. No pull request, merge, or write to `main` is implied by milestone acceptance.
+Repository publication: `assistant/read-authority-boundary` was fast-forward merged into `main` at `84293aeb381db596f4c3233473c350fda6c5426d` on 2026-08-20. No merge commit was required because the branch was 47 commits ahead and 0 behind.
 
 ## Release definition
 
