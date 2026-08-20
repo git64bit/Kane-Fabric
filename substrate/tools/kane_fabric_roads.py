@@ -40,6 +40,10 @@ CONTRACT = _load_module(
     "_kane_fabric_roads_contract",
     Path(__file__).resolve().with_name("kane_fabric_substrate.py"),
 )
+COMPRESSION = _load_module(
+    "_kane_fabric_roads_compression",
+    Path(__file__).resolve().with_name("kane_fabric_compression.py"),
+)
 GEOMETRY = _load_module(
     "_kane_fabric_roads_geometry",
     Path(__file__).resolve().parents[2]
@@ -407,6 +411,7 @@ def _expected_policy():
 
 
 def build_component(database: Path, output: Path):
+    COMPRESSION.require_accepted_zlib()
     database = database.resolve()
     output = output.resolve()
     if database == output:
