@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "observed_date": "2026-08-20",
+  "project": {
+    "repository": "git64bit/Kane-Fabric",
+    "branch": "main"
+  },
+  "deployment": {
+    "proxmox_host": "srv-b",
+    "container_id": 102,
+    "container_hostname": "kane-fabric",
+    "os": "Debian GNU/Linux 12 (bookworm)",
+    "checkout": {
+      "path": "/tmp/kane-fabric-ms2",
+      "path_status": "current-observed-operational-path",
+      "origin": "https://github.com/git64bit/Kane-Fabric.git",
+      "branch": "main",
+      "upstream": "origin/main",
+      "fetch_refspec": "+refs/heads/*:refs/remotes/origin/*",
+      "last_observed_head": "2ab4835b05d04e0156c53726738a238af5acd2a6",
+      "last_observed_worktree": "clean"
+    }
+  },
+  "operational_state": {
+    "root": "/var/lib/kane-fabric",
+    "database": {
+      "path": null,
+      "sha256": null,
+      "status": "pending-ms3-live-identification"
+    }
+  },
+  "milestone": {
+    "current": 3,
+    "name": "Compile Shared Substrate",
+    "phase": "first-real-environment-baseline-gate",
+    "gate_steps_complete": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "next_gate_step": 7
+  },
+  "accepted_tests": {
+    "database": {
+      "command": "bash database/run-tests.sh",
+      "environment": "CT102",
+      "repository_head": "2ab4835b05d04e0156c53726738a238af5acd2a6",
+      "passed": 16,
+      "failed": 0,
+      "observed_date": "2026-08-20"
+    },
+    "substrate": {
+      "command": "bash substrate/run-tests.sh",
+      "environment": "CT102",
+      "repository_head": "2ab4835b05d04e0156c53726738a238af5acd2a6",
+      "passed": 19,
+      "failed": 0,
+      "observed_date": "2026-08-20"
+    }
+  },
+  "known_remote_branches": [
+    {
+      "name": "ms3-substrate-contract",
+      "head": "9b583fb7ab18b6d5e00e4643d4cbfe15f305e8cc",
+      "fully_contained_in_main": true,
+      "deletion_authorized": false
+    }
+  ],
+  "next_safe_action": "Identify the actual current accepted/working Kane County Fabric database in CT102, record its path and SHA-256, build county-overview.json from it, validate jurisdiction/release identity, and prove the database SHA-256 is unchanged.",
+  "state_policy": {
+    "stable_facts_are_not_rediscovered_each_session": true,
+    "live_state_must_be_verified_before_mutation": true,
+    "accepted_tests_are_not_rerun_without_an_invalidating_change": true,
+    "documentation_updates_are_batched_at_material_checkpoints": true
+  }
+}
