@@ -2,176 +2,221 @@
 
 ## Purpose
 
-This document defines how Kane Fabric software work is performed, where commands run, which system is authoritative for each kind of state, and how real-environment validation is distinguished from repository-only work.
+This document defines how Kane Fabric development is executed, which system owns each kind of state, and how a successor resumes work without repeating already accepted discovery and verification.
 
-It exists because repository history proved that correct code is not enough if an Assistant or developer uses the wrong execution environment, treats a historical checkout path as current, creates an unnecessary branch, or asks the user to act as a routine terminal relay.
+The process has two goals that must coexist:
 
-This is the current development-process authority. Historical milestone handoffs describe the process used at that time and do not override this document.
+1. never confuse repository/sandbox work with real CT102 acceptance;
+2. do not spend each new session reconstructing stable facts that the repository already records.
 
-`docs/HANDOFF.md` is the separate **current operational-state authority** for a successor: it records the repository map, current milestone boundary, last observed CT/runtime state, external evidence identities, compatibility nuances, accepted gates, and next safe action. Process belongs here; current state belongs there. Both must be maintained.
+Historical milestone handoffs preserve historical procedure and evidence. They do not override this document.
+
+## Current-state documents
+
+Use these documents for different purposes:
+
+- `docs/HANDOFF.md` — durable system mental model, historical evidence, non-obvious invariants, current milestone narrative;
+- `docs/CURRENT_STATE.json` — compact machine-readable latest observed operational checkpoint;
+- `docs/SESSION_START.md` — low-churn session-resume procedure;
+- current milestone handoff — milestone-specific implementation/acceptance detail.
+
+`CURRENT_STATE.json` is a recorded observation, not a substitute for live authority. It deliberately distinguishes the last observed CT state from the current GitHub `main` commit.
 
 ## Authority map
 
-Kane Fabric deliberately separates four authorities:
+Kane Fabric separates four authorities:
 
-| Authority | Role |
+| Authority | Owns |
 | --- | --- |
-| GitHub repository `git64bit/Kane-Fabric`, branch `main` | software, contracts, migrations, tests, documentation, small deterministic manifests |
+| GitHub `git64bit/Kane-Fabric`, branch `main` | software, contracts, migrations, tests, documentation, small deterministic manifests |
 | Proxmox host `srv-b` | LXC lifecycle, host conformance, host firewall/network policy, host-to-container execution |
-| CT102 `kane-fabric` | authoritative Kane Fabric execution environment for runtime tests, county database operations, compilation, and real-environment acceptance |
-| `/var/lib/kane-fabric` inside CT102 | operational county state, immutable evidence, active databases, staging, rollback, audit, and compiled artifacts |
+| CT102 `kane-fabric` | real Kane Fabric runtime/test/compiler environment |
+| `/var/lib/kane-fabric` inside CT102 | operational databases, immutable evidence, staging, rollback, audit, compiled artifacts |
 
-These roles must not be collapsed.
+These roles must not be collapsed. An Assistant sandbox is not CT102.
 
-The Assistant's own local/sandbox filesystem is not CT102 and must never be described as though commands run there prove CT102 behavior.
+## Session-start fast path
+
+A new Assistant must not begin by searching the host/container filesystem or replaying already accepted test gates.
+
+Start with:
+
+1. read live GitHub `main`;
+2. read `docs/HANDOFF.md`;
+3. read `docs/CURRENT_STATE.json`;
+4. read `docs/SESSION_START.md` and the current milestone documents needed for the next action;
+5. use the recorded CT102 checkout path directly;
+6. run the one-command repository/state check;
+7. investigate only a fact that the check contradicts.
+
+Stable facts are not discovery tasks. Repository identity, `srv-b`, CT102, `/var/lib/kane-fabric`, normal test entry points, and the recorded operational checkout path remain usable until deliberately changed or contradicted by a failed verification.
+
+The current read-only CT checker is:
+
+```bash
+bash development/kane-fabric-dev-state.sh
+```
+
+Use `--deep` only when full database validation and SHA-256 are required:
+
+```bash
+bash development/kane-fabric-dev-state.sh --deep
+```
+
+Do not incur deep database hashing/validation on every normal session start.
 
 ## Normal command path
 
-Kane Fabric runtime commands are executed inside CT102 through the Proxmox host.
-
-The normal host-to-container form is:
-
-```bash
-pct exec 102 -- COMMAND ARGUMENTS...
-```
-
-For a compound shell command:
-
-```bash
-pct exec 102 -- bash -lc '...'
-```
-
-Before attempting an exec, verify the container state on `srv-b`:
+Kane Fabric runtime commands execute inside CT102 through `srv-b`:
 
 ```bash
 pct status 102
+pct exec 102 -- COMMAND ARGUMENTS...
+pct exec 102 -- bash -lc '...'
 ```
 
-A stopped or unavailable CT is an infrastructure condition. It must not be misreported as an application or test failure.
+A stopped/unavailable CT is infrastructure state, not an application test failure.
 
-Do not substitute an Assistant sandbox, a different container, CT100, or CT101 for CT102 merely because those environments are reachable.
+Do not substitute CT100, CT101, or an Assistant sandbox for CT102 acceptance.
 
-## Assistant responsibility
+## Assistant responsibility and manual relay exception
 
-Routine project execution is an Assistant/development responsibility, not a user command-relay workflow.
+Routine project execution is an Assistant/development responsibility.
 
-When an authorized execution channel to `srv-b` is available, the Assistant should use it and then use `pct exec 102 -- ...` for CT102 commands. The user should not be asked to copy ordinary test, Git, inspection, build, or validation commands into CT102 merely because doing so is convenient for the Assistant.
+When an authorized execution channel to `srv-b` exists, the Assistant uses it and then `pct exec 102` for CT commands. The user is not the default terminal relay merely because relaying commands is convenient.
 
-If an Assistant session does not expose an authorized execution channel to `srv-b`, that is a capability gap for that session. The Assistant must state the limitation accurately and must not:
+If a session lacks an authorized `srv-b` execution channel:
 
-- claim that CT102 commands were executed;
-- claim that a real-environment acceptance gate passed;
-- run the same command in a local sandbox and present it as equivalent;
-- silently redefine the development process so that the user becomes the normal terminal operator.
+- state that capability gap accurately;
+- do not claim CT102 commands ran;
+- do not present sandbox output as CT102 evidence;
+- continue repository-only work where valid.
 
-The Assistant may continue repository analysis, documentation, design work, and other tasks that do not require CT102. Execution-dependent work remains unverified until the actual CT environment is available.
+The user may explicitly choose or accept a bounded manual command relay. When that exception is in use, issue one bounded command group at a time for state-changing or diagnostic work and evaluate its returned output before the next such group.
 
-The user may explicitly choose to perform a command manually, but that is an exception initiated or accepted by the user, not the default development process.
-
-Historical note: Milestones 1 and 2 did use an explicit user-operated command-relay pattern for many accepted gates. The Assistant supplied bounded command groups for `srv-b`, the user executed them, and returned exact output. That evidence remains valid. The historical fact must be preserved in release/handoff records, while current sessions follow the normal execution model above whenever an authorized `srv-b` execution channel is available.
+Milestones 1 and 2 used this manual relay pattern for many accepted gates; that historical evidence remains valid.
 
 ## Repository workflow
 
-The GitHub repository is the software Single Source of Truth.
+GitHub `main` is the software Single Source of Truth.
 
-Before substantive work:
+Work directly on `main` unless the user explicitly requests a branch/PR workflow.
 
-1. read current `main` rather than relying only on a prior handoff;
-2. read `docs/HANDOFF.md` and the current milestone documents;
-3. inspect the current governing documents;
-4. verify that the repository has not advanced since the proposed change was prepared.
-
-For this repository, work directly on `main` unless the user explicitly requests a feature branch, pull request, or other branch workflow.
-
-Do not silently change a checkout to a single-branch fetch configuration.
-
-Before changing local branch or refspec state, inspect:
+Before changing checkout state, inspect at minimum:
 
 ```bash
 git status --short --branch
 git branch -vv
 git config --get-all remote.origin.fetch
+git remote -v
 ```
 
-Never discard apparent local changes until they have been compared with the intended authoritative ref.
+Never discard unexplained local changes. Never silently restrict the fetch refspec to one branch.
 
-CT102 intentionally does not need GitHub write credentials for Assistant-driven repository publication. Repository writes should use the authorized GitHub integration when available. Do not ask the user to add GitHub credentials to CT102 merely to accommodate an Assistant-created Git workflow.
+CT102 does not need GitHub write credentials for Assistant publication. Use the authorized GitHub integration for repository writes; do not ask the user to add CT102 credentials merely to publish or clean up Assistant-created branches.
 
-## CT102 checkout discovery
+## CT102 checkout rule
 
-A historical checkout path is evidence, not a permanent path contract.
+The path in `docs/CURRENT_STATE.json` is the **current operational checkout path** until deliberately changed or contradicted.
 
-The Milestone 2 cleanup used `/tmp/kane-fabric-ms2`. Future work must not assume that path still exists or is the current checkout simply because a historical handoff names it.
+A successor must try that path first. Do not search `/tmp`, `/root`, `/opt`, `/srv`, or `/var/lib` for another checkout unless:
 
-At the start of a real CT102 execution session, determine the current Kane Fabric checkout and verify:
+- the recorded path does not exist;
+- it is not `git64bit/Kane-Fabric`;
+- branch/upstream/refspec/worktree checks contradict the recorded contract.
 
-- it is the `git64bit/Kane-Fabric` repository;
-- it is on `main` unless the user explicitly requested otherwise;
-- it tracks the intended `origin/main`;
-- its worktree state is understood before update/reset operations;
-- its fetch refspec is not unexpectedly restricted.
-
-Once a stable canonical checkout path is deliberately established for current operations, record it in `docs/HANDOFF.md` and the current milestone/release documentation. Do not infer one from an old milestone.
+If a different canonical checkout is deliberately established, update `CURRENT_STATE.json`, `docs/HANDOFF.md`, and the current milestone handoff at the same material checkpoint.
 
 ## Host commands versus CT commands
 
-Commands belong to the authority that owns the state being inspected or changed.
-
 Run on `srv-b`:
 
-- `pct status`, `pct config`, and other Proxmox/LXC lifecycle inspection;
-- host firewall/network inspection;
-- the host-owned executable `ct-baseline.sh` conformance gate;
-- host storage and host systemd checks;
-- `pct exec 102 -- ...` itself.
+- `pct status`, `pct config`, LXC lifecycle inspection;
+- host firewall/network checks;
+- host storage/systemd checks;
+- the host-owned `/usr/local/sbin/ct-baseline.sh` gate;
+- `pct exec 102 -- ...`.
 
 Run inside CT102 through `pct exec`:
 
-- Kane Fabric Python tools and shell entry points;
-- `database/run-tests.sh` and `substrate/run-tests.sh`;
-- Git inspection/update of the CT102 runtime checkout;
-- source-profile/status checks;
+- Kane Fabric Git inspection/synchronization;
+- project tests and tools;
+- source-profile/status work;
 - candidate harvest/validation/registration;
-- database validation and comparison;
-- reconciliation preparation/validation;
-- substrate compilation and browser-package generation;
-- inspection of `/var/lib/kane-fabric` operational state.
+- database validation/comparison;
+- reconciliation/promotion preparation;
+- substrate compilation/package generation;
+- `/var/lib/kane-fabric` inspection.
 
-Do not duplicate the host's `ct-baseline.sh` inside the repository or CT as an alternative authority. The repository records the dependency on that host gate; `srv-b` owns its executable definition.
+Do not duplicate the host `ct-baseline.sh` inside the repository as a competing authority.
 
 ## Development loop
 
-The normal implementation loop is:
+The normal loop is:
 
 ```text
-read current GitHub main + docs/HANDOFF.md
+read current main + current checkpoint
         ↓
-make the smallest coherent software/contract change
+run one-command CT state check
         ↓
-update main through the authorized repository channel
+make smallest coherent implementation/contract change
         ↓
-verify CT102 is running on srv-b
+update GitHub main
         ↓
-exec into CT102
+verify/synchronize CT102 when required
         ↓
-synchronize/verify the CT102 checkout against main
+run only the tests invalidated by the change
         ↓
-run unit/regression tests in CT102
+run the required real-data gate
         ↓
-run the real-data gate required by the milestone
+verify authoritative state changed only when intended
         ↓
-verify authoritative/evidence state was changed only when the operation intended it
-        ↓
-record accepted evidence + current state in docs/HANDOFF.md when the gate matters
+record one material checkpoint
 ```
 
-A local or synthetic test can catch defects earlier, but it does not replace the CT102 gate when the claim concerns the real Kane Fabric environment or real Kane County state.
+Do not insert documentation commits after every intermediate observation. Repeated handoff commits create recursive Git/CT synchronization churn and reduce useful development time.
+
+## Documentation/checkpoint cadence
+
+Update `docs/CURRENT_STATE.json`, `docs/HANDOFF.md`, and the milestone handoff at a **material checkpoint**, not after every command.
+
+Material checkpoints include:
+
+- an acceptance gate passes/fails and changes the next safe action;
+- current operational DB path/hash is established or changes;
+- implementation boundary changes;
+- deployment/authority/checkout path changes;
+- a new non-obvious invariant or exception is discovered.
+
+Carry ordinary intermediate observations through the bounded gate and record them together.
+
+A documentation-only commit after an accepted test does not by itself invalidate that test. Record the implementation/test HEAD that was actually exercised and rerun only if relevant code/environment changed.
+
+## Test invalidation discipline
+
+Use the least expensive useful test and make claims only at the level actually run:
+
+1. static/repository review;
+2. synthetic/local unit tests;
+3. repository regression tests inside CT102;
+4. real Kane County read-only/derived-data gate inside CT102;
+5. deliberately scoped candidate/reconciliation/promotion gate;
+6. release evidence with exact hashes/counts.
+
+Accepted tests are **not rerun just because a new Assistant/session started**.
+
+Rerun when an invalidating change exists, such as:
+
+- implementation covered by that test changed;
+- migration/source contract changed;
+- relevant runtime/dependency/environment changed;
+- a contradictory live observation appears.
+
+Do not rerun an unchanged accepted gate merely to rediscover confidence.
 
 ## Shell safety
 
-When compound commands are passed to a root shell, use an isolated shell/subshell rather than changing the state of an interactive shell unexpectedly.
-
-Typical host-to-CT form:
+Use strict mode inside a bounded subprocess, not by injecting it into an interactive root shell:
 
 ```bash
 pct exec 102 -- bash -lc '
@@ -180,159 +225,109 @@ pct exec 102 -- bash -lc '
 '
 ```
 
-Project scripts may contain their own `set -euo pipefail` because they execute in their own noninteractive process.
-
-Quote paths and data deliberately. Do not embed untrusted source values into shell command text.
-
-If the user is explicitly executing a manual command relay, provide one bounded command group at a time for state-changing or diagnostic work so returned output can be evaluated before the next operation.
+Quote paths/data deliberately. Do not interpolate untrusted source values into shell command text.
 
 ## Operational data boundary
 
-`/var/lib/kane-fabric` is operational state, not source-control authority.
-
-The expected categories remain:
+`/var/lib/kane-fabric` is operational state, not source-control authority:
 
 ```text
-seed/                    immutable initial seed evidence
-reconstruction-inputs/   imported historical reconstruction evidence
-reconstruction-code/     historical reference software
-database/                active/working Kane Fabric databases
+seed/                    immutable seed evidence
+reconstruction-inputs/   frozen historical evidence
+reconstruction-code/     frozen historical software reference
+database/                active/working Fabric databases
 staging/                 candidate/reconciliation/promotion work
 rollback/                rollback evidence
-audit/                    audit/reconstruction reports
+audit/                    audit reports
 render/                   compiled substrate/subscription artifacts
 ```
 
-Large GeoPackages, harvested GeoJSON, candidate directories, reconciliation databases, rollback copies, and compiled packages remain outside Git.
+Large GeoPackages, harvested source data, staging/rollback directories, and generated packages remain outside Git.
 
-Immutable evidence must not be modified as a shortcut for testing.
+Immutable evidence must never be modified as a testing shortcut.
 
-## Read-only work, staged writes, and authority-changing writes
+## Read-only, staged, and authority-changing work
 
-Not all CT102 commands have the same operational effect.
+### Read-only / derived
 
-### Read-only / derived work
+Examples: source status, validation, accepted-vs-candidate comparison, substrate compilation from a read-only DB, tests using temporary DBs.
 
-Examples:
-
-- source status;
-- database validation and inspection;
-- deterministic accepted-versus-candidate comparison;
-- substrate compilation from an authoritative database opened read-only;
-- tests against temporary databases.
-
-These should not mutate accepted county state. Where practical, hash or otherwise verify the source database before and after a derived build.
+Where practical, verify the source database before and after derived compilation.
 
 ### Staged/provenance writes
 
-Candidate registration records candidate provenance in the working database. It does not make the candidate accepted geography. Reconciliation and promotion preparation create external candidate artifacts rather than silently replacing the active database.
-
-These writes must use the designated database/staging paths for the current operation and must pass their post-write validators.
+Candidate registration records lineage; it does not promote geography. Reconciliation/promotion preparation creates candidate artifacts and must pass validators.
 
 ### Accepted-state changes
 
-Promotion is a distinct authority-changing operation. It must never be hidden inside an unrelated test or build command.
+Promotion is explicit authority-changing work. It must never be hidden in a test, source-status operation, or substrate build.
 
-Kane Fabric promotion code requires an explicit `promote` command, retains a rollback backup, verifies the prepared candidate, replaces the database atomically, and automatically restores the previous state if post-promotion verification fails.
+Promotion requires explicit `promote`, rollback backup, validation, atomic replacement, and post-verification/restore behavior. Rollback is likewise explicit.
 
-Rollback is likewise an explicit named operation.
-
-A development test may prove promotion/rollback behavior on a disposable or deliberately prepared test database. It must not promote the operational accepted database merely because a test suite needs coverage.
-
-## Test and acceptance hierarchy
-
-Use the least expensive useful test first, but make acceptance claims only at the level actually tested.
-
-1. static/repository review;
-2. synthetic unit tests;
-3. full repository regression tests inside CT102;
-4. real Kane County read-only/derived-data gate inside CT102;
-5. deliberately scoped candidate/reconciliation/promotion gate when the milestone requires it;
-6. release evidence and exact hashes/counts recorded in documentation.
-
-A result at level 1 or 2 must not be described as level 3 or 4 acceptance.
-
-Once a bounded implementation slice passes its defined acceptance gate, accept it and move forward unless a later change invalidates that evidence. Do not create repeated verification churn merely to reconfirm an already accepted unchanged slice.
+Operational accepted state must not be promoted merely to satisfy test coverage.
 
 ## Source refresh discipline
 
-The project objective is to keep county geography current without confusing freshness with authority.
-
-The operational sequence remains:
+Freshness is not authority:
 
 ```text
-source-status check
-    ↓
-new/changed source detected
-    ↓
-complete candidate harvest
-    ↓
-candidate validation
-    ↓
-registration as candidate
-    ↓
-deterministic comparison
-    ↓
-identity reconciliation where required
-    ↓
-promotion preparation and validation
-    ↓
-explicit atomic promotion
+source-status
+  → changed source detected
+  → complete candidate harvest
+  → candidate validation
+  → candidate registration
+  → deterministic comparison
+  → identity reconciliation where required
+  → promotion prepare/validate
+  → explicit atomic promotion
 ```
 
-A newer upstream response does not bypass these gates.
+A newer upstream response never bypasses these gates.
 
 ## File transfer
 
-For large cross-machine artifacts in the current environment, the established workflow is:
+For large cross-machine artifacts in the current environment, the established workflow remains:
 
 ```text
 create tarball
 → Webmin download/upload
-→ verify SHA-256 locally
-→ extract/use only after verification
+→ verify SHA-256
+→ extract/use
 ```
 
-Do not prescribe SCP/SSH-based transfer as the default unless the user explicitly requests it or the deployment policy is deliberately changed.
-
-This transfer rule does not prohibit the host-to-LXC `pct exec` development path; they solve different problems.
+Do not prescribe SCP/SSH transfer as the default unless deployment policy is deliberately changed. This rule is separate from host-to-LXC `pct exec` command execution.
 
 ## Project boundaries on srv-b
 
 CT102 is Kane Fabric.
 
-CT100 and CT101 belong to Mechanical Compiler infrastructure and must not be repurposed for Kane Fabric development merely because they are on the same Proxmox host.
-
-Co-location does not transfer application ownership or authority.
+CT100 and CT101 are Mechanical Compiler infrastructure and must not be repurposed for Kane Fabric merely because they share the Proxmox host.
 
 ## Handoff rule
 
-`docs/HANDOFF.md` is the stable current handoff path and must be updated throughout development, not created only at release time.
+At material checkpoints, the durable handoff/current state must capture:
 
-Every material current-state update and every future milestone handoff must state or reference:
+- current milestone and implementation boundary;
+- last observed CT checkout path/branch/head/upstream/worktree state;
+- current operational DB path/hash when established;
+- accepted CT102 gates and the implementation HEAD actually tested;
+- deliberate compatibility names/exclusions/source-policy exceptions;
+- unavailable execution capability where relevant;
+- exact next safe action.
 
-- `docs/DEVELOPMENT_PROCESS.md` as the execution-process authority;
-- the current milestone and implementation boundary;
-- the current GitHub `main` identity when recorded, with a warning to re-read live `main`;
-- the current CT102 checkout path if a stable path has been deliberately established;
-- the last **observed** CT102 checkout branch/head/upstream/worktree state, distinct from GitHub state;
-- the current active/working database path and whether its recorded hash is historical evidence or current observed state;
-- which real-environment gates have actually been executed;
-- which repository/synthetic tests exist but have not yet been run in CT102;
-- deliberate compatibility names, exclusions, source-policy exceptions, and other non-obvious invariants introduced or discovered;
-- any execution capability that was unavailable rather than silently replaced by user command relay;
-- the exact next safe development action.
+`CURRENT_STATE.json` should contain compact values that a checker can consume. `HANDOFF.md` should explain the meaning and history that cannot be understood safely from raw fields alone.
 
-Milestone-specific handoffs must update `docs/HANDOFF.md` as well as their milestone file. A successor should not need private conversation memory to reconstruct the repository or workflow.
+A successor should not need private chat history and should not need to rediscover stable project topology.
 
-Historical handoffs may preserve obsolete procedures for forensic value, but they must not be treated as current execution instructions when they conflict with this document or `docs/HANDOFF.md`.
+## Correction history
 
-## Current correction history
-
-The Milestone 2 handoff contains the historical sentence:
+Milestone 2 contains the historical sentence:
 
 > The user performs infrastructure commands on `srv-b` and returns output.
 
-That sentence describes the interaction pattern actually used during that historical work. It is not deleted from history. For current development, the normal rule is: **the Assistant/development process executes routine commands through the authorized `srv-b` → `pct exec 102` path when that capability exists; the user is not the default terminal relay.**
+That describes the workflow actually used then. It is not the current default rule.
 
-The MS-2 branch/refspec cleanup incident and the broader handoff failure that followed are documented in `docs/HANDOFF.md`. They are process lessons, not merely historical trivia: future work must preserve a clean `main` workflow and a maintained, self-sufficient current handoff.
+The MS-2 branch/refspec incident and the later handoff/access failures established two permanent lessons:
+
+1. keep the normal repository workflow on clean `main` unless explicitly changed;
+2. preserve a compact current-state checkpoint and verify it directly instead of reconstructing the whole environment every session.
