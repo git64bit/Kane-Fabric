@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 import sqlite3
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -124,6 +125,65 @@ class FabricReadTests(unittest.TestCase):
             self.database,
             [("test-roads-release", source)],
         )
+
+    def test_authority_summary_is_read_only_and_explains_authority(self) -> None:
+        before = sha256_file(self.database)
+        summary = fabric_read.authority_summary(self.database)
+        after = sha256_file(self.database)
+
+        self.assertEqual(before, after)
+        self.assertEqual("read-only", summary["mode"])
+        self.assertEqual("accepted-geographic-state", summary["authority"])
+        self.assertEqual("lifecycle-and-release-metadata-only", summary["validation_scope"])
+        self.assertEqual(1, summary["accepted_release_count"])
+        release = summary["accepted_releases"][0]
+        self.assertEqual("roads", release["dataset_key"])
+        self.assertEqual("test-roads-release", release["release_key"])
+        self.assertEqual(1, release["feature_count"])
+        self.assertEqual(1, release["harvest_object_count"])
+        self.assertEqual(0, release["retained_feature_delta"])
+        self.assertEqual("matches_harvest_inventory", release["inventory_relation"])
+        self.assertEqual(0, release["candidate_release_count"])
+        self.assertIn("Only a source release", summary["interpretation"]["accepted_release_rule"])
+        self.assertIn("does not change", summary["interpretation"]["candidate_rule"])
+        self.assertIn("not authoritative", summary["interpretation"]["freshness_rule"])
+        self.assertIn("do not diagnose corruption", summary["interpretation"]["inventory_rule"])
+
+    def test_authority_summary_explains_retained_inventory_delta(self) -> None:
+        connection = sqlite3.connect(self.database)
+        try:
+            connection.execute(
+                "UPDATE harvest_run SET object_count = 2 WHERE harvest_key = 'roads-harvest'"
+            )
+            connection.commit()
+        finally:
+            connection.close()
+
+        summary = fabric_read.authority_summary(self.database)
+        release = summary["accepted_releases"][0]
+        self.assertEqual(2, release["harvest_object_count"])
+        self.assertEqual(1, release["retained_feature_delta"])
+        self.assertEqual(
+            "retains_fewer_features_than_harvest_inventory",
+            release["inventory_relation"],
+        )
+
+    def test_authority_shell_entry_point_returns_same_contract(self) -> None:
+        result = subprocess.run(
+            [
+                "bash",
+                str(DATABASE / "kane-fabric-read.sh"),
+                "authority",
+                str(self.database),
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        summary = json.loads(result.stdout)
+        self.assertEqual("kane-fabric-authority-summary", summary["format"])
+        self.assertEqual("accepted-geographic-state", summary["authority"])
+        self.assertEqual("test-roads-release", summary["accepted_releases"][0]["release_key"])
 
     def test_load_accepted_map_layer_is_read_only_and_validated(self) -> None:
         before = sha256_file(self.database)
