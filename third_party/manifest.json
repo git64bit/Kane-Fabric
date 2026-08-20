@@ -155,6 +155,21 @@
       "vendoring_requirement": "required-if-retained"
     },
     {
+      "key": "chromium",
+      "license": "BSD-3-Clause core plus bundled third-party licenses/notices in the exact selected Chromium distribution",
+      "license_impact": "does-not-relicense-kane-fabric",
+      "pin": {
+        "observed_debian_package": "chromium 151.0.7922.137-1~deb12u1",
+        "observed_environment": "CT102 Debian 12 development-only real-browser acceptance runtime",
+        "observed_license_file_sha256": "5e759c74a792b9d6c81107c21346f3d671347a02e843c2818a24900b6f63d3fd",
+        "observed_version": "Chromium 151.0.7922.137 built on Debian GNU/Linux 12 (bookworm)",
+        "status": "observed-development-only-not-vendored"
+      },
+      "reason": "Development-only real-browser Canvas and bounded selective HTTP range proof for MS3-009/MS3-010",
+      "role": "development-test-runtime",
+      "vendoring_requirement": "required-if-retained"
+    },
+    {
       "key": "esp-idf",
       "license": "Apache-2.0 core plus exact-release third-party firmware/tooling licenses",
       "license_impact": "does-not-relicense-kane-fabric-subject-to-selected-component-review",
