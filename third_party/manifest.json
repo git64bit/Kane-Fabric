@@ -45,7 +45,9 @@
       "license": "PSF-2.0 plus licenses carried by the selected CPython distribution",
       "license_impact": "does-not-relicense-kane-fabric",
       "pin": {
-        "status": "runtime-version-not-yet-recorded"
+        "observed_environment": "CT102 Debian 12",
+        "observed_version": "3.11.2 (main, May 12 2026, 05:17:27) [GCC 12.2.0]",
+        "status": "observed-ct102-not-vendored"
       },
       "reason": "Current Kane Fabric database, harvesting, compiler, validation, and test runtime",
       "role": "runtime-build-test",
@@ -56,7 +58,9 @@
       "license": "public-domain",
       "license_impact": "does-not-relicense-kane-fabric",
       "pin": {
-        "status": "runtime-version-not-yet-recorded"
+        "observed_environment": "CT102 Debian 12 via Python sqlite3",
+        "observed_version": "3.40.1",
+        "status": "observed-ct102-not-vendored"
       },
       "reason": "Authoritative GeoPackage database engine behind Python sqlite3",
       "role": "runtime-library",
@@ -67,7 +71,10 @@
       "license": "Zlib",
       "license_impact": "does-not-relicense-kane-fabric",
       "pin": {
-        "status": "runtime-version-not-yet-recorded"
+        "observed_compile_version": "1.2.13",
+        "observed_environment": "CT102 Debian 12 via Python zlib",
+        "observed_runtime_version": "1.2.13",
+        "status": "observed-ct102-not-vendored"
       },
       "reason": "Deterministic zlib-wrapped DEFLATE compiler implementation for v1 .kfs payloads",
       "role": "runtime-library",
@@ -78,7 +85,9 @@
       "license": "Apache-2.0 for OpenSSL 3.0 and later; exact selected release must remain 3.x-or-later unless separately reviewed",
       "license_impact": "does-not-relicense-kane-fabric",
       "pin": {
-        "status": "runtime-version-not-yet-recorded"
+        "observed_environment": "CT102 Debian 12 via Python ssl",
+        "observed_version": "OpenSSL 3.0.20 7 Apr 2026",
+        "status": "observed-ct102-not-vendored"
       },
       "reason": "TLS implementation behind Python HTTPS harvesting when CPython ssl uses OpenSSL",
       "role": "runtime-library",
