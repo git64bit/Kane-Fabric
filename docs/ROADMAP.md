@@ -198,13 +198,32 @@ Exit gate: **PASSED**. Kane Fabric can initialize and refresh Kane County throug
 
 ## Milestone 3 — Compile shared substrate
 
+**Status: IN PROGRESS**
+
+Current cross-milestone handoff: `docs/HANDOFF.md`
+
+Milestone-specific handoff: `docs/MILESTONE_3_HANDOFF.md`
+
+Design baseline: `docs/MILESTONE_3_DESIGN.md`
+
+Frozen wire contract: `docs/SUBSTRATE_FORMAT_V1.md`
+
 Purpose: produce the first Kane Fabric shared geographic distribution.
 
 Initial substrate:
 
-- county boundary/context;
+- county/jurisdiction boundary and overview context;
 - roads;
 - water.
+
+Current implementation state:
+
+- MS3-001 v1 contract primitives — repository implementation present;
+- MS3-002 deterministic jurisdiction overview — repository implementation present;
+- first real CT102 Milestone 3 execution/immutability gate — **not yet accepted**;
+- road LOD, water LOD, manifest, package activation, browser proof, and edge-compatibility proof — not yet complete.
+
+Repository implementation does not count as CT102 acceptance. The next safe action is the real baseline gate recorded in `docs/HANDOFF.md` and `docs/MILESTONE_3_HANDOFF.md` before road LOD implementation proceeds as accepted real-environment-backed work.
 
 Work includes:
 
@@ -212,9 +231,10 @@ Work includes:
 - define LOD strategy;
 - define package identity/hash rules;
 - compile Kane County substrate;
-- validate browser-side loading, decompression, and rendering.
+- validate browser-side loading, decompression, and rendering;
+- keep the package access pattern compatible with the ESP32-S3/ESP-IDF reference edge.
 
-Exit gate: a browser can open Kane County and navigate the shared substrate independently of any one application subscription.
+Exit gate: a browser can open Kane County and navigate the shared substrate independently of any one application subscription, with reproducible package identities and an edge-practical selective access pattern.
 
 ## Milestone 4 — Subscription contract
 
