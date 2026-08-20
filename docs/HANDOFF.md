@@ -122,7 +122,7 @@ remote refs    origin/main only
 working tree   clean
 ```
 
-The repository subsequently advanced through GitHub to Milestone 3 commits. Therefore **do not assume CT102 is currently synchronized beyond that last observed checkout state**. Discover it on first live access.
+That remains historical MS-2 cleanup evidence. The current live MS-3 observation is recorded below.
 
 Before changing checkout state, inspect:
 
@@ -168,7 +168,7 @@ local divergence  0 ahead / 32 behind
 merge base        9440c31283a000f0b3ce30e57035446ad45c7ce3
 ```
 
-This proves the local checkout is a clean fast-forward candidate. At the time of this record it had **not yet been fast-forwarded**, so no current Milestone 3 CT tests can be claimed from this checkout.
+That proved the local checkout was a clean fast-forward candidate.
 
 The fetch also revealed this remote branch:
 
@@ -178,6 +178,21 @@ HEAD  9b583fb7ab18b6d5e00e4643d4cbfe15f305e8cc
 ```
 
 GitHub comparison confirms that `9b583fb...` is fully contained in `main`: `main` is 10 commits ahead, 0 behind, and `9b583fb...` is the merge base. The remote branch is therefore merged/stale state rather than independent current development. No deletion has been authorized or performed as part of this observation.
+
+A guarded fast-forward was then executed from `srv-b` through `pct exec 102`. Preconditions required local `main`, a clean worktree, the expected GitHub origin, `HEAD` as an ancestor of `origin/main`, and zero local commits ahead. The fetch immediately before the fast-forward moved `origin/main` to the then-current handoff state and produced a 0-ahead / 34-behind relationship. The fast-forward completed cleanly:
+
+```text
+checkout path     /tmp/kane-fabric-ms2
+branch            main
+local HEAD        4eaa85a1fd34fd426703560fe216f55f46636a79
+origin/main       4eaa85a1fd34fd426703560fe216f55f46636a79
+upstream          origin/main
+worktree          clean
+fetch refspec     +refs/heads/*:refs/remotes/origin/*
+post-FF state     synchronized
+```
+
+This is the last observed synchronized CT102 repository state. The handoff update that records it necessarily advances GitHub `main` again, so a future command must compare live refs rather than assuming CT102 remains byte-for-byte at repository HEAD. The synchronization evidence itself remains valid for `4eaa85a1...`.
 
 Because `/tmp/kane-fabric-ms2` has now been observed live, it may be used for the immediate Milestone 3 baseline sequence. It remains an observed deployment path, not a permanent architectural path contract; future sessions must still verify it before relying on it.
 
@@ -616,19 +631,19 @@ Kane-specific LOD policy is source policy, not a universal Fabric rule:
 
 At the time this handoff was repaired, repository code and synthetic tests existed for the v1 contract primitives and overview generator.
 
-**No accepted record yet proves the current Milestone 3 repository state was synchronized and executed inside CT102.**
+**The full first Milestone 3 CT102 gate is not yet accepted.**
 
-The live baseline has now established the first three discovery conditions:
+The live baseline has established the repository/environment portion:
 
 1. CT102 is running — **observed**;
 2. the actual Kane Fabric checkout is `/tmp/kane-fabric-ms2` — **observed**;
-3. repo identity, `main`, upstream, clean worktree, and normal all-branches fetch refspec are sane — **observed**.
+3. repo identity, `main`, upstream, clean worktree, and normal all-branches fetch refspec are sane — **observed**;
+4. a guarded fast-forward synchronized CT102 to the then-current GitHub `main` at `4eaa85a1fd34fd426703560fe216f55f46636a79` without discarding local state — **observed**.
 
-After `git fetch --prune origin`, local `main` was observed at `9440c312...`, exactly 32 commits behind and 0 ahead of `origin/main` at `8d56d975...`. The next safe operation is a verified fast-forward of that clean checkout. No Milestone 3 tests or real-data compilation should be claimed before synchronization and execution.
+The documentation commit recording that observation moves GitHub `main` again, so the next live command must fetch and verify the small documentation-only delta before running tests. This does not invalidate the synchronization evidence at `4eaa85a1...`.
 
 The remaining real-environment gate is:
 
-4. synchronize/verify the checkout against current GitHub `main` without discarding unexplained local state;
 5. run `bash database/run-tests.sh` inside CT102;
 6. run `bash substrate/run-tests.sh` inside CT102;
 7. identify the actual current accepted/working Kane County Fabric database;
