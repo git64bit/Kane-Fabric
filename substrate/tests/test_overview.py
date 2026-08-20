@@ -37,6 +37,14 @@ def sha256(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
+def sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
 class OverviewTests(unittest.TestCase):
     def setUp(self) -> None:
         self.temp = tempfile.TemporaryDirectory()
@@ -134,7 +142,8 @@ class OverviewTests(unittest.TestCase):
     def read_output(self) -> dict[str, object]:
         return json.loads(self.output.read_text(encoding="utf-8"))
 
-    def test_build_is_byte_deterministic_and_canonical(self) -> None:
+    def test_build_is_byte_deterministic_canonical_and_read_only(self) -> None:
+        database_before = sha256_file(self.database)
         first = OVERVIEW.build_overview(self.database, self.output)
         first_bytes = self.output.read_bytes()
         second = OVERVIEW.build_overview(self.database, self.output)
@@ -147,6 +156,7 @@ class OverviewTests(unittest.TestCase):
             OVERVIEW.CONTRACT.canonical_json_bytes(self.read_output()),
         )
         self.assertFalse(first_bytes.endswith(b"\n"))
+        self.assertEqual(database_before, sha256_file(self.database))
 
     def test_jurisdiction_identity_is_explicit(self) -> None:
         OVERVIEW.build_overview(self.database, self.output)
