@@ -34,6 +34,11 @@ COMPONENT_PATHS = {
     "roads": "roads-lod.kfs",
     "water": "water-lod.kfs",
 }
+COMPONENT_FORMATS = {
+    "county_overview": OVERVIEW_FORMAT,
+    "roads": ROAD_FORMAT,
+    "water": WATER_FORMAT,
+}
 
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 _FIPS_RE = re.compile(r"^[0-9]{5}$")
@@ -175,6 +180,11 @@ def validate_component_descriptor(
         raise SubstrateContractError("component path must be a safe relative path")
 
     format_key = str(value["format"])
+    if format_key != COMPONENT_FORMATS[role]:
+        raise SubstrateContractError(
+            f"component format does not match role {role}"
+        )
+
     version = value["version"]
     byte_length = value["byte_length"]
     if version != VERSION:
@@ -245,6 +255,22 @@ def compute_substrate_content_sha256(
     )
 
 
+def decode_index_length(prefix: bytes, *, expected_magic: bytes) -> int:
+    """Read only the fixed 16-byte prefix and return the canonical-index length."""
+
+    if expected_magic not in (ROAD_MAGIC, WATER_MAGIC):
+        raise SubstrateContractError("unsupported expected magic")
+    if len(prefix) != PREFIX_LENGTH:
+        raise SubstrateContractError(
+            "substrate component prefix must be exactly 16 bytes"
+        )
+    if prefix[:8] != expected_magic:
+        raise SubstrateContractError(
+            "substrate component magic/version is invalid"
+        )
+    return struct.unpack(">Q", prefix[8:16])[0]
+
+
 def encode_container_prefix(
     magic: bytes, index: Mapping[str, object]
 ) -> bytes:
@@ -270,16 +296,13 @@ def decode_container_index(
     readers do not need whole-component RAM residency.
     """
 
-    if expected_magic not in (ROAD_MAGIC, WATER_MAGIC):
-        raise SubstrateContractError("unsupported expected magic")
     if len(data) < PREFIX_LENGTH:
         raise SubstrateContractError("substrate component prefix is truncated")
-    if data[:8] != expected_magic:
-        raise SubstrateContractError(
-            "substrate component magic/version is invalid"
-        )
 
-    index_length = struct.unpack(">Q", data[8:16])[0]
+    index_length = decode_index_length(
+        data[:PREFIX_LENGTH],
+        expected_magic=expected_magic,
+    )
     index_end = PREFIX_LENGTH + index_length
     if index_end > len(data):
         raise SubstrateContractError("substrate component index is truncated")
