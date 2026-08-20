@@ -16,9 +16,17 @@ import zlib
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-ROADS_PATH = ROOT / "substrate/tools/kane_fabric_roads.py"
-GEOMETRY_PATH = ROOT / "database/tools/kane_fabric_geometry.py"
-WRAPPER = ROOT / "substrate/kane-fabric-roads.sh"
+DATABASE_TOOLS = ROOT / "database" / "tools"
+ENTRY_PATH = ROOT / "substrate" / "tools" / "kane_fabric_roads_entry.py"
+WRAPPER = ROOT / "substrate" / "kane-fabric-roads.sh"
+
+if str(DATABASE_TOOLS) not in sys.path:
+    sys.path.insert(0, str(DATABASE_TOOLS))
+
+import kane_fabric_db as fabric_db
+import kane_fabric_map_layers as map_layers
+import kane_fabric_provenance as provenance
+import kane_fabric_read as fabric_read
 
 
 def load_module(name: str, path: Path):
@@ -31,8 +39,18 @@ def load_module(name: str, path: Path):
     return module
 
 
-ROADS = load_module("_kane_fabric_roads_test", ROADS_PATH)
-GEOMETRY = load_module("_kane_fabric_roads_geometry_test", GEOMETRY_PATH)
+ENTRY = load_module("_kane_fabric_roads_test_entry", ENTRY_PATH)
+ROADS = ENTRY.ROADS
+
+
+def canonical_bytes(value: object) -> bytes:
+    return json.dumps(
+        value,
+        ensure_ascii=False,
+        separators=(",", ":"),
+        sort_keys=True,
+        allow_nan=False,
+    ).encode("utf-8")
 
 
 def sha256(data: bytes) -> str:
@@ -53,80 +71,94 @@ class RoadComponentTests(unittest.TestCase):
         self.root = Path(self.temp.name)
         self.database = self.root / "roads.gpkg"
         self.output = self.root / "roads-lod.kfs"
-        self._create_database()
+        fabric_db.init_database(self.database)
+        self._record_roads()
 
     def tearDown(self) -> None:
         self.temp.cleanup()
 
-    def _create_database(self) -> None:
-        connection = sqlite3.connect(self.database)
-        connection.executescript(
-            """
-            CREATE TABLE county (
-                county_id INTEGER PRIMARY KEY,
-                county_key TEXT NOT NULL,
-                name TEXT NOT NULL,
-                state_code TEXT NOT NULL,
-                country_code TEXT NOT NULL,
-                fips_code TEXT NOT NULL
-            );
-            CREATE TABLE dataset (
-                dataset_id INTEGER PRIMARY KEY,
-                dataset_key TEXT NOT NULL,
-                county_id INTEGER NOT NULL
-            );
-            CREATE TABLE source_release (
-                source_release_id INTEGER PRIMARY KEY,
-                dataset_id INTEGER NOT NULL,
-                release_key TEXT NOT NULL,
-                lifecycle_status TEXT NOT NULL,
-                content_sha256 TEXT NOT NULL,
-                feature_count INTEGER NOT NULL
-            );
-            CREATE TABLE source_map_feature (
-                source_map_feature_id INTEGER PRIMARY KEY,
-                source_release_id INTEGER NOT NULL,
-                source_feature_id TEXT NOT NULL,
-                geometry BLOB NOT NULL,
-                geometry_type TEXT NOT NULL,
-                geometry_sha256 TEXT NOT NULL,
-                min_x REAL NOT NULL,
-                min_y REAL NOT NULL,
-                max_x REAL NOT NULL,
-                max_y REAL NOT NULL
-            );
-            """
-        )
-        connection.execute(
-            "INSERT INTO county VALUES "
-            "(1, 'kane-county-il', 'Kane County', 'IL', 'US', '17089')"
-        )
-        connection.execute("INSERT INTO dataset VALUES (1, 'roads', 1)")
-        connection.execute(
-            "INSERT INTO source_release VALUES "
-            "(1, 1, 'kane-roads-test', 'accepted', ?, 6)",
-            ("a" * 64,),
-        )
-
+    def _record_roads(self) -> None:
         lengths = [0.010, 0.008, 0.006, 0.004, 0.002, 0.001]
+        features = []
         for index, length in enumerate(lengths, start=1):
             x0 = -88.0 + index * 0.02
             y0 = 41.5 + index * 0.01
-            coordinates = [
-                [x0, y0],
-                [x0 + length / 2.0, y0 + 0.000001],
-                [x0 + length, y0],
-            ]
-            blob, wkb, bounds = GEOMETRY.encode_geopackage_geometry(
-                "LineString", coordinates
+            features.append(
+                {
+                    "type": "Feature",
+                    "properties": {"id": f"road-{index}"},
+                    "geometry": {
+                        "type": "LineString",
+                        "coordinates": [
+                            [x0, y0],
+                            [x0 + length / 2.0, y0 + 0.000001],
+                            [x0 + length, y0],
+                        ],
+                    },
+                }
             )
-            connection.execute(
-                "INSERT INTO source_map_feature VALUES "
-                "(?, 1, ?, ?, 'LineString', ?, ?, ?, ?, ?)",
-                (index, f"road-{index}", blob, sha256(wkb), *bounds),
-            )
-        connection.commit()
-        connection.close()
+
+        source = self.root / "roads.geojson"
+        source.write_bytes(
+            canonical_bytes({"type": "FeatureCollection", "features": features})
+        )
+        raw = source.read_bytes()
+        digest = sha256(raw)
+        descriptor = {
+            "county": {
+                "county_key": "test-county",
+                "name": "Test County",
+                "state_code": "IL",
+                "country_code": "US",
+                "fips_code": "17089",
+            },
+            "agency": {
+                "agency_key": "test-agency",
+                "name": "Test Agency",
+                "jurisdiction": "Test County, Illinois",
+                "homepage_uri": "https://example.invalid/",
+            },
+            "dataset": {
+                "dataset_key": "roads",
+                "name": "roads",
+                "description": "road component test",
+                "data_kind": "roads",
+                "source_uri": "https://example.invalid/roads",
+            },
+            "harvest": {
+                "harvest_key": "roads-harvest",
+                "started_at": "2026-08-20T12:00:00.000Z",
+                "completed_at": "2026-08-20T12:00:01.000Z",
+                "status": "succeeded",
+                "source_metadata": {"id_property": "id"},
+                "object_count": len(features),
+            },
+            "files": [
+                {
+                    "file_role": "source",
+                    "relative_path": source.name,
+                    "byte_length": len(raw),
+                    "sha256": digest,
+                    "media_type": "application/geo+json",
+                }
+            ],
+            "release": {
+                "release_key": "test-roads-release",
+                "lifecycle_status": "accepted",
+                "source_published_at": "2026-08-20T11:00:00.000Z",
+                "content_sha256": digest,
+                "feature_count": len(features),
+                "metadata": {"id_property": "id"},
+                "accepted_at": "2026-08-20T12:00:02.000Z",
+            },
+        }
+        descriptor_path = self.root / "roads-descriptor.json"
+        descriptor_path.write_bytes(canonical_bytes(descriptor))
+        provenance.record_descriptor(self.database, descriptor_path)
+        map_layers.import_map_layers(
+            self.database,
+            [("test-roads-release", source)],
+        )
 
     def _read_index(self):
         data = self.output.read_bytes()
@@ -145,17 +177,14 @@ class RoadComponentTests(unittest.TestCase):
             records.extend(document["features"])
         return records
 
-    def _stored_geometry(self, feature_id: str):
-        connection = sqlite3.connect(f"file:{self.database.resolve()}?mode=ro", uri=True)
-        try:
-            row = connection.execute(
-                "SELECT geometry FROM source_map_feature WHERE source_feature_id = ?",
-                (feature_id,),
-            ).fetchone()
-        finally:
-            connection.close()
-        self.assertIsNotNone(row)
-        return GEOMETRY.decode_geopackage_geometry(row[0])
+    def _stored_feature(self, feature_id: str):
+        accepted = fabric_read.load_accepted_map_layer(self.database, "roads")
+        feature = next(
+            (item for item in accepted.features if item.source_feature_id == feature_id),
+            None,
+        )
+        self.assertIsNotNone(feature)
+        return feature
 
     def test_build_is_deterministic_valid_and_read_only(self) -> None:
         before = sha256_file(self.database)
@@ -205,7 +234,7 @@ class RoadComponentTests(unittest.TestCase):
             record["id"]: record for record in self._level_records("orientation")
         }
 
-        stored = self._stored_geometry("road-1")
+        stored = self._stored_feature("road-1")
         self.assertEqual(
             stored.coordinates,
             detail["road-1"]["geometry"]["coordinates"],
@@ -231,7 +260,7 @@ class RoadComponentTests(unittest.TestCase):
         connection.execute("UPDATE source_release SET feature_count = 7")
         connection.commit()
         connection.close()
-        with self.assertRaisesRegex(RuntimeError, "stored inventory has 6"):
+        with self.assertRaisesRegex(RuntimeError, "stores 6 features; expected 7"):
             ROADS.build_component(self.database, self.output)
 
     def test_shell_entry_point_builds_and_validates(self) -> None:
