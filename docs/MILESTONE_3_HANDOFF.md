@@ -52,7 +52,41 @@ working tree  clean
 
 After that observation, `main` advanced through GitHub with development-process, civic-infrastructure, multi-county, substrate-format, overview, and handoff work.
 
-Therefore **do not assume CT102 has the current Milestone 3 repository state**. On first live access, discover the actual checkout and synchronize/verify it deliberately. The old MS-2 path `/tmp/kane-fabric-ms2` existed during the cleanup but is not a permanent path contract.
+A new live observation on 2026-08-20 confirmed:
+
+```text
+CT102 status      running
+hostname          kane-fabric
+OS                Debian 12 (bookworm)
+checkout path     /tmp/kane-fabric-ms2
+branch            main
+local HEAD        9440c31283a000f0b3ce30e57035446ad45c7ce3
+upstream          origin/main
+worktree          clean
+fetch refspec     +refs/heads/*:refs/remotes/origin/*
+origin URL         https://github.com/git64bit/Kane-Fabric.git
+```
+
+A read-only/fetch-only synchronization inspection then observed:
+
+```text
+origin/main       8d56d97555533d4795b477e7b193139ae6ad850d
+local divergence  0 ahead / 32 behind
+merge base        9440c31283a000f0b3ce30e57035446ad45c7ce3
+```
+
+Therefore the checkout is a clean fast-forward candidate; it had not yet been fast-forwarded when this observation was recorded.
+
+The fetch also revealed a remaining remote branch:
+
+```text
+origin/ms3-substrate-contract
+HEAD  9b583fb7ab18b6d5e00e4643d4cbfe15f305e8cc
+```
+
+That commit is fully contained in `main`: GitHub comparison shows `main` 10 commits ahead of `9b583fb...`, 0 behind, with `9b583fb...` as the merge base. The branch is therefore merged/stale state, not divergent development. No branch deletion was authorized or performed when this handoff entry was written.
+
+The checkout path `/tmp/kane-fabric-ms2` is now a **current observed path**, but it remains a deployment observation rather than a conceptual/path contract. Future sessions must still verify it before relying on it.
 
 ## Execution authority
 
@@ -219,14 +253,25 @@ Repository review and synthetic regression-test code exist.
 
 The first real CT102 Milestone 3 execution gate has **not yet been accepted**.
 
+The initial discovery portion of that gate has now been observed live:
+
+- CT102 is running;
+- CT102 identity is `kane-fabric` on Debian 12;
+- the Kane Fabric checkout was found at `/tmp/kane-fabric-ms2`;
+- it is a clean local `main` with the correct origin and normal all-branches fetch refspec;
+- after `git fetch --prune origin`, local `main` was exactly 32 commits behind and 0 ahead of `origin/main` at `8d56d975...`;
+- no worktree changes were present.
+
+The checkout has **not yet been fast-forwarded** in the accepted record, so synchronization, tests, real database discovery, and overview compilation remain pending.
+
 Do not claim that substrate tests, Kane County overview generation, or database immutability proof passed on the real environment merely because the code exists in GitHub or because a sandbox test passes.
 
 The first CT102 gate must prove:
 
-1. CT102 is running;
-2. the actual Kane Fabric checkout is found and understood;
-3. checkout repo identity, `main`, upstream, worktree, and fetch refspec are sane;
-4. checkout is synchronized/verified against current GitHub `main` without discarding unexplained state;
+1. CT102 is running — **observed**;
+2. the actual Kane Fabric checkout is found and understood — **observed**;
+3. checkout repo identity, `main`, upstream, worktree, and fetch refspec are sane — **observed**;
+4. checkout is synchronized/verified against current GitHub `main` without discarding unexplained state — **next pending step**;
 5. `bash database/run-tests.sh` passes inside CT102;
 6. `bash substrate/run-tests.sh` passes inside CT102;
 7. the actual current Kane County working/accepted Fabric database is identified from live CT state;
