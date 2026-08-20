@@ -18,11 +18,19 @@ The shared contract primitives are implemented in:
 substrate/tools/kane_fabric_substrate.py
 ```
 
-Run the bounded format tests with:
+Run the bounded substrate tests with:
 
 ```sh
-./substrate/run-tests.sh
+bash substrate/run-tests.sh
 ```
+
+The first real compiler output is:
+
+```sh
+bash substrate/kane-fabric-overview.sh build DATABASE county-overview.json
+```
+
+The generator opens the authoritative database read-only and emits canonical deterministic JSON.
 
 ## Naming rule
 
