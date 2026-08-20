@@ -2,9 +2,9 @@
 
 ## 1. Purpose
 
-Kane Fabric separates authoritative geographic state, external source evidence, compiled distribution artifacts, and application-owned subscription state.
+Kane Fabric separates authoritative geographic state, external source evidence, compiled distribution artifacts, logical geographic partition definitions, and application-owned subscription state.
 
-This contract exists to prevent a county refresh, application change, edge-node failure, or package rebuild from silently transferring ownership between layers.
+This contract exists to prevent a county refresh, application change, partition change, edge-node failure, or package rebuild from silently transferring ownership between layers.
 
 ## 2. Official source data
 
@@ -24,11 +24,13 @@ A live upstream response does not become authoritative Kane Fabric state merely 
 
 ## 3. Accepted geographic state
 
-The county Fabric node owns the currently accepted geographic release state used to compile substrate and subscription packages.
+The county Fabric node owns the currently accepted geographic release state used to compile substrate, partition references, and geographic portions of subscription packages.
 
 Accepted state changes only through an explicit validated promotion process.
 
 A failed or partial candidate must not silently alter accepted state.
+
+Partition selection, subscription publication, rendering, caching, and physical edge placement do not themselves alter accepted geographic authority.
 
 ## 4. Seed evidence
 
@@ -63,11 +65,13 @@ Examples include persistent building/site identities needed to bridge official s
 
 Such identities must be reconciled explicitly when official geometry or identifiers change.
 
+Geographic identity does not change merely because an object appears in several partitions or subscriptions.
+
 ## 7. Shared substrate
 
 The shared substrate is Kane Fabric-owned compiled geographic context.
 
-Initial expected components include:
+The accepted Milestone 3 v1 components are:
 
 - county boundary/context;
 - roads;
@@ -75,46 +79,82 @@ Initial expected components include:
 
 The authoritative source of these compiled artifacts remains the accepted county database and associated release metadata, not an edge-device copy.
 
-## 8. Subscriptions
+The county-wide Milestone 3 publication remains canonical. A later geographic partition may select/reference only part of the publication without creating a second geographic authority.
 
-A subscription is a logical Kane Fabric distribution dataset layered on the shared substrate.
+## 8. Geographic partitions
 
-Subscription packages may contain geographic identity, geometry, classification, and domain metadata required for a consumer.
+A geographic partition is a logical Kane Fabric distribution/composition definition over a declared jurisdictional area.
+
+Partition examples include:
+
+- whole jurisdiction;
+- municipality/incorporated place;
+- township/equivalent administrative subdivision;
+- explicit bounded region;
+- deterministic composite scope.
+
+A partition may identify which substrate chunks/ranges and subscription objects are relevant to a focused area.
+
+A partition does **not** own or replace:
+
+- accepted geographic authority;
+- source provenance;
+- feature identity;
+- subscription business/domain ownership;
+- physical edge-node identity.
+
+Administrative boundaries used to define a partition must carry explicit accepted lineage when applicable. A changed administrative boundary produces a new partition definition/generation rather than silently mutating an old one.
+
+Objects crossing partition boundaries retain one logical identity and may be referenced or replicated in several partitions.
+
+## 9. Subscriptions
+
+A subscription is an independently versioned logical distribution dataset layered on the shared substrate.
+
+Subscription packages may contain geographic references, geometry, classification, and domain metadata required for a consumer.
 
 Ownership of domain/business state remains with the application where appropriate.
 
 Example: an Industry subscription may carry site geometry and stable geographic references for Mechanical Compiler, while Mechanical Compiler remains authoritative for participant identity, capability, qualification, workflow, and federation state.
 
-## 9. Browser state
+A subscription may cover one partition, several partitions, or a whole jurisdiction. Its logical identity does not change because its bytes are moved, replicated, cached, or sharded across physical edge devices.
+
+A proprietary, restricted, private, or commercially licensed subscription does not acquire ownership of the underlying public Kane Fabric substrate or partition definitions merely because the artifacts are composed together or co-located on one device.
+
+## 10. Browser state
 
 Browser-local state is not county authority unless an explicit application contract says otherwise.
 
-Caching, decompression buffers, visual selections, and transient UI state may be discarded and reconstructed.
+Caching, decompression buffers, selected partitions, visual selections, and transient UI state may be discarded and reconstructed.
 
 Future offline write journals, if introduced, must have an explicit ownership and reconciliation contract before implementation.
 
-## 10. Edge-node state
+## 11. Edge-node state
 
-Edge nodes hold replaceable distribution copies.
+Edge nodes hold replaceable distribution copies and placement configuration.
 
 An edge node may store:
 
-- immutable objects;
-- manifests;
-- substrate generations;
-- subscription generations;
+- immutable objects/components;
+- substrate manifests/generations;
+- geographic partition descriptors/manifests;
+- subscription manifests/generations;
+- selected chunk/range copies;
 - caches;
-- replication/shard copies.
+- replication/shard copies;
+- local placement/serving configuration.
 
-Loss of an edge node must not destroy authoritative county state.
+Loss or replacement of an edge node must not destroy authoritative county state or require a change to logical partition/subscription identity.
 
-## 11. Rollback and audit
+Physical device identity, hostname, SSID, IP address, and storage path are placement/runtime state rather than partition/subscription authority.
+
+## 12. Rollback and audit
 
 Rollback artifacts and append-only promotion/audit records are part of the county Fabric node's operational evidence.
 
 They may be retained according to policy, but they are not active accepted state unless an explicit rollback operation restores them.
 
-## 12. Git boundary
+## 13. Git boundary
 
 Git owns versioned implementation and contracts, not large operational geographic data.
 
@@ -124,7 +164,7 @@ Do not commit:
 - harvest GeoJSON;
 - candidate databases;
 - rollback databases;
-- render packages;
+- large generated substrate/partition/subscription packages;
 - reconstruction bundles;
 - secrets or private deployment credentials.
 
@@ -132,7 +172,7 @@ Do commit:
 
 - schemas and migrations;
 - source/county profiles;
-- small deterministic manifests when appropriate;
+- partition/subscription schemas and small deterministic manifests when appropriate;
 - tests;
 - scripts;
 - documentation;
