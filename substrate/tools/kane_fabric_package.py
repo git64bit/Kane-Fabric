@@ -35,6 +35,10 @@ CONTRACT = _load_module(
     "_kane_fabric_package_contract",
     TOOLS / "kane_fabric_substrate.py",
 )
+COMPRESSION = _load_module(
+    "_kane_fabric_package_compression",
+    TOOLS / "kane_fabric_compression.py",
+)
 OVERVIEW = _load_module(
     "_kane_fabric_package_overview",
     TOOLS / "kane_fabric_overview.py",
@@ -148,6 +152,7 @@ def inspect_package(package_dir: Path) -> dict[str, object]:
 
 
 def _build_staged_package(database: Path, stage_dir: Path) -> dict[str, object]:
+    COMPRESSION.require_accepted_zlib()
     paths = package_paths(stage_dir)
     OVERVIEW.build_overview(database, paths["county_overview"])
     ROADS.build_component(database, paths["roads"])
@@ -277,6 +282,7 @@ def _rollback_activation(package_dir: Path, *, had_previous: bool) -> None:
 
 
 def build_package(database: Path, package_dir: Path) -> dict[str, object]:
+    COMPRESSION.require_accepted_zlib()
     database = database.resolve()
     package_dir = package_dir.resolve()
     if not database.is_file():
