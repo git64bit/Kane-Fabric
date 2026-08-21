@@ -19,7 +19,6 @@ NORMATIVE_HEADING = "## Normative implementation order"
 NORMATIVE_ITEM_RE = re.compile(r"^(MS4-\d{3})\b")
 REFERENCE_ITEM_RE = re.compile(r"^\s*(?:[-*]\s+)?(MS4-\d{3})\b")
 HISTORICAL_MILESTONE_RE = re.compile(r"^MILESTONE_[0-3]_")
-EXPECTED_NUMBERS = tuple(range(1, 12))
 
 
 def _read_text(root: Path, relative: Path) -> str:
@@ -56,10 +55,11 @@ def extract_normative_sequence(text: str) -> tuple[str, ...]:
         raise RuntimeError("normative Milestone 4 work-sequence contains a duplicate identifier")
 
     numbers = tuple(int(identifier.removeprefix("MS4-")) for identifier in identifiers)
-    if numbers != EXPECTED_NUMBERS:
+    expected = tuple(range(1, max(numbers) + 1))
+    if numbers != expected:
         raise RuntimeError(
-            "normative Milestone 4 work-sequence must contain MS4-001 through MS4-011 "
-            "exactly once and in order"
+            "normative Milestone 4 work-sequence identifiers must start at MS4-001 "
+            "and be strictly contiguous and increasing"
         )
     return tuple(identifiers)
 
@@ -73,14 +73,10 @@ def _line_leading_identifiers(text: str) -> tuple[str, ...]:
     return tuple(result)
 
 
-def _contains_contiguous_sequence(values: tuple[str, ...], sequence: tuple[str, ...]) -> bool:
-    if len(values) < len(sequence):
-        return False
-    width = len(sequence)
-    return any(
-        values[index : index + width] == sequence
-        for index in range(len(values) - width + 1)
-    )
+def _contains_complete_identifier_set(
+    values: tuple[str, ...], sequence: tuple[str, ...]
+) -> bool:
+    return set(sequence).issubset(set(values))
 
 
 def iter_current_markdown(root: Path) -> Iterable[Path]:
@@ -117,7 +113,7 @@ def validate(root: Path = ROOT) -> dict[str, object]:
             except (OSError, UnicodeError) as exc:
                 errors.append(f"cannot read {relative}: {exc}")
                 continue
-            if _contains_contiguous_sequence(identifiers, sequence):
+            if _contains_complete_identifier_set(identifiers, sequence):
                 errors.append(
                     f"{relative} duplicates the complete normative Milestone 4 work sequence; "
                     f"refer to {DESIGN_REFERENCE} instead"

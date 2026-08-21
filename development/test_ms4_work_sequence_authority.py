@@ -112,24 +112,38 @@ class WorkSequenceAuthorityTests(unittest.TestCase):
             result["normative_work_items"],
         )
 
-    def test_duplicate_full_sequence_in_current_document_fails(self) -> None:
+    def test_normative_sequence_can_extend_contiguously(self) -> None:
+        self._write_design(ITEMS + "\nMS4-012  deliberately added future work item")
+        result = CHECKER.validate(self.root)
+        self.assertTrue(result["valid"], result["errors"])
+        self.assertEqual("MS4-012", result["normative_work_items"][-1])
+
+    def test_duplicate_full_identifier_set_in_current_document_fails_even_with_prose_between_items(self) -> None:
+        copied = "\n".join(
+            f"{line}\nExplanation for copied item {index}."
+            for index, line in enumerate(ITEMS.splitlines(), start=1)
+        )
         self._write(
             "docs/ROADMAP.md",
-            "Design authority: `docs/MILESTONE_4_DESIGN.md`\n\n```text\n"
-            + ITEMS
-            + "\n```\n",
+            "Design authority: `docs/MILESTONE_4_DESIGN.md`\n\n" + copied + "\n",
         )
         self.assertTrue(
             any("duplicates the complete normative" in error for error in self._errors())
         )
 
-    def test_missing_or_duplicate_identifier_in_normative_sequence_fails(self) -> None:
+    def test_missing_duplicate_or_out_of_order_identifier_in_normative_sequence_fails(self) -> None:
         cases = {
             "missing": ITEMS.replace("MS4-006  Condo proof subscription\n", ""),
             "duplicate": ITEMS.replace(
                 "MS4-007  Industry / Mechanical Compiler proof subscription",
                 "MS4-006  duplicate Condo proof\n"
                 "MS4-007  Industry / Mechanical Compiler proof subscription",
+            ),
+            "out-of-order": ITEMS.replace(
+                "MS4-005  geographic identity references and ownership/rights boundary\n"
+                "MS4-006  Condo proof subscription",
+                "MS4-006  Condo proof subscription\n"
+                "MS4-005  geographic identity references and ownership/rights boundary",
             ),
         }
         for label, items in cases.items():
