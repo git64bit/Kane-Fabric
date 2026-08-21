@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+import { webcrypto } from "node:crypto";
+
 import { renderSubstrate } from "./kane-fabric-renderer.js";
 
 class RecordingContext2D {
@@ -42,9 +44,11 @@ if (!baseUrl) {
   process.exit(2);
 }
 
+const runtime = { crypto: webcrypto };
 const canvas = new RecordingCanvas(1024, 768);
 const stats = await renderSubstrate(canvas, baseUrl, {
   roadLevel: "orientation",
+  runtime,
   waterLevel: "overview",
 });
 

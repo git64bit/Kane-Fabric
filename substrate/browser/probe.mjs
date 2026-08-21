@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+import { webcrypto } from "node:crypto";
+
 import {
   chunksForLevel,
   loadSubstrateMetadata,
@@ -21,7 +23,8 @@ if (!baseUrl) {
 if (typeof fetch !== "function") fail("global fetch is unavailable");
 if (typeof DecompressionStream !== "function") fail("DecompressionStream is unavailable");
 
-const metadata = await loadSubstrateMetadata(baseUrl);
+const runtime = { crypto: webcrypto };
+const metadata = await loadSubstrateMetadata(baseUrl, { runtime });
 if (
   expectedContent !== null &&
   metadata.manifest.substrate_content_sha256 !== expectedContent
@@ -31,8 +34,8 @@ if (
   );
 }
 
-const roads = await openFlatComponent(baseUrl, metadata.manifest, "roads");
-const water = await openFlatComponent(baseUrl, metadata.manifest, "water");
+const roads = await openFlatComponent(baseUrl, metadata.manifest, "roads", { runtime });
+const water = await openFlatComponent(baseUrl, metadata.manifest, "water", { runtime });
 
 const roadChunks = chunksForLevel(roads, "orientation");
 const waterChunks = chunksForLevel(water, "overview");
@@ -40,8 +43,8 @@ if (roadChunks.length === 0 || waterChunks.length === 0) fail("expected selectab
 
 const roadChunk = roadChunks[0];
 const waterChunk = waterChunks[0];
-const roadFeatures = await readChunk(roads, roadChunk);
-const waterFeatures = await readChunk(water, waterChunk);
+const roadFeatures = await readChunk(roads, roadChunk, { runtime });
+const waterFeatures = await readChunk(water, waterChunk, { runtime });
 
 const roadRequested = roads.payloadStart + roadChunk.length;
 const waterRequested = water.payloadStart + waterChunk.length;

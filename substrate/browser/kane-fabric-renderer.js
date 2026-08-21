@@ -198,12 +198,13 @@ export async function renderSubstrate(
     fetchImpl = fetch,
     padding = DEFAULT_PADDING,
     roadLevel = "orientation",
+    runtime = globalThis,
     waterLevel = "overview",
   } = {},
 ) {
   const ctx = canvasContext(canvas);
   const substrateBaseUrl = resolveSubstrateBaseUrl(baseUrl);
-  const metadata = await loadSubstrateMetadata(substrateBaseUrl, { fetchImpl });
+  const metadata = await loadSubstrateMetadata(substrateBaseUrl, { fetchImpl, runtime });
   const fitBounds = validateBounds(metadata.overview.fit.bounds, "overview fit bounds");
   const renderBounds = bounds === null ? fitBounds : validateBounds(bounds, "render bounds");
   const projection = createViewportProjection(renderBounds, canvas.width, canvas.height, padding);
@@ -213,8 +214,8 @@ export async function renderSubstrate(
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   const boundaryRingCount = drawBoundary(ctx, metadata.overview, projection);
-  const roads = await openFlatComponent(substrateBaseUrl, metadata.manifest, "roads", { fetchImpl });
-  const water = await openFlatComponent(substrateBaseUrl, metadata.manifest, "water", { fetchImpl });
+  const roads = await openFlatComponent(substrateBaseUrl, metadata.manifest, "roads", { fetchImpl, runtime });
+  const water = await openFlatComponent(substrateBaseUrl, metadata.manifest, "water", { fetchImpl, runtime });
 
   const stats = {
     boundary_ring_count: boundaryRingCount,
@@ -225,7 +226,7 @@ export async function renderSubstrate(
     water: { chunk_count: 0, feature_count: 0, line_part_count: 0, polygon_ring_count: 0, level: waterLevel },
   };
 
-  for await (const item of streamLevelChunks(water, waterLevel, { bounds: renderBounds, fetchImpl })) {
+  for await (const item of streamLevelChunks(water, waterLevel, { bounds: renderBounds, fetchImpl, runtime })) {
     stats.water.chunk_count += 1;
     stats.water.feature_count += item.features.length;
     for (const feature of item.features) {
@@ -235,7 +236,7 @@ export async function renderSubstrate(
     }
   }
 
-  for await (const item of streamLevelChunks(roads, roadLevel, { bounds: renderBounds, fetchImpl })) {
+  for await (const item of streamLevelChunks(roads, roadLevel, { bounds: renderBounds, fetchImpl, runtime })) {
     stats.roads.chunk_count += 1;
     stats.roads.feature_count += item.features.length;
     for (const feature of item.features) {

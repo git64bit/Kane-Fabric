@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import assert from "node:assert/strict";
+import { webcrypto } from "node:crypto";
 import test from "node:test";
 
 import {
@@ -71,7 +72,7 @@ test("isSecureContext is diagnostic only when capability is actually present", (
 });
 
 test("Node-style runtime with callable digest and no isSecureContext passes", async () => {
-  const runtime = { crypto: globalThis.crypto };
+  const runtime = { crypto: webcrypto };
   assert.equal("isSecureContext" in runtime, false);
   assert.doesNotThrow(() => assertSubstrateVerificationCapability(runtime));
   assert.equal(
