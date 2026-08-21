@@ -11,11 +11,11 @@ from ms4.tools.kane_fabric_partition import (
     _require_exact_keys,
     build_partition_descriptor,
     canonical_json_bytes,
+    normalize_scope,
     validate_partition_descriptor,
 )
 
 COORDINATE_PLACES = Decimal("0.0000001")
-_SUPPORTED_SCOPE_CLASSES = frozenset({"whole-jurisdiction", "bounded-region", "administrative", "composite"})
 
 
 def normalize_coordinate(value: object, *, latitude: bool = False) -> str:
@@ -56,7 +56,10 @@ def whole_jurisdiction_scope() -> dict[str, object]:
 
 
 def bounded_region_scope(bounds: Sequence[object]) -> dict[str, object]:
-    return {"scope_class": "bounded-region", "definition": {"bounds": normalize_bounds(bounds), "srs_id": 4326}}
+    return {
+        "scope_class": "bounded-region",
+        "definition": {"bounds": normalize_bounds(bounds), "srs_id": 4326},
+    }
 
 
 def _text(value: object, label: str) -> str:
@@ -73,16 +76,30 @@ def _sha(value: object, label: str) -> str:
     return text
 
 
-def administrative_scope(*, administrative_kind: str, name: str, bounds: Sequence[object], boundary_lineage: Mapping[str, object]) -> dict[str, object]:
+def administrative_scope(
+    *,
+    administrative_kind: str,
+    name: str,
+    bounds: Sequence[object],
+    boundary_lineage: Mapping[str, object],
+) -> dict[str, object]:
     if administrative_kind not in {"municipality", "township-or-equivalent"}:
         raise PartitionContractError("administrative_kind is unsupported")
-    _require_exact_keys(boundary_lineage, {"dataset_key", "release_key", "content_sha256", "feature_id", "geometry_sha256"}, "administrative boundary lineage")
+    _require_exact_keys(
+        boundary_lineage,
+        {"dataset_key", "release_key", "content_sha256", "feature_id", "geometry_sha256"},
+        "administrative boundary lineage",
+    )
     boundary = {
         "dataset_key": _text(boundary_lineage["dataset_key"], "boundary dataset_key"),
         "release_key": _text(boundary_lineage["release_key"], "boundary release_key"),
-        "content_sha256": _sha(boundary_lineage["content_sha256"], "boundary content_sha256"),
+        "content_sha256": _sha(
+            boundary_lineage["content_sha256"], "boundary content_sha256"
+        ),
         "feature_id": _text(boundary_lineage["feature_id"], "boundary feature_id"),
-        "geometry_sha256": _sha(boundary_lineage["geometry_sha256"], "boundary geometry_sha256"),
+        "geometry_sha256": _sha(
+            boundary_lineage["geometry_sha256"], "boundary geometry_sha256"
+        ),
     }
     return {
         "scope_class": "administrative",
@@ -97,45 +114,56 @@ def administrative_scope(*, administrative_kind: str, name: str, bounds: Sequenc
 
 
 def partition_bounds(partition: Mapping[str, object]) -> list[str] | None:
+    """Return one exact rectangular scope, or None for whole jurisdiction.
+
+    Composite union scopes intentionally have no single authoritative rectangle.
+    Callers requiring inclusion semantics must use partition_includes_bounds().
+    """
+
     descriptor = validate_partition_descriptor(partition)
     scope = descriptor["scope"]
     scope_class = scope["scope_class"]
-    if scope_class not in _SUPPORTED_SCOPE_CLASSES:
-        raise PartitionContractError(f"scope_class {scope_class!r} has no v1 inclusion semantics")
     if scope_class == "whole-jurisdiction":
         return None
-    bounds = scope["definition"].get("bounds")
-    if bounds is None:
-        return None
-    if not isinstance(bounds, Sequence) or isinstance(bounds, (str, bytes, bytearray)):
-        raise PartitionContractError("scope bounds are invalid")
-    normalized = normalize_bounds(bounds)
-    if list(bounds) != normalized:
-        raise PartitionContractError("scope bounds are not normalized")
-    return normalized
+    if scope_class == "composite":
+        raise PartitionContractError(
+            "composite union has no single authoritative bounds; use member-aware inclusion"
+        )
+    definition = scope["definition"]
+    assert isinstance(definition, Mapping)
+    bounds = definition["bounds"]
+    assert isinstance(bounds, list)
+    return list(bounds)
 
 
 def composite_scope(partitions: Sequence[Mapping[str, object]]) -> dict[str, object]:
+    """Build a deterministic union preserving each member's actual logical scope."""
+
     if len(partitions) < 2:
         raise PartitionContractError("composite scope requires at least two partitions")
     validated = [validate_partition_descriptor(item) for item in partitions]
     if len({canonical_json_bytes(item["jurisdiction"]) for item in validated}) != 1:
         raise PartitionContractError("composite partitions must share one jurisdiction")
-    keys = sorted(str(item["partition_key"]) for item in validated)
-    if len(set(keys)) != len(keys):
+    by_key = {str(item["partition_key"]): item for item in validated}
+    if len(by_key) != len(validated):
         raise PartitionContractError("composite partitions must be unique")
-    member_bounds = [partition_bounds(item) for item in validated]
-    if any(item is None for item in member_bounds):
-        bounds = None
-    else:
-        values = [tuple(map(Decimal, item)) for item in member_bounds if item is not None]
-        bounds = [
-            normalize_coordinate(min(item[0] for item in values)),
-            normalize_coordinate(min(item[1] for item in values), latitude=True),
-            normalize_coordinate(max(item[2] for item in values)),
-            normalize_coordinate(max(item[3] for item in values), latitude=True),
-        ]
-    return {"scope_class": "composite", "definition": {"members": keys, "bounds": bounds, "operation": "union", "srs_id": 4326}}
+    members = [
+        {
+            "partition_key": key,
+            "scope": by_key[key]["scope"],
+        }
+        for key in sorted(by_key)
+    ]
+    scope = {
+        "scope_class": "composite",
+        "definition": {
+            "members": members,
+            "operation": "union",
+            "srs_id": 4326,
+        },
+    }
+    # Exercise the closed v1 schema before returning a scope that can enter identity.
+    return normalize_scope(scope)
 
 
 def bounds_intersect(first: Sequence[object], second: Sequence[object]) -> bool:
@@ -144,6 +172,34 @@ def bounds_intersect(first: Sequence[object], second: Sequence[object]) -> bool:
     return not (a[2] < b[0] or a[0] > b[2] or a[3] < b[1] or a[1] > b[3])
 
 
-def partition_includes_bounds(partition: Mapping[str, object], candidate_bounds: Sequence[object]) -> bool:
-    bounds = partition_bounds(partition)
-    return True if bounds is None else bounds_intersect(bounds, candidate_bounds)
+def _scope_includes_bounds(
+    scope: Mapping[str, object], candidate_bounds: Sequence[object]
+) -> bool:
+    normalized_scope = normalize_scope(scope)
+    scope_class = normalized_scope["scope_class"]
+    definition = normalized_scope["definition"]
+    assert isinstance(definition, Mapping)
+
+    if scope_class == "whole-jurisdiction":
+        normalize_bounds(candidate_bounds)
+        return True
+
+    if scope_class in {"bounded-region", "administrative"}:
+        bounds = definition["bounds"]
+        assert isinstance(bounds, list)
+        return bounds_intersect(bounds, candidate_bounds)
+
+    members = definition["members"]
+    assert isinstance(members, list)
+    return any(
+        _scope_includes_bounds(member["scope"], candidate_bounds)
+        for member in members
+        if isinstance(member, Mapping) and isinstance(member.get("scope"), Mapping)
+    )
+
+
+def partition_includes_bounds(
+    partition: Mapping[str, object], candidate_bounds: Sequence[object]
+) -> bool:
+    descriptor = validate_partition_descriptor(partition)
+    return _scope_includes_bounds(descriptor["scope"], candidate_bounds)

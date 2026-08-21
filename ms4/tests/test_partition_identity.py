@@ -49,24 +49,33 @@ class PartitionIdentityTests(unittest.TestCase):
         self.assertEqual(first["partition_key"], second["partition_key"])
         self.assertNotEqual(canonical_json_bytes(first), canonical_json_bytes(second))
 
-    def test_physical_placement_metadata_cannot_enter_identity(self) -> None:
+    def test_unknown_scope_class_is_rejected(self) -> None:
+        with self.assertRaisesRegex(PartitionContractError, "unsupported by v1"):
+            build_partition_descriptor(
+                JURISDICTION,
+                {
+                    "scope_class": "edge-node",
+                    "definition": {"edge_node": "node-a"},
+                },
+            )
+
+    def test_extra_definition_fields_are_rejected_without_vocabulary_blacklist(self) -> None:
         for key, value in (
             ("device_id", "esp32-001"),
-            ("hostname", "edge-a"),
-            ("ssid", "fabric"),
-            ("ip_address", "10.20.0.12"),
-            ("storage_path", "/sdcard/partition"),
+            ("edge_node", "node-a"),
+            ("mac_address", "00:11:22:33:44:55"),
+            ("arbitrary_future_field", "must-not-enter-identity"),
         ):
             scope = copy.deepcopy(SCOPE)
             scope["definition"][key] = value
             with self.subTest(key=key):
-                with self.assertRaisesRegex(PartitionContractError, "physical placement"):
+                with self.assertRaisesRegex(PartitionContractError, "keys mismatch"):
                     build_partition_descriptor(JURISDICTION, scope)
 
     def test_floating_point_scope_values_are_rejected_until_normalized(self) -> None:
         scope = copy.deepcopy(SCOPE)
         scope["definition"]["bounds"] = [-88.5, 41.7, -88.2, 42.0]
-        with self.assertRaisesRegex(PartitionContractError, "floating-point"):
+        with self.assertRaisesRegex(PartitionContractError, "fixed-decimal"):
             build_partition_descriptor(JURISDICTION, scope)
 
     def test_descriptor_tampering_fails_validation(self) -> None:

@@ -29,6 +29,7 @@ venv/
 
 # Generated Kane Fabric artifacts
 *.krf
+*.kfs
 *.zip
 *.tar
 *.tar.gz

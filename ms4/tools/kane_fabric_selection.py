@@ -10,7 +10,7 @@ from collections.abc import Mapping
 from pathlib import Path
 
 from ms4.tools.kane_fabric_partition import canonical_json_bytes, validate_partition_descriptor
-from ms4.tools.kane_fabric_scope import normalize_bounds, partition_bounds, partition_includes_bounds
+from ms4.tools.kane_fabric_scope import normalize_bounds, partition_includes_bounds
 
 FORMAT = "kane-fabric-substrate-partition-selection"
 VERSION = 1
@@ -49,9 +49,15 @@ def _component_by_role(manifest: Mapping[str, object], role: str) -> dict[str, o
     components = manifest.get("components")
     if not isinstance(components, list):
         raise SelectionContractError("substrate manifest components are invalid")
-    matches = [item for item in components if isinstance(item, dict) and item.get("role") == role]
+    matches = [
+        item
+        for item in components
+        if isinstance(item, dict) and item.get("role") == role
+    ]
     if len(matches) != 1:
-        raise SelectionContractError(f"substrate manifest must contain one {role} component")
+        raise SelectionContractError(
+            f"substrate manifest must contain one {role} component"
+        )
     return matches[0]
 
 
@@ -67,7 +73,9 @@ def _read_flat_index(path: Path, role: str) -> tuple[dict[str, object], int]:
     try:
         index = json.loads(index_bytes.decode("utf-8"))
     except (UnicodeError, json.JSONDecodeError) as exc:
-        raise SelectionContractError(f"{role} component index is invalid JSON") from exc
+        raise SelectionContractError(
+            f"{role} component index is invalid JSON"
+        ) from exc
     if not isinstance(index, dict) or canonical_json_bytes(index) != index_bytes:
         raise SelectionContractError(f"{role} component index is not canonical JSON")
     return index, 16 + index_length
@@ -86,12 +94,23 @@ def build_selection_manifest(
     package_dir = package_dir.resolve()
     manifest_path = package_dir / "substrate-manifest.json"
     manifest = _read_canonical_json(manifest_path)
-    if manifest.get("format") != "kane-fabric-substrate-manifest" or manifest.get("version") != 1:
-        raise SelectionContractError("substrate manifest format/version is unsupported")
-    if canonical_json_bytes(manifest.get("jurisdiction")) != canonical_json_bytes(descriptor["jurisdiction"]):
+    if (
+        manifest.get("format") != "kane-fabric-substrate-manifest"
+        or manifest.get("version") != 1
+    ):
+        raise SelectionContractError(
+            "substrate manifest format/version is unsupported"
+        )
+    if canonical_json_bytes(manifest.get("jurisdiction")) != canonical_json_bytes(
+        descriptor["jurisdiction"]
+    ):
         raise SelectionContractError("partition and substrate jurisdictions differ")
     substrate_identity = manifest.get("substrate_content_sha256")
-    if not isinstance(substrate_identity, str) or len(substrate_identity) != 64:
+    if (
+        not isinstance(substrate_identity, str)
+        or len(substrate_identity) != 64
+        or any(ch not in "0123456789abcdef" for ch in substrate_identity)
+    ):
         raise SelectionContractError("substrate content identity is invalid")
 
     selections: list[dict[str, object]] = []
@@ -99,8 +118,13 @@ def build_selection_manifest(
     overview_path = package_dir / str(overview.get("path"))
     if overview_path.name != _ROLE_PATH["county_overview"]:
         raise SelectionContractError("county overview path violates v1 contract")
-    if overview_path.stat().st_size != overview.get("byte_length") or _sha256_file(overview_path) != overview.get("sha256"):
-        raise SelectionContractError("county overview bytes disagree with substrate manifest")
+    if (
+        overview_path.stat().st_size != overview.get("byte_length")
+        or _sha256_file(overview_path) != overview.get("sha256")
+    ):
+        raise SelectionContractError(
+            "county overview bytes disagree with substrate manifest"
+        )
     selections.append(
         {
             "role": "county_overview",
@@ -116,18 +140,29 @@ def build_selection_manifest(
         path = package_dir / str(component.get("path"))
         if path.name != _ROLE_PATH[role]:
             raise SelectionContractError(f"{role} path violates v1 contract")
-        if path.stat().st_size != component.get("byte_length") or _sha256_file(path) != component.get("sha256"):
-            raise SelectionContractError(f"{role} bytes disagree with substrate manifest")
+        if (
+            path.stat().st_size != component.get("byte_length")
+            or _sha256_file(path) != component.get("sha256")
+        ):
+            raise SelectionContractError(
+                f"{role} bytes disagree with substrate manifest"
+            )
         index, payload_start = _read_flat_index(path, role)
         levels = index.get("levels")
         if not isinstance(levels, list):
             raise SelectionContractError(f"{role} levels are invalid")
-        matches = [item for item in levels if isinstance(item, dict) and item.get("key") == level_key]
+        matches = [
+            item
+            for item in levels
+            if isinstance(item, dict) and item.get("key") == level_key
+        ]
         if len(matches) != 1 or not isinstance(matches[0].get("chunks"), list):
             raise SelectionContractError(f"{role} level {level_key!r} is unavailable")
         selected_chunks: list[dict[str, object]] = []
         for ordinal, chunk in enumerate(matches[0]["chunks"]):
-            if not isinstance(chunk, dict) or not isinstance(chunk.get("bounds"), list):
+            if not isinstance(chunk, dict) or not isinstance(
+                chunk.get("bounds"), list
+            ):
                 raise SelectionContractError(f"{role} chunk metadata is invalid")
             if not partition_includes_bounds(descriptor, chunk["bounds"]):
                 continue
@@ -161,8 +196,11 @@ def build_selection_manifest(
         "jurisdiction": descriptor["jurisdiction"],
         "partition_key": descriptor["partition_key"],
         "partition_definition_sha256": descriptor["definition_sha256"],
-        "partition_bounds": partition_bounds(descriptor),
+        "partition_scope": descriptor["scope"],
         "substrate_content_sha256": substrate_identity,
         "components": selections,
     }
-    return {**body, "selection_sha256": hashlib.sha256(canonical_json_bytes(body)).hexdigest()}
+    return {
+        **body,
+        "selection_sha256": hashlib.sha256(canonical_json_bytes(body)).hexdigest(),
+    }
