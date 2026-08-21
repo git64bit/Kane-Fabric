@@ -19,7 +19,6 @@ if (!baseUrl) {
 }
 
 if (typeof fetch !== "function") fail("global fetch is unavailable");
-if (!globalThis.crypto?.subtle) fail("Web Crypto is unavailable");
 if (typeof DecompressionStream !== "function") fail("DecompressionStream is unavailable");
 
 const metadata = await loadSubstrateMetadata(baseUrl);

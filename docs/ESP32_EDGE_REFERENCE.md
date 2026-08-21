@@ -55,6 +55,8 @@ The initial firmware implementation uses ESP-IDF and its HTTP-server facilities 
 
 The edge-serving contract is expected to provide the browser with immutable files, objects, ranges, partition descriptors, and subscription manifests required by an activated Fabric generation.
 
+The HTTP serving mechanism does not by itself establish browser compatibility. Direct browser consumption is conforming only when the browser execution context exposes Web Crypto SHA-256 through callable `crypto.subtle.digest`, because Kane Fabric requires cryptographic byte-integrity verification before publication access. HTTPS is one normal way to obtain a secure browser context, but this document does not select the eventual Milestone 5 transport/security deployment or promise that arbitrary LAN HTTP will expose Web Crypto.
+
 The HTTP implementation must remain subordinate to public artifact and logical identity contracts. A future edge device or HTTP implementation may replace ESP32-S3/ESP-IDF without requiring a new browser data model, new substrate identity, new partition identity, or new subscription identity.
 
 ## Milestone relationship

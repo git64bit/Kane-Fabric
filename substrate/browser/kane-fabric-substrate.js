@@ -34,6 +34,23 @@ export class SubstrateError extends Error {
   }
 }
 
+export function assertSubstrateVerificationCapability(runtime = globalThis) {
+  if (typeof runtime?.crypto?.subtle?.digest === "function") {
+    return runtime.crypto.subtle;
+  }
+  if (runtime?.isSecureContext === false) {
+    throw new SubstrateError(
+      "Kane Fabric substrate verification requires Web Crypto SHA-256. " +
+        "This browser context is not secure. Use a secure HTTPS origin or a " +
+        "browser-recognized trustworthy local development origin.",
+    );
+  }
+  throw new SubstrateError(
+    "Kane Fabric substrate verification requires Web Crypto SHA-256, but " +
+      "crypto.subtle.digest is unavailable in this runtime.",
+  );
+}
+
 function requireObject(value, label) {
   if (value === null || typeof value !== "object" || Array.isArray(value)) {
     throw new SubstrateError(`${label} must be an object`);
@@ -221,12 +238,10 @@ function sameSemanticJson(first, second) {
   return stableSemanticString(first) === stableSemanticString(second);
 }
 
-export async function sha256Hex(bytes) {
+export async function sha256Hex(bytes, { runtime = globalThis } = {}) {
   const input = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
-  if (!globalThis.crypto?.subtle) {
-    throw new SubstrateError("Web Crypto SHA-256 is unavailable");
-  }
-  const digest = new Uint8Array(await globalThis.crypto.subtle.digest("SHA-256", input));
+  const subtle = assertSubstrateVerificationCapability(runtime);
+  const digest = new Uint8Array(await subtle.digest("SHA-256", input));
   return Array.from(digest, (value) => value.toString(16).padStart(2, "0")).join("");
 }
 
@@ -239,7 +254,8 @@ function componentUrl(baseUrl, path) {
   return new URL(path, baseDirectoryUrl(baseUrl));
 }
 
-async function fetchWhole(url, fetchImpl) {
+async function fetchWhole(url, fetchImpl, runtime) {
+  assertSubstrateVerificationCapability(runtime);
   const response = await fetchImpl(url);
   if (!response.ok) {
     throw new SubstrateError(`GET ${url} failed with HTTP ${response.status}`);
@@ -257,11 +273,12 @@ export async function fetchExactRange(
   url,
   start,
   end,
-  { expectedTotal = null, fetchImpl = fetch } = {},
+  { expectedTotal = null, fetchImpl = fetch, runtime = globalThis } = {},
 ) {
   requireInteger(start, "range start");
   requireInteger(end, "range end");
   if (end < start) throw new SubstrateError("range end precedes range start");
+  assertSubstrateVerificationCapability(runtime);
   const response = await fetchImpl(url, { headers: { Range: `bytes=${start}-${end}` } });
   if (response.status !== 206) {
     throw new SubstrateError(`Range GET ${url} returned HTTP ${response.status}; expected 206`);
@@ -360,17 +377,17 @@ function validateManifest(document) {
   return manifest;
 }
 
-export async function loadManifest(baseUrl, { fetchImpl = fetch } = {}) {
+export async function loadManifest(baseUrl, { fetchImpl = fetch, runtime = globalThis } = {}) {
   const url = componentUrl(baseUrl, MANIFEST_PATH);
-  const bytes = await fetchWhole(url, fetchImpl);
+  const bytes = await fetchWhole(url, fetchImpl, runtime);
   return { bytes, document: validateManifest(decodeCanonicalJson(bytes, "substrate manifest")), url };
 }
 
-export async function loadOverview(baseUrl, manifest, { fetchImpl = fetch } = {}) {
+export async function loadOverview(baseUrl, manifest, { fetchImpl = fetch, runtime = globalThis } = {}) {
   const descriptor = descriptorByRole(manifest, "county_overview");
   const url = componentUrl(baseUrl, descriptor.path);
-  const bytes = await fetchWhole(url, fetchImpl);
-  if (bytes.byteLength !== descriptor.byte_length || (await sha256Hex(bytes)) !== descriptor.sha256) {
+  const bytes = await fetchWhole(url, fetchImpl, runtime);
+  if (bytes.byteLength !== descriptor.byte_length || (await sha256Hex(bytes, { runtime })) !== descriptor.sha256) {
     throw new SubstrateError("county overview bytes disagree with manifest");
   }
   const document = requireObject(decodeCanonicalJson(bytes, "county overview"), "county overview");
@@ -446,12 +463,12 @@ function validateFlatIndex(index, manifest, role) {
   return { document, payloadLength: expectedOffset };
 }
 
-export async function openFlatComponent(baseUrl, manifest, role, { fetchImpl = fetch } = {}) {
+export async function openFlatComponent(baseUrl, manifest, role, { fetchImpl = fetch, runtime = globalThis } = {}) {
   const contract = ROLE_CONTRACT[role];
   if (!contract?.magic) throw new SubstrateError(`unsupported flat component role: ${role}`);
   const descriptor = descriptorByRole(manifest, role);
   const url = componentUrl(baseUrl, descriptor.path);
-  const prefix = (await fetchExactRange(url, 0, 15, { expectedTotal: descriptor.byte_length, fetchImpl })).bytes;
+  const prefix = (await fetchExactRange(url, 0, 15, { expectedTotal: descriptor.byte_length, fetchImpl, runtime })).bytes;
   const magic = new TextDecoder("ascii", { fatal: true }).decode(prefix.slice(0, 8));
   if (magic !== contract.magic) throw new SubstrateError(`${role} component magic/version is invalid`);
   const view = new DataView(prefix.buffer, prefix.byteOffset, prefix.byteLength);
@@ -461,7 +478,7 @@ export async function openFlatComponent(baseUrl, manifest, role, { fetchImpl = f
   if (indexLength <= 0 || 16 + indexLength >= descriptor.byte_length) {
     throw new SubstrateError(`${role} index length is invalid`);
   }
-  const indexBytes = (await fetchExactRange(url, 16, 15 + indexLength, { expectedTotal: descriptor.byte_length, fetchImpl })).bytes;
+  const indexBytes = (await fetchExactRange(url, 16, 15 + indexLength, { expectedTotal: descriptor.byte_length, fetchImpl, runtime })).bytes;
   const validated = validateFlatIndex(decodeCanonicalJson(indexBytes, `${role} index`), manifest, role);
   const payloadStart = 16 + indexLength;
   if (payloadStart + validated.payloadLength !== descriptor.byte_length) {
@@ -490,18 +507,19 @@ async function decompressDeflate(bytes) {
   return new Uint8Array(await new Response(stream).arrayBuffer());
 }
 
-export async function readChunk(component, chunk, { fetchImpl = fetch } = {}) {
+export async function readChunk(component, chunk, { fetchImpl = fetch, runtime = globalThis } = {}) {
   const start = component.payloadStart + chunk.offset;
   const end = start + chunk.length - 1;
   const compressed = (await fetchExactRange(component.url, start, end, {
     expectedTotal: component.descriptor.byte_length,
     fetchImpl,
+    runtime,
   })).bytes;
-  if ((await sha256Hex(compressed)) !== chunk.payload_sha256) {
+  if ((await sha256Hex(compressed, { runtime })) !== chunk.payload_sha256) {
     throw new SubstrateError(`${component.role} compressed chunk SHA-256 mismatch`);
   }
   const recordsBytes = await decompressDeflate(compressed);
-  if (recordsBytes.byteLength !== chunk.uncompressed_length || (await sha256Hex(recordsBytes)) !== chunk.records_sha256) {
+  if (recordsBytes.byteLength !== chunk.uncompressed_length || (await sha256Hex(recordsBytes, { runtime })) !== chunk.records_sha256) {
     throw new SubstrateError(`${component.role} uncompressed chunk identity mismatch`);
   }
   const document = requireObject(decodeCanonicalJson(recordsBytes, `${component.role} chunk records`), `${component.role} chunk records`);
@@ -511,15 +529,16 @@ export async function readChunk(component, chunk, { fetchImpl = fetch } = {}) {
   return document.features;
 }
 
-export async function* streamLevelChunks(component, levelKey, { bounds = null, fetchImpl = fetch } = {}) {
+export async function* streamLevelChunks(component, levelKey, { bounds = null, fetchImpl = fetch, runtime = globalThis } = {}) {
   for (const chunk of chunksForLevel(component, levelKey, bounds)) {
-    yield { chunk, features: await readChunk(component, chunk, { fetchImpl }) };
+    yield { chunk, features: await readChunk(component, chunk, { fetchImpl, runtime }) };
   }
 }
 
-export async function loadSubstrateMetadata(baseUrl, { fetchImpl = fetch } = {}) {
-  const manifest = await loadManifest(baseUrl, { fetchImpl });
-  const overview = await loadOverview(baseUrl, manifest.document, { fetchImpl });
+export async function loadSubstrateMetadata(baseUrl, { fetchImpl = fetch, runtime = globalThis } = {}) {
+  assertSubstrateVerificationCapability(runtime);
+  const manifest = await loadManifest(baseUrl, { fetchImpl, runtime });
+  const overview = await loadOverview(baseUrl, manifest.document, { fetchImpl, runtime });
   return {
     baseUrl: baseDirectoryUrl(baseUrl),
     manifest: manifest.document,

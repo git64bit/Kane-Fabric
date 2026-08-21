@@ -107,6 +107,8 @@ The browser should be able to:
 7. render baseline geography;
 8. compose application-specific subscriptions without modifying the baseline.
 
+Browser-side Kane Fabric byte-integrity validation requires Web Crypto SHA-256. Before substrate publication access begins, the browser execution context must expose callable `crypto.subtle.digest`. Transport labels alone do not establish that capability: HTTPS is a normal way to obtain a secure browser context, while browser-recognized trustworthy local development origins may also expose the API.
+
 No web application should require direct access to the authoritative GeoPackage.
 
 ## Geographic partition relationship
