@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Kane Fabric MS4 Browser Proof</title>
+  <style>
+    body { font-family: sans-serif; margin: 1rem; }
+    canvas { border: 1px solid #888; max-width: 100%; }
+    pre { white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <h1>Kane Fabric MS4 Browser Proof</h1>
+  <canvas id="map" width="1024" height="768"></canvas>
+  <pre id="result">running</pre>
+  <script type="module">
+    import { composePartitions, renderPartitionComposition } from "./kane-fabric-ms4.js";
+    import { renderSubstrate } from "./kane-fabric-renderer.js";
+
+    const result = document.getElementById("result");
+    const canvas = document.getElementById("map");
+    const params = new URLSearchParams(location.search);
+    const substrateBase = params.get("substrate") || "./substrate/";
+    const compositionBase = params.get("ms4") || "./ms4/";
+
+    try {
+      const west = await renderPartitionComposition(
+        canvas,
+        substrateBase,
+        compositionBase,
+        "west",
+        { renderImpl: renderSubstrate },
+      );
+      const composed = await composePartitions(
+        compositionBase,
+        ["west", "east"],
+      );
+      if (west.subscriptions.length !== 2) throw new Error("west partition did not compose exactly two subscriptions");
+      if (composed.partitions.length !== 2) throw new Error("multi-partition proof did not load two partitions");
+      if (composed.object_appearances !== 4 || composed.unique_objects.length !== 2) {
+        throw new Error("cross-partition logical-object deduplication failed");
+      }
+      const pixels = canvas.getContext("2d").getImageData(0, 0, canvas.width, canvas.height).data;
+      let nonWhite = 0;
+      for (let offset = 0; offset < pixels.length; offset += 4) {
+        if (pixels[offset] !== 255 || pixels[offset + 1] !== 255 || pixels[offset + 2] !== 255) nonWhite += 1;
+      }
+      if (nonWhite === 0) throw new Error("substrate renderer produced an empty canvas");
+      const payload = {
+        status: "ms4-browser-composition-passed",
+        substrate_content_sha256: west.renderer.substrate_content_sha256,
+        partition_keys: composed.partitions.map((item) => item.descriptor.partition_key),
+        subscription_generations: west.subscriptions.map((item) => ({
+          subscription_key: item.manifest.subscription_key,
+          generation_key: item.manifest.generation_key,
+        })),
+        object_appearances: composed.object_appearances,
+        unique_objects: composed.unique_objects.length,
+        canvas: { width: canvas.width, height: canvas.height, non_white_pixel_count: nonWhite },
+        renderer: west.renderer,
+      };
+      document.documentElement.dataset.status = "passed";
+      result.textContent = JSON.stringify(payload);
+    } catch (error) {
+      document.documentElement.dataset.status = "failed";
+      result.textContent = JSON.stringify({
+        status: "ms4-browser-composition-failed",
+        message: String(error?.stack || error),
+      });
+    }
+  </script>
+</body>
+</html>
