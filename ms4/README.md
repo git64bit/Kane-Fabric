@@ -21,3 +21,15 @@ Run:
 ```bash
 bash ms4/run-tests.sh
 ```
+
+## MS4-002 scope normalization and inclusion
+
+The partition module normalizes WGS84 coordinates to fixed seven-decimal text and defines whole-jurisdiction, explicit bounded, accepted-boundary administrative, and deterministic composite scopes. Bounding-box intersection is inclusive: boundary-touching and boundary-crossing objects/chunks are selected rather than clipped, preventing partition-edge holes while preserving logical object identity.
+
+## MS4-003 substrate partition selection
+
+`tools/kane_fabric_selection.py` compiles a deterministic selection manifest that binds one partition identity to one canonical Milestone 3 substrate content identity and exact selected road/water chunk references. It verifies component bytes against the substrate manifest before producing references.
+
+## MS4-004 / MS4-005 subscription generations and geographic references
+
+`tools/kane_fabric_subscription.py` defines independently versioned subscription generations. A generation binds application ownership, rights/license metadata, compatible substrate identity, explicit partition coverage, canonical object bytes, and immutable Fabric geographic references. Fabric references bind dataset, accepted release key/hash, and persistent object key without transferring application ownership into Kane Fabric geography.
