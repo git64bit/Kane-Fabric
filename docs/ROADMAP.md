@@ -250,9 +250,11 @@ Completed ESP32-S3/ESP-IDF firmware remains a Milestone 5 responsibility.
 
 ## Milestone 4 — Subscriptions + geographic scoping/partition identity
 
-**Status: IN PROGRESS — MS4-001 NEXT**
+**Status: IN PROGRESS**
 
-Design baseline: `docs/MILESTONE_4_DESIGN.md`
+Current item: `MS4-001`
+
+Design authority: `docs/MILESTONE_4_DESIGN.md`
 
 Purpose: define how applications add independently versioned domain-specific geographic state without owning the public substrate, and define deterministic logical geographic partitions so substrate/subscription content can be addressed, composed, stored, replicated, and later served in focused areas smaller than the whole county.
 
@@ -271,21 +273,7 @@ Partition scope classes should support at least:
 
 Municipality and township are named convenience scopes, not the only partition mechanism and not semantic ownership boundaries. Roads, water, buildings, and application objects may cross them while retaining one logical identity.
 
-Core work:
-
-```text
-MS4-001  partition descriptor and deterministic identity contract
-MS4-002  administrative/bounded scope normalization and inclusion rules
-MS4-003  substrate partition selection manifest/reference model
-MS4-004  subscription manifest and independent generation contract
-MS4-005  geographic identity references and ownership/rights boundary
-MS4-006  Condo proof subscription
-MS4-007  Industry / Mechanical Compiler proof subscription
-MS4-008  browser composition of substrate + multiple scoped subscriptions
-MS4-009  multi-partition / cross-boundary composition proof
-MS4-010  edge-placement compatibility proof without ESP-IDF implementation
-MS4-011  release evidence and milestone closeout
-```
+Detailed Milestone 4 work-item definitions and order are normative in `docs/MILESTONE_4_DESIGN.md`; this roadmap does not maintain a second copy of that sequence.
 
 Important boundary: the Milestone 3 county publication remains canonical. MS4 partitions select/reference relevant substrate chunks/ranges and subscription objects; they do not create separate authoritative town/township databases and do not change accepted geography.
 

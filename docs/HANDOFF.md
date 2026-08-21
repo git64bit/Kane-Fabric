@@ -320,25 +320,22 @@ A partition identity must not depend on:
 - IP address;
 - physical storage path.
 
-## 10. Milestone 4 implementation order
+## 10. Milestone 4 work-sequence authority
 
-Current planned order:
+The detailed Milestone 4 work-item definitions and order are normative only in:
 
 ```text
-MS4-001  partition descriptor and deterministic identity contract
-MS4-002  administrative/bounded scope normalization and inclusion rules
-MS4-003  substrate partition selection manifest/reference model
-MS4-004  subscription manifest and independent generation contract
-MS4-005  geographic identity references and ownership/rights boundary
-MS4-006  Condo proof subscription
-MS4-007  Industry / Mechanical Compiler proof subscription
-MS4-008  browser composition of substrate + multiple scoped subscriptions
-MS4-009  multi-partition / cross-boundary composition proof
-MS4-010  edge-placement compatibility proof without ESP-IDF implementation
-MS4-011  release evidence and milestone closeout
+docs/MILESTONE_4_DESIGN.md
 ```
 
-Do not mark an item complete merely because its design text exists.
+Current/next work item:
+
+```text
+MS4-001
+partition descriptor and deterministic identity contract
+```
+
+This handoff may identify the current item for safe resumption, but it does not maintain a second copy of the complete sequence. Do not mark an item complete merely because its design text exists.
 
 ## 11. ESP32-S3 / ESP-IDF boundary
 

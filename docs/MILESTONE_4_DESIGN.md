@@ -192,9 +192,11 @@ Those examples describe logical placement only. Milestone 4 does not define ESP-
 
 Milestone 5 maps the logical partition/subscription identities onto actual ESP32-S3 storage and serving implementations.
 
-## Initial implementation order
+## Normative implementation order
 
-The planned MS4 sequence is:
+This section is the single authoritative definition of the detailed Milestone 4 work sequence. Other current documents may report milestone status, identify the current work item, or summarize the milestone, but they must refer here rather than maintain a second complete sequence.
+
+The normative MS4 sequence is:
 
 ```text
 MS4-001  partition descriptor and deterministic identity contract
