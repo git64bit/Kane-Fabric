@@ -101,6 +101,26 @@ class WorkSequenceAuthorityTests(unittest.TestCase):
             + "\n",
         )
 
+    def _write_released_state(self) -> None:
+        self._write(
+            "docs/CURRENT_STATE.json",
+            json.dumps(
+                {
+                    "schema_version": 1,
+                    "milestone": {
+                        "current": 5,
+                        "next_work_item": "Define Milestone 5 edge contract",
+                        "previous_milestone": {
+                            "number": 4,
+                            "status": "released",
+                        },
+                    },
+                },
+                indent=2,
+            )
+            + "\n",
+        )
+
     def _errors(self) -> list[str]:
         return CHECKER.validate(self.root)["errors"]
 
@@ -171,7 +191,7 @@ class WorkSequenceAuthorityTests(unittest.TestCase):
             any("docs/HANDOFF.md must reference" in error for error in self._errors())
         )
 
-    def test_current_state_design_pointer_elsewhere_fails(self) -> None:
+    def test_current_state_design_pointer_elsewhere_fails_while_ms4_is_current(self) -> None:
         self._write_state("docs/OTHER_DESIGN.md", "MS4-001 partition descriptor")
         self.assertTrue(
             any("milestone.design must be" in error for error in self._errors())
@@ -180,6 +200,17 @@ class WorkSequenceAuthorityTests(unittest.TestCase):
     def test_current_state_next_item_absent_from_normative_sequence_fails(self) -> None:
         self._write_state("docs/MILESTONE_4_DESIGN.md", "MS4-012 future item")
         self.assertTrue(any("identifier absent" in error for error in self._errors()))
+
+    def test_released_ms4_state_can_advance_to_ms5(self) -> None:
+        self._write_released_state()
+        result = CHECKER.validate(self.root)
+        self.assertTrue(result["valid"], result["errors"])
+
+    def test_ms4_release_record_is_historical_not_second_live_authority(self) -> None:
+        self._write_released_state()
+        self._write("docs/MILESTONE_4_RELEASE.md", ITEMS + "\n")
+        result = CHECKER.validate(self.root)
+        self.assertTrue(result["valid"], result["errors"])
 
 
 if __name__ == "__main__":
