@@ -4,7 +4,7 @@
 The road LOD/container implementation owns road scoring, simplification,
 chunking, framing, and validation. It does not own authoritative database SQL.
 This entry point injects validated accepted roads from kane_fabric_read before
-any build command runs.
+any build command runs and enforces the release-byte compression runtime pin.
 """
 
 from __future__ import annotations
@@ -35,6 +35,10 @@ FABRIC_READ = _load_module(
     "_kane_fabric_roads_fabric_read",
     ROOT / "database" / "tools" / "kane_fabric_read.py",
 )
+COMPRESSION = _load_module(
+    "_kane_fabric_roads_compression_guard",
+    TOOLS / "kane_fabric_zlib_guard.py",
+)
 
 
 def load_accepted_roads(database: Path):
@@ -64,6 +68,18 @@ def load_accepted_roads(database: Path):
 # compiler-local SQLite loader while preserving the already-written road
 # algorithm for bounded review.
 ROADS.load_accepted_roads = load_accepted_roads
+
+_UNGUARDED_BUILD_COMPONENT = ROADS.build_component
+
+
+def build_component(database: Path, output: Path):
+    """Guard release-byte compression before entering the road compiler."""
+
+    COMPRESSION.require_pinned_zlib()
+    return _UNGUARDED_BUILD_COMPONENT(database, output)
+
+
+ROADS.build_component = build_component
 
 
 def main() -> int:
