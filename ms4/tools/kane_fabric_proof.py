@@ -4,6 +4,11 @@
 This command reads the authoritative Fabric GeoPackage and the accepted MS3
 substrate package read-only. It writes a new proof bundle to an explicit,
 previously nonexistent output directory and never promotes geographic state.
+
+The MS3 substrate manifest is authoritative only for the four-file substrate
+publication and the releases that publication actually contains. Accepted
+geography outside that substrate, including buildings, is resolved from the
+authoritative GeoPackage whose full database SHA-256 is pinned below.
 """
 
 from __future__ import annotations
@@ -39,10 +44,22 @@ VERSION = 1
 ACCEPTED_DATABASE_SHA256 = "31e362b696a37f1b9c45ae355c5669511a3128c17a651108a62e20d1cedebd67"
 ACCEPTED_SUBSTRATE_SHA256 = "fe417a02222669d9b81c72dc717ab0178b54b1c13cd0d3e8510c6b4f25224bcc"
 ACCEPTED_COMPONENTS = {
-    "county-overview.json": (1670, "f0995177625e28adc39e0ddd842ea22fbc1935239d6d1f7d54f377edde62e942"),
-    "roads-lod.kfs": (4014272, "4c897db58a55961d76e720d3905b57a76fe199f5396c876b57e56ecaeaaee4d2"),
-    "water-lod.kfs": (3183647, "dc4786b2904869fc5f910fa0d1b1a5767f1204fda99f34b2745f1ef7088f7f89"),
-    "substrate-manifest.json": (1797, "1143324ace2dd7c47ad5f79e0763fdf978be5447527095e9e6f96d46b3fd1d13"),
+    "county-overview.json": (
+        1670,
+        "f0995177625e28adc39e0ddd842ea22fbc1935239d6d1f7d54f377edde62e942",
+    ),
+    "roads-lod.kfs": (
+        4014272,
+        "4c897db58a55961d76e720d3905b57a76fe199f5396c876b57e56ecaeaaee4d2",
+    ),
+    "water-lod.kfs": (
+        3183647,
+        "dc4786b2904869fc5f910fa0d1b1a5767f1204fda99f34b2745f1ef7088f7f89",
+    ),
+    "substrate-manifest.json": (
+        1797,
+        "1143324ace2dd7c47ad5f79e0763fdf978be5447527095e9e6f96d46b3fd1d13",
+    ),
 }
 PROOF_PARTITION_BOUNDS = {
     "west": [-88.60, 41.60, -88.295, 42.20],
@@ -104,6 +121,8 @@ def verify_ms3_package(package_dir: Path) -> dict[str, object]:
 
 
 def accepted_release_map(manifest: Mapping[str, object]) -> dict[str, dict[str, object]]:
+    """Return release identities carried by the accepted MS3 substrate manifest."""
+
     releases = manifest.get("accepted_releases")
     if not isinstance(releases, list):
         raise ProofError("MS3 accepted release inventory is invalid")
@@ -111,45 +130,79 @@ def accepted_release_map(manifest: Mapping[str, object]) -> dict[str, dict[str, 
     for item in releases:
         if not isinstance(item, dict) or not isinstance(item.get("dataset_key"), str):
             raise ProofError("MS3 accepted release entry is invalid")
-        result[str(item["dataset_key"])] = item
+        dataset_key = str(item["dataset_key"])
+        if dataset_key in result:
+            raise ProofError(f"MS3 accepted release inventory duplicates {dataset_key}")
+        result[dataset_key] = dict(item)
     return result
 
 
 def select_authoritative_building(
-    database: Path, accepted_buildings: Mapping[str, object]
+    database: Path,
+    expected_release: Mapping[str, object] | None = None,
 ) -> dict[str, object]:
+    """Select one deterministic persistent building from accepted DB geography.
+
+    ``expected_release`` is an optional independent cross-check. It is not
+    required for discovery because buildings are deliberately outside the MS3
+    four-file substrate publication.
+    """
+
     connection = sqlite3.connect(f"file:{database.resolve()}?mode=ro", uri=True)
     connection.row_factory = sqlite3.Row
     try:
         row = connection.execute(
-            "SELECT pb.building_key, sb.source_feature_id, sb.min_x, sb.min_y, sb.max_x, sb.max_y, "
+            "SELECT pb.building_key, sb.source_feature_id, "
+            "sb.min_x, sb.min_y, sb.max_x, sb.max_y, "
             "sb.geometry_sha256, sr.release_key, sr.content_sha256 "
             "FROM project_building pb "
-            "JOIN source_building sb ON sb.source_building_id = pb.created_from_source_building_id "
-            "JOIN source_release sr ON sr.source_release_id = sb.source_release_id "
+            "JOIN source_building sb "
+            "ON sb.source_building_id = pb.created_from_source_building_id "
+            "JOIN source_release sr "
+            "ON sr.source_release_id = sb.source_release_id "
             "JOIN dataset d ON d.dataset_id = sr.dataset_id "
-            "WHERE pb.lifecycle_status = 'active' AND sr.lifecycle_status = 'accepted' "
+            "WHERE pb.lifecycle_status = 'active' "
+            "AND sr.lifecycle_status = 'accepted' "
             "AND d.dataset_key = 'buildings' "
             "AND sb.max_x >= -88.305 AND sb.min_x <= -88.295 "
             "AND sb.max_y >= 41.60 AND sb.min_y <= 42.20 "
             "ORDER BY ABS(((sb.min_x + sb.max_x) / 2.0) + 88.300), "
-            "ABS(((sb.min_y + sb.max_y) / 2.0) - 41.880), pb.building_key LIMIT 1"
+            "ABS(((sb.min_y + sb.max_y) / 2.0) - 41.880), "
+            "pb.building_key LIMIT 1"
         ).fetchone()
     except sqlite3.Error as exc:
         raise ProofError(f"authoritative building query failed: {exc}") from exc
     finally:
         connection.close()
+
     if row is None:
-        raise ProofError("no accepted persistent building identity crosses the MS4 proof overlap")
+        raise ProofError(
+            "no accepted persistent building identity crosses the MS4 proof overlap"
+        )
+
     result = dict(row)
-    if result["release_key"] != accepted_buildings.get("release_key"):
-        raise ProofError("proof building release_key disagrees with accepted MS3 release inventory")
-    if result["content_sha256"] != accepted_buildings.get("content_sha256"):
-        raise ProofError("proof building release content identity disagrees with accepted MS3 inventory")
+    if expected_release is not None:
+        if result["release_key"] != expected_release.get("release_key"):
+            raise ProofError(
+                "proof building release_key disagrees with expected accepted release inventory"
+            )
+        if result["content_sha256"] != expected_release.get("content_sha256"):
+            raise ProofError(
+                "proof building release content identity disagrees with expected accepted inventory"
+            )
+
     bounds = [result[key] for key in ("min_x", "min_y", "max_x", "max_y")]
     if any(value is None for value in bounds):
         raise ProofError("proof building has null bounds")
     return result
+
+
+def building_release_identity(building: Mapping[str, object]) -> dict[str, object]:
+    return {
+        "dataset_key": "buildings",
+        "release_key": str(building["release_key"]),
+        "content_sha256": str(building["content_sha256"]),
+    }
 
 
 def fabric_reference(building: Mapping[str, object]) -> dict[str, str]:
@@ -162,7 +215,9 @@ def fabric_reference(building: Mapping[str, object]) -> dict[str, str]:
     }
 
 
-def _subscription_spec(key: str) -> tuple[dict[str, str], dict[str, str], dict[str, object]]:
+def _subscription_spec(
+    key: str,
+) -> tuple[dict[str, str], dict[str, str], dict[str, object]]:
     if key == "condo":
         return (
             {"application_key": "condo-proof", "name": "Condo proof subscription"},
@@ -188,23 +243,44 @@ def _subscription_spec(key: str) -> tuple[dict[str, str], dict[str, str], dict[s
     raise ProofError(f"unknown proof subscription key: {key}")
 
 
-def compile_into(database: Path, package_dir: Path, output_dir: Path) -> dict[str, object]:
+def compile_into(
+    database: Path,
+    package_dir: Path,
+    output_dir: Path,
+) -> dict[str, object]:
     database = database.resolve()
     package_dir = package_dir.resolve()
+
     database_sha_before = sha256_file(database)
     if database_sha_before != ACCEPTED_DATABASE_SHA256:
         raise ProofError(
-            f"authoritative database SHA-256 {database_sha_before} is not the accepted MS4 baseline"
+            f"authoritative database SHA-256 {database_sha_before} "
+            "is not the accepted MS4 baseline"
         )
+
     substrate_manifest = verify_ms3_package(package_dir)
     jurisdiction = substrate_manifest.get("jurisdiction")
     if not isinstance(jurisdiction, dict):
         raise ProofError("accepted substrate jurisdiction is invalid")
+
+    # The MS3 manifest binds the substrate releases only. Buildings are accepted
+    # geography outside the substrate and therefore come from the pinned
+    # authoritative GeoPackage.
     accepted = accepted_release_map(substrate_manifest)
-    accepted_buildings = accepted.get("buildings")
-    if accepted_buildings is None:
-        raise ProofError("accepted substrate has no buildings release identity")
-    building = select_authoritative_building(database, accepted_buildings)
+    building = select_authoritative_building(database)
+    database_building_release = building_release_identity(building)
+    manifest_building_release = accepted.get("buildings")
+    if manifest_building_release is not None:
+        if (
+            manifest_building_release.get("release_key")
+            != database_building_release["release_key"]
+            or manifest_building_release.get("content_sha256")
+            != database_building_release["content_sha256"]
+        ):
+            raise ProofError(
+                "MS3 manifest buildings identity conflicts with accepted database geography"
+            )
+    accepted["buildings"] = database_building_release
 
     partitions = {
         name: build_partition_descriptor(
@@ -214,6 +290,7 @@ def compile_into(database: Path, package_dir: Path, output_dir: Path) -> dict[st
         )
         for name, bounds in PROOF_PARTITION_BOUNDS.items()
     }
+
     building_bounds = [
         building[key] for key in ("min_x", "min_y", "max_x", "max_y")
     ]
@@ -224,9 +301,11 @@ def compile_into(database: Path, package_dir: Path, output_dir: Path) -> dict[st
     for name, descriptor in partitions.items():
         descriptor_path = output_dir / "partitions" / f"{name}.json"
         descriptor_meta = write_json(descriptor_path, descriptor)
+
         selection = build_selection_manifest(package_dir, descriptor)
         selection_path = output_dir / "selections" / f"{name}.json"
         selection_meta = write_json(selection_path, selection)
+
         partition_entries.append(
             {
                 "name": name,
@@ -240,6 +319,7 @@ def compile_into(database: Path, package_dir: Path, output_dir: Path) -> dict[st
 
     subscription_entries: list[dict[str, object]] = []
     generation_keys: list[str] = []
+
     for key in ("condo", "industry"):
         owner, rights, payload = _subscription_spec(key)
         manifest, objects_doc = build_subscription_documents(
@@ -251,13 +331,16 @@ def compile_into(database: Path, package_dir: Path, output_dir: Path) -> dict[st
             rights=rights,
             objects=[
                 {
-                    "object_key": f"{key}-proof-{str(building['building_key'])[-16:]}",
+                    "object_key": (
+                        f"{key}-proof-{str(building['building_key'])[-16:]}"
+                    ),
                     "bounds": building_bounds,
                     "geographic_refs": [reference],
                     "payload": payload,
                 }
             ],
         )
+
         validate_subscription_documents(
             manifest,
             objects_doc,
@@ -265,21 +348,34 @@ def compile_into(database: Path, package_dir: Path, output_dir: Path) -> dict[st
             accepted_releases=accepted,
             authoritative_object_keys=authoritative_object_keys,
         )
+
         for descriptor in partitions.values():
-            selected = select_objects_for_partition(descriptor, manifest, objects_doc)
+            selected = select_objects_for_partition(
+                descriptor,
+                manifest,
+                objects_doc,
+            )
             if len(selected) != 1:
                 raise ProofError(
-                    f"{key} proof object is not selected exactly once by every proof partition"
+                    f"{key} proof object is not selected exactly once "
+                    "by every proof partition"
                 )
+
         subdir = output_dir / "subscriptions" / key
-        manifest_meta = write_json(subdir / "subscription-manifest.json", manifest)
+        manifest_meta = write_json(
+            subdir / "subscription-manifest.json",
+            manifest,
+        )
         objects_meta = write_json(subdir / "objects.json", objects_doc)
+
         generation_keys.append(str(manifest["generation_key"]))
         subscription_entries.append(
             {
                 "subscription_key": key,
                 "generation_key": manifest["generation_key"],
-                "manifest_path": f"subscriptions/{key}/subscription-manifest.json",
+                "manifest_path": (
+                    f"subscriptions/{key}/subscription-manifest.json"
+                ),
                 "manifest_sha256": manifest_meta["sha256"],
                 "objects_path": f"subscriptions/{key}/objects.json",
                 "objects_sha256": objects_meta["sha256"],
@@ -308,14 +404,23 @@ def compile_into(database: Path, package_dir: Path, output_dir: Path) -> dict[st
     )
     validate_placement_plan(placement_a)
     validate_placement_plan(placement_b)
-    if placement_a["logical_content_sha256"] != placement_b["logical_content_sha256"]:
-        raise ProofError("physical relocation changed MS4 logical placement identity")
+    if (
+        placement_a["logical_content_sha256"]
+        != placement_b["logical_content_sha256"]
+    ):
+        raise ProofError(
+            "physical relocation changed MS4 logical placement identity"
+        )
+
     write_json(output_dir / "placements" / "node-a.json", placement_a)
     write_json(output_dir / "placements" / "node-b.json", placement_b)
 
     database_sha_after = sha256_file(database)
     if database_sha_after != database_sha_before:
-        raise ProofError("authoritative database bytes changed during read-only MS4 proof compilation")
+        raise ProofError(
+            "authoritative database bytes changed during read-only "
+            "MS4 proof compilation"
+        )
 
     body = {
         "format": FORMAT,
@@ -333,7 +438,9 @@ def compile_into(database: Path, package_dir: Path, output_dir: Path) -> dict[st
         },
         "partitions": partition_entries,
         "subscriptions": subscription_entries,
-        "edge_placement_logical_sha256": placement_a["logical_content_sha256"],
+        "edge_placement_logical_sha256": placement_a[
+            "logical_content_sha256"
+        ],
     }
     composition_sha = hashlib.sha256(canonical_json_bytes(body)).hexdigest()
     composition = {**body, "composition_sha256": composition_sha}
@@ -341,16 +448,25 @@ def compile_into(database: Path, package_dir: Path, output_dir: Path) -> dict[st
     return composition
 
 
-def compile_proof(database: Path, package_dir: Path, output_dir: Path) -> dict[str, object]:
+def compile_proof(
+    database: Path,
+    package_dir: Path,
+    output_dir: Path,
+) -> dict[str, object]:
     """Build into a sibling staging directory and publish by atomic rename."""
 
     output_dir = output_dir.resolve()
     if output_dir.exists():
         raise ProofError(f"proof output already exists: {output_dir}")
+
     output_dir.parent.mkdir(parents=True, exist_ok=True)
     stage = Path(
-        tempfile.mkdtemp(prefix=f".{output_dir.name}.stage-", dir=output_dir.parent)
+        tempfile.mkdtemp(
+            prefix=f".{output_dir.name}.stage-",
+            dir=output_dir.parent,
+        )
     )
+
     try:
         composition = compile_into(database, package_dir, stage)
         os.replace(stage, output_dir)
@@ -366,7 +482,12 @@ def main() -> int:
     parser.add_argument("package_dir", type=Path)
     parser.add_argument("output_dir", type=Path)
     args = parser.parse_args()
-    result = compile_proof(args.database, args.package_dir, args.output_dir)
+
+    result = compile_proof(
+        args.database,
+        args.package_dir,
+        args.output_dir,
+    )
     print(json.dumps(result, sort_keys=True, separators=(",", ":")))
     return 0
 
