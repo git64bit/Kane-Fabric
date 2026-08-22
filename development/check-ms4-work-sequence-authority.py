@@ -18,7 +18,7 @@ DESIGN_REFERENCE = DESIGN_RELATIVE.as_posix()
 NORMATIVE_HEADING = "## Normative implementation order"
 NORMATIVE_ITEM_RE = re.compile(r"^(MS4-\d{3})\b")
 REFERENCE_ITEM_RE = re.compile(r"^\s*(?:[-*]\s+)?(MS4-\d{3})\b")
-HISTORICAL_MILESTONE_RE = re.compile(r"^MILESTONE_[0-3]_")
+HISTORICAL_MILESTONE_RE = re.compile(r"^MILESTONE_[0-4]_")
 
 
 def _read_text(root: Path, relative: Path) -> str:
@@ -94,6 +94,63 @@ def iter_current_markdown(root: Path) -> Iterable[Path]:
         yield path
 
 
+def _validate_current_state(
+    root: Path, sequence: tuple[str, ...], errors: list[str]
+) -> None:
+    try:
+        state = json.loads(_read_text(root, CURRENT_STATE_RELATIVE))
+        milestone = state.get("milestone") if isinstance(state, dict) else None
+        if not isinstance(milestone, dict):
+            errors.append("docs/CURRENT_STATE.json milestone object is missing or invalid")
+            return
+
+        current = milestone.get("current")
+        if current == 4:
+            if milestone.get("design") != DESIGN_REFERENCE:
+                errors.append(
+                    f"docs/CURRENT_STATE.json milestone.design must be {DESIGN_REFERENCE}"
+                )
+            next_work_item = milestone.get("next_work_item")
+            if not isinstance(next_work_item, str) or not next_work_item:
+                errors.append(
+                    "docs/CURRENT_STATE.json milestone.next_work_item is missing or invalid"
+                )
+            else:
+                match = re.match(r"^(MS4-\d{3})\b", next_work_item)
+                if not match:
+                    errors.append(
+                        "docs/CURRENT_STATE.json milestone.next_work_item must begin with an "
+                        "MS4-NNN identifier while Milestone 4 is current"
+                    )
+                elif sequence and match.group(1) not in sequence:
+                    errors.append(
+                        "docs/CURRENT_STATE.json milestone.next_work_item names an identifier "
+                        "absent from the normative Milestone 4 work sequence"
+                    )
+            return
+
+        if isinstance(current, int) and current > 4:
+            previous = milestone.get("previous_milestone")
+            if not isinstance(previous, dict):
+                errors.append(
+                    "docs/CURRENT_STATE.json must record released Milestone 4 in "
+                    "milestone.previous_milestone after advancing beyond Milestone 4"
+                )
+                return
+            if previous.get("number") != 4 or previous.get("status") != "released":
+                errors.append(
+                    "docs/CURRENT_STATE.json milestone.previous_milestone must identify "
+                    "Milestone 4 as released after advancing beyond Milestone 4"
+                )
+            return
+
+        errors.append(
+            "docs/CURRENT_STATE.json milestone.current must be Milestone 4 or a later milestone"
+        )
+    except (json.JSONDecodeError, OSError, RuntimeError, UnicodeError) as exc:
+        errors.append(f"docs/CURRENT_STATE.json is invalid: {exc}")
+
+
 def validate(root: Path = ROOT) -> dict[str, object]:
     root = root.resolve()
     errors: list[str] = []
@@ -131,35 +188,7 @@ def validate(root: Path = ROOT) -> dict[str, object]:
                 f"{DESIGN_REFERENCE}"
             )
 
-    try:
-        state = json.loads(_read_text(root, CURRENT_STATE_RELATIVE))
-        milestone = state.get("milestone") if isinstance(state, dict) else None
-        if not isinstance(milestone, dict):
-            errors.append("docs/CURRENT_STATE.json milestone object is missing or invalid")
-        else:
-            if milestone.get("design") != DESIGN_REFERENCE:
-                errors.append(
-                    f"docs/CURRENT_STATE.json milestone.design must be {DESIGN_REFERENCE}"
-                )
-            next_work_item = milestone.get("next_work_item")
-            if not isinstance(next_work_item, str) or not next_work_item:
-                errors.append(
-                    "docs/CURRENT_STATE.json milestone.next_work_item is missing or invalid"
-                )
-            else:
-                match = re.match(r"^(MS4-\d{3})\b", next_work_item)
-                if not match:
-                    errors.append(
-                        "docs/CURRENT_STATE.json milestone.next_work_item must begin with an "
-                        "MS4-NNN identifier"
-                    )
-                elif sequence and match.group(1) not in sequence:
-                    errors.append(
-                        "docs/CURRENT_STATE.json milestone.next_work_item names an identifier "
-                        "absent from the normative Milestone 4 work sequence"
-                    )
-    except (json.JSONDecodeError, OSError, RuntimeError, UnicodeError) as exc:
-        errors.append(f"docs/CURRENT_STATE.json is invalid: {exc}")
+    _validate_current_state(root, sequence, errors)
 
     return {
         "design_authority": DESIGN_REFERENCE,
