@@ -1,72 +1,42 @@
 # Kane Fabric
 
-Kane Fabric is public civic infrastructure for maintaining and distributing authoritative county-scale geographic state through a browser-first **substrate + subscriptions** system.
+Kane Fabric is public civic infrastructure for maintaining and distributing authoritative county-scale geographic state through a browser-first **substrate + logical partitions + subscriptions** architecture.
 
-Kane County, Illinois is the reference deployment rather than the conceptual namespace of the software. Reusable contracts are intended to remain portable across U.S. counties and county-equivalent jurisdictions without building speculative nationwide infrastructure before it is needed.
+Kane County, Illinois is the reference deployment rather than the conceptual namespace of the software. Reusable contracts are intended to remain portable across U.S. counties and county-equivalent jurisdictions without speculative nationwide infrastructure.
 
-Kane Fabric is deliberately released under the repository `LICENSE` using The Unlicense/public-domain dedication. Independent use, adaptation, redistribution, commercial use, government use, and continued operation without permission from the original project are intended properties. The project does not condition use on political, religious, commercial, governmental, philosophical, or intellectual-ideological affiliation. See `docs/CIVIC_INFRASTRUCTURE_PRINCIPLES.md`.
+Kane Fabric-authored code is released under the repository `LICENSE` using The Unlicense/public-domain dedication. Third-party geographic data, firmware SDKs, and other dependencies retain their own provenance/license boundaries.
 
-Kane Fabric grew out of Kane Condo 0.4. Kane Condo proved the county-scale browser map, source-profile registry, update detection, candidate harvesting, deterministic comparison, project-identity reconciliation, atomic promotion and rollback, render-package generation, and browser-side rendering model. Kane Condo is frozen at tag `0.4`; Kane Fabric begins from those proven results without remaining condo-specific.
+## Start here
 
-## Start here for current development
+New Assistants and developers read:
 
-**New Assistants and developers start with `docs/HANDOFF.md`, then `docs/CURRENT_STATE.json`, `docs/SESSION_START.md`, and `docs/DEVELOPMENT_PROCESS.md`.**
+1. `docs/HANDOFF.md`
+2. `docs/CURRENT_STATE.json`
+3. `docs/SESSION_START.md`
+4. `docs/DEVELOPMENT_PROCESS.md`
+5. the current milestone reference identified by those documents
 
-Current milestone design:
-
-```text
-docs/MILESTONE_4_DESIGN.md
-```
-
-`docs/HANDOFF.md` is the durable system handoff. `docs/CURRENT_STATE.json` is the compact machine-readable latest observed checkpoint. `docs/SESSION_START.md` defines the low-churn resume path. Stable deployment facts are not rediscovered every session.
-
-Inside CT102, use the recorded checkout path and run:
+Inside CT102, use the recorded checkout and run:
 
 ```bash
 bash development/kane-fabric-dev-state.sh
 ```
 
-Use `--deep` only when database hashes/full validation are actually required.
+Use `--deep` only when database hashes/full validation are required.
 
-Historical milestone release records are evidence, not current implementation instructions. Milestone 3 is closed; do not restart MS-3 discovery or implementation unless a concrete regression invalidates its accepted evidence.
-
-## Development and execution process
-
-`docs/DEVELOPMENT_PROCESS.md` is the current authority for how project work is executed.
-
-The critical execution boundary is:
-
-```text
-GitHub main
-software/contracts SSOT
-        ↓
-srv-b
-Proxmox/LXC control plane
-        ↓
-pct exec 102 -- ...
-        ↓
-CT102 kane-fabric
-real Kane Fabric execution environment
-        ↓
-/var/lib/kane-fabric
-operational county state and evidence
-```
-
-An Assistant sandbox is not CT102 and cannot substitute for CT102 acceptance.
-
-## Project status
+## Current status
 
 **Milestone 1 — Kane County Reconstruction Proof: RELEASED (2026-08-18).**
 
-A clean Kane Fabric CT independently reconstructed the Kane County pipeline from declared inputs through candidate replay, exact deterministic comparison, and project-building reconciliation. See `docs/MILESTONE_1_RELEASE.md`.
+See `docs/MILESTONE_1_RELEASE.md`.
 
 **Milestone 2 — Extract Kane Fabric Geographic Core: RELEASED (2026-08-20).**
 
-Kane Fabric owns the geographic database migrations and implementation, source contracts, seed/bootstrap import, provenance, storage, durable geographic building identity, candidate engines, deterministic comparison, reconciliation, and atomic promotion/rollback. The geographic core operates without Kane Condo classification tables and without the frozen Kane Condo checkout as a runtime dependency. See `docs/MILESTONE_2_RELEASE.md`.
+See `docs/MILESTONE_2_RELEASE.md`.
 
 **Milestone 3 — Compile Shared Substrate: RELEASED (2026-08-20).**
 
-Milestone 3 established the deterministic four-file public baseline geography publication:
+Canonical publication:
 
 ```text
 county-overview.json
@@ -75,114 +45,95 @@ water-lod.kfs
 substrate-manifest.json
 ```
 
-The accepted Kane County substrate is independently browser-consumable, byte-identifiable, selectively readable through indexed byte ranges, decompressible/renderable in a real browser, and compatible with bounded edge-serving access patterns. The authoritative GeoPackage remained unchanged through the accepted build and browser proofs. See `docs/MILESTONE_3_RELEASE.md`.
-
-**Milestone 4 — Subscriptions + Geographic Scoping/Partition Identity: IN PROGRESS.**
-
-Milestone 4 defines how application subscriptions are layered on the public substrate and how substrate/subscription content can be addressed through deterministic logical geographic partitions.
-
-The partition model is intentionally broader than towns or townships. Supported scopes are expected to include whole-jurisdiction, municipality, township/equivalent administrative subdivision, explicit bounded region, and deterministic composite scopes where justified.
-
-A partition is a logical distribution/composition identity, not a physical edge device and not a second geographic authority. Administrative boundaries are convenient named scopes; roads, water, buildings, and application data may cross them without changing feature identity.
-
-The intended progression is:
+Accepted substrate content identity:
 
 ```text
-MS-3  county substrate + selective chunks       COMPLETE
-  ↓
-MS-4  subscriptions + geographic partitions     CURRENT
-  ↓
-MS-5  ESP32-S3 placement/storage/HTTP serving   DEFERRED
+fe417a02222669d9b81c72dc717ab0178b54b1c13cd0d3e8510c6b4f25224bcc
 ```
 
-See `docs/MILESTONE_4_DESIGN.md`.
+See `docs/MILESTONE_3_RELEASE.md`.
+
+**Milestone 4 — Subscriptions + Geographic Scoping/Partition Identity: RELEASED (2026-08-22).**
+
+Milestone 4 established deterministic logical partitions, exact substrate-selection references, independently versioned Condo and Industry proof subscriptions, Fabric geographic reference/ownership boundaries, real browser composition, cross-boundary identity preservation, and physical-placement independence.
+
+Accepted proof:
+
+```text
+composition_sha256       a58c8398248cee05b7baad9ae289fe0581bdb3624ce1aff3aa8a49721f92ee53
+bundle_inventory_sha256  1e109d4621ce738e3e35b93c23ecab0d5c9a0d4166aad5d72f4e2eff397ad0d3
+release_proof_sha256      3235cd4f7b7041138fe05708dbb077c07dc3ce8b8ec7a390141489460ac40634
+```
+
+See `docs/MILESTONE_4_RELEASE.md`.
+
+**Milestone 5 — Edge Serving Contract: CURRENT.**
+
+Milestone 5 maps the released MS3/MS4 logical identities onto physical constrained-edge storage and HTTP serving. ESP32-S3-class hardware using ESP-IDF remains the initial reference direction. The edge implementation must not redesign partition, subscription, or substrate identities merely to suit a device.
+
+See `docs/ESP32_EDGE_REFERENCE.md` and `docs/ROADMAP.md`.
 
 ## Platform model
 
 Kane Fabric separates three long-lived roles:
 
-- **County Fabric node** — authoritative control plane and compiler. It owns source acquisition, provenance, validation, reconciliation, promotion, rollback, package compilation, publication, and edge synchronization.
-- **Browser** — durable user client. It validates, fetches, decompresses, renders, pans, zooms, and composes substrate plus subscriptions.
-- **Edge nodes** — replaceable low-cost HTTP/storage devices. ESP32-S3 is the initial minimum reference implementation, not a permanent architectural dependency.
+- **County Fabric node** — authoritative geographic control plane/compiler. It owns source acquisition, provenance, validation, reconciliation, promotion, rollback, and deterministic publication compilation.
+- **Browser** — durable client. It verifies, selectively fetches, decompresses, composes, and renders substrate plus subscriptions.
+- **Edge nodes** — replaceable storage/HTTP resources. Physical placement is not logical data identity.
 
-Physical edge placement is deliberately separated from logical data identity. A subscription or geographic partition may fit on one node, share a node with others, span several nodes, or be replicated without changing its logical identity.
-
-## Geographic model
-
-Kane Fabric distinguishes three layers:
-
-### Authoritative geography
-
-The county Fabric node maintains accepted geographic state through explicit provenance, candidate validation, comparison, reconciliation where required, and promotion. Source freshness, candidate registration, comparison, compilation, and partition selection do not silently change accepted authority.
-
-### Shared substrate
-
-The public substrate contains geographic context useful to many applications. The Milestone 3 v1 baseline contains:
-
-- county boundary/context;
-- roads;
-- water.
-
-The county-wide publication remains canonical. Milestone 4 partitioning selects/references relevant substrate chunks and context rather than creating independent town databases or new geographic authorities.
-
-### Subscriptions and partitions
-
-Subscriptions provide application-specific geographic state. Initial proof paths are:
-
-- Condo;
-- Industry / Mechanical Compiler.
-
-A subscription is a logical dataset with its own generation and ownership boundary. It may reference Kane Fabric geographic identities without acquiring ownership of the public substrate.
-
-A geographic partition is a deterministic jurisdiction-scoped area used for selection, composition, storage planning, replication, and serving. Examples include a municipality, township, explicit bounded region, or whole county.
-
-A road, water feature, building identity, or subscription object crossing a partition boundary retains one logical identity. Partition boundaries are distribution boundaries, not semantic ownership boundaries.
-
-## Edge direction
-
-ESP32-S3 + ESP-IDF remains the Milestone 5 reference edge implementation.
-
-Milestone 4 is hardware-aware but firmware-independent: its partition and subscription contracts must make it practical for constrained devices to carry focused subsets, but it does not define ESP-IDF HTTP handlers, storage APIs, flash/SD layouts, Wi-Fi behavior, or firmware updates.
-
-A future arrangement may therefore look like:
+The authority flow is:
 
 ```text
-edge A  Aurora-area substrate + Industry subscription
-edge B  Elgin-area substrate + Condo subscription
-edge C  township-focused context + several small subscriptions
+official geographic sources
+        ↓
+accepted geographic state
+        ↓
+canonical county substrate
++ deterministic logical partitions
++ independent subscription generations
+        ↓
+physical edge placement / replication
+        ↓
+browser composition
 ```
 
-Those placements do not become part of partition or subscription identity.
+## Geographic authority
 
-## Governing forward objectives
+Accepted geography changes only through explicit promotion. Source status, candidate registration, comparison, partition selection, subscription compilation, and edge placement are not authority-changing operations.
 
-New work is evaluated against continuing objectives:
+Current Kane County authoritative database:
 
-1. preserve Kane Fabric as authentic, independently usable public civic infrastructure;
-2. maintain current, validated, authoritative county geographic state without bypassing provenance, candidate validation, comparison, reconciliation, promotion, or rollback safeguards;
-3. keep the compiled publication—not the internal GeoPackage schema—as the durable external geographic interface;
-4. keep subscriptions independent of shared-substrate ownership;
-5. keep geographic partition identity independent of physical edge hardware;
-6. avoid unnecessary Kane County coupling in reusable namespaces and durable contracts.
+```text
+/var/lib/kane-fabric/database/kane-county-fabric.gpkg
+SHA256  31e362b696a37f1b9c45ae355c5669511a3128c17a651108a62e20d1cedebd67
+```
 
-Kane County remains the sole required operational reference deployment for current work. No speculative nationwide framework or fake second-county implementation is required.
+The internal GeoPackage schema is not the durable browser/client interface.
+
+## Substrate, partitions, and subscriptions
+
+The Milestone 3 county publication remains canonical. Milestone 4 partitions do not create separate town/township authorities or databases; they deterministically select/reference content from accepted generations.
+
+A partition is a logical jurisdiction-scoped distribution/composition identity. It may be a whole jurisdiction, accepted administrative scope, explicit bounded region, or deterministic composite. Physical node identity, hostname, SSID, IP address, and storage path are excluded from partition identity.
+
+A subscription is independently versioned application/domain state that may reference persistent Fabric geographic identities while retaining its own owner, rights, generation, and payload lifecycle.
+
+Cross-boundary roads, water, buildings, and subscription objects retain one logical identity even when referenced or replicated through several partitions.
+
+## Browser integrity boundary
+
+Browser publication access requires Web Crypto SHA-256 capability. Kane Fabric fails before consuming substrate/publication bytes when the execution context cannot perform the required cryptographic verification. HTTPS is a normal way to obtain a secure browser context; the correctness requirement is the capability, not URL string inference.
 
 ## Dependency and licensing boundary
 
 Kane Fabric-authored code remains under the root Unlicense.
 
-Third-party implementations retained by the final project must be explicitly reviewed, pinned, and vendored according to `docs/DEPENDENCY_POLICY.md`. Platform contracts such as standard browser APIs are not treated as bundled project implementations merely because Kane Fabric depends on those interfaces.
+Retained third-party project-controlled runtime/build/test/firmware implementations must be reviewed, pinned, and vendored according to `docs/DEPENDENCY_POLICY.md`. Standard browser APIs are contracts, not bundled implementations merely because Kane Fabric uses them.
 
-Node.js and Chromium were used as development-only acceptance runtimes during Milestone 3 and are not dependencies of the public substrate or future edge nodes.
-
-ESP-IDF remains a future project-controlled firmware SDK/toolchain and must be pinned/licensed/vendored before Kane Fabric firmware release if retained.
+Node.js and Chromium are development/acceptance tooling. ESP-IDF, if retained for Milestone 5 release, must be explicitly pinned, license-reviewed, and vendored according to project policy.
 
 ## Repository boundary
 
-Large county databases, harvests, staging artifacts, rollback copies, render/substrate packages, and reconstruction evidence remain outside Git.
+Large county databases, harvests, staging artifacts, rollback copies, render/substrate packages, MS4 proof bundles, and operational evidence remain outside Git under `/var/lib/kane-fabric`.
 
-Git contains software, county/source contracts, tests, documentation, schemas, deterministic small manifests, and repeatable procedures required to reproduce those external artifacts.
-
-The public-domain status of Kane Fabric software does not automatically determine the legal status of third-party geographic data. External source provenance remains a separate boundary.
-
-See `docs/HANDOFF.md` for durable system context, `docs/CURRENT_STATE.json` for the latest operational checkpoint, `docs/ROADMAP.md` for milestone sequencing, `docs/MILESTONE_4_DESIGN.md` for the current milestone contract, and `docs/ESP32_EDGE_REFERENCE.md` for the deferred Milestone 5 edge implementation boundary.
+Git contains software, migrations, source/county contracts, tests, documentation, schemas, small deterministic manifests, and repeatable procedures required to reproduce those external artifacts.
