@@ -1,26 +1,12 @@
 # Kane Fabric Roadmap
 
+This roadmap reports milestone status and purpose. Detailed historical evidence belongs in the milestone release records; detailed work-item authority belongs in the active milestone design/contract document.
+
 ## Milestone 0 — Fix the platform contract
 
-Purpose: establish the architectural boundary before Kane Condo implementation code is adapted.
+**Status: COMPLETE**
 
-Initial deliverables:
-
-- project charter;
-- architecture;
-- data ownership contract;
-- county-node reconstruction contract;
-- infrastructure baseline;
-- roadmap.
-
-Exit gate:
-
-- browser-first client boundary is explicit;
-- county Fabric node is authoritative control plane/compiler;
-- edge nodes are replaceable distribution resources;
-- substrate/subscription model is explicit;
-- Mechanical Compiler/application ownership boundary is explicit;
-- large operational geographic data remains outside Git.
+Established the browser-first client boundary, county Fabric control plane/compiler role, replaceable edge role, substrate/subscription model, application ownership boundary, and external operational-data boundary.
 
 ## Milestone 1 — Reconstruct Kane County on a clean Fabric node
 
@@ -28,131 +14,7 @@ Exit gate:
 
 Release record: `docs/MILESTONE_1_RELEASE.md`
 
-Purpose: prove that the county pipeline can be reproduced from declared inputs rather than copied from hidden orchestrator state.
-
-Milestone 1 was released after clean-node reconstruction through deterministic project-building reconciliation. The promotion/rollback replay originally listed as Batch 009 was not executed before release and is carried forward explicitly as Milestone 2 Entry Gate 001. This scope amendment preserves the unperformed proof rather than claiming it passed.
-
-### Batch 001 — Environment acceptance — COMPLETE
-
-Record and verify two separate layers:
-
-**Host-level conformance**, owned by `srv-b` and asserted by its executable `ct-baseline.sh` check:
-
-- autostart and unprivileged LXC state;
-- required LXC features;
-- single service-bridge interface and LAN isolation;
-- Debian 12;
-- generated locale;
-- timezone;
-- required host-standard tools and admin access;
-- no container mail agent and effective SMTP egress block;
-- systemd health;
-- applicable host firewall and monitoring requirements.
-
-**Kane Fabric-specific environment requirements**:
-
-- data storage and layout;
-- Python;
-- SQLite runtime and CLI;
-- Git;
-- reconstruction evidence locations;
-- project-specific test gates.
-
-Acceptance: the host-level baseline exits zero for CT102 and all Kane Fabric-specific environment checks pass. Kane Fabric must not maintain a competing definition of host conformance.
-
-Accepted host result on 2026-08-18: CT100, CT101 and CT102 conform with `62 passed, 0 failed, 3 informational`.
-
-### Batch 002 — Reconstruction evidence contract — COMPLETE
-
-Record the immutable Kane County seed, historical reference database, staged candidate evidence, and their SHA-256 identities outside Git.
-
-Acceptance: evidence is distinguishable from active Fabric state and can be verified before use.
-
-### Batch 003 — Historical software reproducibility — COMPLETE
-
-Run the exact Kane Condo `0.4` database test suite on the clean Kane Fabric CT.
-
-Accepted result: 374 tests pass on the reconstructed environment; the historical checkout remains clean.
-
-### Batch 004 — Read-only reference validation — COMPLETE
-
-Use the reconstructed 0.4 toolchain to:
-
-- validate the known-good promoted database;
-- inspect its database state;
-- validate source profiles;
-- perform live lightweight source-status checks;
-- prove the reference database hash is unchanged.
-
-Accepted result: all five official source profiles reported `Up to date`; the 649027584-byte historical promoted reference remained at SHA-256 `164200d4d7262874dcc03239c8258446a4d7bb81ce84daf46dc4937d6c97fe86`.
-
-### Batch 005 — Fresh working database reconstruction — COMPLETE
-
-Create a new working database from the immutable accepted seed and declared migrations/import contracts.
-
-Do not install the final Kane Condo database as active Fabric state.
-
-Accepted result: a fresh working database was reconstructed from the immutable donor and passed semantic comparison with the historical seed-import contract.
-
-### Batch 006 — Candidate replay — COMPLETE
-
-Using the staged Kane reconstruction evidence, replay:
-
-- building candidate validation/registration;
-- road candidate validation/registration;
-- coordinated water candidate validation/registration;
-- county boundary candidate validation/registration.
-
-Accepted result: one accepted and one candidate release exist for each of the five datasets. Registration did not promote accepted geography.
-
-Active working database at the end of Batch 006:
-
-```text
-/var/lib/kane-fabric/database/kane-county-reconstructed.gpkg
-size    355217408 bytes
-SHA256  ff67edcb0a732d87f3dc3bb3cf7fda91a03fea4ef8e16fb527f88283894c0a97
-```
-
-### Batch 007 — Deterministic comparison replay — COMPLETE
-
-Reproduce accepted-versus-candidate comparison results.
-
-Accepted result: two fresh CT102 comparison runs were byte-for-byte repeatable and matched historical Batch 022 comparison artifacts exactly for buildings, boundary, roads, and coordinated water. The active database remained byte-identical throughout comparison.
-
-### Batch 008 — Geographic identity reconciliation replay — COMPLETE
-
-Reconstruct the building project-identity reconciliation on an external candidate database.
-
-Accepted result:
-
-```text
-ready_for_promotion       true
-ambiguity_count           0
-mapped_source_count       208324
-unmapped_source_count     0
-continuation mappings     208324
-replacement mappings      0
-additions                 0
-disappearances            0
-new project buildings     0
-classification changes    0
-```
-
-Reconciliation artifact:
-
-```text
-/var/lib/kane-fabric/staging/reconciliation/kane-buildings-reconciliation-20250730-2bfb38f11c7d
-candidate DB SHA256  9e59c2ad2bd6d6962894faebd98ffc31620b48f711b091f0c376e2707c488ae9
-reconciliation SHA256 1d81b3287cee5c0ed47f6aa5092d8dee2b7aab382095749494f630f601a06a62
-```
-
-### Original Batch 009 — Promotion and rollback replay — CARRIED TO MILESTONE 2
-
-This proof was part of the original Milestone 1 plan but was not executed before the Milestone 1 release.
-
-It is now Milestone 2 Entry Gate 001 and remains mandatory before extraction changes authoritative database behavior.
-
-Milestone 1 exit statement: Kane County's authoritative database pipeline has been independently reconstructed from declared inputs through deterministic comparison and project-identity reconciliation on CT102. Promotion/rollback replay remains explicitly pending as the next milestone's entry gate.
+Proved reconstruction from declared inputs through deterministic candidate replay/comparison and project-building reconciliation. The carried promotion/rollback proof was explicitly completed at Milestone 2 entry rather than silently claimed in Milestone 1.
 
 ## Milestone 2 — Extract Kane Fabric geographic core
 
@@ -160,41 +22,7 @@ Milestone 1 exit statement: Kane County's authoritative database pipeline has be
 
 Release record: `docs/MILESTONE_2_RELEASE.md`
 
-Historical handoff: `docs/MILESTONE_2_HANDOFF.md`
-
-Purpose: first close the carried promotion/rollback proof, then separate reusable county geography from Kane Condo application semantics.
-
-### Entry Gate 001 — Promotion and rollback replay — COMPLETE
-
-The carried Milestone 1 promotion/rollback proof passed before behavior-changing extraction proceeded. The reconstructed state was prepared, semantically compared with the immutable promoted oracle, atomically activated, automatically restored after injected post-verification failure, explicitly rolled back, and all historical evidence remained unchanged.
-
-### Core extraction work — COMPLETE
-
-Kane Fabric now owns:
-
-- geographic GeoPackage migrations and validation;
-- provenance, boundary, roads/water, and building storage;
-- durable geographic building identities;
-- source-profile registry and source status;
-- building, road, coordinated-water, and boundary candidate engines;
-- deterministic candidate comparison;
-- building reconciliation;
-- atomic promotion and rollback;
-- verified Kane County seed/bootstrap import.
-
-The geographic core does not require Condo classification tables or semantics. The frozen Kane Condo `0.4` checkout remains a regression oracle only and is not a runtime dependency.
-
-### Historical closeout — COMPLETE
-
-The native Fabric core replayed the immutable Milestone 1 Kane County evidence and reproduced all four historical comparison hashes exactly. Reconciliation mapped all 208,324 building identities with zero ambiguities and zero unmapped sources. Native Fabric promotion succeeded and explicit rollback restored the prior accepted release set. The immutable seed and historical promoted oracle remained byte-identical.
-
-Closeout report SHA-256:
-
-```text
-fee3194b432566fc0cf4af09b8e9e80eb6efd9945e0894e96ecbb2aa22ce9f4c
-```
-
-Exit gate: **PASSED**. Kane Fabric can initialize and refresh Kane County through Fabric-owned names and entry points without depending on Kane Condo application classifications or the historical Kane Condo runtime.
+Kane Fabric owns the reusable geographic database migrations, provenance, source contracts, candidate engines, deterministic comparison, persistent building identity, reconciliation, explicit atomic promotion/rollback, and Kane County bootstrap path without requiring Condo classification semantics at Fabric runtime.
 
 ## Milestone 3 — Compile shared substrate
 
@@ -202,147 +30,84 @@ Exit gate: **PASSED**. Kane Fabric can initialize and refresh Kane County throug
 
 Release record: `docs/MILESTONE_3_RELEASE.md`
 
-Historical handoff: `docs/MILESTONE_3_HANDOFF.md`
-
-Design baseline: `docs/MILESTONE_3_DESIGN.md`
-
 Frozen wire contract: `docs/SUBSTRATE_FORMAT_V1.md`
 
-Purpose: produce the first Kane Fabric shared geographic distribution.
+Released canonical publication:
 
-Released substrate:
+```text
+county-overview.json
+roads-lod.kfs
+water-lod.kfs
+substrate-manifest.json
+```
 
-- county/jurisdiction boundary and overview context;
-- roads;
-- water.
-
-Accepted implementation state:
-
-- MS3-001 v1 contract primitives — complete;
-- MS3-002 deterministic jurisdiction overview — complete;
-- MS3-003 road LOD/container — complete;
-- MS3-004 water LOD/container — complete;
-- MS3-005 manifest — complete;
-- MS3-006 package compiler/activation — complete;
-- MS3-007 deterministic real proof — complete;
-- MS3-008 browser selective loader — complete;
-- MS3-009 real browser rendering — complete;
-- MS3-010 bounded edge compatibility proof — complete;
-- MS3-011 release closeout — complete.
-
-Accepted substrate content identity:
+Accepted substrate identity:
 
 ```text
 fe417a02222669d9b81c72dc717ab0178b54b1c13cd0d3e8510c6b4f25224bcc
 ```
 
-Repository publication:
-
-```text
-assistant/read-authority-boundary
-  fast-forward merged to main
-  published main head 84293aeb381db596f4c3233473c350fda6c5426d
-```
-
-Exit gate: **PASSED**. A normal browser can open Kane County, selectively read and validate the immutable substrate, render boundary/roads/water independently of application subscription state, and consume the same access pattern through a bounded reference server representative of the future ESP32-S3 edge constraint.
-
-Completed ESP32-S3/ESP-IDF firmware remains a Milestone 5 responsibility.
+Exit gate: a normal browser can verify, selectively read, decompress, and render the canonical county substrate through bounded byte-range access without application subscription state.
 
 ## Milestone 4 — Subscriptions + geographic scoping/partition identity
 
-**Status: IN PROGRESS**
+**Status: RELEASED — 2026-08-22**
 
-Current item: `MS4-001`
+Release record: `docs/MILESTONE_4_RELEASE.md`
 
-Design authority: `docs/MILESTONE_4_DESIGN.md`
+Historical design authority: `docs/MILESTONE_4_DESIGN.md`
 
-Purpose: define how applications add independently versioned domain-specific geographic state without owning the public substrate, and define deterministic logical geographic partitions so substrate/subscription content can be addressed, composed, stored, replicated, and later served in focused areas smaller than the whole county.
+Purpose achieved: applications can publish independently versioned geographic subscriptions layered on the canonical substrate, and content can be addressed through deterministic logical geographic partitions independent of physical edge devices.
 
-Initial proof subscriptions:
+All normative work items from `MS4-001` through `MS4-011` are complete. The detailed sequence remains defined only in `docs/MILESTONE_4_DESIGN.md`.
 
-- Condo as the historical application extraction path;
-- Industry as the Mechanical Compiler integration path.
+Accepted proof identities:
 
-Partition scope classes should support at least:
+```text
+composition_sha256       a58c8398248cee05b7baad9ae289fe0581bdb3624ce1aff3aa8a49721f92ee53
+bundle_inventory_sha256  1e109d4621ce738e3e35b93c23ecab0d5c9a0d4166aad5d72f4e2eff397ad0d3
+release_proof_sha256      3235cd4f7b7041138fe05708dbb077c07dc3ce8b8ec7a390141489460ac40634
+```
 
-- whole jurisdiction;
-- municipality/incorporated place when an accepted boundary definition exists;
-- township or equivalent administrative subdivision when an accepted boundary definition exists;
-- explicit bounded region;
-- deterministic composite scopes where justified.
-
-Municipality and township are named convenience scopes, not the only partition mechanism and not semantic ownership boundaries. Roads, water, buildings, and application objects may cross them while retaining one logical identity.
-
-Detailed Milestone 4 work-item definitions and order are normative in `docs/MILESTONE_4_DESIGN.md`; this roadmap does not maintain a second copy of that sequence.
-
-Important boundary: the Milestone 3 county publication remains canonical. MS4 partitions select/reference relevant substrate chunks/ranges and subscription objects; they do not create separate authoritative town/township databases and do not change accepted geography.
-
-Physical edge placement is also outside the logical identity contract. One partition may live on one node, share a node, span nodes, or be replicated without changing partition/subscription identity.
-
-Exit gate: one browser session can consume the accepted Kane substrate and compose at least two independently versioned logical subscriptions through explicit geographic partitions, including deterministic cross-boundary behavior, without depending on which physical edge device stores the bytes.
+Exit gate: **PASSED**. A real browser consumed the accepted Kane substrate and composed two independently versioned subscriptions through two explicit logical partitions. Cross-boundary replication retained logical object identity, and different physical placement metadata did not change logical placement identity.
 
 ## Milestone 5 — Edge serving contract
 
-Purpose: map the logical substrate/partition/subscription contracts onto replaceable low-cost edge hardware.
+**Status: CURRENT**
 
-Initial reference implementation: ESP32-S3-class device using ESP-IDF.
+Reference boundary: `docs/ESP32_EDGE_REFERENCE.md`
 
-Milestone 5, not Milestone 4, owns the actual ESP-IDF implementation.
+Purpose: map the released MS3 substrate and MS4 partition/subscription identities onto replaceable constrained edge hardware without redesigning logical identity semantics.
+
+Initial reference implementation direction: ESP32-S3-class hardware using ESP-IDF.
 
 Work includes:
 
-- select, pin, license-review, and vendor the ESP-IDF/toolchain if retained;
-- map logical partitions/subscriptions onto physical storage;
-- HTTP serving contract and byte-range behavior;
-- storage layout and capacity planning;
-- manifest/object verification;
-- package/partition/subscription activation;
-- local browser access;
-- AP/STA deployment experiments;
-- optional upstream synchronization transport;
-- node replacement/recovery;
-- proof that focused partition placement makes useful service practical on constrained hardware.
+- freeze the physical edge serving/storage contract;
+- select, pin, license-review, and vendor ESP-IDF/toolchain if retained;
+- map logical substrate/partition/subscription generations onto physical storage;
+- implement HTTP serving and byte-range behavior;
+- define storage layout and capacity limits;
+- verify manifests/objects before activation;
+- define activation, rollback/recovery, and node replacement behavior;
+- prove local browser access under the required WebCrypto secure-context constraints;
+- test AP/STA deployment behavior and optional synchronization transport;
+- prove focused partition placement makes useful service practical on constrained hardware.
 
-Exit gate: a browser can consume the last activated substrate/partition/subscription generations from ESP32-S3 reference hardware while the county Fabric CT is unavailable, without changing the logical identities established in MS-3/MS-4.
+Exit gate: a browser can consume the last activated substrate/partition/subscription generations from reference edge hardware while the county Fabric CT is unavailable, without changing the logical identities established in MS3/MS4.
 
 ## Milestone 6 — Multi-node distribution
 
-Purpose: prove that logical partitions and subscriptions are independent of individual edge devices and can be placed, sharded, or replicated across a set of nodes.
+**Status: PLANNED**
 
-Experiments:
+Purpose: prove that logical partitions and subscriptions can be placed, sharded, and replicated across multiple replaceable nodes without changing application semantics or identities.
 
-- several geographic partitions on one node;
-- one partition/subscription generation distributed across nodes;
-- overlapping administrative/bounded scopes;
-- replication of critical objects;
-- coordinator/proxy versus direct multi-origin browser fetching;
-- CORS/CSP implications;
-- node discovery and replacement;
-- loss of one node without changing logical partition/subscription identity.
-
-Exit gate: loss or replacement of one physical edge node does not force a change to logical partition identity, subscription identity, or browser application semantics.
+Exit gate: loss or replacement of one physical node does not force changes to logical partition identity, subscription identity, or browser application semantics.
 
 ## Milestone 7 — Generic county bootstrap
 
-Purpose: turn Kane County lessons into a repeatable county deployment model.
+**Status: PLANNED**
 
-Work includes:
+Purpose: turn the Kane County reference implementation into a repeatable county/county-equivalent deployment model primarily through configuration/profile work rather than forks.
 
-- separate county-specific profile/data from generic Fabric software;
-- declare required initial source contracts;
-- codify infrastructure bootstrap while allowing each deployment host to own its own executable conformance standard;
-- automate only after manual reconstruction is proven;
-- produce deterministic acceptance reports;
-- test a second county without changing core architecture.
-
-Target model:
-
-```text
-conformant supported CT
-+ Kane Fabric software
-+ county/source profile
-+ accepted seed or initial harvest
-= reproducible county Fabric node
-```
-
-Exit gate: a second county can be brought online primarily through configuration/profile work rather than a forked implementation.
+Exit gate: a second county can be brought online without changing core architecture.
