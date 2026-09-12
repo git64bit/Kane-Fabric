@@ -21,7 +21,9 @@ Mechanical Compiler / IDENTITY-CONTRACT.md
 status: specified, not implemented
 ```
 
-The Mechanical Compiler identity contract is intentionally a relying-party contract. Its application does not authenticate users, hold a membership roll, know membership groups, or know building geography. A reverse proxy decides whether a request may proceed and supplies request identity headers only after authorization.
+Follow-up received 2026-09-12: the Mechanical Compiler removed the earlier Kane-specific trusted-header names and made that relying-party interface deployment-neutral. The exact current header names remain owned by the Mechanical Compiler contract and are deliberately not copied into Kane Fabric because Fabric does not implement or consume that protocol.
+
+The Mechanical Compiler identity contract is intentionally a relying-party contract. Its application does not authenticate users, hold a membership roll, know membership groups, or know building geography. A reverse proxy decides whether a request may proceed and supplies minimal request identity only after authorization.
 
 That is compatible with the Kane Fabric boundary **provided Kane Fabric is not turned into the identity provider or authorization service**.
 
@@ -88,7 +90,7 @@ Therefore the Mechanical Compiler TLS arrangement is useful operational evidence
 
 The Mechanical Compiler explicitly does not want building or group information in the application.
 
-That is a useful generic consumer constraint for planned MS6 work. Persistent parcel/building/delivery-point geography may be consumed by a membership service, but Kane Fabric must not automatically expose geographic identity in relying-party request headers.
+That is a useful generic consumer constraint for planned MS6 work. Persistent parcel/building/delivery-point geography may be consumed by a membership service, but Kane Fabric must not automatically expose geographic identity in relying-party request metadata.
 
 Data minimization at this boundary is desirable:
 
@@ -108,7 +110,7 @@ minimum authorization result / application identity
 **Blocks:** first authenticated Mechanical Compiler integration  
 **Does not block:** Kane Fabric MS5
 
-The current Mechanical Compiler contract gives `kane-fabric/oidc` as an example authentication method.
+The reviewed Mechanical Compiler contract used `kane-fabric/oidc` as an example authentication method.
 
 Kane Fabric currently defines no OIDC service, no person authentication service, and no membership authority. The example must not become an implementation assumption.
 
@@ -120,7 +122,7 @@ If a future identity or membership service uses OIDC, the reported method must i
 **Blocks:** using an epoch-unlinkable civic anchor system as Mechanical Compiler membership without an explicit bridge contract  
 **Does not block:** Kane Fabric MS5 or MS6 geography work
 
-The Mechanical Compiler contract defines an email address as the application identity and anticipates persisted designs attributed to a verified person.
+The reviewed Mechanical Compiler contract defines an email address as the application identity and anticipates persisted designs attributed to a verified person.
 
 The civic-participation architecture discussed alongside Kane Fabric instead trends toward address-bound, opaque, per-epoch participation credentials with no persistent person identity.
 
@@ -140,37 +142,32 @@ Kane Fabric must not solve this by inventing a person identity.
 **Blocks:** membership semantics only  
 **Does not block:** Mechanical Compiler's verdict-only relying-party interface
 
-The Mechanical Compiler contract says membership attaches to buildings while simultaneously insisting the compiler itself never learns what a building is.
+The reviewed Mechanical Compiler contract says membership attaches to buildings while simultaneously insisting the compiler itself never learns what a building is.
 
 Planned Kane Fabric MS6 work distinguishes persistent delivery points from building footprints because multi-unit structures contain multiple independently addressable dwellings.
 
 The relying-party interface can survive this change unchanged if geography remains upstream. The membership system must eventually reconcile whether its eligibility unit is a building, parcel, delivery point, or another consumer-owned concept.
 
-### KF-MC-004 — Kane-specific interface naming versus multi-county reuse
+### KF-MC-004 — deployment-neutral relying-party naming
 
-**Owner:** Mechanical Compiler  
-**Blocks:** claiming the current identity interface is generic across county deployments  
-**Does not block:** Kane deployment
+**Status:** RESOLVED by Mechanical Compiler, 2026-09-12  
+**Owner:** Mechanical Compiler
 
-`X-Kane-Auth-*` headers and parent-domain assumptions are Kane-specific.
+The first reviewed contract used Kane-specific trusted-header names. Mechanical Compiler subsequently removed those names and reported that the interface no longer carries the county name.
 
-If Mechanical Compiler is intended to consume Fabric deployments in other counties, either:
+This is the preferred direction for multi-county reuse. Kane Fabric records the resolution but intentionally does not import the replacement header names into its own contracts. Header syntax remains Mechanical Compiler-owned deployment/interface detail unless a future integration requires a jointly frozen protocol.
 
-- these names are deployment configuration;
-- a deployment-neutral header contract replaces them; or
-- the Mechanical Compiler is explicitly a Kane-specific deployment and another generic layer is defined elsewhere.
-
-Kane Fabric must not hard-code these relying-party names into its own contracts.
+Parent-domain deployment names may still be Kane-specific operational configuration; that does not create a Fabric interface requirement.
 
 ### KF-MC-005 — trust-header forgery prevention must land before authentication
 
 **Owner:** Mechanical Compiler CT101 proxy  
-**Blocks:** enabling trusted identity headers  
+**Blocks:** enabling trusted request identity  
 **Does not block:** Kane Fabric
 
-The Mechanical Compiler contract correctly requires inbound `X-Kane-Auth-*` headers to be stripped before trusted headers are added.
+The Mechanical Compiler contract requires any client-supplied copies of its trusted identity headers to be stripped before proxy-authenticated values are added.
 
-This is a Mechanical Compiler security gate. Kane Fabric has no action except to avoid treating these headers as a Fabric protocol.
+This is a Mechanical Compiler security gate. Kane Fabric has no action except to avoid treating those headers as a Fabric protocol.
 
 ### KF-MC-006 — existing `wg-pk` is test infrastructure, not fleet topology
 
@@ -230,10 +227,10 @@ The Mechanical Compiler identity contract does **not** justify adding any of the
 - membership roll;
 - group or role directory;
 - application ACL engine;
-- trusted `X-Kane-Auth-*` request-header protocol;
+- consumer-specific trusted request-header protocol;
 - Mechanical Compiler-specific reverse proxy;
 - stable person/email identity;
-- building or delivery-point identity embedded in application authentication headers.
+- building or delivery-point identity embedded in application authentication metadata.
 
 If a future consumer needs those services, the owning application or a separate membership/identity system must define them.
 
