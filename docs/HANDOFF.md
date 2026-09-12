@@ -1,268 +1,197 @@
 # Kane Fabric — Current Handoff
 
-This is the current operational handoff for a new Assistant or developer. Start here.
+This is the current operational handoff. Start here, then read `docs/CURRENT_STATE.json` and the active milestone design.
 
-Historical milestone handoffs and release records remain evidence, not current implementation instructions. When a historical document conflicts with this file, `docs/CURRENT_STATE.json`, or a governing contract, use the current documents.
+Historical release records remain evidence. They are not current implementation instructions.
 
-## 1. What Kane Fabric is
+## 1. Current checkpoint
 
-Kane Fabric is public civic infrastructure for maintaining authoritative county-scale geographic state and distributing it through a browser-first architecture:
+Milestones 0–4 are complete. Milestone 4 was released on 2026-08-22 and proved:
 
-```text
-official geographic sources
-        ↓
-County Fabric node
-  authoritative control plane/compiler
-        ↓
-accepted geographic state
-        ↓
-canonical county substrate
-+ logical geographic partitions
-+ independently versioned application subscriptions
-        ↓
-replaceable physical edge nodes / mirrors / caches
-        ↓
-Browser
-  verify, selectively fetch, decompress, compose, render
-```
+- deterministic logical geographic partition identity;
+- independently versioned Condo and Industry proof subscriptions;
+- browser composition of accepted MS3 substrate plus both subscriptions;
+- cross-boundary logical-object identity;
+- physical placement independence;
+- unchanged accepted geographic authority.
 
-Kane County, Illinois is the reference deployment. Reusable wire formats, partition identities, subscription contracts, and edge-serving contracts must remain geographically generic where possible.
-
-The authoritative GeoPackage is an internal control-plane implementation. Compiled publications and explicit contracts are the durable external interface.
-
-## 2. Current read order
-
-1. `docs/HANDOFF.md`
-2. `docs/CURRENT_STATE.json`
-3. `docs/DEVELOPMENT_PROCESS.md`
-4. `README.md`
-5. `docs/PROJECT_CHARTER.md`
-6. `docs/ARCHITECTURE.md`
-7. `docs/DATA_OWNERSHIP.md`
-8. `docs/ROADMAP.md`
-9. `docs/MILESTONE_4_RELEASE.md` for the released partition/subscription identities
-10. `docs/MILESTONE_4_DESIGN.md` as the historical normative MS4 work-sequence authority
-11. `docs/ESP32_EDGE_REFERENCE.md` for the Milestone 5 starting boundary
-
-Historical release evidence:
-
-- `docs/MILESTONE_1_RELEASE.md`
-- `docs/MILESTONE_2_RELEASE.md`
-- `docs/MILESTONE_3_RELEASE.md`
-- `docs/MILESTONE_4_RELEASE.md`
-
-## 3. Separate authorities
-
-| Authority | Owns |
-| --- | --- |
-| GitHub `git64bit/Kane-Fabric`, `main` | software, migrations, tests, contracts, documentation, small deterministic manifests |
-| Proxmox host `srv-b` | LXC lifecycle, host conformance, host firewall/network policy, host-to-container execution |
-| CT102 `kane-fabric` | real Kane Fabric runtime/test/compiler environment |
-| `/var/lib/kane-fabric` in CT102 | operational databases, immutable evidence, staging, rollback, audit, generated publications |
-
-An Assistant sandbox is not CT102 and cannot substitute for CT102 acceptance.
-
-CT100 and CT101 are Mechanical Compiler infrastructure. Do not repurpose them.
-
-Normal development is directly on `main` unless the user explicitly requests a branch/PR workflow.
-
-Recorded CT102 checkout:
-
-```text
-/tmp/kane-fabric-ms2
-```
-
-This is an observed deployment path, not an architectural contract.
-
-## 4. Geographic authority lifecycle
-
-Accepted geography changes only through explicit promotion:
-
-```text
-source profile
-  → source status
-  → candidate harvest
-  → candidate validation
-  → candidate registration
-  → deterministic comparison
-  → reconciliation where required
-  → promotion preparation + validation
-  → explicit atomic promotion
-  → accepted geographic state
-  → read-only publication / partition / subscription compilation
-```
-
-Source freshness, candidate registration, comparison, partition selection, subscription generation, edge placement, and browser composition do not silently change geographic authority.
-
-Current authoritative database:
-
-```text
-/var/lib/kane-fabric/database/kane-county-fabric.gpkg
-bytes   355180544
-SHA256  31e362b696a37f1b9c45ae355c5669511a3128c17a651108a62e20d1cedebd67
-migrations 7
-```
-
-Accepted releases:
-
-```text
-buildings          208324
-county boundary         1
-roads                 27675
-water creeks            555
-Fox River                 1
-water total              556
-```
-
-Road provenance correction remains binding: the accepted road release and accepted harvest inventory both contain 27,675 objects. A later live source inventory exposed 27,676 and correctly triggered `new_source_detected`. Do not revive the disproven missing-geometry explanation.
-
-Water provenance remains coordinated across `water-creeks` and `water-fox-river`.
-
-## 5. Durable building identity and application ownership
-
-Kane Fabric owns persistent geographic building identity because applications need references that survive source refreshes.
-
-Physical compatibility tables may retain donor-era names such as `project_building` and `project_building_source_mapping`; those records remain Fabric geography, not Condo application state.
-
-Application classifications and domain payloads belong to applications/subscriptions. Industry / Mechanical Compiler state is not Kane Fabric authority merely because it references a Fabric building.
-
-## 6. Milestone 3 — released substrate
-
-Milestone 3 is released and must not be reopened without a concrete invalidating observation.
-
-Canonical publication:
-
-```text
-county-overview.json
-roads-lod.kfs
-water-lod.kfs
-substrate-manifest.json
-```
-
-Accepted substrate content SHA-256:
-
-```text
-fe417a02222669d9b81c72dc717ab0178b54b1c13cd0d3e8510c6b4f25224bcc
-```
-
-Component identities:
-
-```text
-county-overview.json   1670 bytes     f0995177625e28adc39e0ddd842ea22fbc1935239d6d1f7d54f377edde62e942
-roads-lod.kfs          4014272 bytes  4c897db58a55961d76e720d3905b57a76fe199f5396c876b57e56ecaeaaee4d2
-water-lod.kfs          3183647 bytes  dc4786b2904869fc5f910fa0d1b1a5767f1204fda99f34b2745f1ef7088f7f89
-substrate-manifest     1797 bytes     1143324ace2dd7c47ad5f79e0763fdf978be5447527095e9e6f96d46b3fd1d13
-```
-
-The released browser path requires Web Crypto SHA-256 capability before publication access. Capability is authoritative; URL/scheme inference is not. Loopback HTTP was proven trustworthy in Chromium; ordinary LAN HTTP without WebCrypto failed before any substrate publication request. Do not weaken integrity verification or add a fallback hash implementation.
-
-The normative project zlib compile/runtime pin remains `1.2.13`. Historical observed values are evidence only, not authority.
-
-## 7. Milestone 4 — released partitions and subscriptions
-
-Milestone 4 is **RELEASED — 2026-08-22**.
-
-Release record:
-
-```text
-docs/MILESTONE_4_RELEASE.md
-```
-
-Accepted implementation head:
+Accepted MS4 implementation head:
 
 ```text
 9f6013d1b8b44998047f71e2b3f3e9c55c9ed298
 ```
 
-Accepted proof bundle:
+MS4 release proof:
 
 ```text
-/var/lib/kane-fabric/render/ms4-proof
-composition SHA256      a58c8398248cee05b7baad9ae289fe0581bdb3624ce1aff3aa8a49721f92ee53
-bundle inventory SHA256 1e109d4621ce738e3e35b93c23ecab0d5c9a0d4166aad5d72f4e2eff397ad0d3
+3235cd4f7b7041138fe05708dbb077c07dc3ce8b8ec7a390141489460ac40634
 ```
 
-Release evidence:
+The repository was deliberately paused after the MS4 documentation closeout. The pre-MS5-redesign `main` head was:
 
 ```text
-/var/lib/kane-fabric/render/ms4-evidence/ms4-011-release-proof.json
-SHA256  3235cd4f7b7041138fe05708dbb077c07dc3ce8b8ec7a390141489460ac40634
+3adf081791943c8fc1552580abf34068388f4c89
 ```
 
-Released logical partition identities:
-
-```text
-west  kfp1-489f4340fc2fa2652dfa5bf4eac4b0e1
-east  kfp1-3047abaf4fef374f57fb59b9c76902f6
-```
-
-Released proof subscription generations:
-
-```text
-condo     kfsg1-4804b03fc48ffb4b9882fdd71ce39689
-industry  kfsg1-f6efa4be24e65db0f6b78b99c3ec3a37
-```
-
-The final proof established two partitions, two subscriptions, four cross-partition object appearances, two unique logical objects, preserved cross-boundary identity, physical-placement independence, and unchanged accepted geographic authority.
-
-Partition boundaries are distribution boundaries, not ownership or geographic authority boundaries. Municipalities/townships are convenience scopes only. Cross-boundary features retain one logical identity. A partition identity never depends on ESP32 serial/device identity, hostname, SSID, IP address, or physical storage path.
-
-The Industry proof is a synthetic contract-shape proof unless Mechanical Compiler later supplies an actual geographic/service interface.
-
-## 8. Milestone 5 — current work
+## 2. Active milestone
 
 Current milestone:
 
-**Milestone 5 — Edge serving contract**
+**Milestone 5 — Reference Physical Edge Architecture**
 
-Milestone 5 maps already-released MS3/MS4 logical identities onto physical edge hardware. ESP32-S3-class hardware with ESP-IDF remains the initial reference direction.
-
-Milestone 5 owns physical/runtime decisions including:
-
-- selection, pinning, license review, and vendoring of ESP-IDF/toolchain if retained;
-- physical storage layout and capacity planning;
-- HTTP serving and byte-range behavior;
-- package/partition/subscription activation;
-- local browser access and secure-context implications;
-- AP/STA deployment behavior;
-- synchronization transport where required;
-- node replacement and recovery.
-
-Milestone 5 must not redesign MS3 substrate identity, MS4 partition identity, subscription generation identity, or cross-boundary object identity merely to suit one device.
-
-## 9. Dependency and licensing policy
-
-Kane Fabric-authored code remains under the repository Unlicense.
-
-A dependency is unacceptable if it forces Kane Fabric-authored code to change license. Retained project-controlled third-party runtime/build/test/firmware implementations must be pinned and vendored before final release according to `docs/DEPENDENCY_POLICY.md`.
-
-Node.js and Chromium are development/acceptance tooling, not published runtime dependencies merely because they were used for proofs.
-
-## 10. Testing and evidence discipline
-
-Make claims only at the level actually tested:
+Normative design/work-sequence authority:
 
 ```text
-repository/static review
-  → synthetic/unit tests
-  → full regression tests in CT102
-  → real Kane County read-only/derived-data proof
-  → explicit authority-changing gate when required
-  → release evidence with exact identities
+docs/MILESTONE_5_DESIGN.md
 ```
 
-Accepted gates are not rerun merely because a new Assistant arrived. Rerun when implementation, environment, dependency, or contradictory evidence invalidates the prior result.
+Hardware/reference boundary:
 
-## 11. Shell and operational discipline
+```text
+docs/ESP32_EDGE_REFERENCE.md
+```
 
-Never inject bare `set -euo pipefail` into the interactive `srv-b` root shell. Use strict mode only inside bounded child commands such as `pct exec 102 -- bash -lc '...'`.
+Current work item:
 
-For user-relayed CT102 work, issue one bounded command group at a time and wait for output before the next state-changing group.
+```text
+MS5-001
+physical-edge threat model, trust boundary, and replaceability contract
+```
 
-Large operational GeoPackages and generated proof/publication artifacts remain outside Git.
+Do not recreate a second MS5 work sequence in another current document.
 
-## 12. Next safe action
+## 3. Why MS5 was redesigned
 
-Milestones 1–4 are released.
+The old roadmap treated MS5 mostly as an ESP32 HTTP-serving exercise.
 
-Begin Milestone 5 by defining how the released MS3 substrate and MS4 partition/subscription identities map to physical ESP32-S3-class storage, HTTP serving, activation, replacement, and recovery. Preserve the existing logical identities and authority boundaries while doing so.
+Two later developments invalidated that simplification:
+
+1. the first real consumer exposed missing generic Fabric primitives, especially persistent delivery-point geography and accepted parcel classification;
+2. ESP32-S3 WireGuard feasibility work showed that managed edge connectivity is plausible, but also made physical-device identity/provisioning/replacement a first-class concern.
+
+The resulting decision is that the physical edge must be treated as disposable infrastructure rather than as a permanent root of trust.
+
+## 4. Approved physical-edge security position
+
+These points are settled unless explicitly changed:
+
+- **Do not require irreversible ESP32 security eFuse burning.**
+- The ESP32-S3 is replaceable compute/radio/storage.
+- Physical compromise of one edge is tolerated as a local/recoverable failure.
+- The project protects strongly against fleet-class firmware/provisioning failure and authority/signing compromise.
+- Geographic promotion authority, release-signing authority, and CA/issuing authority never live on an edge.
+- Software-held device keys are acceptable for the reference edge where the deployment threat model permits them.
+- A separate external secure element may be supported through a key-provider boundary, but it is optional and never defines Fabric logical identity.
+- TLS identity, management/WireGuard identity, optional secure-element identity, hardware identity, storage location, partition identity, subscription identity, and substrate identity are distinct.
+- Normal firmware-update authenticity is useful; physical inability of an owner to reflash one ESP32 is not an MS5 goal.
+
+## 5. WireGuard position
+
+WireGuard is a preferred management/synchronization candidate, not an accepted Fabric dependency and not logical identity.
+
+External feasibility evidence established that a maintained WireGuard component could compile for ESP32-S3 against the then-current ESP-IDF development environment. Runtime tunnel operation on the ESP32 was not yet proven.
+
+MS5 owns the runtime feasibility proof:
+
+- real handshake;
+- NAT/persistent keepalive;
+- Wi-Fi interruption/recovery;
+- repeated reconnect;
+- memory/flash/task/socket/CPU cost;
+- coexistence with AP/STA, storage, browser serving, and update operations.
+
+If WireGuard fails that proof, Kane Fabric chooses another management transport without changing MS3/MS4 identities.
+
+## 6. Consumer-exposed geography
+
+The first real civic consumer exposed two generic geographic requirements that did not exist in the original roadmap:
+
+- accepted parcel/classification source data;
+- persistent delivery-point identity distinct from building identity.
+
+These are planned as **Milestone 6 — Civic geography extension: parcels + delivery points**.
+
+The Fabric boundary is strict:
+
+Fabric may own:
+
+- accepted parcel geography/classification;
+- persistent delivery-point geography;
+- building/parcel/delivery-point relationships;
+- source witnesses and promotion/reconciliation lifecycle.
+
+Fabric does not own:
+
+- postal challenge/anchor epochs;
+- person or participant identity;
+- civic participation credentials;
+- affected-set assertions;
+- consumer accounts/mail aliases/economic semantics.
+
+A delivery point is geography, not proof that a particular person lives there or participates in anything.
+
+## 7. Forward roadmap
+
+```text
+MS0–MS4   logical Fabric foundation                   COMPLETE
+MS5       reference physical edge architecture        CURRENT
+MS6       parcels + persistent delivery-point geography
+MS7       managed edge synchronization
+MS8       multi-node distribution
+           ↓
+Kane Fabric 1.0
+MS9       generic second-county bootstrap             POST-1.0
+```
+
+The 1.0 plan is depth before breadth: finish a complete Kane County system before making a second-county deployment a release prerequisite.
+
+## 8. Stable authorities
+
+Repository:
+
+```text
+git64bit/Kane-Fabric
+branch: main
+```
+
+Execution:
+
+```text
+Proxmox host: srv-b
+Kane Fabric container: CT102 / kane-fabric
+operational root: /var/lib/kane-fabric
+last recorded checkout: /tmp/kane-fabric-ms2
+```
+
+Authoritative database last verified during MS4:
+
+```text
+/var/lib/kane-fabric/database/kane-county-fabric.gpkg
+SHA256 31e362b696a37f1b9c45ae355c5669511a3128c17a651108a62e20d1cedebd67
+```
+
+Accepted MS3 substrate:
+
+```text
+fe417a02222669d9b81c72dc717ab0178b54b1c13cd0d3e8510c6b4f25224bcc
+```
+
+GitHub `main` is software/documentation authority. CT102 is the real compiler/runtime/acceptance environment. An Assistant sandbox is not CT102.
+
+## 9. Development discipline
+
+- Normal development is directly on `main` unless explicitly changed by the operator.
+- Do not reopen accepted MS3/MS4 gates without an invalidating change or contradiction.
+- Compilation, serving, edge provisioning, or synchronization never silently promote geography.
+- Use the recorded CT102 checkout first; verify it before state-changing work.
+- Keep large operational artifacts outside Git under `/var/lib/kane-fabric`.
+- Batch documentation at material checkpoints rather than after every command.
+- Do not turn the first consumer's application rules into generic Fabric semantics.
+- Do not burn ESP32 eFuses as a Kane Fabric reference-edge requirement.
+
+## 10. Next safe action
+
+1. Verify the recorded CT102 checkout is clean and points at the expected repository.
+2. Fast-forward it to current GitHub `main` only if the normal preconditions pass.
+3. Begin **MS5-001** from `docs/MILESTONE_5_DESIGN.md`.
+4. Do not begin firmware implementation until the MS5-001/002/003 contracts make the physical trust, storage, activation, and key-provider boundaries explicit.

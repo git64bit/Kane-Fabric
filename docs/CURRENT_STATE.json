@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
-  "observed_date": "2026-08-22",
+  "observed_date": "2026-09-12",
   "project": {
     "repository": "git64bit/Kane-Fabric",
     "branch": "main",
-    "milestone_3_source_branch": "assistant/read-authority-boundary",
     "milestone_3_published_main_head": "84293aeb381db596f4c3233473c350fda6c5426d",
-    "milestone_4_accepted_implementation_head": "9f6013d1b8b44998047f71e2b3f3e9c55c9ed298"
+    "milestone_4_accepted_implementation_head": "9f6013d1b8b44998047f71e2b3f3e9c55c9ed298",
+    "pre_ms5_redesign_main_head": "3adf081791943c8fc1552580abf34068388f4c89"
   },
   "deployment": {
     "proxmox_host": "srv-b",
@@ -15,13 +15,14 @@
     "os": "Debian GNU/Linux 12 (bookworm)",
     "checkout": {
       "path": "/tmp/kane-fabric-ms2",
-      "path_status": "current-observed-operational-path",
+      "path_status": "last-observed-operational-path-before-ms5-redesign",
       "origin": "https://github.com/git64bit/Kane-Fabric.git",
       "branch": "main",
       "upstream": "origin/main",
       "fetch_refspec": "+refs/heads/*:refs/remotes/origin/*",
       "last_observed_head": "9f6013d1b8b44998047f71e2b3f3e9c55c9ed298",
-      "last_observed_worktree": "clean"
+      "last_observed_worktree": "clean",
+      "note": "CT102 was not re-read during the 2026-09-12 roadmap redesign. Verify and fast-forward before MS5 execution."
     }
   },
   "operational_state": {
@@ -31,37 +32,16 @@
       "sha256": "31e362b696a37f1b9c45ae355c5669511a3128c17a651108a62e20d1cedebd67",
       "byte_length": 355180544,
       "migration_count": 7,
-      "status": "current-observed-fabric-native-working-database",
-      "accepted_release_count": 5,
-      "jurisdiction": {
-        "country_code": "US",
-        "state_code": "IL",
-        "fips_code": "17089",
-        "county_key": "kane-county-il",
-        "name": "Kane County"
-      }
-    },
-    "legacy_database_observation": {
-      "path": "/var/lib/kane-fabric/database/kane-county-reconstructed.gpkg",
-      "status": "donor-shaped-historical-working-database-not-current-authority",
-      "migration_count": 8
+      "status": "accepted-authoritative-fabric-database-last-verified-ms4"
     },
     "milestone_3_publication": {
-      "status": "released-on-main",
-      "published_main_head": "84293aeb381db596f4c3233473c350fda6c5426d",
+      "status": "released",
       "substrate_content_sha256": "fe417a02222669d9b81c72dc717ab0178b54b1c13cd0d3e8510c6b4f25224bcc",
-      "total_byte_length": 7201386,
-      "components": {
-        "county-overview.json": {"byte_length": 1670, "sha256": "f0995177625e28adc39e0ddd842ea22fbc1935239d6d1f7d54f377edde62e942"},
-        "roads-lod.kfs": {"byte_length": 4014272, "sha256": "4c897db58a55961d76e720d3905b57a76fe199f5396c876b57e56ecaeaaee4d2"},
-        "water-lod.kfs": {"byte_length": 3183647, "sha256": "dc4786b2904869fc5f910fa0d1b1a5767f1204fda99f34b2745f1ef7088f7f89"},
-        "substrate-manifest.json": {"byte_length": 1797, "sha256": "1143324ace2dd7c47ad5f79e0763fdf978be5447527095e9e6f96d46b3fd1d13"}
-      },
       "evidence_root": "/var/lib/kane-fabric/render/ms3-evidence",
       "release_record": "docs/MILESTONE_3_RELEASE.md"
     },
     "milestone_4_release": {
-      "status": "released-on-main",
+      "status": "released",
       "accepted_implementation_head": "9f6013d1b8b44998047f71e2b3f3e9c55c9ed298",
       "proof_directory": "/var/lib/kane-fabric/render/ms4-proof",
       "evidence_root": "/var/lib/kane-fabric/render/ms4-evidence",
@@ -69,15 +49,6 @@
       "release_proof_sha256": "3235cd4f7b7041138fe05708dbb077c07dc3ce8b8ec7a390141489460ac40634",
       "composition_sha256": "a58c8398248cee05b7baad9ae289fe0581bdb3624ce1aff3aa8a49721f92ee53",
       "bundle_inventory_sha256": "1e109d4621ce738e3e35b93c23ecab0d5c9a0d4166aad5d72f4e2eff397ad0d3",
-      "partitions": {
-        "west": {"partition_key": "kfp1-489f4340fc2fa2652dfa5bf4eac4b0e1", "selection_sha256": "2996001d7d55ee50522262048d467cbb4fedd5cb418656586fc13b62113cd8f1"},
-        "east": {"partition_key": "kfp1-3047abaf4fef374f57fb59b9c76902f6", "selection_sha256": "7bf705f5cee7749a29bc39ced9cb77d96ea0b88c00ba4f65dcb8d64c12a095ba"}
-      },
-      "subscriptions": {
-        "condo": {"generation_key": "kfsg1-4804b03fc48ffb4b9882fdd71ce39689", "objects_sha256": "bad11f7cb03b3ed1f73ed86defdd5c3b0e58d2d524747aa82bb292e184262dac"},
-        "industry": {"generation_key": "kfsg1-f6efa4be24e65db0f6b78b99c3ec3a37", "objects_sha256": "7832aba2497a24a0397bb78e54372b8804e1959202e23cc88833c05bcc4f3b2b"}
-      },
-      "edge_placement_logical_sha256": "51c07aead7369e5fbc94971b083afdc674ff67cd1bd40f5669cf1f54c36b3cff",
       "acceptance": {
         "partition_count": 2,
         "subscription_count": 2,
@@ -85,55 +56,55 @@
         "unique_objects": 2,
         "cross_boundary_identity_preserved": true,
         "physical_placement_independent": true,
-        "accepted_authority_unchanged": true,
-        "chromium": "Chromium 151.0.7922.137 built on Debian GNU/Linux 12 (bookworm)"
+        "accepted_authority_unchanged": true
       }
     }
   },
   "milestone": {
     "current": 5,
-    "name": "Edge serving contract",
-    "phase": "ms5-design-entry",
+    "name": "Reference Physical Edge Architecture",
+    "phase": "ms5-contract-and-threat-boundary",
+    "design": "docs/MILESTONE_5_DESIGN.md",
     "reference": "docs/ESP32_EDGE_REFERENCE.md",
-    "scope": {
-      "reference_hardware": "ESP32-S3-class",
-      "reference_sdk": "ESP-IDF",
-      "maps_released_ms3_ms4_identities_to_physical_storage_and_serving": true,
-      "may_change_ms3_ms4_logical_identity_contracts": false
+    "approved_security_posture": {
+      "esp32_is_replaceable_platform": true,
+      "irreversible_efuse_security_required": false,
+      "secure_element_required": false,
+      "external_secure_element_may_be_optional_provider": true,
+      "authoritative_signing_or_ca_keys_on_edge": false,
+      "individual_physical_edge_compromise_tolerated": true,
+      "fleet_class_failure_is_systemic": true,
+      "authority_signing_compromise_is_systemic": true,
+      "wireguard_is_logical_identity": false
     },
     "previous_milestone": {
       "number": 4,
       "name": "Subscriptions + Geographic Scoping/Partition Identity",
       "status": "released",
-      "accepted_implementation_head": "9f6013d1b8b44998047f71e2b3f3e9c55c9ed298",
-      "gate_steps_complete": [1,2,3,4,5,6,7,8,9,10,11]
+      "gate_steps_complete": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
     },
-    "next_work_item": "Define the Milestone 5 physical edge serving/storage contract from the released MS3/MS4 identities before implementing ESP-IDF firmware."
+    "next_work_item": "MS5-001 physical-edge threat model, trust boundary, and replaceability contract"
   },
-  "accepted_tests": {
-    "database": {"command": "bash database/run-tests.sh", "environment": "CT102", "repository_head": "2ab4835b05d04e0156c53726738a238af5acd2a6", "passed": 16, "failed": 0, "observed_date": "2026-08-20"},
-    "substrate_post_qc003": {"command": "bash substrate/run-tests.sh", "environment": "CT102", "repository_head": "dc843b53d4293b1a2f0f139d8bc86e48dc31b7d8", "passed": 55, "failed": 0, "observed_date": "2026-08-21"},
-    "ms4": {"command": "bash ms4/run-tests.sh", "environment": "CT102", "repository_head": "9f6013d1b8b44998047f71e2b3f3e9c55c9ed298", "python_passed": 33, "node_passed": 5, "failed": 0, "observed_date": "2026-08-22"},
-    "ms4_closeout": {"environment": "CT102", "repository_head": "9f6013d1b8b44998047f71e2b3f3e9c55c9ed298", "result": "passed", "marker": "MS4 EXECUTION EXIT GATE PASSED", "release_evidence_readback": "passed", "release_proof_sha256": "3235cd4f7b7041138fe05708dbb077c07dc3ce8b8ec7a390141489460ac40634", "observed_date": "2026-08-22"}
+  "forward_roadmap": {
+    "ms6": "Civic geography extension: parcels + delivery points",
+    "ms7": "Managed edge synchronization",
+    "ms8": "Multi-node distribution",
+    "release_1_0_after": 8,
+    "ms9": "Generic county bootstrap (post-1.0)"
   },
-  "accepted_releases": [
-    {"dataset_key": "buildings", "release_key": "kane-buildings-20250730-086f09eba5ad", "content_sha256": "086f09eba5ad5b21eea1b6c9a8158eaf8c509a258c53509d115eaf1d19a7f799", "feature_count": 208324},
-    {"dataset_key": "county-boundary", "release_key": "kane-county-boundary-20230509-73cb32426b22", "content_sha256": "73cb32426b22bcf73f08c6356d4e39eb72d878192d1bdc33385b87af0193bfc6", "feature_count": 1},
-    {"dataset_key": "roads", "release_key": "kane-roads-20250730-028e3c1dc7a6", "content_sha256": "028e3c1dc7a6eede26ed3295d8c17ff524a15d7f1eadb13747836fae777e1eb3", "feature_count": 27675, "harvest_object_count": 27675, "inventory_note": "accepted harvest contains 27675 objects; a later live source inventory exposed 27676 object IDs and correctly triggered new_source_detected"},
-    {"dataset_key": "water-creeks", "release_key": "kane-water-creeks-20250717-249c70f01dbc", "content_sha256": "249c70f01dbca57f90f22acf254b8d0ffe71bc5f5bf92f5e70103250f1ed1f5d", "feature_count": 555},
-    {"dataset_key": "water-fox-river", "release_key": "kane-water-fox-river-20250717-905d93f928d2", "content_sha256": "905d93f928d2f4e4c9c8257c32e2639f29cb398984681a15149ad4a756b7f1a2", "feature_count": 1}
-  ],
-  "known_remote_branches": [
-    {"name": "assistant/read-authority-boundary", "status": "merged-into-main-at-84293aeb381db596f4c3233473c350fda6c5426d", "deletion_authorized": false},
-    {"name": "ms3-substrate-contract", "head": "9b583fb7ab18b6d5e00e4643d4cbfe15f305e8cc", "fully_contained_in_main": true, "deletion_authorized": false}
-  ],
-  "next_safe_action": "Milestone 4 is released. Begin Milestone 5 by defining how released MS3 substrate identities and MS4 partition/subscription identities map onto physical ESP32-S3-class storage, HTTP byte serving, activation, replacement, and recovery. Do not redesign MS3/MS4 logical identities and do not change accepted geography during edge work.",
-  "state_policy": {
-    "stable_facts_are_not_rediscovered_each_session": true,
-    "live_state_must_be_verified_before_mutation": true,
-    "accepted_tests_are_not_rerun_without_an_invalidating_change": true,
-    "documentation_updates_are_batched_at_material_checkpoints": true,
-    "root_unlicense_must_not_change_for_dependencies": true,
-    "retained_third_party_must_be_vendored_before_final_project_release": true
-  }
+  "consumer_exposed_requirements": {
+    "source": "first real civic consumer review",
+    "fabric_owned": [
+      "accepted parcel/classification source data",
+      "persistent delivery-point identity",
+      "building/parcel/delivery-point geographic relationships"
+    ],
+    "not_fabric_owned": [
+      "postal challenge/anchor epochs",
+      "civic participation credentials",
+      "affected-set membership/assertion semantics",
+      "mail aliases or economic/application semantics"
+    ]
+  },
+  "next_safe_action": "Verify CT102 checkout against current GitHub main and fast-forward only if clean. Then implement MS5-001 from docs/MILESTONE_5_DESIGN.md. Do not burn ESP32 security eFuses. Do not select a secure element as mandatory Fabric identity. Do not begin consumer anchor/participation implementation inside Kane Fabric."
 }
