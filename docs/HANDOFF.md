@@ -155,7 +155,7 @@ Its useful architectural shape is:
 membership / identity system
         ↓
 Mechanical Compiler CT101 reverse proxy
-        ↓ authorization verdict + minimum identity headers
+        ↓ authorization verdict + minimum identity metadata
 Mechanical Compiler application
 ```
 
@@ -178,12 +178,13 @@ docs/CONSUMER_INTERFACE_GATES.md
 
 Most important:
 
-1. Kane Fabric must not become the identity provider merely because the Mechanical Compiler currently uses `kane-fabric/oidc` as an example method string.
+1. Kane Fabric must not become the identity provider merely because the originally reviewed Mechanical Compiler contract used `kane-fabric/oidc` as an example method string.
 2. Mechanical Compiler's persistent email-as-author identity must be reconciled with any address-bound/epoch-unlinkable civic membership design before those systems integrate.
 3. Building-oriented membership wording must eventually reconcile with planned persistent delivery-point geography without teaching the compiler geography.
-4. Kane-specific request-header/domain assumptions require review before claiming generic multi-county reuse.
-5. Existing WireGuard estate topology is test infrastructure, not a fleet contract.
-6. Mechanical Compiler's central TLS/reverse-proxy path does not solve MS5's offline/local browser secure-origin problem.
+4. Existing WireGuard estate topology is test infrastructure, not a fleet contract.
+5. Mechanical Compiler's central TLS/reverse-proxy path does not solve MS5's offline/local browser secure-origin problem.
+
+One previously identified issue is already resolved: Mechanical Compiler removed the earlier Kane-specific trusted-header names and made that relying-party interface deployment-neutral. Kane Fabric intentionally does not copy the replacement header names into its contracts because it neither implements nor consumes that protocol.
 
 These are interface gates, not instructions to implement Mechanical Compiler semantics in Kane Fabric.
 
@@ -262,10 +263,13 @@ The database was re-read in read-only mode at MS5 entry and still reported the f
 
 GitHub `main` is software/documentation authority. CT102 is the real compiler/runtime/acceptance environment. An Assistant sandbox is not CT102.
 
+CT102's last accepted implementation checkout is the MS5-003 acceptance head. GitHub `main` may be ahead by documentation-only handoff/interface-gate commits. A successor should verify the CT102 worktree is clean and fast-forward to current `main` before beginning MS5-004; no re-acceptance of MS5-001..003 is required merely because documentation advanced.
+
 ## 10. Development discipline
 
 - Normal development is directly on `main` unless explicitly changed by the operator.
 - Do not reopen accepted MS3/MS4 gates without an invalidating change or contradiction.
+- Do not reopen accepted MS5-001..003 merely because later documentation commits advance `main`.
 - Compilation, serving, provisioning, synchronization, or consumer demand never silently promote geography.
 - Use CT102 for real acceptance.
 - Keep large operational artifacts outside Git under `/var/lib/kane-fabric`.
@@ -277,7 +281,9 @@ GitHub `main` is software/documentation authority. CT102 is the real compiler/ru
 
 ## 11. Next safe action
 
-Proceed with:
+1. On CT102, verify `/tmp/kane-fabric-ms2` is still clean at the accepted MS5-003 implementation head.
+2. Fast-forward it to current GitHub `main` if the preconditions pass.
+3. Proceed with:
 
 ```text
 MS5-004
@@ -288,7 +294,7 @@ The contract must preserve these additional cross-project constraints:
 
 - browser/TLS device identity is not person or membership identity;
 - local secure-origin operation cannot depend on Mechanical Compiler's central reverse-proxy/TLS arrangement;
-- no application authentication headers become a Kane Fabric protocol;
+- no application authentication metadata becomes a Kane Fabric protocol;
 - future delivery-point geography remains outside the browser-serving device identity.
 
 After MS5-004, continue in the normative order defined only by `docs/MILESTONE_5_DESIGN.md`.
