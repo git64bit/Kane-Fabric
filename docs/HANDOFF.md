@@ -27,6 +27,12 @@ MS4 release proof:
 3235cd4f7b7041138fe05708dbb077c07dc3ce8b8ec7a390141489460ac40634
 ```
 
+Historical MS4 design authority:
+
+```text
+docs/MILESTONE_4_DESIGN.md
+```
+
 The repository was deliberately paused after the MS4 documentation closeout. The pre-MS5-redesign `main` head was:
 
 ```text
