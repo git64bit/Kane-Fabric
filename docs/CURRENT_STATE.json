@@ -91,19 +91,7 @@
       "number": 4,
       "name": "Subscriptions + Geographic Scoping/Partition Identity",
       "status": "released",
-      "gate_steps_complete": [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6,
-        7,
-        8,
-        9,
-        10,
-        11
-      ]
+      "gate_steps_complete": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
     },
     "next_work_item": "MS5-004 browser secure-origin plus local AP/STA access contract"
   },
@@ -129,7 +117,7 @@
       "application authorization or proxy ACLs",
       "mail aliases or economic/application semantics"
     ],
-    "current_consumer_observation": "Mechanical Compiler is a relying party behind its own authorization proxy; it currently requires no direct Kane Fabric identity/authentication API."
+    "current_consumer_observation": "Mechanical Compiler is a relying party behind its own authorization proxy; it currently requires no direct Kane Fabric identity/authentication API. Its trusted request-identity interface has been renamed to deployment-neutral terms and Kane Fabric intentionally records no consumer-owned header names."
   },
   "cross_project_gates": {
     "register": "docs/CONSUMER_INTERFACE_GATES.md",
@@ -142,8 +130,10 @@
     "consumer_side_gates": [
       "Mechanical Compiler example kane-fabric/oidc must not imply Kane Fabric is an identity provider",
       "stable email authorship must be reconciled with any epoch-unlinkable civic membership system before those systems integrate",
-      "building-based membership wording must be reconciled with future delivery-point geography without teaching the compiler geography",
-      "Kane-specific header/domain naming must be reviewed before generic multi-county deployment"
+      "building-based membership wording must be reconciled with future delivery-point geography without teaching the compiler geography"
+    ],
+    "resolved_consumer_interfaces": [
+      "Mechanical Compiler removed Kane-specific trusted-header names and made that relying-party interface deployment-neutral on 2026-09-12"
     ]
   },
   "next_safe_action": "Implement MS5-004 from docs/MILESTONE_5_DESIGN.md. Keep browser/TLS device identity separate from person or membership identity. Do not implement Mechanical Compiler authentication, membership, OIDC, or proxy ACL semantics inside Kane Fabric. Keep cross-project gates visible in docs/CONSUMER_INTERFACE_GATES.md."
