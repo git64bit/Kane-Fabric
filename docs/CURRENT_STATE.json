@@ -6,7 +6,9 @@
     "branch": "main",
     "milestone_3_published_main_head": "84293aeb381db596f4c3233473c350fda6c5426d",
     "milestone_4_accepted_implementation_head": "9f6013d1b8b44998047f71e2b3f3e9c55c9ed298",
-    "pre_ms5_redesign_main_head": "3adf081791943c8fc1552580abf34068388f4c89"
+    "pre_ms5_redesign_main_head": "3adf081791943c8fc1552580abf34068388f4c89",
+    "ms5_roadmap_authority_head": "eadd3e6f9e1972781589c3104143a3939779d1cd",
+    "ms5_contract_acceptance_head": "4b9b9d3cbaaff08c90a63a7937fc2ac4efeb6dee"
   },
   "deployment": {
     "proxmox_host": "srv-b",
@@ -15,14 +17,13 @@
     "os": "Debian GNU/Linux 12 (bookworm)",
     "checkout": {
       "path": "/tmp/kane-fabric-ms2",
-      "path_status": "last-observed-operational-path-before-ms5-redesign",
+      "path_status": "current-observed-operational-path",
       "origin": "https://github.com/git64bit/Kane-Fabric.git",
       "branch": "main",
       "upstream": "origin/main",
       "fetch_refspec": "+refs/heads/*:refs/remotes/origin/*",
-      "last_observed_head": "9f6013d1b8b44998047f71e2b3f3e9c55c9ed298",
-      "last_observed_worktree": "clean",
-      "note": "CT102 was not re-read during the 2026-09-12 roadmap redesign. Verify and fast-forward before MS5 execution."
+      "last_observed_head": "4b9b9d3cbaaff08c90a63a7937fc2ac4efeb6dee",
+      "last_observed_worktree": "clean"
     }
   },
   "operational_state": {
@@ -32,7 +33,8 @@
       "sha256": "31e362b696a37f1b9c45ae355c5669511a3128c17a651108a62e20d1cedebd67",
       "byte_length": 355180544,
       "migration_count": 7,
-      "status": "accepted-authoritative-fabric-database-last-verified-ms4"
+      "status": "accepted-authoritative-fabric-database-read-only-verified-at-ms5-entry",
+      "accepted_release_count": 5
     },
     "milestone_3_publication": {
       "status": "released",
@@ -63,7 +65,7 @@
   "milestone": {
     "current": 5,
     "name": "Reference Physical Edge Architecture",
-    "phase": "ms5-contract-and-threat-boundary",
+    "phase": "ms5-browser-access-contract",
     "design": "docs/MILESTONE_5_DESIGN.md",
     "reference": "docs/ESP32_EDGE_REFERENCE.md",
     "approved_security_posture": {
@@ -77,13 +79,33 @@
       "authority_signing_compromise_is_systemic": true,
       "wireguard_is_logical_identity": false
     },
+    "accepted_work": {
+      "through": "MS5-003",
+      "repository_head": "4b9b9d3cbaaff08c90a63a7937fc2ac4efeb6dee",
+      "ct102_test_result": "18 passed, 0 failed",
+      "ct102_compileall": "passed",
+      "ct102_worktree": "clean",
+      "observed_date": "2026-09-12"
+    },
     "previous_milestone": {
       "number": 4,
       "name": "Subscriptions + Geographic Scoping/Partition Identity",
       "status": "released",
-      "gate_steps_complete": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+      "gate_steps_complete": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ]
     },
-    "next_work_item": "MS5-001 physical-edge threat model, trust boundary, and replaceability contract"
+    "next_work_item": "MS5-004 browser secure-origin plus local AP/STA access contract"
   },
   "forward_roadmap": {
     "ms6": "Civic geography extension: parcels + delivery points",
@@ -93,18 +115,36 @@
     "ms9": "Generic county bootstrap (post-1.0)"
   },
   "consumer_exposed_requirements": {
-    "source": "first real civic consumer review",
+    "gate_register": "docs/CONSUMER_INTERFACE_GATES.md",
     "fabric_owned": [
       "accepted parcel/classification source data",
       "persistent delivery-point identity",
       "building/parcel/delivery-point geographic relationships"
     ],
     "not_fabric_owned": [
+      "person/account authentication",
       "postal challenge/anchor epochs",
       "civic participation credentials",
       "affected-set membership/assertion semantics",
+      "application authorization or proxy ACLs",
       "mail aliases or economic/application semantics"
+    ],
+    "current_consumer_observation": "Mechanical Compiler is a relying party behind its own authorization proxy; it currently requires no direct Kane Fabric identity/authentication API."
+  },
+  "cross_project_gates": {
+    "register": "docs/CONSUMER_INTERFACE_GATES.md",
+    "ms5_blocking_now": [],
+    "future_fabric_gates": [
+      "MS5-004 local browser secure origin must remain independent of Mechanical Compiler public/proxy TLS",
+      "MS5-008 WireGuard is management transport only; existing wg-pk topology is feasibility infrastructure, not a fleet contract",
+      "MS6 delivery-point geography must not become person/application identity"
+    ],
+    "consumer_side_gates": [
+      "Mechanical Compiler example kane-fabric/oidc must not imply Kane Fabric is an identity provider",
+      "stable email authorship must be reconciled with any epoch-unlinkable civic membership system before those systems integrate",
+      "building-based membership wording must be reconciled with future delivery-point geography without teaching the compiler geography",
+      "Kane-specific header/domain naming must be reviewed before generic multi-county deployment"
     ]
   },
-  "next_safe_action": "Verify CT102 checkout against current GitHub main and fast-forward only if clean. Then implement MS5-001 from docs/MILESTONE_5_DESIGN.md. Do not burn ESP32 security eFuses. Do not select a secure element as mandatory Fabric identity. Do not begin consumer anchor/participation implementation inside Kane Fabric."
+  "next_safe_action": "Implement MS5-004 from docs/MILESTONE_5_DESIGN.md. Keep browser/TLS device identity separate from person or membership identity. Do not implement Mechanical Compiler authentication, membership, OIDC, or proxy ACL semantics inside Kane Fabric. Keep cross-project gates visible in docs/CONSUMER_INTERFACE_GATES.md."
 }
