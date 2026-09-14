@@ -6,15 +6,10 @@
     "branch": "main",
     "milestone_3_published_main_head": "84293aeb381db596f4c3233473c350fda6c5426d",
     "milestone_4_accepted_implementation_head": "9f6013d1b8b44998047f71e2b3f3e9c55c9ed298",
-    "pre_ms5_redesign_main_head": "3adf081791943c8fc1552580abf34068388f4c89",
-    "ms5_roadmap_authority_head": "eadd3e6f9e1972781589c3104143a3939779d1cd",
-    "ms5_contract_acceptance_head": "4b9b9d3cbaaff08c90a63a7937fc2ac4efeb6dee",
-    "ms5_contract_correction_head": "025b55df42f3cc9d3613a2ae845952ce2bc033c7",
-    "ms5_contract_correction_acceptance_head": "762041080fa51e6441546b7ba14bd07792676b9f",
-    "ms5_004_acceptance_head": "07f4f71f51b538bc1fc5d446691e0bbcfc03cd9c",
     "ms5_005_acceptance_head": "aed812df8c5e37bb1843e022d7a7813dc7e8e862",
     "web_001_acceptance_head": "98873196438f87f946796d9b4ffd2ff2a5a135e4",
-    "web_002_acceptance_head": "ef3c08f77442e1a8cefe6a0567b50e10ce010dd3"
+    "web_002_acceptance_head": "ef3c08f77442e1a8cefe6a0567b50e10ce010dd3",
+    "web_003_acceptance_head": "b216a3d6e0fd7be51223754c9dc3459229498346"
   },
   "deployment": {
     "proxmox_host": "srv-b",
@@ -28,9 +23,9 @@
       "branch": "main",
       "upstream": "origin/main",
       "fetch_refspec": "+refs/heads/*:refs/remotes/origin/*",
-      "last_observed_head": "ef3c08f77442e1a8cefe6a0567b50e10ce010dd3",
+      "last_observed_head": "b216a3d6e0fd7be51223754c9dc3459229498346",
       "last_observed_worktree": "clean",
-      "note": "CT102 accepted WEB-002 real-browser composition at this checkout head on 2026-09-14. The earlier MS5-001..005 acceptance remains valid at its recorded implementation heads."
+      "note": "CT102 accepted WEB-003 repository and real-browser interaction gates at this implementation head on 2026-09-14."
     }
   },
   "operational_state": {
@@ -40,18 +35,16 @@
       "sha256": "31e362b696a37f1b9c45ae355c5669511a3128c17a651108a62e20d1cedebd67",
       "byte_length": 355180544,
       "migration_count": 7,
-      "status": "accepted-authoritative-fabric-database-read-only-verified-at-web-002",
-      "accepted_release_count": 5
+      "accepted_release_count": 5,
+      "status": "accepted-authoritative-fabric-database"
     },
     "milestone_3_publication": {
       "status": "released",
       "substrate_content_sha256": "fe417a02222669d9b81c72dc717ab0178b54b1c13cd0d3e8510c6b4f25224bcc",
-      "evidence_root": "/var/lib/kane-fabric/render/ms3-evidence",
       "release_record": "docs/MILESTONE_3_RELEASE.md",
       "retained_original_package_found_at_web_002": false,
-      "web_002_reproduction": {
+      "accepted_reproduction": {
         "directory": "/var/lib/kane-fabric/render/web-002/ms3-accepted-reproduction",
-        "status": "byte-identical deterministic reproduction from unchanged authoritative database",
         "total_bytes": 7201386,
         "component_identities_match_release": true,
         "authoritative_database_unchanged": true
@@ -59,22 +52,10 @@
     },
     "milestone_4_release": {
       "status": "released",
-      "accepted_implementation_head": "9f6013d1b8b44998047f71e2b3f3e9c55c9ed298",
       "proof_directory": "/var/lib/kane-fabric/render/ms4-proof",
-      "evidence_root": "/var/lib/kane-fabric/render/ms4-evidence",
-      "release_record": "docs/MILESTONE_4_RELEASE.md",
       "release_proof_sha256": "3235cd4f7b7041138fe05708dbb077c07dc3ce8b8ec7a390141489460ac40634",
       "composition_sha256": "a58c8398248cee05b7baad9ae289fe0581bdb3624ce1aff3aa8a49721f92ee53",
-      "bundle_inventory_sha256": "1e109d4621ce738e3e35b93c23ecab0d5c9a0d4166aad5d72f4e2eff397ad0d3",
-      "acceptance": {
-        "partition_count": 2,
-        "subscription_count": 2,
-        "object_appearances": 4,
-        "unique_objects": 2,
-        "cross_boundary_identity_preserved": true,
-        "physical_placement_independent": true,
-        "accepted_authority_unchanged": true
-      }
+      "bundle_inventory_sha256": "1e109d4621ce738e3e35b93c23ecab0d5c9a0d4166aad5d72f4e2eff397ad0d3"
     },
     "web_002_browser_acceptance": {
       "directory": "/var/lib/kane-fabric/render/web-002/browser-acceptance-ef3c08f",
@@ -83,11 +64,23 @@
       "partition": "west",
       "object_count": 2,
       "overlay_count": 2,
-      "application_request_count": 16,
-      "ms3_request_count": 36,
-      "ms4_request_count": 14,
       "bounded_ms3_range_reads": true,
       "verified_ms4_composition_reads": true,
+      "physical_platform_assumed": false,
+      "status": "accepted"
+    },
+    "web_003_browser_acceptance": {
+      "directory": "/var/lib/kane-fabric/render/web-003/browser-acceptance-b216a3d",
+      "evidence_sha256": "7c0c4afbb2e7ee02586d13a051ded35366501cebf210e716cd9239ba5c05b369",
+      "browser": "Chromium 151.0.7922.137 built on Debian GNU/Linux 12 (bookworm)",
+      "partition": "west",
+      "zoom_control": true,
+      "keyboard_pan": true,
+      "reset_control": true,
+      "independent_substrate_visibility": true,
+      "independent_subscription_visibility": true,
+      "verified_object_inspection": true,
+      "bounded_artifact_access": true,
       "physical_platform_assumed": false,
       "status": "accepted"
     }
@@ -98,29 +91,6 @@
     "phase": "ms5-006-deferred-for-web-application-priority-workstream",
     "design": "docs/MILESTONE_5_DESIGN.md",
     "reference": "docs/ESP32_EDGE_REFERENCE.md",
-    "platform_boundary": {
-      "default_reference_platform": "ESP32-S3 with ESP-IDF",
-      "esp32_is_required_platform": false,
-      "alternative_edge_classes_allowed": [
-        "other-microcontroller",
-        "single-board-computer",
-        "general-purpose-appliance",
-        "software-only-edge"
-      ],
-      "durable_browser_contract_must_be_platform_neutral": true,
-      "third_party_platform_evolution_must_not_define_fabric_identity": true
-    },
-    "approved_security_posture": {
-      "esp32_is_replaceable_platform": true,
-      "irreversible_efuse_security_required": false,
-      "secure_element_required": false,
-      "external_secure_element_may_be_optional_provider": true,
-      "authoritative_signing_or_ca_keys_on_edge": false,
-      "individual_physical_edge_compromise_tolerated": true,
-      "fleet_class_failure_is_systemic": true,
-      "authority_signing_compromise_is_systemic": true,
-      "wireguard_is_logical_identity": false
-    },
     "accepted_work": {
       "through": "MS5-005 ESP-IDF/toolchain and retained dependency selection plan",
       "repository_head": "aed812df8c5e37bb1843e022d7a7813dc7e8e862",
@@ -128,33 +98,7 @@
       "ct102_compileall": "passed",
       "ct102_authority_guard": "valid",
       "ct102_dependency_policy": "passed",
-      "ct102_worktree": "clean",
-      "observed_date": "2026-09-14"
-    },
-    "accepted_toolchain_selection": {
-      "esp_idf_version": "v6.0.3",
-      "esp_idf_commit": "76f5dedd9950a3012fee8fb7d5586df21fc67802",
-      "esp_idf_release_asset_sha256": "748b12484402d8a1cb58ba68b7545d2a1f96d36820ab0145e0332c8348ba5ab7",
-      "wireguard_status": "not-retained-pending-MS5-008-runtime-resource-proof",
-      "status": "accepted-on-CT102"
-    },
-    "accepted_bounded_correction": {
-      "implementation_head": "025b55df42f3cc9d3613a2ae845952ce2bc033c7",
-      "ct102_acceptance_head": "762041080fa51e6441546b7ba14bd07792676b9f",
-      "scope": [
-        "activation validates the actual edge descriptor and rejects an inventory whose logical placement differs from the edge logical placement",
-        "activation state rejects rollback_inventory_sha256 when no active inventory exists",
-        "regression tests cover both invariants"
-      ],
-      "contract_test_count": 20,
-      "status": "accepted-on-CT102",
-      "effect": "bounded join of existing MS5-001/002 contracts; no roadmap or identity redesign"
-    },
-    "previous_milestone": {
-      "number": 4,
-      "name": "Subscriptions + Geographic Scoping/Partition Identity",
-      "status": "released",
-      "gate_steps_complete": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+      "ct102_worktree": "clean"
     },
     "next_work_item": "MS5-006 ESP32-S3 immutable artifact storage and HTTP byte-range implementation (deferred while the Web Application workstream establishes the real browser consumer requirements)"
   },
@@ -162,43 +106,29 @@
     "name": "Kane Fabric Web Application",
     "design": "docs/WEB_APPLICATION_DESIGN.md",
     "status": "active",
-    "active_item": "WEB-003 geographic navigation, layer/subscription visibility, and inspection interaction",
-    "reason": "focus on Kane Fabric-controlled browser/application work until third-party physical-edge integration becomes necessary",
-    "existing_foundation": [
-      "accepted MS3 browser verification/selective-fetch/decompression/Canvas rendering",
-      "accepted MS4 browser partition/subscription composition"
-    ],
+    "active_item": "WEB-004 explicit verification/error/offline behavior visible to the user",
     "edge_dependency": "none for WEB-001 through WEB-004; development/software artifact sources may satisfy the same browser contract",
     "accepted_work": {
-      "through": "WEB-002 accepted MS3/MS4 map composition as a user-facing vertical slice",
-      "repository_head": "ef3c08f77442e1a8cefe6a0567b50e10ce010dd3",
+      "through": "WEB-003 geographic navigation, layer/subscription visibility, and inspection interaction",
+      "repository_head": "b216a3d6e0fd7be51223754c9dc3459229498346",
       "repository_gate": {
         "ct102_authority_guard": "valid",
         "ct102_dependency_policy": "passed",
-        "javascript_python_syntax": "passed",
-        "unit_tests": "13 passed, 0 failed",
+        "javascript_syntax": "passed",
+        "unit_tests": "21 passed, 0 failed",
         "ct102_worktree": "clean"
       },
       "real_browser_gate": {
         "browser": "Chromium 151.0.7922.137 built on Debian GNU/Linux 12 (bookworm)",
-        "substrate_content_sha256": "fe417a02222669d9b81c72dc717ab0178b54b1c13cd0d3e8510c6b4f25224bcc",
-        "composition_sha256": "a58c8398248cee05b7baad9ae289fe0581bdb3624ce1aff3aa8a49721f92ee53",
-        "partition": "west",
-        "objects": 2,
-        "visible_overlays": 2,
-        "platform_neutral_http_sources": "passed",
-        "evidence_sha256": "cef970419e4983c845ac19956f4d2f9a7245444d90acb0d81ee917c907090d5a"
-      },
-      "observed_date": "2026-09-14"
+        "interaction_controls": "passed",
+        "visibility_controls": "passed",
+        "object_inspection": "passed",
+        "bounded_artifact_access": "passed",
+        "physical_platform_assumed": false,
+        "evidence_sha256": "7c0c4afbb2e7ee02586d13a051ded35366501cebf210e716cd9239ba5c05b369"
+      }
     },
     "resume_ms5_006_when": "the Web Application establishes concrete serving/storage requirements or WEB-005 determines the browser contract is ready for physical-edge implementation"
-  },
-  "forward_roadmap": {
-    "ms6": "Civic geography extension: parcels + delivery points",
-    "ms7": "Managed edge synchronization",
-    "ms8": "Multi-node distribution",
-    "release_1_0_after": 8,
-    "ms9": "Generic county bootstrap (post-1.0)"
   },
   "consumer_exposed_requirements": {
     "gate_register": "docs/CONSUMER_INTERFACE_GATES.md",
@@ -209,29 +139,11 @@
     ],
     "not_fabric_owned": [
       "person/account authentication",
-      "postal challenge/anchor epochs",
-      "civic participation credentials",
-      "affected-set membership/assertion semantics",
-      "application authorization or proxy ACLs",
+      "application membership or authorization",
+      "proxy ACL semantics",
+      "consumer-owned request identity",
       "mail aliases or economic/application semantics"
-    ],
-    "current_consumer_observation": "Mechanical Compiler is a relying party behind its own authorization proxy; it currently requires no direct Kane Fabric identity/authentication API. Its trusted request-identity interface has been renamed to deployment-neutral terms and Kane Fabric intentionally records no consumer-owned header names."
-  },
-  "cross_project_gates": {
-    "register": "docs/CONSUMER_INTERFACE_GATES.md",
-    "ms5_blocking_now": [],
-    "future_fabric_gates": [
-      "MS5-008 WireGuard is management transport only; existing wg-pk topology is feasibility infrastructure, not a fleet contract",
-      "MS6 delivery-point geography must not become person/application identity"
-    ],
-    "consumer_side_gates": [
-      "Mechanical Compiler example kane-fabric/oidc must not imply Kane Fabric is an identity provider",
-      "stable email authorship must be reconciled with any epoch-unlinkable civic membership system before those systems integrate",
-      "building-based membership wording must be reconciled with future delivery-point geography without teaching the compiler geography"
-    ],
-    "resolved_consumer_interfaces": [
-      "Mechanical Compiler removed Kane-specific trusted-header names and made that relying-party interface deployment-neutral on 2026-09-12"
     ]
   },
-  "next_safe_action": "Proceed with WEB-003 according to docs/WEB_APPLICATION_DESIGN.md. Add geographic navigation, layer/subscription visibility controls, and inspection interaction on top of the accepted WEB-002 verified composition result. Keep source verification and Fabric identity semantics in the existing accepted MS3/MS4 modules; do not introduce platform-specific edge APIs or ESP-IDF work."
+  "next_safe_action": "Proceed with WEB-004 according to docs/WEB_APPLICATION_DESIGN.md. Make verification, network/offline failure, and recovery behavior explicit to the user while preserving the accepted MS3/MS4 verification boundary and platform-neutral artifact-source contract. Keep MS5-006 deferred."
 }
