@@ -6,11 +6,12 @@ Start here, then read:
 docs/DEVELOPMENT_PROCESS.md
 docs/CURRENT_STATE.json
 docs/SESSION_START.md
+docs/WEB_APPLICATION_DESIGN.md
 docs/MILESTONE_5_DESIGN.md
 docs/CONSUMER_INTERFACE_GATES.md
 ```
 
-`docs/DEVELOPMENT_PROCESS.md` defines how work is executed, which system owns each kind of state, how CT102 acceptance differs from GitHub publication, when the user may act as a bounded terminal relay, and when accepted gates must or must not be rerun. Read it before issuing infrastructure commands or changing the repository.
+`docs/DEVELOPMENT_PROCESS.md` defines execution authority and acceptance discipline. `docs/MILESTONE_5_DESIGN.md` remains the sole detailed authority for the Milestone 5 sequence. `docs/WEB_APPLICATION_DESIGN.md` is the detailed authority for the current Web Application priority workstream.
 
 Historical release records remain evidence. They are not current implementation instructions.
 
@@ -18,18 +19,12 @@ Historical release records remain evidence. They are not current implementation 
 
 Milestones 0–4 are complete.
 
-Milestone 4 was released on 2026-08-22 and proved deterministic logical geographic partition identity, independently versioned Condo and Industry proof subscriptions, browser composition of the accepted MS3 substrate plus both subscriptions, cross-boundary logical-object identity, physical-placement independence, and unchanged accepted geographic authority.
+Milestone 4 was released on 2026-08-22 and proved deterministic logical geographic partition identity, independently versioned subscriptions, real browser composition of the accepted MS3 substrate plus subscriptions, cross-boundary logical-object identity, physical-placement independence, and unchanged accepted geographic authority.
 
 Accepted MS4 implementation head:
 
 ```text
 9f6013d1b8b44998047f71e2b3f3e9c55c9ed298
-```
-
-MS4 release proof:
-
-```text
-3235cd4f7b7041138fe05708dbb077c07dc3ce8b8ec7a390141489460ac40634
 ```
 
 Accepted MS3 substrate identity:
@@ -38,15 +33,21 @@ Accepted MS3 substrate identity:
 fe417a02222669d9b81c72dc717ab0178b54b1c13cd0d3e8510c6b4f25224bcc
 ```
 
-Do not reopen accepted MS3/MS4 gates without an invalidating change or contradiction.
+MS4 release proof:
 
-## 2. Active milestone
+```text
+3235cd4f7b7041138fe05708dbb077c07dc3ce8b8ec7a390141489460ac40634
+```
+
+Do not reopen accepted MS3/MS4 gates without an invalidating implementation/environment change or contradictory observation.
+
+## 2. Active milestone and current priority
 
 Current milestone:
 
 **Milestone 5 — Reference Physical Edge Architecture**
 
-Normative design/work-sequence authority:
+Normative MS5 design/work-sequence authority:
 
 ```text
 docs/MILESTONE_5_DESIGN.md
@@ -58,13 +59,18 @@ Hardware/reference boundary:
 docs/ESP32_EDGE_REFERENCE.md
 ```
 
-Cross-project non-normative gate register:
+Current priority workstream:
 
 ```text
-docs/CONSUMER_INTERFACE_GATES.md
+Kane Fabric Web Application
+docs/WEB_APPLICATION_DESIGN.md
 ```
 
-Do not recreate a second complete MS5 work sequence in another current document.
+MS5-006 remains the next normative MS5 work item, but it is deliberately deferred while the Web Application establishes the real browser consumer requirements. This does not renumber, abandon, or redesign Milestone 5.
+
+The priority rule is:
+
+> Continue developing the parts Kane Fabric controls until third-party platform integration becomes necessary to advance the system.
 
 ## 3. Accepted MS5 checkpoints
 
@@ -76,56 +82,41 @@ MS5-001 through MS5-003 were originally accepted on CT102 on 2026-09-12 at:
 
 with 18 passing contract tests.
 
-A later handoff review identified one bounded cross-contract gap: the edge descriptor and storage inventory each carried a `logical_placement_sha256`, but activation did not enforce equality between them. It also identified an undefined activation state in which rollback existed while no active inventory existed.
-
-The bounded correction was implemented at:
+A bounded MS5-001/002 cross-contract correction then bound storage activation to the actual edge logical placement and rejected rollback-without-active state. The correction implementation head is:
 
 ```text
 025b55df42f3cc9d3613a2ae845952ce2bc033c7
 ```
 
-The correction:
-
-- requires activation to receive and validate the actual edge descriptor;
-- rejects a candidate inventory whose logical placement differs from the edge logical placement;
-- rejects activation state with rollback inventory but no active inventory;
-- adds regression tests for both cases.
-
-This is a join/enforcement correction to the existing MS5-001/002 contracts. It does **not** redesign MS5, MS3/MS4 identity, or the roadmap.
-
-The corrected MS5-001 through MS5-003 contract set was accepted on CT102 on 2026-09-14 at checkout head:
+The corrected contract set was accepted on CT102 on 2026-09-14 at:
 
 ```text
 762041080fa51e6441546b7ba14bd07792676b9f
 ```
 
-Acceptance evidence:
+with a valid authority guard, compileall pass, 20 passing tests, and clean worktree.
 
-```text
-MS5 work-sequence authority guard: valid
-python compileall: PASS
-MS5 contract tests: 20 passed, 0 failed
-worktree: clean
-```
-
-MS5-004 then added the browser secure-origin plus local AP/STA access contract. It requires a physical edge access profile that is bound to the actual edge instance and browser-TLS key provider, uses HTTPS rather than arbitrary LAN HTTP, preserves the boundary between browser/TLS identity and Fabric geography, and keeps AP+STA shared-radio/channel behavior as an explicit measurement obligation rather than an assumption.
-
-MS5-004 was accepted on CT102 on 2026-09-14 at:
+MS5-004 added the browser secure-origin plus local AP/STA access contract. It was accepted on CT102 on 2026-09-14 at:
 
 ```text
 07f4f71f51b538bc1fc5d446691e0bbcfc03cd9c
 ```
 
-Acceptance evidence:
+with a valid authority guard, compileall pass, 28 passing tests, and clean worktree.
+
+MS5-005 froze the default reference firmware SDK/toolchain and retained-dependency selection plan. ESP-IDF v6.0.3 is pinned at commit:
 
 ```text
-MS5 work-sequence authority guard: valid
-python compileall: PASS
-MS5 contract tests: 28 passed, 0 failed
-worktree: clean
+76f5dedd9950a3012fee8fb7d5586df21fc67802
 ```
 
-MS5-005 froze the reference firmware SDK/toolchain and retained-dependency plan. The selected SDK is ESP-IDF v6.0.3 at commit `76f5dedd9950a3012fee8fb7d5586df21fc67802`, with the submodule-complete release asset pinned by SHA-256. The ESP32-S3 Xtensa compiler is pinned by the selected ESP-IDF tool manifest. WireGuard remains explicitly unretained until MS5-008 runtime/resource acceptance.
+The submodule-complete release asset is pinned by SHA-256:
+
+```text
+748b12484402d8a1cb58ba68b7545d2a1f96d36820ab0145e0332c8348ba5ab7
+```
+
+WireGuard remains explicitly unretained until MS5-008 runtime/resource acceptance.
 
 MS5-005 was accepted on CT102 on 2026-09-14 at:
 
@@ -143,89 +134,65 @@ MS5 contract tests: 36 passed, 0 failed
 worktree: clean
 ```
 
-This checkpoint is accepted. Do not rerun or reopen MS5-001..005 merely because documentation advances after this accepted head. Rerun only if an implementation, dependency, environment change, or contradictory live observation invalidates an accepted gate.
+This is the last accepted CT102 MS5 implementation checkpoint. Do not rerun MS5-001..005 merely because documentation or Web Application source advances after this head.
 
-The next normative work item is now:
+## 4. Default edge platform is not the architecture
 
-```text
-MS5-006
-ESP32-S3 immutable artifact storage and HTTP byte-range implementation
-```
+ESP32-S3 is the **default reference edge platform**. It is not a permanent Kane Fabric platform requirement.
 
-## 4. Approved physical-edge security position
+A conforming edge may eventually be another microcontroller, an SBC, a general-purpose appliance, or a software-only server so long as it satisfies the same durable browser/publication and edge-authority contracts.
 
-These points are settled unless explicitly changed:
+This is important because ESP32-S3 hardware, the wider ESP32 product line, ESP-IDF, compiler releases, and supporting components are third-party implementations outside Kane Fabric control. They may evolve incompatibly or disappear.
 
-- Do not require irreversible ESP32 security eFuse burning.
-- ESP32-S3 is replaceable compute/radio/storage.
-- Physical compromise of one edge is a local/recoverable failure.
-- Fleet-class firmware/provisioning failure and authority/signing compromise are systemic threats.
-- Geographic promotion authority, Fabric release-signing authority, and CA/issuing authority never live on an edge.
-- Software-held replaceable device keys are acceptable for the reference edge where appropriate.
-- A separate external secure element may implement a key-provider role, but it is optional and never defines Fabric logical identity.
-- TLS identity, management/WireGuard identity, optional secure-element identity, hardware identity, storage location, partition identity, subscription identity, and substrate identity remain distinct.
-- Firmware-update authenticity is useful; preventing a determined owner from reflashing one ESP32 is not an MS5 objective.
+Therefore:
 
-## 5. WireGuard position
+- no Fabric logical identity may depend on ESP32 identity or continued ESP32 availability;
+- the Web Application must not require an ESP32-specific JavaScript API or device RPC protocol;
+- the accepted ESP-IDF v6.0.3/toolchain selection remains useful reference groundwork, not architectural lock-in;
+- hardware-specific implementation resumes when consumer-facing requirements make it necessary.
 
-WireGuard is a preferred management/synchronization candidate, not an accepted Fabric dependency and not logical identity.
+## 5. Web Application foundation already available
 
-External feasibility work established compile-level support on ESP32-S3. Runtime tunnel behavior remains an MS5 proof obligation in MS5-008: real handshake, routed management traffic, NAT/persistent keepalive, Wi-Fi interruption and reconnect behavior, repeated disconnect/reconnect, flash/RAM/task/socket/CPU cost, and coexistence with AP/STA, storage, browser serving, and update operations.
+The repository already contains meaningful browser infrastructure.
 
-The existing `wg-pk` estate hub may be used as controlled feasibility infrastructure. It is not automatically the production fleet topology. Failure of management connectivity must not invalidate already activated public Fabric artifacts.
+MS3 browser modules have proved immutable substrate verification, WebCrypto SHA-256, selective byte-range fetch, decompression, and Canvas rendering.
 
-## 6. Consumer pressure and Mechanical Compiler
+MS4 browser modules have proved deterministic partition/subscription loading and verified browser composition. The existing `substrate/browser/render.html` and `ms4/browser/proof.html` are proof harnesses, not a user application.
 
-Mechanical Compiler is currently a relying party behind its own authorization boundary. It intentionally does not want building geography, membership groups, membership-roll contents, or eligibility rules in the application.
+The current task is therefore to build a durable human-facing application shell around accepted browser primitives, not to rewrite the substrate/partition logic.
 
-That reinforces the Fabric boundary:
+The first Web work item is named only here by status; the detailed Web sequence lives only in `docs/WEB_APPLICATION_DESIGN.md`:
 
 ```text
-accepted Fabric geography
-        ↓
-consumer-owned membership / eligibility system
-        ↓
-minimal authorization result
-        ↓
-Mechanical Compiler
+WEB-001 application shell + platform-neutral artifact-source configuration
 ```
 
-The current Mechanical Compiler contract creates no direct Kane Fabric authentication API requirement.
+## 6. Approved physical-edge security position
 
-Cross-project issues are tracked only in:
+These points remain settled unless explicitly invalidated:
+
+- no irreversible ESP32 security eFuse operation is required;
+- physical compromise of one edge is local/recoverable;
+- fleet-class firmware/provisioning failure and authority/signing compromise are systemic threats;
+- geographic promotion authority, Fabric release-signing authority, and CA/issuing authority never live on an edge;
+- software-held replaceable device keys are acceptable for the default reference edge;
+- an external secure element is optional and substitutable;
+- TLS, management/WireGuard, secure-element, hardware, storage, substrate, partition, and subscription identities remain distinct;
+- firmware authenticity protects normal fleet operation but does not make one physical device authoritative.
+
+## 7. WireGuard and consumer boundaries
+
+WireGuard is a preferred management/synchronization candidate, not an accepted Fabric dependency and not logical identity. Compile feasibility exists; runtime handshake/recovery/resource/coexistence proof remains MS5-008 work.
+
+Mechanical Compiler remains a relying party behind its own authorization boundary. Kane Fabric must not implement Mechanical Compiler authentication, membership, OIDC, proxy ACL, or request-header semantics.
+
+Cross-project issues remain tracked in:
 
 ```text
 docs/CONSUMER_INTERFACE_GATES.md
 ```
 
-Important unresolved issues include persistent email authorship versus any epoch-unlinkable civic membership model, building-oriented membership wording versus future delivery-point geography, existing WireGuard estate topology versus future fleet lifecycle, and the fact that Mechanical Compiler central TLS does not solve MS5's local/offline browser secure-origin requirement.
-
-One previously identified issue is resolved: Mechanical Compiler removed its earlier Kane-specific trusted-header naming and made that relying-party interface deployment-neutral. Kane Fabric intentionally records no consumer-owned header syntax.
-
-Do not implement Mechanical Compiler authentication, membership, OIDC, proxy ACL, or request-header semantics inside Kane Fabric.
-
-## 7. Consumer-exposed geography and forward roadmap
-
-A real civic consumer exposed generic future Fabric requirements:
-
-- accepted parcel/classification source data;
-- persistent delivery-point identity distinct from building identity;
-- building/parcel/delivery-point geographic relationships.
-
-These remain planned for MS6. Fabric owns geography and source/promotion/reconciliation lifecycle, not person identity, civic participation credentials, application authorization, mail aliases, or economic semantics.
-
-Forward roadmap:
-
-```text
-MS0–MS4   logical Fabric foundation                    COMPLETE
-MS5       reference physical edge architecture         CURRENT
-MS6       parcels + persistent delivery-point geography
-MS7       managed edge synchronization
-MS8       multi-node distribution
-           ↓
-Kane Fabric 1.0
-MS9       generic second-county bootstrap              POST-1.0
-```
+Generic future geography exposed by real consumers remains planned for MS6: accepted parcel/classification data, persistent delivery-point identity, and building/parcel/delivery-point geographic relationships. Fabric owns geography, not person/account/participation semantics.
 
 ## 8. Stable operational authorities
 
@@ -252,34 +219,30 @@ Authoritative database:
 SHA256 31e362b696a37f1b9c45ae355c5669511a3128c17a651108a62e20d1cedebd67
 ```
 
-GitHub `main` is software/documentation authority. CT102 is the real compiler/runtime/acceptance environment. An Assistant sandbox is not CT102.
+GitHub `main` is software/documentation authority. CT102 is the real runtime/compiler/acceptance environment. An Assistant sandbox is not CT102 evidence.
 
-CT102 was last observed clean at `aed812df8c5e37bb1843e022d7a7813dc7e8e862`, where MS5-005 and the previously accepted MS5 contracts passed the 36-test acceptance gate. GitHub `main` may be ahead by documentation-only material-checkpoint commits; that alone does not invalidate the accepted implementation gate.
+CT102 was last observed clean at `aed812df8c5e37bb1843e022d7a7813dc7e8e862`, where MS5-005 and the prior MS5 contracts passed the 36-test acceptance gate. GitHub may advance by documentation/Web Application work without invalidating that accepted MS5 implementation gate.
 
 ## 9. Development discipline
 
-- Normal development is directly on `main` unless explicitly changed by the operator.
-- Compilation, serving, provisioning, synchronization, or consumer demand never silently promote geography.
-- Use CT102 for real acceptance.
+- Work directly on `main` unless explicitly changed by the operator.
+- Accepted geography changes only through explicit promotion.
+- Use CT102 for real application/browser acceptance when such a claim is made.
 - Keep large operational artifacts outside Git under `/var/lib/kane-fabric`.
-- Batch documentation at material checkpoints.
-- Do not turn consumer application rules into generic Fabric semantics.
-- Do not burn ESP32 eFuses as a Kane Fabric reference-edge requirement.
-- Do not make WireGuard, TLS, secure-element, device, person, or membership identity into Fabric logical identity.
-- Treat `docs/CONSUMER_INTERFACE_GATES.md` as a gate register, not a backlog that Kane Fabric owns.
-- Do not reopen MS5-001..005 unless a later implementation, dependency, environment change, or contradictory observation invalidates an accepted contract.
+- Do not introduce third-party browser dependencies for convenience; use `docs/DEPENDENCY_POLICY.md`.
+- Do not turn consumer rules into generic Fabric semantics.
+- Do not make a default hardware platform into Fabric logical identity.
+- Do not rerun accepted gates without an invalidating change.
 
 ## 10. Next safe action
 
 Proceed with:
 
 ```text
-MS5-006
-ESP32-S3 immutable artifact storage and HTTP byte-range implementation
+WEB-001
+application shell + platform-neutral artifact-source configuration
 ```
 
-Use `docs/MILESTONE_5_DESIGN.md` as the sole detailed work-sequence authority. MS5-006 must implement bounded immutable artifact access and HTTP single-byte-range behavior for the ESP32-S3 reference edge while preserving the accepted storage/activation identity contracts and browser-facing publication semantics.
+Use the existing accepted MS3/MS4 browser modules. Build a dependency-free browser application shell with a platform-neutral artifact-source boundary and explicit loading/verification/failure states.
 
-Do not rerun the accepted MS5-001..005 gate merely because this handoff/current-state checkpoint advances documentation beyond the CT102 acceptance head.
-
-After MS5-006, continue in the normative order defined only by `docs/MILESTONE_5_DESIGN.md`.
+Do **not** install ESP-IDF or begin MS5-006 merely to advance the Web Application. MS5-006 resumes when the Web Application establishes concrete serving/storage requirements or the Web workstream reaches its explicit reassessment gate.

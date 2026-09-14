@@ -70,9 +70,21 @@
   "milestone": {
     "current": 5,
     "name": "Reference Physical Edge Architecture",
-    "phase": "ms5-006-ready",
+    "phase": "ms5-006-deferred-for-web-application-priority-workstream",
     "design": "docs/MILESTONE_5_DESIGN.md",
     "reference": "docs/ESP32_EDGE_REFERENCE.md",
+    "platform_boundary": {
+      "default_reference_platform": "ESP32-S3 with ESP-IDF",
+      "esp32_is_required_platform": false,
+      "alternative_edge_classes_allowed": [
+        "other-microcontroller",
+        "single-board-computer",
+        "general-purpose-appliance",
+        "software-only-edge"
+      ],
+      "durable_browser_contract_must_be_platform_neutral": true,
+      "third_party_platform_evolution_must_not_define_fabric_identity": true
+    },
     "approved_security_posture": {
       "esp32_is_replaceable_platform": true,
       "irreversible_efuse_security_required": false,
@@ -117,21 +129,22 @@
       "number": 4,
       "name": "Subscriptions + Geographic Scoping/Partition Identity",
       "status": "released",
-      "gate_steps_complete": [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6,
-        7,
-        8,
-        9,
-        10,
-        11
-      ]
+      "gate_steps_complete": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
     },
-    "next_work_item": "MS5-006 ESP32-S3 immutable artifact storage and HTTP byte-range implementation"
+    "next_work_item": "MS5-006 ESP32-S3 immutable artifact storage and HTTP byte-range implementation (deferred while the Web Application workstream establishes the real browser consumer requirements)"
+  },
+  "priority_workstream": {
+    "name": "Kane Fabric Web Application",
+    "design": "docs/WEB_APPLICATION_DESIGN.md",
+    "status": "active",
+    "active_item": "WEB-001 application shell + platform-neutral artifact-source configuration",
+    "reason": "focus on Kane Fabric-controlled browser/application work until third-party physical-edge integration becomes necessary",
+    "existing_foundation": [
+      "accepted MS3 browser verification/selective-fetch/decompression/Canvas rendering",
+      "accepted MS4 browser partition/subscription composition"
+    ],
+    "edge_dependency": "none for WEB-001 through WEB-004; development/software artifact sources may satisfy the same browser contract",
+    "resume_ms5_006_when": "the Web Application establishes concrete serving/storage requirements or WEB-005 determines the browser contract is ready for physical-edge implementation"
   },
   "forward_roadmap": {
     "ms6": "Civic geography extension: parcels + delivery points",
@@ -173,5 +186,5 @@
       "Mechanical Compiler removed Kane-specific trusted-header names and made that relying-party interface deployment-neutral on 2026-09-12"
     ]
   },
-  "next_safe_action": "Proceed with MS5-006 according to docs/MILESTONE_5_DESIGN.md. CT102 last accepted checkpoint is aed812df8c5e37bb1843e022d7a7813dc7e8e862 with a clean worktree, valid MS5 authority guard, dependency-policy pass, compileall pass, and 36 passing contract tests. Documentation-only checkpoint commits after that head do not invalidate the accepted gate. MS5-006 must implement immutable artifact storage and HTTP single-byte-range serving for the ESP32-S3 reference edge without changing Fabric logical identities or promotion authority."
+  "next_safe_action": "Proceed with WEB-001 according to docs/WEB_APPLICATION_DESIGN.md. Keep MS5-006 deferred and do not install or exercise ESP-IDF merely to advance the Web Application. Reuse the accepted MS3/MS4 browser modules and build a platform-neutral application shell over configurable artifact sources. The CT102 MS5-005 acceptance at aed812df8c5e37bb1843e022d7a7813dc7e8e862 remains valid; documentation-only priority changes do not invalidate it."
 }
