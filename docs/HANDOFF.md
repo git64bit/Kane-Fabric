@@ -28,17 +28,17 @@ MS4 composition identity
 a58c8398248cee05b7baad9ae289fe0581bdb3624ce1aff3aa8a49721f92ee53
 ```
 
-The originally released MS3 package directory was no longer retained when WEB-002 needed it. The deterministic compiler reproduced the exact released four-file publication from the unchanged authoritative database at:
+The exact released MS3 publication is available as a byte-identical deterministic reproduction at:
 
 ```text
 /var/lib/kane-fabric/render/web-002/ms3-accepted-reproduction
 ```
 
-All released component sizes and SHA-256 identities matched exactly. This is a byte-identical reproduction, not a new geographic release.
+This is not a new geographic release.
 
 ## Milestone 5 status
 
-Milestone 5 remains current. `MS5-006` is the next normative MS5 item, but is deliberately deferred while Kane Fabric develops the browser application and other project-controlled components.
+Milestone 5 remains current. `MS5-006` is the next normative MS5 item, but it remains deferred until WEB-005 explicitly reassesses the stable browser/edge serving contract.
 
 Last accepted MS5 implementation checkpoint:
 
@@ -56,7 +56,7 @@ contract tests          36 passed, 0 failed
 worktree                clean
 ```
 
-ESP32-S3 remains the default reference edge platform, not the architecture. No Fabric logical identity or browser behavior may depend on continued ESP32 availability. Do not rerun accepted MS5-001..005 gates merely because Web Application source advances.
+ESP32-S3 remains the default reference edge platform, not the architecture. No Fabric logical identity or browser behavior may depend on continued ESP32 availability.
 
 ## Web Application accepted work
 
@@ -78,9 +78,9 @@ Accepted at:
 ef3c08f77442e1a8cefe6a0567b50e10ce010dd3
 ```
 
-The new application surface consumed the accepted MS3 publication and accepted MS4 composition in real Chromium through independent ordinary HTTP sources. It visibly rendered two verified subscription objects and preserved bounded MS3 byte-range access.
+The application consumed accepted MS3/MS4 artifacts in real Chromium through independent ordinary HTTP sources, rendered verified composition, and preserved bounded byte-range access.
 
-Durable evidence:
+Evidence:
 
 ```text
 /var/lib/kane-fabric/render/web-002/browser-acceptance-ef3c08f
@@ -95,36 +95,52 @@ Accepted at:
 b216a3d6e0fd7be51223754c9dc3459229498346
 ```
 
+It proved real-browser navigation, independent layer/subscription visibility, verified object inspection, and bounded artifact access without changing Fabric identities.
+
+Evidence:
+
+```text
+/var/lib/kane-fabric/render/web-003/browser-acceptance-b216a3d
+SHA256 7c0c4afbb2e7ee02586d13a051ded35366501cebf210e716cd9239ba5c05b369
+```
+
+### WEB-004
+
+Accepted at:
+
+```text
+73252b6a3c87ba47b7f68f3e3206056607e1e53a
+```
+
 Repository gate:
 
 ```text
 MS5 authority guard     valid
 dependency policy       PASS
 JavaScript syntax       PASS
-Web tests               21 passed, 0 failed
+Web tests               28 passed, 0 failed
 worktree                clean
 ```
 
-Real Chromium interaction proof established:
+Real Chromium failure/recovery proof established:
 
 ```text
-zoom control                         PASS
-keyboard pan                         PASS
-reset control                        PASS
-independent substrate visibility     PASS
-independent subscription visibility  PASS
-verified object inspection           PASS
-bounded artifact access              PASS
-physical platform assumed            false
+verified data survives connectivity loss without new artifact fetch   PASS
+corrupt artifact bytes fail verification                              PASS
+failed verification clears accepted presentation                      PASS
+o connectivity before verification fails closed                       PASS
+connection-restored retry prompt                                       PASS
+explicit retry recovery                                                PASS
+physical platform assumed                                              false
 ```
 
-The selected verified object was `condo-proof-66642827bace7fb1`. Presentation interaction changed only browser state; it did not alter Fabric identities, accepted geography, artifact bytes, partition identity, or subscription generation identity.
+A verified browser may continue displaying data that was already verified before connectivity loss, but no new fetch or verification claim is made while offline. Before verification, offline/network/integrity failures remain visibly not verified.
 
-Durable evidence:
+Evidence:
 
 ```text
-/var/lib/kane-fabric/render/web-003/browser-acceptance-b216a3d
-SHA256 7c0c4afbb2e7ee02586d13a051ded35366501cebf210e716cd9239ba5c05b369
+/var/lib/kane-fabric/render/web-004/browser-acceptance-73252b6
+SHA256 f9054cb884568e8503a8e7f416065aa5ea97bcd5b8082494a5ade00cb4db4b50
 ```
 
 ## Active Web item
@@ -132,13 +148,15 @@ SHA256 7c0c4afbb2e7ee02586d13a051ded35366501cebf210e716cd9239ba5c05b369
 Proceed with:
 
 ```text
-WEB-004
-explicit verification/error/offline behavior visible to the user
+WEB-005
+real-browser acceptance against accepted Kane County artifacts and reassessment of edge requirements
 ```
 
-WEB-004 should make trustworthy application state understandable without weakening the accepted verification boundary. It should distinguish at least successful verification from artifact/network failure, avoid presenting stale or unverified data as accepted, and provide bounded recovery/retry behavior using the same platform-neutral artifact-source contract.
+WEB-005 is primarily a consolidation and decision gate, not an invitation to redesign the accepted browser application. It should determine which concrete serving/storage properties are now actually required from a physical edge and whether those requirements are stable enough to resume `MS5-006` against the default ESP32-S3 reference implementation.
 
-Do not introduce ESP32-specific APIs, application identity/membership semantics, a third-party browser framework, geographic promotion behavior, or hidden fallback that bypasses artifact verification.
+The accepted browser contract already requires ordinary browser fetch semantics, exact byte-range support for flat substrate components, immutable accepted artifact identities, WebCrypto-capable secure browser context at the physical edge, and no device-specific JavaScript or hardware identity semantics.
+
+Do not weaken or alter those accepted contracts merely to make the reference hardware implementation easier.
 
 ## Stable operational authorities
 
@@ -153,7 +171,7 @@ authoritative DB    /var/lib/kane-fabric/database/kane-county-fabric.gpkg
 DB SHA256           31e362b696a37f1b9c45ae355c5669511a3128c17a651108a62e20d1cedebd67
 ```
 
-CT102 was last observed clean at `b216a3d6e0fd7be51223754c9dc3459229498346`, where WEB-003 passed repository and real-browser interaction gates. GitHub may advance through documentation/Web Application commits without invalidating that accepted runtime checkpoint.
+CT102 was last observed clean at `73252b6a3c87ba47b7f68f3e3206056607e1e53a`, where WEB-004 passed repository and real-browser failure/recovery gates. GitHub may advance through documentation commits without invalidating that accepted runtime checkpoint.
 
 ## Execution discipline
 
@@ -162,6 +180,5 @@ CT102 was last observed clean at `b216a3d6e0fd7be51223754c9dc3459229498346`, whe
 - CT102 is the real runtime/browser acceptance environment; an Assistant sandbox is not acceptance evidence.
 - Large generated/browser evidence stays under `/var/lib/kane-fabric`, not Git.
 - Do not rerun accepted gates without an invalidating change.
-- Do not install ESP-IDF merely to advance WEB-004.
-- For long CT102/srv-b acceptance procedures, create a standalone script file for the operator to upload and run. Keep chat relay commands and output intentionally short.
-- MS5-006 resumes when the Web Application establishes concrete physical-edge requirements or WEB-005 reaches the explicit reassessment gate.
+- For long CT102/srv-b acceptance procedures, create a standalone script file for the operator to upload and run. Keep chat relay commands and successful output intentionally short.
+- Resume `MS5-006` only after WEB-005 explicitly concludes that the browser-facing serving/storage contract is stable enough for physical-edge implementation.
