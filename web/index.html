@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-state="loading">
+<html lang="en" data-state="loading" data-verification="not-verified" data-availability="online">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -31,6 +31,13 @@
     </section>
 
     <aside class="info-panel" aria-label="Fabric data status">
+      <section id="verification-panel" class="verification-panel" data-kind="checking" aria-live="polite">
+        <p class="section-label">Verification</p>
+        <h2 id="verification-title">Verifying Fabric artifacts</h2>
+        <p id="verification-detail" class="muted">Loading configured artifact sources and verifying their accepted identities before presentation.</p>
+        <button id="retry-verification" class="retry-button" type="button" hidden disabled>Retry verification</button>
+      </section>
+
       <section>
         <p class="section-label">Artifact source</p>
         <h2 id="source-label">Loading</h2>

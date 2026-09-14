@@ -16,6 +16,7 @@ body {
 
 button, input { font: inherit; }
 button { cursor: pointer; }
+button:disabled { cursor: default; opacity: .65; }
 
 .topbar {
   display: flex;
@@ -82,7 +83,10 @@ h2 { margin-bottom: .35rem; font-size: 1.05rem; }
   background: #fff;
   color: inherit;
 }
-.map-toolbar button:focus-visible, #map:focus-visible, .layer-row input:focus-visible {
+.map-toolbar button:focus-visible,
+#map:focus-visible,
+.layer-row input:focus-visible,
+.retry-button:focus-visible {
   outline: 3px solid #4677b7;
   outline-offset: 2px;
 }
@@ -120,6 +124,39 @@ h2 { margin-bottom: .35rem; font-size: 1.05rem; }
   margin-top: 1.15rem;
   padding-top: 1.15rem;
   border-top: 1px solid #e1e5e8;
+}
+
+.verification-panel {
+  padding: .8rem;
+  border: 1px solid #b9c1c8;
+  border-radius: .5rem;
+  background: #f7f9fa;
+}
+.verification-panel h2 { margin-bottom: .3rem; }
+.verification-panel p:last-of-type { margin-bottom: 0; }
+.verification-panel[data-kind="verified"] {
+  border-color: #4f7758;
+  background: #f3f8f4;
+}
+.verification-panel[data-kind="verified-offline"] {
+  border-color: #7b6b32;
+  background: #faf7eb;
+}
+.verification-panel[data-kind="offline"],
+.verification-panel[data-kind="network"],
+.verification-panel[data-kind="verification"],
+.verification-panel[data-kind="error"],
+.verification-panel[data-kind="configuration"] {
+  border-color: #9d4e4e;
+  background: #fbf3f3;
+}
+.retry-button {
+  margin-top: .7rem;
+  padding: .45rem .7rem;
+  border: 1px solid #7c8791;
+  border-radius: .4rem;
+  background: #fff;
+  color: inherit;
 }
 
 .facts { display: grid; gap: .8rem; }
@@ -209,7 +246,15 @@ footer {
   .topbar, .map-panel, .info-panel, footer { background: #171d22; border-color: #303940; }
   .info-panel > section + section { border-color: #303940; }
   .eyebrow, .section-label, .muted, .facts span, .subscription-meta span, #navigation-status, .map-caption, footer { color: #aeb8c1; }
-  .map-toolbar button { background: #20272d; border-color: #46515a; }
+  .map-toolbar button, .retry-button { background: #20272d; border-color: #46515a; }
+  .verification-panel { background: #1d242a; border-color: #46515a; }
+  .verification-panel[data-kind="verified"] { background: #18241b; border-color: #5e8c68; }
+  .verification-panel[data-kind="verified-offline"] { background: #282416; border-color: #8d7d3e; }
+  .verification-panel[data-kind="offline"],
+  .verification-panel[data-kind="network"],
+  .verification-panel[data-kind="verification"],
+  .verification-panel[data-kind="error"],
+  .verification-panel[data-kind="configuration"] { background: #241c1c; border-color: #a35b5b; }
   .notice { background: #1d242a; border-color: #46515a; }
   .error { background: #241c1c; border-color: #a35b5b; }
   .inspector code, .inspector-payload { background: #20272d; }

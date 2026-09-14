@@ -16,6 +16,11 @@ import {
   visibleOverlays,
   zoomNavigation,
 } from "./app-interaction.js";
+import {
+  classifyLoadFailure,
+  recoveryStatusPayload,
+  verificationPresentation,
+} from "./app-status.js";
 
 const OVERLAY_STYLES = [
   { stroke: "#a33f3f", fill: "rgba(163,63,63,.12)" },
@@ -41,12 +46,17 @@ const elements = {
   zoomIn: document.getElementById("zoom-in"),
   zoomOut: document.getElementById("zoom-out"),
   resetView: document.getElementById("reset-view"),
+  verificationPanel: document.getElementById("verification-panel"),
+  verificationTitle: document.getElementById("verification-title"),
+  verificationDetail: document.getElementById("verification-detail"),
+  retryVerification: document.getElementById("retry-verification"),
   setup: document.getElementById("setup"),
   error: document.getElementById("error"),
   machineStatus: document.getElementById("machine-status"),
 };
 
 const session = {
+  config: null,
   result: null,
   view: null,
   overlays: [],
@@ -56,6 +66,10 @@ const session = {
   visibility: null,
   selected: null,
   drag: null,
+  phase: "loading",
+  failure: null,
+  online: navigator.onLine !== false,
+  loadSerial: 0,
 };
 
 function setState(state, text) {
@@ -67,6 +81,58 @@ function setState(state, text) {
 function text(value, fallback = "—") {
   if (value === null || value === undefined || String(value).trim() === "") return fallback;
   return String(value);
+}
+
+function setPlaceholder(container, message) {
+  container.replaceChildren();
+  const item = document.createElement(container.tagName === "UL" ? "li" : "p");
+  item.className = "muted";
+  item.textContent = message;
+  container.append(item);
+}
+
+function clearInteractivePresentation(partition = "—") {
+  session.result = null;
+  session.view = null;
+  session.overlays = [];
+  session.baseCanvas = null;
+  session.composedCanvas = null;
+  session.navigation = createNavigationState();
+  session.visibility = null;
+  session.selected = null;
+  session.drag = null;
+
+  const context = elements.canvas.getContext("2d");
+  if (context) {
+    context.setTransform(1, 0, 0, 1, 0, 0);
+    context.clearRect(0, 0, elements.canvas.width, elements.canvas.height);
+    context.fillStyle = "#fff";
+    context.fillRect(0, 0, elements.canvas.width, elements.canvas.height);
+  }
+
+  elements.jurisdiction.textContent = "—";
+  elements.identity.textContent = "—";
+  elements.partition.textContent = partition;
+  elements.objectCount.textContent = "—";
+  elements.navigationStatus.textContent = "1.00×";
+  setPlaceholder(elements.layers, "No verified layers loaded.");
+  setPlaceholder(elements.subscriptions, "No verified subscriptions loaded.");
+  renderInspector(null);
+}
+
+function renderVerificationState() {
+  const presentation = verificationPresentation({
+    phase: session.phase,
+    online: session.online,
+    failure: session.failure,
+  });
+  elements.verificationPanel.dataset.kind = presentation.kind;
+  elements.verificationTitle.textContent = presentation.title;
+  elements.verificationDetail.textContent = presentation.detail;
+  elements.retryVerification.hidden = !presentation.retryable;
+  elements.retryVerification.disabled = !presentation.retryable;
+  elements.root.dataset.verification = presentation.verified ? "verified" : "not-verified";
+  elements.root.dataset.availability = presentation.availability;
 }
 
 function drawSubscriptionOverlays(context, overlays) {
@@ -213,18 +279,37 @@ function renderInspector(overlay) {
 }
 
 function publishMachineStatus() {
-  if (!session.view || !session.visibility) return;
-  const payload = {
-    ...acceptancePayload(session.view, session.overlays),
-    ...interactionAcceptancePayload(session.navigation, session.visibility, session.selected),
-    status: "web-003-interactive",
+  const recovery = recoveryStatusPayload({
+    phase: session.phase,
+    online: session.online,
+    failure: session.failure,
+  });
+
+  let payload = {
+    status: `web-004-${session.phase}`,
+    ...recovery,
   };
+
+  if (session.phase === "verified" && session.view && session.visibility) {
+    payload = {
+      ...acceptancePayload(session.view, session.overlays),
+      ...interactionAcceptancePayload(session.navigation, session.visibility, session.selected),
+      ...recovery,
+      status: "web-004-verified",
+    };
+    elements.root.dataset.substrateIdentity = payload.substrate_content_sha256;
+    elements.root.dataset.partitionName = payload.partition_name;
+    elements.root.dataset.objectCount = String(payload.object_count);
+    elements.root.dataset.overlayCount = String(payload.overlay_count);
+    elements.root.dataset.zoom = String(payload.navigation.scale);
+  } else {
+    delete elements.root.dataset.substrateIdentity;
+    delete elements.root.dataset.objectCount;
+    delete elements.root.dataset.overlayCount;
+    delete elements.root.dataset.zoom;
+  }
+
   elements.machineStatus.textContent = JSON.stringify(payload);
-  elements.root.dataset.substrateIdentity = payload.substrate_content_sha256;
-  elements.root.dataset.partitionName = payload.partition_name;
-  elements.root.dataset.objectCount = String(payload.object_count);
-  elements.root.dataset.overlayCount = String(payload.overlay_count);
-  elements.root.dataset.zoom = String(payload.navigation.scale);
 }
 
 function canvasPoint(event) {
@@ -236,6 +321,7 @@ function canvasPoint(event) {
 }
 
 function inspectAt(point) {
+  if (!session.visibility) return;
   const mapPoint = screenToMapPoint(session.navigation, point.x, point.y);
   session.selected = hitTestOverlay(session.overlays, session.visibility, mapPoint.x, mapPoint.y);
   renderInspector(session.selected);
@@ -244,19 +330,23 @@ function inspectAt(point) {
 
 function installInteractionHandlers() {
   elements.zoomIn.addEventListener("click", () => {
+    if (!session.visibility) return;
     session.navigation = zoomNavigation(session.navigation, 1.5, elements.canvas.width / 2, elements.canvas.height / 2, elements.canvas.width, elements.canvas.height);
     redrawMap();
   });
   elements.zoomOut.addEventListener("click", () => {
+    if (!session.visibility) return;
     session.navigation = zoomNavigation(session.navigation, 1 / 1.5, elements.canvas.width / 2, elements.canvas.height / 2, elements.canvas.width, elements.canvas.height);
     redrawMap();
   });
   elements.resetView.addEventListener("click", () => {
+    if (!session.visibility) return;
     session.navigation = resetNavigation();
     redrawMap();
   });
 
   elements.canvas.addEventListener("wheel", (event) => {
+    if (!session.visibility) return;
     event.preventDefault();
     const point = canvasPoint(event);
     session.navigation = zoomNavigation(session.navigation, event.deltaY < 0 ? 1.25 : 0.8, point.x, point.y, elements.canvas.width, elements.canvas.height);
@@ -264,12 +354,13 @@ function installInteractionHandlers() {
   }, { passive: false });
 
   elements.canvas.addEventListener("pointerdown", (event) => {
+    if (!session.visibility) return;
     const point = canvasPoint(event);
     session.drag = { pointerId: event.pointerId, point, moved: false };
     elements.canvas.setPointerCapture?.(event.pointerId);
   });
   elements.canvas.addEventListener("pointermove", (event) => {
-    if (!session.drag || session.drag.pointerId !== event.pointerId) return;
+    if (!session.visibility || !session.drag || session.drag.pointerId !== event.pointerId) return;
     const point = canvasPoint(event);
     const dx = point.x - session.drag.point.x;
     const dy = point.y - session.drag.point.y;
@@ -279,7 +370,7 @@ function installInteractionHandlers() {
     redrawMap();
   });
   elements.canvas.addEventListener("pointerup", (event) => {
-    if (!session.drag || session.drag.pointerId !== event.pointerId) return;
+    if (!session.visibility || !session.drag || session.drag.pointerId !== event.pointerId) return;
     const point = canvasPoint(event);
     const moved = session.drag.moved;
     session.drag = null;
@@ -287,6 +378,7 @@ function installInteractionHandlers() {
   });
 
   elements.canvas.addEventListener("keydown", (event) => {
+    if (!session.visibility) return;
     const step = 48;
     if (event.key === "+" || event.key === "=") {
       event.preventDefault();
@@ -308,47 +400,43 @@ function installInteractionHandlers() {
 }
 
 function showSetup(config) {
+  session.phase = "unconfigured";
+  session.failure = null;
+  clearInteractivePresentation(config.partition ?? "—");
   elements.setup.hidden = false;
   elements.setup.querySelector("code").textContent =
     `?substrate=${encodeURIComponent("https://artifact-source.example/substrate/")}` +
     `&composition=${encodeURIComponent("https://artifact-source.example/ms4/")}` +
     `&partition=${encodeURIComponent("partition-ref")}`;
-  elements.partition.textContent = config.partition ?? "—";
   setState("unconfigured", "Source configuration required");
+  renderVerificationState();
+  publishMachineStatus();
 }
 
-async function start() {
-  let config;
-  try {
-    config = configFromSearch(location.search, location.href);
-  } catch (error) {
-    const message = error instanceof AppConfigError ? error.message : String(error?.stack || error);
-    elements.error.hidden = false;
-    elements.error.textContent = message;
-    setState("failed", "Configuration rejected");
-    return;
-  }
+async function verifyConfiguredSource() {
+  if (!session.config?.configured) return;
+  const serial = ++session.loadSerial;
 
-  const summary = sourceSummary(config);
-  elements.sourceLabel.textContent = summary.label;
-  elements.sourceDetail.textContent = summary.detail;
-
-  if (!config.configured) {
-    showSetup(config);
-    return;
-  }
-
-  elements.partition.textContent = config.partition;
+  session.phase = "loading";
+  session.failure = null;
+  session.online = navigator.onLine !== false;
+  clearInteractivePresentation(session.config.partition);
+  elements.setup.hidden = true;
+  elements.error.hidden = true;
+  elements.error.textContent = "";
   setState("loading", "Loading and verifying Fabric artifacts…");
+  renderVerificationState();
+  publishMachineStatus();
 
   try {
     const result = await renderPartitionComposition(
       elements.canvas,
-      config.substrateBase,
-      config.compositionBase,
-      config.partition,
+      session.config.substrateBase,
+      session.config.compositionBase,
+      session.config.partition,
       { renderImpl: renderSubstrate },
     );
+    if (serial !== session.loadSerial) return;
 
     const view = buildCompositionView(result);
     const overlays = projectSubscriptionOverlays(result, elements.canvas.width, elements.canvas.height);
@@ -357,7 +445,10 @@ async function start() {
     const baseCanvas = document.createElement("canvas");
     baseCanvas.width = elements.canvas.width;
     baseCanvas.height = elements.canvas.height;
-    baseCanvas.getContext("2d").drawImage(elements.canvas, 0, 0);
+    const baseContext = baseCanvas.getContext("2d");
+    if (!baseContext) throw new Error("Canvas 2D context is unavailable");
+    baseContext.drawImage(elements.canvas, 0, 0);
+
     const composedCanvas = document.createElement("canvas");
     composedCanvas.width = elements.canvas.width;
     composedCanvas.height = elements.canvas.height;
@@ -369,6 +460,10 @@ async function start() {
     session.composedCanvas = composedCanvas;
     session.navigation = createNavigationState();
     session.visibility = createVisibilityState(view.subscriptions.map((entry) => entry.subscription_key));
+    session.selected = null;
+    session.phase = "verified";
+    session.failure = null;
+    session.online = navigator.onLine !== false;
 
     elements.jurisdiction.textContent = `${text(view.jurisdiction_name)}${view.jurisdiction_fips ? ` (${view.jurisdiction_fips})` : ""}`;
     elements.identity.textContent = view.substrate_content_sha256;
@@ -378,14 +473,78 @@ async function start() {
     renderLayerControls(view);
     renderInspector(null);
     elements.error.hidden = true;
-    redrawMap();
     setState("verified", "Verified interactive Fabric composition");
+    renderVerificationState();
+    redrawMap();
   } catch (error) {
+    if (serial !== session.loadSerial) return;
+    session.phase = "failed";
+    session.online = navigator.onLine !== false;
+    session.failure = classifyLoadFailure(error, { online: session.online });
+    clearInteractivePresentation(session.config.partition);
     elements.error.hidden = false;
-    elements.error.textContent = String(error?.stack || error);
-    setState("failed", "Artifact verification or rendering failed");
+    elements.error.textContent = session.failure.technical_detail;
+    setState("failed", "Fabric artifacts not verified");
+    renderVerificationState();
+    publishMachineStatus();
   }
 }
 
+function installAvailabilityHandlers() {
+  const update = () => {
+    session.online = navigator.onLine !== false;
+    if (session.phase === "failed" && session.online && session.failure?.kind === "offline") {
+      session.failure = {
+        ...session.failure,
+        title: "Connection restored — retry verification",
+        detail: "The browser reports connectivity again. Retry to fetch and verify the configured Fabric artifacts.",
+      };
+    }
+    renderVerificationState();
+    publishMachineStatus();
+  };
+  window.addEventListener("online", update);
+  window.addEventListener("offline", update);
+}
+
+async function start() {
+  let config;
+  try {
+    config = configFromSearch(location.search, location.href);
+  } catch (error) {
+    const message = error instanceof AppConfigError ? error.message : String(error?.stack || error);
+    session.phase = "failed";
+    session.failure = {
+      kind: "configuration",
+      title: "Source configuration rejected",
+      detail: "The supplied artifact-source configuration is invalid. No Fabric artifacts were loaded.",
+      technical_detail: message,
+      retryable: false,
+      verified: false,
+    };
+    clearInteractivePresentation("—");
+    elements.error.hidden = false;
+    elements.error.textContent = message;
+    setState("failed", "Configuration rejected");
+    renderVerificationState();
+    publishMachineStatus();
+    return;
+  }
+
+  session.config = config;
+  const summary = sourceSummary(config);
+  elements.sourceLabel.textContent = summary.label;
+  elements.sourceDetail.textContent = summary.detail;
+
+  if (!config.configured) {
+    showSetup(config);
+    return;
+  }
+
+  await verifyConfiguredSource();
+}
+
+elements.retryVerification.addEventListener("click", () => verifyConfiguredSource());
 installInteractionHandlers();
+installAvailabilityHandlers();
 start();
