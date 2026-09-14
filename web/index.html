@@ -18,10 +18,16 @@
 
   <main class="layout">
     <section class="map-panel" aria-label="Fabric map">
-      <canvas id="map" width="1024" height="768">
+      <div class="map-toolbar" aria-label="Map navigation controls">
+        <button id="zoom-in" type="button" title="Zoom in">+</button>
+        <button id="zoom-out" type="button" title="Zoom out">−</button>
+        <button id="reset-view" type="button">Reset</button>
+        <span id="navigation-status" aria-live="polite">1.00×</span>
+      </div>
+      <canvas id="map" width="1024" height="768" tabindex="0" aria-label="Interactive verified Kane Fabric map">
         Kane Fabric geographic map.
       </canvas>
-      <p class="map-caption">Verified subscription objects are outlined over the accepted substrate.</p>
+      <p class="map-caption">Drag to pan, use the wheel or +/− to zoom, and select a visible subscription object to inspect it. Arrow keys pan; 0 resets the view.</p>
     </section>
 
     <aside class="info-panel" aria-label="Fabric data status">
@@ -51,10 +57,24 @@
       </section>
 
       <section>
+        <p class="section-label">Layers</p>
+        <div id="layers" class="layers">
+          <p class="muted">Not loaded.</p>
+        </div>
+      </section>
+
+      <section>
         <p class="section-label">Verified subscriptions</p>
         <ul id="subscriptions" class="subscriptions">
           <li>Not loaded.</li>
         </ul>
+      </section>
+
+      <section>
+        <p class="section-label">Inspection</p>
+        <div id="inspector" class="inspector">
+          <p class="muted">Select a visible subscription object on the map.</p>
+        </div>
       </section>
 
       <section id="setup" class="notice" hidden>

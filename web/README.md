@@ -4,57 +4,47 @@ This directory is the human-facing Kane Fabric browser application workstream de
 
 It is distinct from the historical browser proof harnesses under `substrate/browser/` and `ms4/browser/`. Those modules remain the accepted verification/rendering foundation and are reused by the application rather than copied or reimplemented.
 
-## Current boundary
+## Accepted foundation
 
-The application consumes Fabric through ordinary browser URLs and browser APIs. It does not infer whether the artifact source is an ESP32-S3, another microcontroller, an SBC, or a software server.
+WEB-001 established the dependency-free application shell and platform-neutral artifact-source configuration.
 
-Development source configuration uses query parameters:
+WEB-002 established a real user-facing vertical slice that consumes accepted MS3/MS4 artifacts, displays verified identities/generations, and visibly composes subscription objects over the accepted substrate. Its real-browser acceptance used independent ordinary HTTP origins for application code, substrate bytes, and composition bytes; no physical edge platform was assumed.
+
+## WEB-003
+
+WEB-003 adds application-side interaction without changing Fabric artifact identity or the browser-to-edge wire contract:
+
+- pan, zoom, keyboard navigation, and reset of the verified map presentation;
+- independent visibility controls for the accepted substrate and each verified subscription;
+- deterministic hit testing of visible subscription overlays;
+- inspection of verified subscription object key, generation, object SHA-256, bounds, geographic references, and application-owned payload;
+- no third-party JavaScript/CSS dependency graph and no device-specific API.
+
+Navigation operates on the already verified rendered composition. Visibility and inspection never alter accepted geography or artifact identities.
+
+## Development source configuration
+
+The application accepts source configuration through query parameters:
 
 ```text
 substrate=<directory URL>
 composition=<directory URL>
-partition=<partition name>
+partition=<partition reference>
 label=<optional human-readable source label>
 ```
 
-`ms4=` remains a temporary alias for `composition=` so existing MS4 proof layouts can be consumed without inventing a second wire format.
+`ms4=` remains a temporary alias for `composition=` so the application can consume existing MS4 proof layouts during transition.
 
-## WEB-001
-
-WEB-001 established:
-
-- a responsive map/application shell;
-- platform-neutral artifact-source configuration;
-- explicit loading, verified, unconfigured, and failure states;
-- verified substrate identity display;
-- verified subscription generation display;
-- no npm or third-party browser dependency graph.
-
-WEB-001 was accepted on CT102 at `98873196438f87f946796d9b4ffd2ff2a5a135e4` with 8 passing Web tests.
-
-## WEB-002
-
-WEB-002 turns the verified composition into a visible user-facing vertical slice while preserving the accepted MS3/MS4 browser modules.
-
-The application now exposes:
-
-- verified Kane jurisdiction and partition identity;
-- the accepted substrate content identity;
-- verified subscription generation identities;
-- composed subscription object counts;
-- visible Canvas overlays for the verified subscription objects;
-- a hidden machine-readable status payload for real-browser acceptance evidence.
-
-Subscription overlays are application presentation only. They do not alter MS3 substrate rendering, MS4 subscription identity, or accepted geographic authority.
-
-`validate-browser-dump.py` validates a real-browser DOM dump against the accepted Kane County MS3 substrate identity and accepted MS4 composition identity. It also requires the two proof subscriptions and visible overlay/object counts while asserting that the application made no physical-platform assumption.
+The application deliberately does not infer whether the artifact source is an ESP32-S3, another microcontroller, an SBC, or a software server.
 
 ## Tests
 
-Run repository/unit tests with:
+Run:
 
 ```bash
 bash web/run-tests.sh
 ```
 
-WEB-002 additionally requires a normal-browser gate against the accepted Kane County MS3/MS4 artifacts before the application slice is recorded as accepted. Repository tests alone do not make that claim.
+The unit tests cover source normalization, verified composition presentation, projection, navigation bounds, visibility state, overlay hit testing, inspection data, and the platform-neutral interaction boundary.
+
+Real browser acceptance belongs on CT102 using accepted Kane County artifacts. The accepted WEB-002 evidence remains valid for its implementation head and is not rerun merely because WEB-003 interaction code is developed.
