@@ -27,16 +27,16 @@
       "branch": "main",
       "upstream": "origin/main",
       "fetch_refspec": "+refs/heads/*:refs/remotes/origin/*",
-      "last_observed_head": "ef6a08f03a94aabd6c15e9c02f6ed9470c65d3ce",
+      "last_observed_head": "52b9b9746be3fa0c3108677e1a6d6c8bba9c8845",
       "last_observed_worktree": "clean",
-      "note": "CT102 accepted the corrected MS5-006 repository gate on 2026-09-14. The host C compile test was explicitly skipped because CT102 has no host C compiler."
+      "note": "CT102 was restored to a clean GitHub-main baseline on 2026-09-14 before publication of the MS5 Wiregate-HTTPS / ESP32-HTTP architecture correction candidate."
     },
     "ms5_006_hardware_execution": {
       "environment": "dedicated ESP programming node with direct USB access",
       "ct102_installs_esp_idf": false,
       "ct102_uses_usb_passthrough": false,
       "direct_usb_required_for_reference_workflow": true,
-      "status": "next-session-resume-environment"
+      "status": "paused-pending-ms5-transport-architecture-acceptance"
     }
   },
   "operational_state": {
@@ -88,27 +88,30 @@
       "browser_contract_stable": true,
       "resume_ms5_006": true,
       "physical_platform_assumed": false,
-      "status": "accepted"
+      "status": "accepted",
+      "note": "Historical WEB-005 acceptance is retained. The later Wiregate-HTTPS / ESP32-HTTP correction supersedes its edge-TLS topology assumption without rewriting this evidence."
     }
   },
   "milestone": {
     "current": 5,
     "name": "Reference Physical Edge Architecture",
-    "phase": "ms5-006-active-after-repository-acceptance",
+    "phase": "ms5-transport-architecture-candidate-pending-ct102-acceptance",
     "design": "docs/MILESTONE_5_DESIGN.md",
     "reference": "docs/ESP32_EDGE_REFERENCE.md",
     "accepted_work": {
-      "through": "MS5-006 repository implementation gate",
+      "through": "MS5-006 repository implementation gate before transport-architecture correction",
       "repository_head": "ef6a08f03a94aabd6c15e9c02f6ed9470c65d3ce",
       "ct102_test_result": "42 passed, 1 environment skip (host C compiler unavailable)",
       "ct102_compileall": "passed",
       "ct102_authority_guard": "valid",
       "ct102_dependency_policy": "passed",
       "ct102_worktree": "clean",
-      "pinned_esp_idf_compile": "pending",
-      "device_storage_range_evidence": "pending"
+      "architecture_correction_status": "published-candidate-pending-ct102-acceptance",
+      "architecture_correction": "browser-https-at-wiregate-hub__esp32-plain-http",
+      "pinned_esp_idf_compile": "blocked-pending-architecture-acceptance",
+      "device_storage_range_evidence": "blocked-pending-architecture-acceptance"
     },
-    "next_work_item": "MS5-006 pinned ESP-IDF v6.0.3 compile and physical storage/range work on the dedicated ESP programming node with direct USB access"
+    "next_work_item": "MS5-004 corrected Wiregate-terminated browser HTTPS and hub-to-edge HTTP repository acceptance in CT102 before resuming MS5-006 physical execution"
   },
   "priority_workstream": {
     "name": "Kane Fabric Web Application",
@@ -138,5 +141,5 @@
       "mail aliases or economic/application semantics"
     ]
   },
-  "next_safe_action": "Resume MS5-006 on the dedicated ESP programming node. Do not install ESP-IDF in CT102 and do not add Proxmox USB passthrough for this workflow. First verify the pinned ESP-IDF v6.0.3/toolchain there, then build, flash, and collect device storage/range evidence against the accepted repository implementation. Native Linux/macOS/Windows distribution support remains a separate undecided concern."
+  "next_safe_action": "Synchronize clean CT102 from GitHub main, verify the published MS5 transport-architecture candidate, and run the invalidated MS5 authority/dependency/compileall/test gates. Do not begin the pinned ESP-IDF build or physical ESP32 work until the corrected Wiregate HTTPS / ESP32 plain-HTTP contracts pass CT102 acceptance and a material acceptance checkpoint is recorded."
 }

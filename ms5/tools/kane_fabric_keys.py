@@ -9,11 +9,10 @@ from collections.abc import Mapping, Sequence
 from ms5.tools.common import ContractError, canonical_json_bytes, nonempty_text
 
 FORMAT = "kane-fabric-edge-key-provider"
-VERSION = 1
+VERSION = 2
 
 PROVIDER_CLASSES = {"software", "external"}
 ALLOWED_PRIVATE_KEY_ROLES = {
-    "browser-tls-server",
     "management-transport-client",
 }
 
@@ -52,8 +51,6 @@ def _keys(values: Sequence[Mapping[str, object]]) -> list[dict[str, str]]:
         raise KeyProviderContractError("private-key roles must be unique")
     if len(refs) != len(set(refs)):
         raise KeyProviderContractError("a private key reference may not be reused across roles")
-    if "browser-tls-server" not in roles:
-        raise KeyProviderContractError("browser-tls-server role is required")
     return result
 
 

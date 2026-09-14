@@ -2,25 +2,21 @@
 
 ## Status
 
-Active priority workstream while Milestone 5 remains current.
+Completed for the current Milestone 5 edge-requirements purpose and retained as the Web Application design authority.
 
-The next normative Milestone 5 item remains `MS5-006` in `docs/MILESTONE_5_DESIGN.md`, but implementation of that third-party-platform-specific item is deliberately deferred while Kane Fabric develops the browser application and other components it controls directly.
+The normative Milestone 5 sequence remains in `docs/MILESTONE_5_DESIGN.md`. WEB-001 through WEB-005 established the reference browser application's consumer requirements and are not a replacement work sequence for MS5.
 
-This document is the single detailed authority for the Web Application workstream. It does not renumber or replace the Milestone 5 sequence.
-
-## Why this work comes now
+## Why this work came before physical implementation
 
 MS5-001 through MS5-005 established the physical-edge trust boundary, immutable-storage/activation contract, cryptographic role separation, browser secure-origin contract, and a pinned default ESP32-S3 toolchain plan.
 
-That is enough groundwork to protect later edge implementation.
+That was enough groundwork to protect later edge implementation, but the actual browser application still needed to establish the concrete consumer requirements for serving, storage, navigation, failure handling, and interaction before the reference firmware was allowed to hard-code platform assumptions.
 
-Continuing immediately into MS5-006 would spend substantial effort against a third-party hardware/SDK ecosystem before the real browser application has established the concrete consumer requirements for serving, storage, navigation, failure handling, and interaction.
-
-Kane Fabric therefore follows this priority rule:
+Kane Fabric therefore followed this priority rule:
 
 > Continue developing the parts Kane Fabric controls until third-party platform integration becomes necessary to advance the system.
 
-This is a sequencing decision, not abandonment of physical-edge work.
+WEB-005 completed that reassessment. The later correction that places browser HTTPS on the Wiregate hub and plain HTTP on the ESP32-S3 refines the transport topology without changing the browser's immutable-artifact validation semantics.
 
 ## Edge-platform boundary
 
@@ -70,7 +66,7 @@ It may:
 - render and inspect accepted partition/subscription content;
 - show content/generation identity and verification status;
 - provide navigation, visibility, inspection, and other geographic interaction;
-- operate against any artifact-serving edge that satisfies the browser-facing contract.
+- operate against any artifact-serving path that satisfies the browser-facing contract.
 
 It must not become:
 
@@ -83,23 +79,29 @@ It must not become:
 
 ## Browser-to-edge contract
 
-The application consumes Fabric artifacts through ordinary browser interfaces:
+The application consumes Fabric artifacts through ordinary browser interfaces. In the first-release reference topology the browser never terminates TLS on the ESP32-S3:
 
 ```text
-Web Application
+Web Application / browser
       |
       | HTTPS / fetch / bounded byte ranges
       v
+Wiregate hub
+      |
+      | plain HTTP
+      v
 Fabric artifact source
       |
-      +-- development/software source
       +-- ESP32-S3 reference source
+      +-- development/software source
       +-- other MCU/SBC/software source
 ```
 
-The application must not need to know which implementation is underneath that artifact source.
+The Wiregate hub owns the browser secure origin and browser-trusted certificate. The ESP32-S3 reference source owns plain-HTTP artifact/range serving only. Direct browser-to-ESP32 HTTP is not the reference secure-origin path.
 
-No ESP32-specific JavaScript API, custom device RPC protocol, hardware serial number, management key, or platform identity may be required merely to read and validate Fabric geography.
+The application must not need to know which implementation is underneath the Wiregate/artifact-source boundary.
+
+No ESP32-specific JavaScript API, custom device RPC protocol, hardware serial number, management key, TLS key, or platform identity may be required merely to read and validate Fabric geography.
 
 During development, source locations may be supplied explicitly to the application. That development configuration is not itself geographic identity and must not be embedded into immutable Fabric content identities.
 
@@ -117,7 +119,7 @@ No npm dependency graph is required for the initial application shell. A new thi
 
 ## Work sequence
 
-This section is the single detailed work sequence for the current Web Application priority workstream.
+This section records the Web Application workstream that produced the current reference client:
 
 ```text
 WEB-001  application shell + platform-neutral artifact-source configuration
@@ -127,13 +129,13 @@ WEB-004  explicit verification/error/offline behavior visible to the user
 WEB-005  real-browser acceptance against accepted Kane County artifacts and reassessment of edge requirements
 ```
 
-Do not duplicate this complete list in current status documents. They may name only the active Web item.
+These items are complete for the current MS5 edge-requirements purpose.
 
 ## WEB-001 boundary
 
-WEB-001 establishes a real application surface without pretending to solve the whole UI.
+WEB-001 established a real application surface without pretending to solve the whole UI.
 
-It must provide:
+It provides:
 
 - a browser application page rather than a proof-only page;
 - responsive map/canvas presentation;
@@ -148,14 +150,8 @@ The initial source configuration may use query parameters as a development adapt
 
 ## Acceptance discipline
 
-Repository/static tests can validate application configuration and dependency boundaries.
+Repository/static tests validate application configuration and dependency boundaries.
 
 A claim that the Web Application actually consumes accepted Kane County artifacts requires a real-browser gate in CT102 using accepted MS3/MS4 artifacts. Existing MS3/MS4 proof evidence remains accepted but does not automatically prove new application code.
 
-Do not install ESP-IDF or begin firmware implementation merely to test WEB-001 through WEB-004.
-
-## Resume condition for MS5-006
-
-Resume MS5-006 when Web Application work has produced concrete browser-facing requirements that make physical edge implementation necessary, or when WEB-005 explicitly concludes that the current browser contract is sufficiently stable for hardware implementation.
-
-At that point the ESP32-S3 remains the default reference implementation. The implementation must satisfy the same browser/artifact contract that a software server, another microcontroller, or an SBC could satisfy.
+The corrected MS5 reference topology adds a separate physical proof: the browser will consume through Wiregate HTTPS while the ESP32-S3 serves the immutable artifacts to Wiregate over plain HTTP. That proof belongs to MS5-007 and must not silently pull WireGuard forward from MS5-008.

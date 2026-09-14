@@ -9,8 +9,11 @@ void app_main(void)
     /*
      * MS5-006 build probe only.
      *
-     * Storage mount selection, browser-trusted HTTPS server startup, and
-     * Wi-Fi AP/STA provisioning are deployment/runtime integration work.
+     * Storage mount selection, plain HTTP artifact-server startup, and
+     * network provisioning are deployment/runtime integration work. Browser
+     * HTTPS terminates at the Wiregate hub; the ESP32-S3 reference edge does
+     * not own a browser TLS private key.
+     *
      * The immutable storage and artifact-serving components are linked here
      * so the pinned ESP-IDF build gate compiles the actual reference code.
      */

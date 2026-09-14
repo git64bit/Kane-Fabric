@@ -2,7 +2,7 @@
 
 ## Purpose
 
-The initial Kane Fabric **default** physical edge reference is an ESP32-S3-class device running Kane Fabric firmware built with ESP-IDF and serving released Fabric artifacts to browsers.
+The initial Kane Fabric **default** physical edge reference is an ESP32-S3-class device running Kane Fabric firmware built with ESP-IDF and serving released Fabric artifacts by plain HTTP to the Wiregate hub.
 
 The device is deliberately replaceable infrastructure. It is not geographic authority, an application owner, a partition identity, a subscription identity, or a permanent hardware root of trust.
 
@@ -16,7 +16,9 @@ This document records the default hardware/reference boundary, not a second work
 
 ## Default reference, not platform requirement
 
-ESP32-S3 is the default reference implementation because it is constrained, inexpensive, widely available, and useful for proving that Kane Fabric does not require desktop-class hardware.
+ESP32-S3 is the default reference implementation because it is constrained, inexpensive, widely available, and useful for establishing a real firmware component from the first Kane Fabric release.
+
+Its first-release role is intentionally modest. The point is to establish the firmware source/build/release/provisioning/replacement lifecycle early, before Kane Fabric becomes mature enough that introducing firmware later would require a major architectural retrofit. The ESP32-S3 does not need to absorb browser TLS, certificate management, or every future management function to justify its presence.
 
 It is **not** the definition of a Kane Fabric edge.
 
@@ -43,7 +45,10 @@ released MS3 substrate
 + released MS4 partitions/subscriptions
         ↓
 replaceable edge implementation
-(ESP32-S3 default; other conforming platforms allowed)
+(ESP32-S3 default; plain HTTP)
+        ↓
+Wiregate hub
+(HTTPS termination / browser origin)
         ↓
 browser
 (validation, selective fetch, decompression, composition, rendering)
@@ -87,30 +92,35 @@ subscription generation identity
 logical placement intent
 
 physical platform identity
-TLS/browser-origin identity
 management/WireGuard identity
 optional secure-element identity
 storage location
 network address
+
+Wiregate hub / browser TLS identity
 ```
 
 Changes in the second group do not change the first group.
 
-## Browser serving
+## Artifact serving and browser path
 
-The browser remains the durable client and must validate immutable Fabric artifacts.
+The browser remains the durable client and must validate immutable Fabric artifacts, but the browser does not terminate TLS on the ESP32-S3.
 
-Any edge implementation must support the required HTTP/range behavior and a browser execution context that exposes the required WebCrypto SHA-256 interface. Plain arbitrary LAN HTTP must not be assumed to satisfy browser secure-context requirements.
+The first-release reference path is:
 
-For the ESP32-S3 default reference, the initial local-access direction is an ESP32-hosted AP with deterministic discovery/origin behavior. STA operation may coexist for upstream management. AP+STA shares one radio, so concurrency, channel behavior, memory, and throughput must be measured on the real device before those behaviors are accepted.
+```text
+browser -- HTTPS --> Wiregate hub -- HTTP --> ESP32-S3
+```
 
-These ESP32-specific radio details are reference-implementation concerns, not browser/publication identity.
+The Wiregate hub owns the browser-trusted certificate and HTTPS termination. The ESP32-S3 owns bounded plain-HTTP artifact serving, including the required byte-range behavior. It holds no browser TLS private key and has no browser certificate-renewal responsibility.
 
-The browser-origin/TLS credential proves a serving endpoint role only. It must not expose persistent civic delivery-point identity.
+Direct HTTP access to the ESP32-S3 may be used for diagnostics and device acceptance. It is not the reference browser secure-origin path. An ESP32-hosted AP is not required by the Kane Fabric browser contract.
+
+This separation deliberately keeps the initial firmware role small while retaining a real firmware/storage/serving component that can evolve later.
 
 ## Management connectivity
 
-Management connectivity is independent of local browser serving.
+Management connectivity is independent of the Wiregate-to-edge HTTP serving path.
 
 An edge with valid activated Fabric data should continue to serve it when management/upstream connectivity is unavailable.
 

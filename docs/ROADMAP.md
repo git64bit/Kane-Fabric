@@ -79,6 +79,8 @@ Design authority: `docs/MILESTONE_5_DESIGN.md`
 
 Purpose: map the released MS3/MS4 logical identities onto a real, replaceable ESP32-S3-class edge appliance without making the microcontroller, a network address, a cryptographic key, or an optional secure element part of Fabric logical identity.
 
+The ESP32-S3 is intentionally present in the first release to establish a real firmware lifecycle before Kane Fabric matures around a software-only architecture. Its initial role is deliberately modest: immutable artifact storage, bounded plain-HTTP serving, provisioning/replacement, and a base for later firmware responsibilities.
+
 The security posture is intentionally proportionate to the system:
 
 - edge publication data is public and independently integrity-checked;
@@ -88,13 +90,14 @@ The security posture is intentionally proportionate to the system:
 - a separate secure element may be used by a deployment through an explicit key-provider boundary, but is not required by the Fabric format or device identity model;
 - authoritative signing, CA, promotion, and release keys never reside on the edge;
 - fleet-class firmware/provisioning failures and authority/signing compromise are systemic threats and receive stronger controls than individual physical device loss;
-- TLS, management/WireGuard, optional secure-element, hardware, partition, subscription, and substrate identities remain separate.
+- browser TLS terminates at the Wiregate hub and is not an ESP32 device-local role;
+- Wiregate/browser TLS, management/WireGuard, optional secure-element, hardware, partition, subscription, and substrate identities remain separate.
 
-MS5 owns the reference edge contract and proof: storage/activation, local browser origin, AP/STA behavior, HTTP range serving, ESP-IDF implementation, management-transport feasibility, firmware authenticity/update/recovery, resource evidence, and replacement/reprovisioning.
+MS5 owns the reference edge contract and proof: storage/activation, Wiregate browser HTTPS termination, hub-to-edge plain HTTP and byte-range serving, ESP-IDF implementation, management-transport feasibility, firmware authenticity/update/recovery, resource evidence, and replacement/reprovisioning. An ESP32-hosted AP is not a browser requirement.
 
-WireGuard is a preferred management/synchronization candidate because an ESP32-S3 build has been demonstrated with the maintained external component, but runtime operation, recovery, resource cost, and coexistence with Fabric serving remain to be proven. WireGuard is never a Fabric logical identity.
+WireGuard is a preferred management/synchronization candidate because an ESP32-S3 build has been demonstrated with the maintained external component, but runtime operation, recovery, resource cost, and coexistence with Fabric serving remain to be proven. WireGuard is never a Fabric logical identity and is not a prerequisite for the browser path.
 
-Exit gate: a normal browser consumes the accepted MS3 substrate plus accepted MS4 partition/subscription generations from real ESP32-S3 reference hardware while CT102 is unavailable; replacing or reprovisioning the physical edge does not change those logical identities; local device compromise cannot create geographic authority or release-signing authority.
+Exit gate: a normal browser consumes the accepted MS3 substrate plus accepted MS4 partition/subscription generations through Wiregate HTTPS from real ESP32-S3 reference hardware serving plain HTTP while CT102 is unavailable; replacing or reprovisioning the physical edge does not change those logical identities; local device compromise cannot create geographic authority or release-signing authority.
 
 ## Milestone 6 — Civic geography extension: parcels + delivery points
 
@@ -124,7 +127,7 @@ Purpose: connect replaceable physical edges to county infrastructure for authent
 
 Work includes:
 
-- management identity lifecycle separate from browser/TLS and logical Fabric identities;
+- management identity lifecycle separate from Wiregate/browser TLS and logical Fabric identities;
 - WireGuard runtime evaluation and adoption if it passes MS5 feasibility;
 - provisioning/replacement of management credentials;
 - authenticated synchronization of immutable generations;

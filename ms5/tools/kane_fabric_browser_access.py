@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""MS5 browser secure-origin and local AP/STA access contract."""
+"""MS5 browser secure-origin, Wiregate hub, and edge HTTP access contract."""
 
 from __future__ import annotations
 
@@ -10,11 +10,10 @@ from collections.abc import Mapping
 
 from ms5.tools.common import ContractError, canonical_json_bytes, nonempty_text
 from ms5.tools.kane_fabric_edge import validate_edge_instance
-from ms5.tools.kane_fabric_keys import validate_key_provider
 
 FORMAT = "kane-fabric-browser-access"
-VERSION = 1
-REQUIRED_BROWSER_TRANSPORT = "local-ap-https"
+VERSION = 2
+REQUIRED_BROWSER_TRANSPORT = "wiregate-hub-proxy"
 
 DNS_LABEL_RE = re.compile(r"^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$")
 
@@ -25,19 +24,18 @@ RUNTIME_REQUIREMENTS = {
 }
 
 LOCAL_NETWORK_REQUIREMENTS = {
-    "esp32_hosted_ap_required": True,
-    "deterministic_local_reachability_required": True,
-    "sta_coexistence_supported": True,
-    "ap_sta_shared_radio": True,
-    "ap_sta_channel_coupled": True,
-    "runtime_channel_behavior_measurement_required": True,
-    "runtime_resource_contention_measurement_required": True,
+    "wiregate_hub_required": True,
+    "browser_to_hub_https_required": True,
+    "hub_to_edge_http_required": True,
+    "direct_browser_to_edge_http_is_reference_path": False,
+    "esp32_hosted_ap_required": False,
+    "wireguard_required_for_browser_path": False,
 }
 
 IDENTITY_BOUNDARY = {
-    "tls_identity_scope": "device-serving-only",
-    "origin_is_fabric_identity": False,
-    "tls_identity_is_fabric_identity": False,
+    "browser_origin_scope": "wiregate-hub-serving-only",
+    "hub_tls_identity_is_fabric_identity": False,
+    "edge_http_endpoint_is_fabric_identity": False,
     "origin_contains_persistent_geographic_identity": False,
     "origin_contains_delivery_point_identity": False,
 }
@@ -59,18 +57,6 @@ def _validated_edge(value: Mapping[str, object]) -> None:
         )
 
 
-def _validated_provider(value: Mapping[str, object]) -> str:
-    try:
-        validate_key_provider(value)
-    except ContractError as exc:
-        raise BrowserAccessContractError(f"key provider is invalid: {exc}") from exc
-    keys = value["keys"]
-    for key in keys:
-        if key["role"] == "browser-tls-server":
-            return key["key_ref"]
-    raise BrowserAccessContractError("browser-tls-server key role is missing")
-
-
 def _origin_host(value: object) -> str:
     try:
         host = nonempty_text(value, "origin_host").lower()
@@ -80,7 +66,7 @@ def _origin_host(value: object) -> str:
         raise BrowserAccessContractError("origin_host must contain only a host, not a URL")
     if host == "localhost" or host.endswith(".localhost"):
         raise BrowserAccessContractError(
-            "a physical edge may not rely on the browser localhost secure-context exception"
+            "the Wiregate hub may not rely on the browser localhost secure-context exception"
         )
     try:
         ipaddress.IPv4Address(host)
@@ -97,33 +83,37 @@ def _origin_host(value: object) -> str:
     return host.rstrip(".")
 
 
-def _origin_port(value: object) -> int:
+def _port(value: object, label: str) -> int:
     if isinstance(value, bool) or not isinstance(value, int) or not 1 <= value <= 65535:
-        raise BrowserAccessContractError("origin_port must be an integer from 1 through 65535")
+        raise BrowserAccessContractError(f"{label} must be an integer from 1 through 65535")
     return value
 
 
 def build_browser_access(
     *,
     edge_instance: Mapping[str, object],
-    key_provider: Mapping[str, object],
     origin_host: str,
     origin_port: int = 443,
+    edge_http_port: int = 80,
 ) -> dict[str, object]:
     _validated_edge(edge_instance)
-    tls_key_ref = _validated_provider(key_provider)
 
     body = {
         "bindings": {
             "edge_physical_instance_sha256": edge_instance["physical_instance_sha256"],
-            "key_provider_fingerprint_sha256": key_provider["provider_fingerprint_sha256"],
         },
-        "origin": {
+        "browser_origin": {
             "scheme": "https",
             "host": _origin_host(origin_host),
-            "port": _origin_port(origin_port),
+            "port": _port(origin_port, "origin_port"),
+            "tls_termination": "wiregate-hub",
             "tls_trust_requirement": "browser-trusted-certificate",
-            "tls_key_ref": tls_key_ref,
+        },
+        "edge_transport": {
+            "scheme": "http",
+            "port": _port(edge_http_port, "edge_http_port"),
+            "tls_required": False,
+            "direct_browser_access": False,
         },
         "runtime_requirements": dict(RUNTIME_REQUIREMENTS),
         "local_network_requirements": dict(LOCAL_NETWORK_REQUIREMENTS),
@@ -141,13 +131,13 @@ def validate_browser_access(
     value: Mapping[str, object],
     *,
     edge_instance: Mapping[str, object],
-    key_provider: Mapping[str, object],
 ) -> None:
     expected_keys = {
         "format",
         "version",
         "bindings",
-        "origin",
+        "browser_origin",
+        "edge_transport",
         "runtime_requirements",
         "local_network_requirements",
         "identity_boundary",
@@ -159,36 +149,53 @@ def validate_browser_access(
         raise BrowserAccessContractError("browser access format/version is unsupported")
 
     _validated_edge(edge_instance)
-    tls_key_ref = _validated_provider(key_provider)
 
     expected_bindings = {
         "edge_physical_instance_sha256": edge_instance["physical_instance_sha256"],
-        "key_provider_fingerprint_sha256": key_provider["provider_fingerprint_sha256"],
     }
     if value["bindings"] != expected_bindings:
         raise BrowserAccessContractError(
-            "browser access is not bound to the supplied edge/provider"
+            "browser access is not bound to the supplied physical edge"
         )
 
-    origin = value["origin"]
+    origin = value["browser_origin"]
     if not isinstance(origin, Mapping) or set(origin) != {
         "scheme",
         "host",
         "port",
+        "tls_termination",
         "tls_trust_requirement",
-        "tls_key_ref",
     }:
         raise BrowserAccessContractError("browser origin section is invalid")
     normalized_origin = {
         "scheme": "https",
         "host": _origin_host(origin["host"]),
-        "port": _origin_port(origin["port"]),
+        "port": _port(origin["port"], "browser_origin.port"),
+        "tls_termination": "wiregate-hub",
         "tls_trust_requirement": "browser-trusted-certificate",
-        "tls_key_ref": tls_key_ref,
     }
     if dict(origin) != normalized_origin:
         raise BrowserAccessContractError(
-            "browser origin is not the fixed secure-origin contract"
+            "browser origin is not the fixed Wiregate HTTPS contract"
+        )
+
+    edge_transport = value["edge_transport"]
+    if not isinstance(edge_transport, Mapping) or set(edge_transport) != {
+        "scheme",
+        "port",
+        "tls_required",
+        "direct_browser_access",
+    }:
+        raise BrowserAccessContractError("edge transport section is invalid")
+    normalized_edge_transport = {
+        "scheme": "http",
+        "port": _port(edge_transport["port"], "edge_transport.port"),
+        "tls_required": False,
+        "direct_browser_access": False,
+    }
+    if dict(edge_transport) != normalized_edge_transport:
+        raise BrowserAccessContractError(
+            "physical edge transport must be plain HTTP behind the Wiregate hub"
         )
 
     if value["runtime_requirements"] != RUNTIME_REQUIREMENTS:
@@ -197,7 +204,7 @@ def validate_browser_access(
         )
     if value["local_network_requirements"] != LOCAL_NETWORK_REQUIREMENTS:
         raise BrowserAccessContractError(
-            "local AP/STA requirements are not the fixed MS5 contract"
+            "Wiregate/edge network requirements are not the fixed MS5 contract"
         )
     if value["identity_boundary"] != IDENTITY_BOUNDARY:
         raise BrowserAccessContractError(
@@ -206,7 +213,8 @@ def validate_browser_access(
 
     body = {
         "bindings": expected_bindings,
-        "origin": normalized_origin,
+        "browser_origin": normalized_origin,
+        "edge_transport": normalized_edge_transport,
         "runtime_requirements": dict(RUNTIME_REQUIREMENTS),
         "local_network_requirements": dict(LOCAL_NETWORK_REQUIREMENTS),
         "identity_boundary": dict(IDENTITY_BOUNDARY),

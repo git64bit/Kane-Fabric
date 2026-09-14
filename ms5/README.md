@@ -3,8 +3,43 @@
 This directory implements the active Milestone 5 contract from
 `docs/MILESTONE_5_DESIGN.md`.
 
-The current contract slice covers MS5-001 through MS5-005. It deliberately
-contains no ESP-IDF firmware and performs no irreversible hardware operation.
+MS5-001 through MS5-005 define the physical-edge contracts. MS5-006 now also
+contains the first ESP-IDF reference firmware components under
+`ms5/esp32_reference/`.
+
+## Current reference topology
+
+The first-release browser path is:
+
+```text
+browser -- HTTPS --> Wiregate hub -- HTTP --> ESP32-S3
+```
+
+Browser HTTPS, certificate lifecycle, and browser trust terminate at the
+Wiregate hub. The ESP32-S3 reference firmware serves immutable artifacts by
+plain HTTP and does not require a `browser-tls-server` private key.
+
+WireGuard remains a later management-transport candidate. It is not required
+for the browser path and is not pulled forward merely to make MS5-007 work.
+
+## Why firmware exists in the first release
+
+The ESP32-S3 role is deliberately modest. Its first-release purpose is to make
+firmware a first-class Kane Fabric component now, while the system is still
+being built, rather than forcing a new firmware lifecycle into a mature
+software-only architecture later.
+
+The initial firmware establishes:
+
+- a pinned ESP-IDF/toolchain build;
+- firmware source and release artifacts;
+- immutable physical storage;
+- bounded HTTP/range serving;
+- provisioning and physical replacement;
+- later update/recovery and management extension points.
+
+The microcontroller does not need to own browser TLS, certificate management,
+or every future synchronization function to justify its inclusion.
 
 ## Contract modules
 
@@ -21,19 +56,17 @@ independently promoted. Storage paths outside the logical artifact inventory are
 physical implementation details.
 
 `tools/kane_fabric_keys.py`
-: device-local cryptographic key-provider boundary. The v1 private-key roles are
-limited to browser TLS serving and optional management transport. Software and
-external providers are interchangeable at this contract boundary. Fabric
+: device-local cryptographic key-provider boundary. Browser TLS is not an edge
+private-key role. The current allowed private-key role is optional management
+transport. Software and external providers remain interchangeable. Fabric
 release-signing, geographic-promotion, CA-issuing, and civic-anchor keys are not
 valid edge roles.
 
 `tools/kane_fabric_browser_access.py`
-: browser secure-origin and local AP/STA access contract. The physical edge must
-serve through HTTPS with a browser-trusted certificate, prove a secure browser
-context with callable WebCrypto SHA-256, provide deterministic ESP32-hosted AP
-reachability, preserve the shared-radio/channel measurement obligations of
-AP+STA operation, and keep browser/TLS identity outside Fabric geography and
-delivery-point identity.
+: browser secure-origin and local Wiregate/edge transport contract. The browser
+uses HTTPS to a browser-trusted Wiregate hub; the hub uses plain HTTP to the
+physical edge. The contract explicitly does not require an ESP32-hosted AP or
+WireGuard for the browser path.
 
 `tools/kane_fabric_toolchain.py`
 : MS5-005 firmware SDK/toolchain selection contract. It freezes the reference
@@ -53,23 +86,6 @@ Detailed selection/reproduction plan:
 docs/MS5_TOOLCHAIN_DEPENDENCY_PLAN.md
 ```
 
-## Fixed MS5 security posture
-
-The reference edge is replaceable infrastructure carrying primarily public
-Fabric artifacts and replaceable operational credentials.
-
-- individual physical-device compromise is local and recoverable;
-- fleet-class firmware/provisioning defects are systemic;
-- authority/signing compromise is systemic and outside the edge boundary;
-- no irreversible ESP32 security eFuse operation is an MS5 requirement;
-- no secure element is mandatory;
-- an external secure element may implement the same replaceable key-provider
-  interface;
-- changing ESP32 hardware, storage, TLS identity, management identity, or key
-  provider must not change MS3/MS4 logical identities;
-- a browser origin/TLS identity is a device-serving role, not persistent
-  geographic or delivery-point identity.
-
 ## Tests
 
 Run:
@@ -78,10 +94,7 @@ Run:
 bash ms5/run-tests.sh
 ```
 
-The tests are contract tests. Real ESP32-S3 firmware, browser execution,
-storage, WireGuard, and concurrent-resource proofs occur in later MS5 work
-items. MS5-004 contract tests define the secure-origin/AP+STA obligations; they
-do not substitute for the later real-browser and constrained-resource proofs.
-MS5-005 freezes dependency identities and offline-reproduction obligations; it
-does not claim that the selected SDK/toolchain has yet produced accepted device
-firmware.
+Repository tests validate the contracts and the current MS5-006 implementation
+shape. Real pinned ESP-IDF compilation and physical-device evidence remain
+separate gates and must not begin until the current architecture correction is
+accepted.

@@ -22,17 +22,19 @@ browser contract stable      true
 resume MS5-006               true
 ```
 
-The current UI is sufficient as the reference client/acceptance instrument. UI polish is not required before physical-edge work proceeds.
+Those values remain historical accepted WEB-005 evidence. The later transport-architecture correction described below supersedes the assumption that browser HTTPS terminates on the physical edge; it does not rewrite the historical evidence.
 
-## MS5-006 status
+The current UI is sufficient as the reference client/acceptance instrument. UI polish is not required before physical-edge work proceeds after the architecture correction is accepted.
 
-MS5-006 is active. The repository implementation is accepted at:
+## MS5-006 accepted implementation baseline
+
+The MS5-006 repository implementation remains accepted at:
 
 ```text
 ef6a08f03a94aabd6c15e9c02f6ed9470c65d3ce
 ```
 
-CT102 repository acceptance:
+CT102 repository acceptance for that implementation:
 
 ```text
 MS5 authority guard       valid
@@ -44,26 +46,38 @@ host C compile            SKIPPED
 worktree                  clean
 ```
 
-The single skip is deliberate environment classification: CT102 has no host C compiler. It is not implementation acceptance evidence. The authoritative C compilation gate is the pinned ESP-IDF v6.0.3 ESP32-S3 build and remains pending.
+The single skip is deliberate environment classification: CT102 has no host C compiler. It is not implementation acceptance evidence. The authoritative C compilation gate remains the pinned ESP-IDF v6.0.3 ESP32-S3 build.
 
-The repository implementation preserves the WEB-005 edge contract: immutable read-only artifact storage, ordinary GET, exact closed single-range `206` behavior, bounded direct-from-storage reads, CORS/range headers, no device-specific browser API, and no geographic authority at the edge. The artifact component registers onto a caller-owned HTTP/HTTPS server so MS5-006 does not weaken the already accepted MS5-004 browser-trusted HTTPS requirement.
+The accepted implementation already provides the useful storage/range behavior: immutable read-only artifact storage, ordinary GET, exact closed single-range `206` behavior, bounded direct-from-storage reads, CORS/range headers, no device-specific browser API, and no geographic authority at the edge.
 
-Current remaining MS5-006 evidence:
+## MS5 transport-architecture correction
+
+The earlier MS5-003/MS5-004 assumption that browser HTTPS terminates on the ESP32-S3 is superseded by the corrected reference topology:
 
 ```text
-pinned ESP-IDF v6.0.3 compile    PENDING
-device storage/range evidence    PENDING
+browser -- HTTPS --> Wiregate hub -- HTTP --> ESP32-S3
 ```
 
-Native Linux/macOS/Windows distribution support is not part of the MS5-006 browser-facing contract and remains an independent, undecided product/distribution concern.
+The correction removes `browser-tls-server` from the ESP32 key-provider role set, makes an ESP32-hosted AP non-required, keeps direct ESP32 HTTP as a diagnostic/backend path rather than the browser secure origin, and explicitly prevents WireGuard from becoming a prerequisite for MS5-007. Management/WireGuard remains MS5-008.
 
-## Next execution environment
+The ESP32-S3 remains in the first release primarily to establish a real firmware lifecycle early. Its initial role is intentionally modest: immutable storage, bounded plain-HTTP serving, provisioning/replacement, and a base for later firmware responsibilities.
 
-Resume MS5-006 on the dedicated ESP programming node with direct USB access.
+The architecture correction is a **repository candidate pending CT102 acceptance**. Do not treat the corrected contract tests as accepted until CT102 synchronizes to the candidate GitHub `main` and runs the invalidated MS5 gates.
 
-Do **not** install ESP-IDF in CT102 and do **not** add Proxmox USB passthrough for this workflow. CT102 remains the repository/browser/contract acceptance environment. The ESP programming node owns the reference firmware workflow: verify the pinned ESP-IDF v6.0.3/toolchain, build the ESP32-S3 firmware, flash the physical device, use serial/device diagnostics, and collect the physical storage/range evidence.
+## Hardware execution status
 
-This separation is intentional: build/flash/device iteration stays on the machine that directly owns the ESP hardware, while CT102 independently validates repository and retained evidence where appropriate.
+Physical ESP32-S3 execution is **paused** while the corrected MS5-003/MS5-004 transport and key-role contracts are validated in CT102.
+
+Do **not** install ESP-IDF in CT102 and do **not** add Proxmox USB passthrough. CT102 remains the repository/browser/contract acceptance environment. After the architecture correction is accepted, the dedicated ESP programming node will still own pinned ESP-IDF verification, build, flash, serial/device diagnostics, and physical storage/range evidence.
+
+Current hardware evidence therefore remains:
+
+```text
+pinned ESP-IDF v6.0.3 compile    BLOCKED pending architecture acceptance
+device storage/range evidence    BLOCKED pending architecture acceptance
+```
+
+Native Linux/macOS/Windows distribution support remains an independent, undecided product/distribution concern.
 
 ## Stable operational authorities
 
@@ -78,7 +92,11 @@ authoritative DB    /var/lib/kane-fabric/database/kane-county-fabric.gpkg
 DB SHA256           31e362b696a37f1b9c45ae355c5669511a3128c17a651108a62e20d1cedebd67
 ```
 
-CT102 was last observed clean at `ef6a08f03a94aabd6c15e9c02f6ed9470c65d3ce` after corrected MS5-006 repository acceptance.
+CT102 was last observed clean at `52b9b9746be3fa0c3108677e1a6d6c8bba9c8845` before publication of the transport-architecture correction candidate. The accepted MS5-006 implementation/test HEAD remains `ef6a08f03a94aabd6c15e9c02f6ed9470c65d3ce` until a later material checkpoint records acceptance of the corrected contracts.
+
+## Next safe action
+
+Synchronize clean CT102 from GitHub `main`, verify that the candidate architecture commit is the live checkout, then run only the gates invalidated by the MS5-003/MS5-004 correction: MS5 authority, dependency policy, Python compileall, and the MS5 test suite. Do not begin pinned ESP-IDF or physical-device execution until those repository/contract gates pass and the acceptance checkpoint is recorded.
 
 ## Execution discipline
 

@@ -45,22 +45,34 @@ Responsibilities:
 
 The browser should not need county-wide migration, harvesting, reconciliation, compilation capabilities, or knowledge of the authoritative database schema.
 
+### Wiregate hub
+
+The Wiregate hub owns the browser secure-origin boundary for the first-release reference topology.
+
+Responsibilities may include:
+
+- terminate browser HTTPS using a browser-trusted certificate;
+- expose the browser-facing artifact origin;
+- proxy bounded HTTP requests to the physical edge;
+- remain separate from Fabric geographic/content identity and from the ESP32's management identity.
+
+The Wiregate hub does not become geographic authority merely because it terminates HTTPS.
+
 ### Edge nodes
 
 Edge nodes are low-cost replaceable storage/serving resources.
 
 Responsibilities may include:
 
-- HTTP serving;
-- local Wi-Fi access;
+- plain HTTP serving of immutable artifacts to a local gateway/hub;
 - persistent bulk storage;
 - package/partition/subscription receipt;
 - hash/signature verification;
 - activation of manifest generations;
 - caching, sharding, or replication;
-- optional upstream synchronization through HTTPS, WireGuard, federation, or future transport.
+- optional upstream synchronization through WireGuard, federation, or future transport.
 
-ESP32-S3 is the minimum initial reference implementation, not a permanent platform dependency.
+The first-release ESP32-S3 reference deliberately does **not** terminate browser HTTPS. Browser TLS terminates at the Wiregate hub. ESP32-S3 is the initial firmware reference implementation, not a permanent platform dependency, and its first-release responsibility is intentionally modest so the firmware lifecycle exists from the beginning without forcing future roles into v1.
 
 A physical edge node is never the identity of a subscription or geographic partition. The same logical partition may move between nodes or be replicated without changing application semantics.
 
@@ -209,19 +221,19 @@ Milestone 4 defines:
 Milestone 5 defines:
 
 - actual ESP32-S3/ESP-IDF firmware;
-- ESP-IDF HTTP behavior;
+- ESP-IDF plain-HTTP artifact behavior behind the Wiregate hub;
 - physical storage layout/capacity decisions;
 - partition/subscription placement on devices;
-- Wi-Fi/AP/STA behavior;
+- firmware provisioning/replacement and later network-management behavior;
 - activation/recovery on reference hardware.
 
 This keeps hardware implementation from contaminating logical dataset identity while still making constrained devices a first-class design constraint.
 
 ## 6. Transport boundary
 
-Local browser operation must not depend on an upstream control-plane connection.
+Local browser operation must not depend on an upstream county control-plane connection. In the first-release reference topology, the browser reaches a local Wiregate hub by HTTPS and the hub reaches the ESP32-S3 by plain HTTP.
 
-Possible transports between county Fabric nodes, edge nodes, mirrors, federated peers, and consumers include:
+Possible transports between county Fabric nodes, edge nodes, mirrors, federated peers, gateways, and consumers include:
 
 - HTTPS;
 - byte-range HTTP;
@@ -241,7 +253,7 @@ The design should preserve useful operation through common failures:
 - upstream county source unavailable -> existing accepted geographic state remains valid;
 - candidate validation failure -> accepted database remains active;
 - interrupted promotion -> prior accepted database remains recoverable;
-- Fabric node temporarily unavailable -> edge nodes may continue serving the last activated generations;
+- Fabric node temporarily unavailable -> edge nodes may continue serving the last activated generations through the local Wiregate path;
 - one edge node lost -> partitions/subscriptions may be restored, relocated, or replicated without changing logical identities;
 - a partition's administrative boundary is updated -> a new partition definition/generation is produced rather than silently changing the old definition;
 - one transport unavailable -> another transport may carry the same immutable publication;
@@ -257,6 +269,8 @@ The architecture does not require:
 - treating a town/township partition as its own geographic authority;
 - destructive clipping of cross-boundary objects merely for edge placement;
 - ESP-IDF implementation during Milestone 4;
+- an ESP32-hosted browser access point;
+- browser TLS termination on the ESP32-S3;
 - a native Android application;
 - a native Windows application;
 - PostgreSQL/PostGIS solely for architectural fashion;

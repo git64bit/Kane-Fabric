@@ -41,7 +41,7 @@ class EdgeContractTests(unittest.TestCase):
             platform_class="esp32-s3-class",
             instance_label=label,
             storage_backend="sd-card",
-            browser_transport="local-ap-https",
+            browser_transport="wiregate-hub-proxy",
             management_transport="none",
         )
 
@@ -93,7 +93,7 @@ class StorageContractTests(unittest.TestCase):
             platform_class="esp32-s3-class",
             instance_label="storage-node",
             storage_backend="sd-card",
-            browser_transport="local-ap-https",
+            browser_transport="wiregate-hub-proxy",
             management_transport="none",
         )
 
@@ -234,12 +234,19 @@ class StorageContractTests(unittest.TestCase):
 
 
 class KeyProviderTests(unittest.TestCase):
-    def test_software_provider_valid(self):
+    def test_software_provider_valid_without_private_keys(self):
+        doc = build_key_provider(
+            provider_class="software",
+            provider_instance="nvs-key-store",
+            keys=[],
+        )
+        validate_key_provider(doc)
+
+    def test_management_key_is_allowed(self):
         doc = build_key_provider(
             provider_class="software",
             provider_instance="nvs-key-store",
             keys=[
-                {"role": "browser-tls-server", "key_ref": "tls-key-1"},
                 {"role": "management-transport-client", "key_ref": "wg-key-1"},
             ],
         )
@@ -249,12 +256,12 @@ class KeyProviderTests(unittest.TestCase):
         software = build_key_provider(
             provider_class="software",
             provider_instance="software-store",
-            keys=[{"role": "browser-tls-server", "key_ref": "tls-a"}],
+            keys=[{"role": "management-transport-client", "key_ref": "wg-a"}],
         )
         external = build_key_provider(
             provider_class="external",
             provider_instance="optional-secure-element",
-            keys=[{"role": "browser-tls-server", "key_ref": "slot-1"}],
+            keys=[{"role": "management-transport-client", "key_ref": "slot-1"}],
         )
         validate_key_provider(software)
         validate_key_provider(external)
@@ -263,15 +270,23 @@ class KeyProviderTests(unittest.TestCase):
             external["provider_fingerprint_sha256"],
         )
 
-    def test_private_key_reuse_across_roles_rejected(self):
+    def test_duplicate_private_key_role_rejected(self):
         with self.assertRaises(KeyProviderContractError):
             build_key_provider(
                 provider_class="software",
                 provider_instance="store",
                 keys=[
-                    {"role": "browser-tls-server", "key_ref": "same"},
-                    {"role": "management-transport-client", "key_ref": "same"},
+                    {"role": "management-transport-client", "key_ref": "a"},
+                    {"role": "management-transport-client", "key_ref": "b"},
                 ],
+            )
+
+    def test_browser_tls_key_role_rejected_from_edge(self):
+        with self.assertRaises(KeyProviderContractError):
+            build_key_provider(
+                provider_class="software",
+                provider_instance="store",
+                keys=[{"role": "browser-tls-server", "key_ref": "tls"}],
             )
 
     def test_authority_role_rejected(self):
@@ -287,10 +302,7 @@ class KeyProviderTests(unittest.TestCase):
             build_key_provider(
                 provider_class="external",
                 provider_instance="store",
-                keys=[
-                    {"role": "browser-tls-server", "key_ref": "tls"},
-                    {"role": "civic-anchor", "key_ref": "anchor"},
-                ],
+                keys=[{"role": "civic-anchor", "key_ref": "anchor"}],
             )
 
 

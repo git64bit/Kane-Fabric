@@ -4,9 +4,9 @@
 
 This document records the implementation boundary for the normative `MS5-006` work item in `docs/MILESTONE_5_DESIGN.md`. It does not redefine the Milestone 5 sequence.
 
-WEB-005 closed the browser application workstream for this stage and froze the browser-facing serving contract sufficiently to resume the physical-edge reference implementation.
+WEB-005 closed the browser application workstream for this stage and froze the browser-facing serving contract sufficiently to resume the physical-edge reference implementation. The transport topology has since been corrected so browser HTTPS terminates at the Wiregate hub while the ESP32-S3 serves ordinary HTTP behind it.
 
-The accepted browser requires an edge artifact source that can:
+The accepted browser requires an artifact source path that can:
 
 - serve released immutable MS3/MS4 files through ordinary GET;
 - serve `.kfs` data through exact single closed byte ranges;
@@ -25,7 +25,7 @@ The partition is generated/populated off-device from a verified artifact tree. R
 - never formats the partition;
 - mounts it read-only;
 - exposes standard VFS/POSIX reads to the artifact server;
-- does not encode partition offset, partition size, flash-chip size, hostname, TLS identity, or hardware identity into Fabric content identity.
+- does not encode partition offset, partition size, flash-chip size, hostname, Wiregate TLS identity, or hardware identity into Fabric content identity.
 
 Exact physical partition sizing remains a deployment/build property because the default ESP32-S3 reference must not redefine the platform-neutral browser or Fabric identity contract. A deployment must provide a `fabric`-class partition large enough for the immutable image it chooses to activate.
 
@@ -35,9 +35,9 @@ The physical FAT image itself is not Fabric logical identity. The storage invent
 
 ## HTTP implementation
 
-`ms5/esp32_reference/components/kane_fabric_artifact_server` registers a GET handler on an ESP-IDF HTTP/HTTPS server supplied by the caller.
+`ms5/esp32_reference/components/kane_fabric_artifact_server` registers a GET handler on an ESP-IDF HTTP server supplied by the caller.
 
-The component deliberately does not start Wi-Fi or choose HTTP versus HTTPS. The caller must later attach it to the browser-trusted secure origin required by MS5-004.
+The component deliberately does not start networking. In the Kane Fabric reference topology it is attached to a **plain HTTP** server on the ESP32-S3. Browser HTTPS and certificate trust terminate at the Wiregate hub under the corrected MS5-004 contract. Direct HTTP probes against the ESP32 remain valid device diagnostics, but direct browser HTTP is not the reference secure-origin path.
 
 The handler:
 
@@ -72,9 +72,9 @@ Repository acceptance proves:
 
 - existing MS5 authority/dependency checks remain valid;
 - all existing MS5 tests remain accepted;
-- the pure C HTTP/range core compiles and passes on CT102;
+- the pure C HTTP/range core compiles where a host C compiler is available;
 - the immutable-image staging tests pass;
-- the ESP32 component source retains the fixed WEB-005 serving invariants.
+- the ESP32 component source retains the fixed serving invariants.
 
 This is not yet the final MS5-006 acceptance.
 
@@ -86,4 +86,4 @@ Final MS5-006 acceptance additionally requires:
 - evidence that the served bytes match the accepted artifacts;
 - no geographic/database mutation or promotion.
 
-Real-browser consumption from the physical edge remains the next normative item after MS5-006.
+Real-browser consumption through the Wiregate hub from the physical ESP32-S3 HTTP edge remains the next normative item after MS5-006. That browser proof must not make WireGuard a prerequisite; management/WireGuard remains MS5-008.

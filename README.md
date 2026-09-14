@@ -23,6 +23,8 @@ Current milestone:
 
 Milestones 1–4 are released. MS5 maps the accepted MS3/MS4 logical contracts onto a real, replaceable ESP32-S3-class edge without making hardware identity, network identity, cryptographic keys, or storage location part of Fabric logical identity.
 
+The ESP32-S3 is intentionally present in the first release to establish Kane Fabric's firmware lifecycle early. Its initial role is modest: immutable artifact storage, bounded plain-HTTP serving, physical provisioning/replacement, and a foundation for later edge responsibilities. Browser HTTPS terminates at the Wiregate hub rather than on the ESP32-S3.
+
 ## Released foundation
 
 ### Milestone 1 — Kane County reconstruction proof
@@ -83,7 +85,8 @@ Instead:
 - firmware/update authenticity protects normal fleet operation;
 - software-held replaceable device keys are allowed where appropriate;
 - an external secure element is optional through a replaceable key-provider boundary;
-- TLS, management/WireGuard, hardware, secure-element, substrate, partition, and subscription identities remain separate.
+- browser TLS terminates at the Wiregate hub; the ESP32-S3 reference edge serves plain HTTP and holds no browser TLS private key;
+- Wiregate/browser TLS, management/WireGuard, hardware, secure-element, substrate, partition, and subscription identities remain separate.
 
 WireGuard is a preferred management candidate under evaluation. Compile feasibility has been observed externally; runtime/resource acceptance on ESP32-S3 remains MS5 work.
 
@@ -123,7 +126,10 @@ accepted geographic state
 MS3 substrate + MS4 partitions/subscriptions
         ↓
 replaceable edge nodes
-(storage, serving, synchronization)
+(storage, plain HTTP serving, firmware lifecycle)
+        ↓
+Wiregate hub
+(HTTPS termination / browser origin)
         ↓
 browser
 (validation, selective fetch, decompression, composition, rendering)

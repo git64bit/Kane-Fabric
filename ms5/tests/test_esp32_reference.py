@@ -81,6 +81,12 @@ class Esp32ReferenceTests(unittest.TestCase):
         self.assertNotIn("0x", cmake)
         self.assertIn("deployment/runtime integration work", app)
 
+    def test_reference_app_keeps_browser_tls_off_the_esp32(self):
+        app = (REFERENCE / "main/app_main.c").read_text()
+        self.assertIn("plain HTTP artifact-server startup", app)
+        self.assertIn("HTTPS terminates at the Wiregate hub", app)
+        self.assertNotIn("browser-trusted HTTPS server startup", app)
+
     def test_edge_image_staging_preserves_verified_artifacts(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
