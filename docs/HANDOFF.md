@@ -57,6 +57,14 @@ device storage/range evidence    PENDING
 
 Native Linux/macOS/Windows distribution support is not part of the MS5-006 browser-facing contract and remains an independent, undecided product/distribution concern.
 
+## Next execution environment
+
+Resume MS5-006 on the dedicated ESP programming node with direct USB access.
+
+Do **not** install ESP-IDF in CT102 and do **not** add Proxmox USB passthrough for this workflow. CT102 remains the repository/browser/contract acceptance environment. The ESP programming node owns the reference firmware workflow: verify the pinned ESP-IDF v6.0.3/toolchain, build the ESP32-S3 firmware, flash the physical device, use serial/device diagnostics, and collect the physical storage/range evidence.
+
+This separation is intentional: build/flash/device iteration stays on the machine that directly owns the ESP hardware, while CT102 independently validates repository and retained evidence where appropriate.
+
 ## Stable operational authorities
 
 ```text
@@ -74,4 +82,4 @@ CT102 was last observed clean at `ef6a08f03a94aabd6c15e9c02f6ed9470c65d3ce` afte
 
 ## Execution discipline
 
-Work directly on `main` unless the operator changes policy. CT102 is the real acceptance environment; the Assistant sandbox is not acceptance evidence. Do not rerun accepted gates without an invalidating change. Large generated/device/browser evidence stays under `/var/lib/kane-fabric`, not Git. Long srv-b/CT102 procedures must be delivered as standalone script files with only a short relay command and compact successful output in chat.
+Work directly on `main` unless the operator changes policy. CT102 is the repository/browser/contract acceptance environment; the dedicated ESP programming node is the MS5 reference firmware build/flash/device-test environment. The Assistant sandbox is not acceptance evidence. Do not rerun accepted gates without an invalidating change. Large generated/device/browser evidence stays under `/var/lib/kane-fabric`, not Git. Long manual acceptance procedures must be delivered as standalone script files with only a short relay command and compact successful output in chat.
