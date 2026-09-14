@@ -106,7 +106,7 @@
       "status": "released",
       "gate_steps_complete": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
     },
-    "next_work_item": "Accept the bounded MS5 contract correction on CT102, then begin MS5-004 browser secure-origin plus local AP/STA access contract"
+    "next_work_item": "MS5-004 browser secure-origin plus local AP/STA access contract (blocked until the bounded MS5-001/002 correction is accepted on CT102)"
   },
   "forward_roadmap": {
     "ms6": "Civic geography extension: parcels + delivery points",
