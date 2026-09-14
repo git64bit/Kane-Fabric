@@ -29,16 +29,16 @@
       "branch": "main",
       "upstream": "origin/main",
       "fetch_refspec": "+refs/heads/*:refs/remotes/origin/*",
-      "last_observed_head": "c43814961cb14d6623ef92e40d6cf4d72f8ef37e",
+      "last_observed_head": "58faa54638b60c50a688d4de3f23d211917cd525",
       "last_observed_worktree": "clean",
-      "note": "CT102 accepted the residual MS5 transport reconciliation on 2026-09-14. Exact stale-assumption guard and corrected broad drift audit passed; Python compileall passed; MS5 tests were 48 passed with one expected host-compiler environment skip."
+      "note": "CT102 synchronized the completed MS5 transport-reconciliation closeout on 2026-09-14. The next repository change freezes the ESP32-S3 v1 firmware responsibility boundary before physical execution resumes."
     },
     "ms5_006_hardware_execution": {
       "environment": "dedicated ESP programming node with direct USB access",
       "ct102_installs_esp_idf": false,
       "ct102_uses_usb_passthrough": false,
       "direct_usb_required_for_reference_workflow": true,
-      "status": "reconciliation-complete-awaiting-operator-resume"
+      "status": "paused-pending-firmware-v1-role-freeze-acceptance"
     }
   },
   "operational_state": {
@@ -97,7 +97,7 @@
   "milestone": {
     "current": 5,
     "name": "Reference Physical Edge Architecture",
-    "phase": "ms5-reconciliation-complete-awaiting-hardware-resume",
+    "phase": "ms5-firmware-v1-role-freeze-candidate-pending-ct102-acceptance",
     "design": "docs/MILESTONE_5_DESIGN.md",
     "reference": "docs/ESP32_EDGE_REFERENCE.md",
     "accepted_work": {
@@ -115,10 +115,11 @@
       "architecture_correction_status": "accepted-in-ct102",
       "architecture_correction": "browser-https-at-wiregate-hub__esp32-plain-http",
       "residual_reconciliation_status": "accepted-in-ct102",
-      "pinned_esp_idf_compile": "pending",
-      "device_storage_range_evidence": "pending"
+      "firmware_v1_role_freeze_status": "published-candidate-pending-ct102-acceptance",
+      "pinned_esp_idf_compile": "pending-after-firmware-role-freeze",
+      "device_storage_range_evidence": "pending-after-firmware-role-freeze"
     },
-    "next_work_item": "Await operator decision to resume MS5-006 physical execution; when resumed, verify the pinned ESP-IDF v6.0.3/toolchain on the dedicated ESP programming node before build/flash/device evidence."
+    "next_work_item": "Accept the frozen ESP32-S3 v1 firmware responsibility profile in CT102 before resuming MS5-006 physical execution."
   },
   "priority_workstream": {
     "name": "Kane Fabric Web Application",
@@ -148,5 +149,5 @@
       "mail aliases or economic/application semantics"
     ]
   },
-  "next_safe_action": "Repository reconciliation is complete. The accepted topology is browser HTTPS to the Wiregate hub and plain HTTP from Wiregate to ESP32-S3; WireGuard remains a later management-transport gate. Await the operator's decision to resume MS5-006 physical execution. When resumed, use the dedicated ESP programming node, verify the exact pinned ESP-IDF v6.0.3/toolchain first, and do not install ESP-IDF or add USB passthrough in CT102."
+  "next_safe_action": "Synchronize clean CT102 to the published ESP32-S3 v1 firmware-role candidate and run the invalidated repository gates: Python compileall, MS5 work-sequence authority, and the MS5 test suite. Do not begin ESP-IDF build/flash/device work until this role freeze is accepted and checkpointed. CT102 remains outside the firmware build/USB path."
 }

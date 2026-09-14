@@ -43,6 +43,79 @@ The first-release ESP32-S3 role is intentionally modest:
 
 HTTPS termination, browser certificate lifecycle, and browser secure-origin trust belong to the Wiregate hub, not to the ESP32-S3 reference firmware.
 
+## Firmware v1 responsibility freeze
+
+The initial ESP32-S3 firmware is a **small deterministic Fabric artifact appliance**. This section freezes its first-release responsibility boundary so later implementation work does not promote an experiment into a required feature merely because ESP-IDF can support it.
+
+The executable mirror of this boundary is `ms5/tools/kane_fabric_firmware_v1.py`. This document remains the normative authority.
+
+### Core runtime responsibilities
+
+The v1 reference firmware must:
+
+- expose firmware build identity and operational state through serial diagnostics;
+- attach as a client to a deployment-provided local IP network sufficient for Wiregate-to-edge HTTP;
+- mount prepared Fabric artifact storage read-only;
+- verify the active artifact inventory before serving it;
+- serve immutable Fabric artifacts by plain HTTP;
+- implement the exact closed byte-range behavior required by the accepted Kane Fabric HTTP contract;
+- fail closed rather than serve an invalid active generation;
+- continue serving the last valid activated generation when management/upstream connectivity is unavailable.
+
+The exact network-provisioning mechanism is an implementation concern. A browser-facing ESP32 access point is not required. A management tunnel is not required for local serving.
+
+### Required lifecycle responsibilities
+
+V1 also establishes a durable firmware lifecycle. These are project responsibilities even when they are not part of the steady-state HTTP serving loop:
+
+- firmware source, build inputs, host-testable logic, build/flash/acceptance scripts, and documentation are tracked in the Kane Fabric repository;
+- the tracked source builds with the exact pinned ESP-IDF/toolchain selection;
+- the resulting firmware artifact has an identifiable build/version identity;
+- a device can be flashed, reprovisioned, and replaced reproducibly;
+- normal firmware authenticity, update, rollback, and recovery behavior is proved before MS5 closeout;
+- physical replacement preserves Fabric logical identities;
+- device acceptance evidence is collected from the dedicated ESP programming node.
+
+Generated build directories, flashed binaries, serial captures, and large physical-device evidence are not repository source merely because the firmware source is. They stay outside Git unless a later release process explicitly publishes selected binaries as release artifacts.
+
+### Explicitly not v1 firmware responsibilities
+
+The ESP32-S3 v1 reference firmware does not own:
+
+- browser HTTPS termination;
+- browser certificate lifecycle or browser authentication;
+- an ESP32-hosted browser access point;
+- Fabric geographic authority or Fabric release-signing authority;
+- county-database mutation, official source acquisition, or candidate promotion;
+- browser rendering or GIS processing;
+- application membership/person identity;
+- fleet orchestration.
+
+These exclusions are deliberate architecture boundaries, not unfinished firmware features.
+
+### Candidate-only later capabilities
+
+The following capabilities may be measured or prototyped during later MS5 work but are **not v1 firmware prerequisites**:
+
+- WireGuard management transport;
+- managed artifact synchronization;
+- automatic update transport;
+- external secure-element use;
+- remote fleet telemetry;
+- richer network discovery.
+
+A later gate may retain one of these capabilities, reject it, or defer it. In particular, **MS5-008 may conclude that WireGuard is not retained on the ESP32-S3** without making the v1 firmware incomplete. The browser path and the core artifact appliance must remain valid either way.
+
+### Acceptance layers
+
+Firmware acceptance is split deliberately by environment and scope.
+
+**Repository acceptance in CT102** proves that the role contract, source, host-testable logic, work-sequence authority, and dependency/build-selection records are internally consistent. CT102 does not build or flash ESP32 firmware and does not need ESP-IDF or USB passthrough.
+
+**Device acceptance on the dedicated ESP programming node** proves the exact pinned build, flash/boot behavior, serial firmware identity, read-only storage mount, active-inventory verification, real HTTP GET/range behavior, and fail-closed response to invalid active state.
+
+**MS5 integration acceptance** later proves the Wiregate browser path, continued serving during management loss, firmware update/rollback/recovery, physical replacement/reprovisioning, and constrained-resource coexistence. Candidate-only capabilities do not become core firmware requirements merely because an integration gate measures them.
+
 ## Fixed boundaries
 
 MS5 must preserve these constraints:
@@ -174,7 +247,7 @@ The Wiregate hub origin/TLS identity is a serving role only. It must not contain
 
 Management/synchronization transport is distinct from browser serving.
 
-WireGuard is the preferred candidate for evaluation because the maintained external ESP32 implementation has been shown to compile for ESP32-S3 with a current ESP-IDF development environment. That is feasibility evidence, not an accepted Kane Fabric dependency.
+WireGuard is the preferred candidate for evaluation because the maintained external ESP32 implementation has been shown to compile for ESP32-S3 with a current ESP-IDF development environment. That is feasibility evidence, not an accepted Kane Fabric dependency and not a v1 firmware requirement.
 
 MS5 must establish runtime facts before adoption:
 
@@ -186,9 +259,11 @@ MS5 must establish runtime facts before adoption:
 - flash/RAM/task/socket/CPU cost;
 - coexistence with edge networking, storage, plain-HTTP artifact serving, and update operations.
 
-The reference topology may be hub-and-spoke with one WireGuard peer per edge. A peer public key or VPN address is physical-node management configuration, never a Fabric logical identity.
+The result of MS5-008 may be **retain**, **reject**, or **defer**. Rejecting or deferring WireGuard does not invalidate the frozen v1 firmware role.
 
-Failure of WireGuard must not invalidate already activated public Fabric artifacts. A disconnected edge should continue serving the last valid local publication by HTTP to the local Wiregate/browser path when that local path remains available.
+The reference topology may be hub-and-spoke with one WireGuard peer per edge if WireGuard is retained. A peer public key or VPN address is physical-node management configuration, never a Fabric logical identity.
+
+Failure of WireGuard, if present, must not invalidate already activated public Fabric artifacts. A disconnected edge should continue serving the last valid local publication by HTTP to the local Wiregate/browser path when that local path remains available.
 
 ## Dependency boundary
 
@@ -224,15 +299,21 @@ Replacement therefore proves the MS4 rule in real hardware: physical placement a
 
 This section is the single authoritative definition of the detailed Milestone 5 work sequence. Current status documents may name the active item but must not maintain a second complete copy.
 
+The sequence contains three different kinds of work and they must not be conflated:
+
+- **core firmware implementation:** MS5-006 establishes the frozen v1 artifact appliance;
+- **required lifecycle/integration proof:** MS5-007, MS5-009, MS5-010, and MS5-011 prove the browser path, update/recovery, replacement, and constrained operation without broadening the v1 feature set;
+- **candidate capability evaluation:** MS5-008 evaluates management transport and may retain, reject, or defer WireGuard.
+
 ```text
 MS5-001  physical-edge threat model, trust boundary, and replaceability contract
 MS5-002  storage inventory, verification, activation, rollback, and recovery contract
 MS5-003  device cryptographic role separation and replaceable key-provider boundary
 MS5-004  Wiregate-terminated browser secure-origin plus hub-to-edge HTTP contract
 MS5-005  ESP-IDF/toolchain and retained dependency selection plan
-MS5-006  ESP32-S3 immutable artifact storage and HTTP byte-range implementation
+MS5-006  ESP32-S3 v1 artifact appliance: immutable storage, verification, diagnostics, and HTTP byte-range implementation
 MS5-007  real browser consumption through Wiregate of accepted MS3/MS4 generations served by ESP32-S3 HTTP
-MS5-008  management transport and WireGuard runtime/resource feasibility proof
+MS5-008  candidate management transport and WireGuard runtime/resource feasibility proof; retain, reject, or defer
 MS5-009  firmware authenticity, update, rollback, and recovery proof
 MS5-010  physical device replacement/reprovisioning identity-preservation proof
 MS5-011  constrained-resource and concurrent-workload acceptance evidence
@@ -243,13 +324,15 @@ MS5-012  release evidence and milestone closeout
 
 Milestone 5 is complete when all of the following are demonstrated on reference ESP32-S3-class hardware:
 
-1. a normal browser consumes the accepted MS3 substrate and accepted MS4 partition/subscription generations through Wiregate HTTPS while the ESP32-S3 serves them to the hub by plain HTTP and CT102 is unavailable;
-2. the browser validates the same immutable logical identities established by MS3/MS4;
-3. storage activation and firmware/update failure do not expose a mixed or silently corrupted generation and have a tested recovery path;
-4. the edge remains useful for already activated public data when upstream management connectivity is unavailable;
-5. physical replacement/reprovisioning can change every device-local identity while retaining the same Fabric logical content/placement identities;
-6. management transport feasibility is measured rather than assumed, with WireGuard adopted only if the runtime/resource proof succeeds;
-7. no irreversible ESP32 eFuse operation is required to satisfy the Kane Fabric reference-edge contract;
-8. optional external secure-element use remains substitutable and does not alter Fabric logical identities.
+1. the firmware source and build inputs are tracked in the Kane Fabric repository, the exact pinned ESP-IDF/toolchain builds successfully on the dedicated ESP programming node, and the flashed device exposes its firmware build identity through diagnostics;
+2. the device mounts prepared artifact storage read-only, verifies active inventory before serving, serves ordinary GET plus the accepted exact closed byte-range behavior, and fails closed on invalid active state;
+3. a normal browser consumes the accepted MS3 substrate and accepted MS4 partition/subscription generations through Wiregate HTTPS while the ESP32-S3 serves them to the hub by plain HTTP and CT102 is unavailable;
+4. the browser validates the same immutable logical identities established by MS3/MS4;
+5. storage activation and firmware/update failure do not expose a mixed or silently corrupted generation and have a tested recovery path;
+6. the edge remains useful for already activated public data when upstream management connectivity is unavailable;
+7. physical replacement/reprovisioning can change every device-local identity while retaining the same Fabric logical content/placement identities;
+8. management transport feasibility is measured rather than assumed, with WireGuard retained only if the runtime/resource proof justifies it; rejection or deferral is a valid MS5-008 outcome;
+9. no irreversible ESP32 eFuse operation is required to satisfy the Kane Fabric reference-edge contract;
+10. optional external secure-element use remains substitutable and does not alter Fabric logical identities.
 
 The output of MS5 becomes the physical-node foundation for later managed synchronization and multi-node distribution.
