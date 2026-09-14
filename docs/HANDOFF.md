@@ -125,13 +125,31 @@ MS5 contract tests: 28 passed, 0 failed
 worktree: clean
 ```
 
-This checkpoint is accepted. Do not rerun or reopen MS5-001..004 merely because documentation advances after this accepted head. Rerun only if an implementation, dependency, environment change, or contradictory live observation invalidates an accepted gate.
+MS5-005 froze the reference firmware SDK/toolchain and retained-dependency plan. The selected SDK is ESP-IDF v6.0.3 at commit `76f5dedd9950a3012fee8fb7d5586df21fc67802`, with the submodule-complete release asset pinned by SHA-256. The ESP32-S3 Xtensa compiler is pinned by the selected ESP-IDF tool manifest. WireGuard remains explicitly unretained until MS5-008 runtime/resource acceptance.
+
+MS5-005 was accepted on CT102 on 2026-09-14 at:
+
+```text
+aed812df8c5e37bb1843e022d7a7813dc7e8e862
+```
+
+Acceptance evidence:
+
+```text
+MS5 work-sequence authority guard: valid
+dependency policy: PASS
+python compileall: PASS
+MS5 contract tests: 36 passed, 0 failed
+worktree: clean
+```
+
+This checkpoint is accepted. Do not rerun or reopen MS5-001..005 merely because documentation advances after this accepted head. Rerun only if an implementation, dependency, environment change, or contradictory live observation invalidates an accepted gate.
 
 The next normative work item is now:
 
 ```text
-MS5-005
-ESP-IDF/toolchain and retained dependency selection plan
+MS5-006
+ESP32-S3 immutable artifact storage and HTTP byte-range implementation
 ```
 
 ## 4. Approved physical-edge security position
@@ -152,7 +170,7 @@ These points are settled unless explicitly changed:
 
 WireGuard is a preferred management/synchronization candidate, not an accepted Fabric dependency and not logical identity.
 
-External feasibility work established compile-level support on ESP32-S3. Runtime tunnel behavior remains an MS5 proof obligation in MS5-008: real handshake, routed management traffic, NAT/persistent keepalive, Wi-Fi interruption/recovery, repeated reconnect, resource cost, and coexistence with AP/STA, storage, browser serving, and update operations.
+External feasibility work established compile-level support on ESP32-S3. Runtime tunnel behavior remains an MS5 proof obligation in MS5-008: real handshake, routed management traffic, NAT/persistent keepalive, Wi-Fi interruption and reconnect behavior, repeated disconnect/reconnect, flash/RAM/task/socket/CPU cost, and coexistence with AP/STA, storage, browser serving, and update operations.
 
 The existing `wg-pk` estate hub may be used as controlled feasibility infrastructure. It is not automatically the production fleet topology. Failure of management connectivity must not invalidate already activated public Fabric artifacts.
 
@@ -236,7 +254,7 @@ SHA256 31e362b696a37f1b9c45ae355c5669511a3128c17a651108a62e20d1cedebd67
 
 GitHub `main` is software/documentation authority. CT102 is the real compiler/runtime/acceptance environment. An Assistant sandbox is not CT102.
 
-CT102 was last observed clean at `07f4f71f51b538bc1fc5d446691e0bbcfc03cd9c`, where MS5-004 and the previously accepted MS5 contracts passed the 28-test acceptance gate. GitHub `main` may be ahead by documentation-only material-checkpoint commits; that alone does not invalidate the accepted implementation gate.
+CT102 was last observed clean at `aed812df8c5e37bb1843e022d7a7813dc7e8e862`, where MS5-005 and the previously accepted MS5 contracts passed the 36-test acceptance gate. GitHub `main` may be ahead by documentation-only material-checkpoint commits; that alone does not invalidate the accepted implementation gate.
 
 ## 9. Development discipline
 
@@ -249,19 +267,19 @@ CT102 was last observed clean at `07f4f71f51b538bc1fc5d446691e0bbcfc03cd9c`, whe
 - Do not burn ESP32 eFuses as a Kane Fabric reference-edge requirement.
 - Do not make WireGuard, TLS, secure-element, device, person, or membership identity into Fabric logical identity.
 - Treat `docs/CONSUMER_INTERFACE_GATES.md` as a gate register, not a backlog that Kane Fabric owns.
-- Do not reopen MS5-001..004 unless a later implementation, dependency, environment change, or contradictory observation invalidates an accepted contract.
+- Do not reopen MS5-001..005 unless a later implementation, dependency, environment change, or contradictory observation invalidates an accepted contract.
 
 ## 10. Next safe action
 
 Proceed with:
 
 ```text
-MS5-005
-ESP-IDF/toolchain and retained dependency selection plan
+MS5-006
+ESP32-S3 immutable artifact storage and HTTP byte-range implementation
 ```
 
-Use `docs/MILESTONE_5_DESIGN.md` as the sole detailed work-sequence authority. MS5-005 must freeze a reproducible ESP-IDF/toolchain and retained-dependency plan with exact immutable versions, license review, and offline/vendored reproduction expectations. The earlier WireGuard compile observation remains feasibility evidence only and must not be converted into an accepted dependency without its later runtime/resource proof.
+Use `docs/MILESTONE_5_DESIGN.md` as the sole detailed work-sequence authority. MS5-006 must implement bounded immutable artifact access and HTTP single-byte-range behavior for the ESP32-S3 reference edge while preserving the accepted storage/activation identity contracts and browser-facing publication semantics.
 
-Do not rerun the accepted MS5-001..004 gate merely because this handoff/current-state checkpoint advances documentation beyond the CT102 acceptance head.
+Do not rerun the accepted MS5-001..005 gate merely because this handoff/current-state checkpoint advances documentation beyond the CT102 acceptance head.
 
-After MS5-005, continue in the normative order defined only by `docs/MILESTONE_5_DESIGN.md`.
+After MS5-006, continue in the normative order defined only by `docs/MILESTONE_5_DESIGN.md`.
