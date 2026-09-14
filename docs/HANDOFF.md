@@ -14,14 +14,7 @@ Historical release records remain evidence. They are not current implementation 
 
 Milestones 0–4 are complete.
 
-Milestone 4 was released on 2026-08-22 and proved:
-
-- deterministic logical geographic partition identity;
-- independently versioned Condo and Industry proof subscriptions;
-- browser composition of the accepted MS3 substrate plus both subscriptions;
-- cross-boundary logical-object identity;
-- physical-placement independence;
-- unchanged accepted geographic authority.
+Milestone 4 was released on 2026-08-22 and proved deterministic logical geographic partition identity, independently versioned Condo and Industry proof subscriptions, browser composition of the accepted MS3 substrate plus both subscriptions, cross-boundary logical-object identity, physical-placement independence, and unchanged accepted geographic authority.
 
 Accepted MS4 implementation head:
 
@@ -35,17 +28,13 @@ MS4 release proof:
 3235cd4f7b7041138fe05708dbb077c07dc3ce8b8ec7a390141489460ac40634
 ```
 
-Historical MS4 design authority:
-
-```text
-docs/MILESTONE_4_DESIGN.md
-```
-
 Accepted MS3 substrate identity:
 
 ```text
 fe417a02222669d9b81c72dc717ab0178b54b1c13cd0d3e8510c6b4f25224bcc
 ```
+
+Do not reopen accepted MS3/MS4 gates without an invalidating change or contradiction.
 
 ## 2. Active milestone
 
@@ -73,7 +62,7 @@ docs/CONSUMER_INTERFACE_GATES.md
 
 Do not recreate a second complete MS5 work sequence in another current document.
 
-## 3. Accepted MS5 work
+## 3. Accepted MS5 checkpoint and pending bounded correction
 
 MS5-001 through MS5-003 were accepted on CT102 on 2026-09-12 at:
 
@@ -81,7 +70,7 @@ MS5-001 through MS5-003 were accepted on CT102 on 2026-09-12 at:
 4b9b9d3cbaaff08c90a63a7937fc2ac4efeb6dee
 ```
 
-Acceptance evidence from CT102:
+Acceptance evidence:
 
 ```text
 python compileall: PASS
@@ -90,25 +79,31 @@ worktree: clean
 MS5 authority guard: valid
 ```
 
-The accepted contracts establish:
+The accepted contracts establish replaceable physical edges, no edge-held Fabric authority, no required irreversible ESP32 eFuse operation, optional/substitutable external key providers, storage identity independent of storage location, whole-inventory activation/rollback/recovery, bounded streaming verification, and separate replaceable TLS/management key roles.
 
-- a physical edge is replaceable and cannot acquire Fabric authority;
-- no irreversible ESP32 eFuse security operation is required;
-- an external secure element is optional rather than the definition of a node;
-- logical placement identity survives physical replacement;
-- storage inventory identity is independent of storage location;
-- activation selects a fully verified inventory rather than exposing mixed generations;
-- rollback/recovery retain a previously verified generation;
-- artifact hashing/verification supports bounded streaming;
-- TLS and management keys are distinct replaceable device-local roles;
-- authority/release-signing and civic-anchor keys are rejected from the edge-device key contract;
-- software and external key providers are substitutable.
+A handoff review then identified one real cross-contract gap: the edge descriptor and storage inventory each carried a `logical_placement_sha256`, but activation did not enforce equality between them. It also identified an undefined activation state in which rollback existed while no active inventory existed.
 
-Current work item:
+A bounded correction is now published at implementation head:
 
 ```text
-MS5-004
-browser secure-origin plus local AP/STA access contract
+025b55df42f3cc9d3613a2ae845952ce2bc033c7
+```
+
+The correction:
+
+- requires activation to receive and validate the actual edge descriptor;
+- rejects a candidate inventory whose logical placement differs from the edge logical placement;
+- rejects activation state with rollback inventory but no active inventory;
+- adds regression tests for both cases.
+
+This is a join/enforcement correction to the existing MS5-001/002 contracts. It does **not** redesign MS5, MS3/MS4 identity, or the roadmap.
+
+**The correction has not yet been accepted on CT102.** Therefore do not begin MS5-004 until the bounded correction passes CT102 acceptance.
+
+Expected MS5 contract-test count after the correction:
+
+```text
+20 passed, 0 failed
 ```
 
 ## 4. Approved physical-edge security position
@@ -129,97 +124,51 @@ These points are settled unless explicitly changed:
 
 WireGuard is a preferred management/synchronization candidate, not an accepted Fabric dependency and not logical identity.
 
-External feasibility work established compile-level support on ESP32-S3. Runtime tunnel behavior remains an MS5 proof obligation.
+External feasibility work established compile-level support on ESP32-S3. Runtime tunnel behavior remains an MS5 proof obligation in MS5-008: real handshake, routed management traffic, NAT/persistent keepalive, Wi-Fi interruption/recovery, repeated reconnect, resource cost, and coexistence with AP/STA, storage, browser serving, and update operations.
 
-MS5-008 must measure:
+The existing `wg-pk` estate hub may be used as controlled feasibility infrastructure. It is not automatically the production fleet topology. Failure of management connectivity must not invalidate already activated public Fabric artifacts.
 
-- real handshake;
-- routed management traffic;
-- NAT/persistent keepalive;
-- Wi-Fi interruption/recovery;
-- repeated reconnect;
-- memory/flash/task/socket/CPU cost;
-- coexistence with AP/STA, storage, browser serving, and update operations.
+## 6. Consumer pressure and Mechanical Compiler
 
-The existing `wg-pk` estate hub may be used as controlled feasibility infrastructure. It is **not** automatically the production fleet topology. Peer lifecycle, scale, ownership, and failure isolation belong to the managed-edge architecture.
+Mechanical Compiler is currently a relying party behind its own authorization boundary. It intentionally does not want building geography, membership groups, membership-roll contents, or eligibility rules in the application.
 
-Failure of management connectivity must not invalidate already activated public Fabric artifacts.
-
-## 6. Consumer pressure and the Mechanical Compiler
-
-A current Mechanical Compiler identity contract was reviewed on 2026-09-12.
-
-Its useful architectural shape is:
+That reinforces the Fabric boundary:
 
 ```text
-membership / identity system
+accepted Fabric geography
         ↓
-Mechanical Compiler CT101 reverse proxy
-        ↓ authorization verdict + minimum identity metadata
-Mechanical Compiler application
+consumer-owned membership / eligibility system
+        ↓
+minimal authorization result
+        ↓
+Mechanical Compiler
 ```
 
-The Mechanical Compiler intentionally does **not** want to know:
+The current Mechanical Compiler contract creates no direct Kane Fabric authentication API requirement.
 
-- building geography;
-- membership levels/groups;
-- membership roll contents;
-- eligibility rules.
-
-That reinforces the Kane Fabric boundary: future Fabric geography may be consumed upstream by a membership system, while the application receives only the consumer-owned authorization result.
-
-The current contract creates **no direct Kane Fabric authentication API requirement**.
-
-The following cross-project issues are deliberately unresolved and recorded in:
+Cross-project issues are tracked only in:
 
 ```text
 docs/CONSUMER_INTERFACE_GATES.md
 ```
 
-Most important:
+Important unresolved issues include persistent email authorship versus any epoch-unlinkable civic membership model, building-oriented membership wording versus future delivery-point geography, existing WireGuard estate topology versus future fleet lifecycle, and the fact that Mechanical Compiler central TLS does not solve MS5's local/offline browser secure-origin requirement.
 
-1. Kane Fabric must not become the identity provider merely because the originally reviewed Mechanical Compiler contract used `kane-fabric/oidc` as an example method string.
-2. Mechanical Compiler's persistent email-as-author identity must be reconciled with any address-bound/epoch-unlinkable civic membership design before those systems integrate.
-3. Building-oriented membership wording must eventually reconcile with planned persistent delivery-point geography without teaching the compiler geography.
-4. Existing WireGuard estate topology is test infrastructure, not a fleet contract.
-5. Mechanical Compiler's central TLS/reverse-proxy path does not solve MS5's offline/local browser secure-origin problem.
+One previously identified issue is resolved: Mechanical Compiler removed its earlier Kane-specific trusted-header naming and made that relying-party interface deployment-neutral. Kane Fabric intentionally records no consumer-owned header syntax.
 
-One previously identified issue is already resolved: Mechanical Compiler removed the earlier Kane-specific trusted-header names and made that relying-party interface deployment-neutral. Kane Fabric intentionally does not copy the replacement header names into its contracts because it neither implements nor consumes that protocol.
+Do not implement Mechanical Compiler authentication, membership, OIDC, proxy ACL, or request-header semantics inside Kane Fabric.
 
-These are interface gates, not instructions to implement Mechanical Compiler semantics in Kane Fabric.
+## 7. Consumer-exposed geography and forward roadmap
 
-## 7. Consumer-exposed geography
-
-A real civic consumer exposed generic geographic requirements that did not exist in the original roadmap:
+A real civic consumer exposed generic future Fabric requirements:
 
 - accepted parcel/classification source data;
 - persistent delivery-point identity distinct from building identity;
 - building/parcel/delivery-point geographic relationships.
 
-These are planned as:
+These remain planned for MS6. Fabric owns geography and source/promotion/reconciliation lifecycle, not person identity, civic participation credentials, application authorization, mail aliases, or economic semantics.
 
-**Milestone 6 — Civic geography extension: parcels + delivery points**
-
-Fabric may own:
-
-- accepted parcel geography/classification;
-- persistent delivery-point geography;
-- source witnesses;
-- building/parcel/delivery-point relationships;
-- candidate/comparison/reconciliation/promotion lifecycle.
-
-Fabric does not own:
-
-- person/email authentication;
-- postal challenge/anchor epochs;
-- civic participation credentials;
-- affected-set membership/assertion semantics;
-- application authorization/ACLs;
-- mail aliases or economic/application semantics.
-
-A delivery point is geography, not evidence that a particular person lives there or participates in anything.
-
-## 8. Forward roadmap
+Forward roadmap:
 
 ```text
 MS0–MS4   logical Fabric foundation                    COMPLETE
@@ -232,9 +181,7 @@ Kane Fabric 1.0
 MS9       generic second-county bootstrap              POST-1.0
 ```
 
-The 1.0 plan is depth before breadth: finish a complete Kane County system before making a second-county deployment a release prerequisite.
-
-## 9. Stable operational authorities
+## 8. Stable operational authorities
 
 Repository:
 
@@ -259,17 +206,13 @@ Authoritative database:
 SHA256 31e362b696a37f1b9c45ae355c5669511a3128c17a651108a62e20d1cedebd67
 ```
 
-The database was re-read in read-only mode at MS5 entry and still reported the five accepted releases.
-
 GitHub `main` is software/documentation authority. CT102 is the real compiler/runtime/acceptance environment. An Assistant sandbox is not CT102.
 
-CT102's last accepted implementation checkout is the MS5-003 acceptance head. GitHub `main` may be ahead by documentation-only handoff/interface-gate commits. A successor should verify the CT102 worktree is clean and fast-forward to current `main` before beginning MS5-004; no re-acceptance of MS5-001..003 is required merely because documentation advanced.
+CT102 was last observed clean at the original MS5-003 acceptance head. GitHub `main` is now ahead by documentation/interface-gate updates plus the bounded executable correction above.
 
-## 10. Development discipline
+## 9. Development discipline
 
 - Normal development is directly on `main` unless explicitly changed by the operator.
-- Do not reopen accepted MS3/MS4 gates without an invalidating change or contradiction.
-- Do not reopen accepted MS5-001..003 merely because later documentation commits advance `main`.
 - Compilation, serving, provisioning, synchronization, or consumer demand never silently promote geography.
 - Use CT102 for real acceptance.
 - Keep large operational artifacts outside Git under `/var/lib/kane-fabric`.
@@ -277,24 +220,25 @@ CT102's last accepted implementation checkout is the MS5-003 acceptance head. Gi
 - Do not turn consumer application rules into generic Fabric semantics.
 - Do not burn ESP32 eFuses as a Kane Fabric reference-edge requirement.
 - Do not make WireGuard, TLS, secure-element, device, person, or membership identity into Fabric logical identity.
-- Treat `docs/CONSUMER_INTERFACE_GATES.md` as a gate register, not as a backlog that Kane Fabric owns.
+- Treat `docs/CONSUMER_INTERFACE_GATES.md` as a gate register, not a backlog that Kane Fabric owns.
+- Do not reopen MS5-001..003 beyond the explicitly bounded placement/activation correction unless new evidence invalidates another accepted contract.
 
-## 11. Next safe action
+## 10. Next safe action
 
-1. On CT102, verify `/tmp/kane-fabric-ms2` is still clean at the accepted MS5-003 implementation head.
-2. Fast-forward it to current GitHub `main` if the preconditions pass.
-3. Proceed with:
+On CT102:
+
+1. verify `/tmp/kane-fabric-ms2` is clean and still at the last accepted MS5-003 head;
+2. fetch and fast-forward to current GitHub `main`;
+3. run the MS5 work-sequence authority guard;
+4. run Python compileall for `ms5`;
+5. run `bash ms5/run-tests.sh`;
+6. require **20 passing contract tests, 0 failures**, and a clean worktree.
+
+If that gate passes, record the bounded correction as accepted and proceed with:
 
 ```text
 MS5-004
 browser secure-origin plus local AP/STA access contract
 ```
-
-The contract must preserve these additional cross-project constraints:
-
-- browser/TLS device identity is not person or membership identity;
-- local secure-origin operation cannot depend on Mechanical Compiler's central reverse-proxy/TLS arrangement;
-- no application authentication metadata becomes a Kane Fabric protocol;
-- future delivery-point geography remains outside the browser-serving device identity.
 
 After MS5-004, continue in the normative order defined only by `docs/MILESTONE_5_DESIGN.md`.
