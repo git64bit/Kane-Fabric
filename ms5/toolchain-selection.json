@@ -1,0 +1,50 @@
+{
+  "compiler": {
+    "archive": "xtensa-esp-elf-15.2.0_20251204-x86_64-linux-gnu.tar.xz",
+    "key": "xtensa-esp-elf",
+    "license": "GPL-3.0-with-GCC-exception",
+    "source_sha256": "3d50f5cd5f173acfd524e07c1cd69bc99585731a415ca2e5bce879997fe602b8",
+    "source_uri": "https://github.com/espressif/crosstool-NG/releases/download/esp-15.2.0_20251204/xtensa-esp-elf-15.2.0_20251204-x86_64-linux-gnu.tar.xz",
+    "status": "selected-not-vendored",
+    "version": "15.2.0_20251204"
+  },
+  "dependency_boundary": {
+    "package_manager_resolution_at_release": false,
+    "wireguard_selection_gate": "MS5-008",
+    "wireguard_status": "candidate-not-retained"
+  },
+  "format": "kane-fabric-ms5-toolchain-selection",
+  "license_boundary": {
+    "compiler_license": "GPL-3.0-with-GCC-exception",
+    "esp_idf_core_license": "Apache-2.0",
+    "exact_release_third_party_notices_required": true,
+    "kane_fabric_root_license_unchanged": true
+  },
+  "offline_reproduction": {
+    "compiler_archive_mirror_required": true,
+    "esp_idf_submodule_complete_archive_required": true,
+    "exact_python_build_environment_lock_required": true,
+    "large_archives_outside_git": true,
+    "metadata_and_hashes_in_git": true,
+    "no_live_network_resolution_at_release": true,
+    "release_asset_mirror_required": true
+  },
+  "reference_build_host": {
+    "architecture": "x86_64",
+    "os_family": "linux",
+    "profile": "linux-amd64"
+  },
+  "schema_version": 1,
+  "sdk": {
+    "key": "esp-idf",
+    "source_archive": "esp-idf-v6.0.3.zip",
+    "source_commit": "76f5dedd9950a3012fee8fb7d5586df21fc67802",
+    "source_sha256": "748b12484402d8a1cb58ba68b7545d2a1f96d36820ab0145e0332c8348ba5ab7",
+    "source_uri": "https://github.com/espressif/esp-idf/releases/download/v6.0.3/esp-idf-v6.0.3.zip",
+    "status": "selected-not-vendored",
+    "tag": "v6.0.3",
+    "tools_manifest_git_blob_sha": "2cf625c4bdd3b8b9baa6c1566ff94c802ddbe0fd",
+    "version": "6.0.3"
+  },
+  "target": "esp32s3"
+}

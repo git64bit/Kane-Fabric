@@ -3,7 +3,7 @@
 This directory implements the active Milestone 5 contract from
 `docs/MILESTONE_5_DESIGN.md`.
 
-The current contract slice covers MS5-001 through MS5-004. It deliberately
+The current contract slice covers MS5-001 through MS5-005. It deliberately
 contains no ESP-IDF firmware and performs no irreversible hardware operation.
 
 ## Contract modules
@@ -35,6 +35,24 @@ reachability, preserve the shared-radio/channel measurement obligations of
 AP+STA operation, and keep browser/TLS identity outside Fabric geography and
 delivery-point identity.
 
+`tools/kane_fabric_toolchain.py`
+: MS5-005 firmware SDK/toolchain selection contract. It freezes the reference
+ESP32-S3 SDK source identity, Linux-amd64 Xtensa compiler identity, license
+boundary, offline-reproduction requirements, and the rule that WireGuard remains
+an unretained candidate until the MS5-008 runtime proof.
+
+Machine-readable toolchain selection:
+
+```text
+ms5/toolchain-selection.json
+```
+
+Detailed selection/reproduction plan:
+
+```text
+docs/MS5_TOOLCHAIN_DEPENDENCY_PLAN.md
+```
+
 ## Fixed MS5 security posture
 
 The reference edge is replaceable infrastructure carrying primarily public
@@ -64,3 +82,6 @@ The tests are contract tests. Real ESP32-S3 firmware, browser execution,
 storage, WireGuard, and concurrent-resource proofs occur in later MS5 work
 items. MS5-004 contract tests define the secure-origin/AP+STA obligations; they
 do not substitute for the later real-browser and constrained-resource proofs.
+MS5-005 freezes dependency identities and offline-reproduction obligations; it
+does not claim that the selected SDK/toolchain has yet produced accepted device
+firmware.
