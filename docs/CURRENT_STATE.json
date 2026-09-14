@@ -10,7 +10,8 @@
     "ms5_roadmap_authority_head": "eadd3e6f9e1972781589c3104143a3939779d1cd",
     "ms5_contract_acceptance_head": "4b9b9d3cbaaff08c90a63a7937fc2ac4efeb6dee",
     "ms5_contract_correction_head": "025b55df42f3cc9d3613a2ae845952ce2bc033c7",
-    "ms5_contract_correction_acceptance_head": "762041080fa51e6441546b7ba14bd07792676b9f"
+    "ms5_contract_correction_acceptance_head": "762041080fa51e6441546b7ba14bd07792676b9f",
+    "ms5_004_acceptance_head": "07f4f71f51b538bc1fc5d446691e0bbcfc03cd9c"
   },
   "deployment": {
     "proxmox_host": "srv-b",
@@ -24,9 +25,9 @@
       "branch": "main",
       "upstream": "origin/main",
       "fetch_refspec": "+refs/heads/*:refs/remotes/origin/*",
-      "last_observed_head": "762041080fa51e6441546b7ba14bd07792676b9f",
+      "last_observed_head": "07f4f71f51b538bc1fc5d446691e0bbcfc03cd9c",
       "last_observed_worktree": "clean",
-      "note": "CT102 accepted the bounded MS5-001/002 cross-contract correction at this checkout head on 2026-09-14."
+      "note": "CT102 accepted the MS5-004 browser secure-origin plus local AP/STA access contract at this checkout head on 2026-09-14."
     }
   },
   "operational_state": {
@@ -68,7 +69,7 @@
   "milestone": {
     "current": 5,
     "name": "Reference Physical Edge Architecture",
-    "phase": "ms5-004-ready",
+    "phase": "ms5-005-ready",
     "design": "docs/MILESTONE_5_DESIGN.md",
     "reference": "docs/ESP32_EDGE_REFERENCE.md",
     "approved_security_posture": {
@@ -83,10 +84,9 @@
       "wireguard_is_logical_identity": false
     },
     "accepted_work": {
-      "through": "MS5-003 corrected contract set",
-      "repository_head": "762041080fa51e6441546b7ba14bd07792676b9f",
-      "correction_implementation_head": "025b55df42f3cc9d3613a2ae845952ce2bc033c7",
-      "ct102_test_result": "20 passed, 0 failed",
+      "through": "MS5-004 browser secure-origin plus local AP/STA access contract",
+      "repository_head": "07f4f71f51b538bc1fc5d446691e0bbcfc03cd9c",
+      "ct102_test_result": "28 passed, 0 failed",
       "ct102_compileall": "passed",
       "ct102_authority_guard": "valid",
       "ct102_worktree": "clean",
@@ -122,7 +122,7 @@
         11
       ]
     },
-    "next_work_item": "MS5-004 browser secure-origin plus local AP/STA access contract"
+    "next_work_item": "MS5-005 ESP-IDF/toolchain and retained dependency selection plan"
   },
   "forward_roadmap": {
     "ms6": "Civic geography extension: parcels + delivery points",
@@ -152,7 +152,6 @@
     "register": "docs/CONSUMER_INTERFACE_GATES.md",
     "ms5_blocking_now": [],
     "future_fabric_gates": [
-      "MS5-004 local browser secure origin must remain independent of Mechanical Compiler public/proxy TLS",
       "MS5-008 WireGuard is management transport only; existing wg-pk topology is feasibility infrastructure, not a fleet contract",
       "MS6 delivery-point geography must not become person/application identity"
     ],
@@ -165,5 +164,5 @@
       "Mechanical Compiler removed Kane-specific trusted-header names and made that relying-party interface deployment-neutral on 2026-09-12"
     ]
   },
-  "next_safe_action": "Proceed with MS5-004 according to docs/MILESTONE_5_DESIGN.md. CT102 last accepted MS5-001..003 checkpoint is 762041080fa51e6441546b7ba14bd07792676b9f with a clean worktree, valid MS5 authority guard, compileall pass, and 20 passing contract tests. Documentation-only checkpoint commits after that head do not invalidate the accepted gate. Do not implement Mechanical Compiler authentication, membership, OIDC, or proxy ACL semantics inside Kane Fabric."
+  "next_safe_action": "Proceed with MS5-005 according to docs/MILESTONE_5_DESIGN.md. CT102 last accepted checkpoint is 07f4f71f51b538bc1fc5d446691e0bbcfc03cd9c with a clean worktree, valid MS5 authority guard, compileall pass, and 28 passing contract tests. Documentation-only checkpoint commits after that head do not invalidate the accepted gate. MS5-005 must freeze the ESP-IDF/toolchain and retained dependency selection plan without treating earlier WireGuard compile feasibility as dependency acceptance."
 }
