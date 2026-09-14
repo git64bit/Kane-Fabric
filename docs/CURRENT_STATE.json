@@ -13,7 +13,8 @@
     "ms5_contract_correction_acceptance_head": "762041080fa51e6441546b7ba14bd07792676b9f",
     "ms5_004_acceptance_head": "07f4f71f51b538bc1fc5d446691e0bbcfc03cd9c",
     "ms5_005_acceptance_head": "aed812df8c5e37bb1843e022d7a7813dc7e8e862",
-    "web_001_acceptance_head": "98873196438f87f946796d9b4ffd2ff2a5a135e4"
+    "web_001_acceptance_head": "98873196438f87f946796d9b4ffd2ff2a5a135e4",
+    "web_002_acceptance_head": "ef3c08f77442e1a8cefe6a0567b50e10ce010dd3"
   },
   "deployment": {
     "proxmox_host": "srv-b",
@@ -27,9 +28,9 @@
       "branch": "main",
       "upstream": "origin/main",
       "fetch_refspec": "+refs/heads/*:refs/remotes/origin/*",
-      "last_observed_head": "98873196438f87f946796d9b4ffd2ff2a5a135e4",
+      "last_observed_head": "ef3c08f77442e1a8cefe6a0567b50e10ce010dd3",
       "last_observed_worktree": "clean",
-      "note": "CT102 accepted WEB-001 application shell and platform-neutral artifact-source configuration at this checkout head on 2026-09-14. The earlier MS5-001..005 acceptance remains valid at its recorded implementation heads."
+      "note": "CT102 accepted WEB-002 real-browser composition at this checkout head on 2026-09-14. The earlier MS5-001..005 acceptance remains valid at its recorded implementation heads."
     }
   },
   "operational_state": {
@@ -39,14 +40,22 @@
       "sha256": "31e362b696a37f1b9c45ae355c5669511a3128c17a651108a62e20d1cedebd67",
       "byte_length": 355180544,
       "migration_count": 7,
-      "status": "accepted-authoritative-fabric-database-read-only-verified-at-ms5-entry",
+      "status": "accepted-authoritative-fabric-database-read-only-verified-at-web-002",
       "accepted_release_count": 5
     },
     "milestone_3_publication": {
       "status": "released",
       "substrate_content_sha256": "fe417a02222669d9b81c72dc717ab0178b54b1c13cd0d3e8510c6b4f25224bcc",
       "evidence_root": "/var/lib/kane-fabric/render/ms3-evidence",
-      "release_record": "docs/MILESTONE_3_RELEASE.md"
+      "release_record": "docs/MILESTONE_3_RELEASE.md",
+      "retained_original_package_found_at_web_002": false,
+      "web_002_reproduction": {
+        "directory": "/var/lib/kane-fabric/render/web-002/ms3-accepted-reproduction",
+        "status": "byte-identical deterministic reproduction from unchanged authoritative database",
+        "total_bytes": 7201386,
+        "component_identities_match_release": true,
+        "authoritative_database_unchanged": true
+      }
     },
     "milestone_4_release": {
       "status": "released",
@@ -66,6 +75,21 @@
         "physical_placement_independent": true,
         "accepted_authority_unchanged": true
       }
+    },
+    "web_002_browser_acceptance": {
+      "directory": "/var/lib/kane-fabric/render/web-002/browser-acceptance-ef3c08f",
+      "evidence_sha256": "cef970419e4983c845ac19956f4d2f9a7245444d90acb0d81ee917c907090d5a",
+      "browser": "Chromium 151.0.7922.137 built on Debian GNU/Linux 12 (bookworm)",
+      "partition": "west",
+      "object_count": 2,
+      "overlay_count": 2,
+      "application_request_count": 16,
+      "ms3_request_count": 36,
+      "ms4_request_count": 14,
+      "bounded_ms3_range_reads": true,
+      "verified_ms4_composition_reads": true,
+      "physical_platform_assumed": false,
+      "status": "accepted"
     }
   },
   "milestone": {
@@ -138,7 +162,7 @@
     "name": "Kane Fabric Web Application",
     "design": "docs/WEB_APPLICATION_DESIGN.md",
     "status": "active",
-    "active_item": "WEB-002 accepted MS3/MS4 map composition as a user-facing vertical slice",
+    "active_item": "WEB-003 geographic navigation, layer/subscription visibility, and inspection interaction",
     "reason": "focus on Kane Fabric-controlled browser/application work until third-party physical-edge integration becomes necessary",
     "existing_foundation": [
       "accepted MS3 browser verification/selective-fetch/decompression/Canvas rendering",
@@ -146,13 +170,25 @@
     ],
     "edge_dependency": "none for WEB-001 through WEB-004; development/software artifact sources may satisfy the same browser contract",
     "accepted_work": {
-      "through": "WEB-001 application shell + platform-neutral artifact-source configuration",
-      "repository_head": "98873196438f87f946796d9b4ffd2ff2a5a135e4",
-      "ct102_authority_guard": "valid",
-      "ct102_dependency_policy": "passed",
-      "javascript_syntax": "passed",
-      "unit_tests": "8 passed, 0 failed",
-      "ct102_worktree": "clean",
+      "through": "WEB-002 accepted MS3/MS4 map composition as a user-facing vertical slice",
+      "repository_head": "ef3c08f77442e1a8cefe6a0567b50e10ce010dd3",
+      "repository_gate": {
+        "ct102_authority_guard": "valid",
+        "ct102_dependency_policy": "passed",
+        "javascript_python_syntax": "passed",
+        "unit_tests": "13 passed, 0 failed",
+        "ct102_worktree": "clean"
+      },
+      "real_browser_gate": {
+        "browser": "Chromium 151.0.7922.137 built on Debian GNU/Linux 12 (bookworm)",
+        "substrate_content_sha256": "fe417a02222669d9b81c72dc717ab0178b54b1c13cd0d3e8510c6b4f25224bcc",
+        "composition_sha256": "a58c8398248cee05b7baad9ae289fe0581bdb3624ce1aff3aa8a49721f92ee53",
+        "partition": "west",
+        "objects": 2,
+        "visible_overlays": 2,
+        "platform_neutral_http_sources": "passed",
+        "evidence_sha256": "cef970419e4983c845ac19956f4d2f9a7245444d90acb0d81ee917c907090d5a"
+      },
       "observed_date": "2026-09-14"
     },
     "resume_ms5_006_when": "the Web Application establishes concrete serving/storage requirements or WEB-005 determines the browser contract is ready for physical-edge implementation"
@@ -197,5 +233,5 @@
       "Mechanical Compiler removed Kane-specific trusted-header names and made that relying-party interface deployment-neutral on 2026-09-12"
     ]
   },
-  "next_safe_action": "Proceed with WEB-002 according to docs/WEB_APPLICATION_DESIGN.md. Reuse the accepted MS3/MS4 browser modules and accepted Kane County artifact identities to produce a real user-facing map composition vertical slice. Keep MS5-006 deferred and do not install ESP-IDF merely to advance the Web Application. WEB-001 was accepted on CT102 at 98873196438f87f946796d9b4ffd2ff2a5a135e4 with a valid MS5 authority guard, dependency-policy pass, JavaScript syntax pass, 8 passing Web tests, and a clean worktree."
+  "next_safe_action": "Proceed with WEB-003 according to docs/WEB_APPLICATION_DESIGN.md. Add geographic navigation, layer/subscription visibility controls, and inspection interaction on top of the accepted WEB-002 verified composition result. Keep source verification and Fabric identity semantics in the existing accepted MS3/MS4 modules; do not introduce platform-specific edge APIs or ESP-IDF work."
 }
