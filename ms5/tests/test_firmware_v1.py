@@ -70,7 +70,11 @@ class FirmwareV1RoleTests(unittest.TestCase):
             self.assertIn("WireGuard", text)
 
         self.assertIn("may conclude that WireGuard is not retained", design)
-        self.assertIn("CT102 does not build or flash firmware", firmware_readme)
+        normalized_firmware_readme = " ".join(firmware_readme.split())
+        self.assertIn(
+            "CT102 does not build or flash firmware",
+            normalized_firmware_readme,
+        )
 
 
 if __name__ == "__main__":
