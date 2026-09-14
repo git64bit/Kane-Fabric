@@ -3,10 +3,14 @@
 Start here, then read:
 
 ```text
+docs/DEVELOPMENT_PROCESS.md
 docs/CURRENT_STATE.json
+docs/SESSION_START.md
 docs/MILESTONE_5_DESIGN.md
 docs/CONSUMER_INTERFACE_GATES.md
 ```
+
+`docs/DEVELOPMENT_PROCESS.md` defines how work is executed, which system owns each kind of state, how CT102 acceptance differs from GitHub publication, when the user may act as a bounded terminal relay, and when accepted gates must or must not be rerun. Read it before issuing infrastructure commands or changing the repository.
 
 Historical release records remain evidence. They are not current implementation instructions.
 
