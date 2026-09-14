@@ -22,9 +22,9 @@ browser contract stable      true
 resume MS5-006               true
 ```
 
-Those values remain historical accepted WEB-005 evidence. The later transport-architecture correction described below supersedes the assumption that browser HTTPS terminates on the physical edge; it does not rewrite the historical evidence.
+Those values remain historical accepted WEB-005 evidence. The later transport-architecture correction supersedes the assumption that browser HTTPS terminates on the physical edge; it does not rewrite the historical evidence.
 
-The current UI is sufficient as the reference client/acceptance instrument. UI polish is not required before physical-edge work proceeds after the architecture correction is accepted.
+The current UI is sufficient as the reference client/acceptance instrument. UI polish is not required before physical-edge work proceeds after the current repository reconciliation review concludes.
 
 ## MS5-006 accepted implementation baseline
 
@@ -50,9 +50,9 @@ The single skip is deliberate environment classification: CT102 has no host C co
 
 The accepted implementation already provides the useful storage/range behavior: immutable read-only artifact storage, ordinary GET, exact closed single-range `206` behavior, bounded direct-from-storage reads, CORS/range headers, no device-specific browser API, and no geographic authority at the edge.
 
-## MS5 transport-architecture correction
+## Accepted MS5 transport-architecture correction
 
-The earlier MS5-003/MS5-004 assumption that browser HTTPS terminates on the ESP32-S3 is superseded by the corrected reference topology:
+The earlier MS5-003/MS5-004 assumption that browser HTTPS terminates on the ESP32-S3 is superseded by the accepted reference topology:
 
 ```text
 browser -- HTTPS --> Wiregate hub -- HTTP --> ESP32-S3
@@ -62,19 +62,38 @@ The correction removes `browser-tls-server` from the ESP32 key-provider role set
 
 The ESP32-S3 remains in the first release primarily to establish a real firmware lifecycle early. Its initial role is intentionally modest: immutable storage, bounded plain-HTTP serving, provisioning/replacement, and a base for later firmware responsibilities.
 
-The architecture correction is a **repository candidate pending CT102 acceptance**. Do not treat the corrected contract tests as accepted until CT102 synchronizes to the candidate GitHub `main` and runs the invalidated MS5 gates.
+The correction was accepted in CT102 at:
+
+```text
+9cdb0206f4f7280799bec9d228a4f56a326a4ad1
+```
+
+Acceptance evidence:
+
+```text
+architecture regression scan   PASS
+Python compileall               PASS
+MS5 authority guard             valid
+dependency policy               PASS
+MS5 tests                       47 passed, 1 environment skip
+host C compiler                 absent on CT102
+host C compile                  SKIPPED
+worktree                        clean
+```
+
+The environment skip remains the same deliberate classification: CT102 has no host C compiler. It does not replace the later pinned ESP-IDF compile on the dedicated programming node.
 
 ## Hardware execution status
 
-Physical ESP32-S3 execution is **paused** while the corrected MS5-003/MS5-004 transport and key-role contracts are validated in CT102.
+Physical ESP32-S3 execution remains **paused by project sequencing**, not because the transport correction failed. The correction is accepted, but the operator requested continued repository reconciliation to catch residual browser-TLS, local-AP, WireGuard-ordering, or overstated ESP32 first-release-role assumptions before hardware work resumes.
 
-Do **not** install ESP-IDF in CT102 and do **not** add Proxmox USB passthrough. CT102 remains the repository/browser/contract acceptance environment. After the architecture correction is accepted, the dedicated ESP programming node will still own pinned ESP-IDF verification, build, flash, serial/device diagnostics, and physical storage/range evidence.
+Do **not** install ESP-IDF in CT102 and do **not** add Proxmox USB passthrough. CT102 remains the repository/browser/contract acceptance environment. When the reconciliation review is complete, the dedicated ESP programming node will still own pinned ESP-IDF verification, build, flash, serial/device diagnostics, and physical storage/range evidence.
 
 Current hardware evidence therefore remains:
 
 ```text
-pinned ESP-IDF v6.0.3 compile    BLOCKED pending architecture acceptance
-device storage/range evidence    BLOCKED pending architecture acceptance
+pinned ESP-IDF v6.0.3 compile    PENDING after reconciliation review
+device storage/range evidence    PENDING after reconciliation review
 ```
 
 Native Linux/macOS/Windows distribution support remains an independent, undecided product/distribution concern.
@@ -92,11 +111,11 @@ authoritative DB    /var/lib/kane-fabric/database/kane-county-fabric.gpkg
 DB SHA256           31e362b696a37f1b9c45ae355c5669511a3128c17a651108a62e20d1cedebd67
 ```
 
-CT102 was last observed clean at `52b9b9746be3fa0c3108677e1a6d6c8bba9c8845` before publication of the transport-architecture correction candidate. The accepted MS5-006 implementation/test HEAD remains `ef6a08f03a94aabd6c15e9c02f6ed9470c65d3ce` until a later material checkpoint records acceptance of the corrected contracts.
+CT102 was last observed clean at `9cdb0206f4f7280799bec9d228a4f56a326a4ad1` after accepting the transport-architecture correction. The accepted MS5-006 implementation baseline remains `ef6a08f03a94aabd6c15e9c02f6ed9470c65d3ce`; the accepted transport/key-role/browser-path correction is `9cdb0206f4f7280799bec9d228a4f56a326a4ad1`.
 
 ## Next safe action
 
-Synchronize clean CT102 from GitHub `main`, verify that the candidate architecture commit is the live checkout, then run only the gates invalidated by the MS5-003/MS5-004 correction: MS5 authority, dependency policy, Python compileall, and the MS5 test suite. Do not begin pinned ESP-IDF or physical-device execution until those repository/contract gates pass and the acceptance checkpoint is recorded.
+Continue a repository-wide reconciliation review for residual stale transport, browser-TLS, local-AP, WireGuard-ordering, or overstated ESP32 first-release-role assumptions. The accepted topology is browser HTTPS to the Wiregate hub and plain HTTP from Wiregate to ESP32-S3. Do not begin pinned ESP-IDF or physical-device execution until the operator concludes this reconciliation review.
 
 ## Execution discipline
 
