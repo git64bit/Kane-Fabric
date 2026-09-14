@@ -21,6 +21,7 @@
       <canvas id="map" width="1024" height="768">
         Kane Fabric geographic map.
       </canvas>
+      <p class="map-caption">Verified subscription objects are outlined over the accepted substrate.</p>
     </section>
 
     <aside class="info-panel" aria-label="Fabric data status">
@@ -32,6 +33,10 @@
 
       <section class="facts">
         <div>
+          <span>Jurisdiction</span>
+          <strong id="jurisdiction">—</strong>
+        </div>
+        <div>
           <span>Partition</span>
           <code id="partition">—</code>
         </div>
@@ -39,10 +44,14 @@
           <span>Substrate identity</span>
           <code id="substrate-identity">—</code>
         </div>
+        <div>
+          <span>Composed subscription objects</span>
+          <strong id="object-count">—</strong>
+        </div>
       </section>
 
       <section>
-        <p class="section-label">Subscriptions</p>
+        <p class="section-label">Verified subscriptions</p>
         <ul id="subscriptions" class="subscriptions">
           <li>Not loaded.</li>
         </ul>
@@ -50,11 +59,12 @@
 
       <section id="setup" class="notice" hidden>
         <h2>Development source required</h2>
-        <p>This first application slice intentionally does not assume where Fabric artifacts are hosted. Supply platform-neutral artifact locations in the URL.</p>
+        <p>This application intentionally does not assume where Fabric artifacts are hosted. Supply platform-neutral artifact locations in the URL.</p>
         <code></code>
       </section>
 
       <section id="error" class="error" role="alert" hidden></section>
+      <pre id="machine-status" class="machine-status" hidden></pre>
     </aside>
   </main>
 
