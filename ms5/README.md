@@ -3,7 +3,7 @@
 This directory implements the active Milestone 5 contract from
 `docs/MILESTONE_5_DESIGN.md`.
 
-The initial implementation slice covers MS5-001 through MS5-003. It deliberately
+The current contract slice covers MS5-001 through MS5-004. It deliberately
 contains no ESP-IDF firmware and performs no irreversible hardware operation.
 
 ## Contract modules
@@ -27,6 +27,14 @@ external providers are interchangeable at this contract boundary. Fabric
 release-signing, geographic-promotion, CA-issuing, and civic-anchor keys are not
 valid edge roles.
 
+`tools/kane_fabric_browser_access.py`
+: browser secure-origin and local AP/STA access contract. The physical edge must
+serve through HTTPS with a browser-trusted certificate, prove a secure browser
+context with callable WebCrypto SHA-256, provide deterministic ESP32-hosted AP
+reachability, preserve the shared-radio/channel measurement obligations of
+AP+STA operation, and keep browser/TLS identity outside Fabric geography and
+delivery-point identity.
+
 ## Fixed MS5 security posture
 
 The reference edge is replaceable infrastructure carrying primarily public
@@ -40,7 +48,9 @@ Fabric artifacts and replaceable operational credentials.
 - an external secure element may implement the same replaceable key-provider
   interface;
 - changing ESP32 hardware, storage, TLS identity, management identity, or key
-  provider must not change MS3/MS4 logical identities.
+  provider must not change MS3/MS4 logical identities;
+- a browser origin/TLS identity is a device-serving role, not persistent
+  geographic or delivery-point identity.
 
 ## Tests
 
@@ -50,5 +60,7 @@ Run:
 bash ms5/run-tests.sh
 ```
 
-The tests are contract tests. Real ESP32-S3, browser, storage, WireGuard, and
-concurrent-resource proofs occur in later MS5 work items.
+The tests are contract tests. Real ESP32-S3 firmware, browser execution,
+storage, WireGuard, and concurrent-resource proofs occur in later MS5 work
+items. MS5-004 contract tests define the secure-origin/AP+STA obligations; they
+do not substitute for the later real-browser and constrained-resource proofs.
