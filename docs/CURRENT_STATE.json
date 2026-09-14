@@ -9,6 +9,7 @@
     "ms5_005_acceptance_head": "aed812df8c5e37bb1843e022d7a7813dc7e8e862",
     "ms5_006_repository_acceptance_head": "ef6a08f03a94aabd6c15e9c02f6ed9470c65d3ce",
     "ms5_transport_architecture_acceptance_head": "9cdb0206f4f7280799bec9d228a4f56a326a4ad1",
+    "ms5_residual_reconciliation_acceptance_head": "c43814961cb14d6623ef92e40d6cf4d72f8ef37e",
     "web_001_acceptance_head": "98873196438f87f946796d9b4ffd2ff2a5a135e4",
     "web_002_acceptance_head": "ef3c08f77442e1a8cefe6a0567b50e10ce010dd3",
     "web_003_acceptance_head": "b216a3d6e0fd7be51223754c9dc3459229498346",
@@ -28,16 +29,16 @@
       "branch": "main",
       "upstream": "origin/main",
       "fetch_refspec": "+refs/heads/*:refs/remotes/origin/*",
-      "last_observed_head": "9cdb0206f4f7280799bec9d228a4f56a326a4ad1",
+      "last_observed_head": "c43814961cb14d6623ef92e40d6cf4d72f8ef37e",
       "last_observed_worktree": "clean",
-      "note": "CT102 accepted the MS5 Wiregate-HTTPS / ESP32-plain-HTTP architecture correction on 2026-09-14. Architecture scan, compileall, authority guard, dependency policy, and MS5 tests passed; the host C compiler remained an expected environment skip."
+      "note": "CT102 accepted the residual MS5 transport reconciliation on 2026-09-14. Exact stale-assumption guard and corrected broad drift audit passed; Python compileall passed; MS5 tests were 48 passed with one expected host-compiler environment skip."
     },
     "ms5_006_hardware_execution": {
       "environment": "dedicated ESP programming node with direct USB access",
       "ct102_installs_esp_idf": false,
       "ct102_uses_usb_passthrough": false,
       "direct_usb_required_for_reference_workflow": true,
-      "status": "paused-for-post-acceptance-repository-reconciliation-review"
+      "status": "reconciliation-complete-awaiting-operator-resume"
     }
   },
   "operational_state": {
@@ -96,25 +97,28 @@
   "milestone": {
     "current": 5,
     "name": "Reference Physical Edge Architecture",
-    "phase": "ms5-transport-architecture-accepted-reconciliation-review",
+    "phase": "ms5-reconciliation-complete-awaiting-hardware-resume",
     "design": "docs/MILESTONE_5_DESIGN.md",
     "reference": "docs/ESP32_EDGE_REFERENCE.md",
     "accepted_work": {
-      "through": "MS5-006 repository implementation gate plus accepted MS5 transport-architecture correction",
-      "repository_head": "9cdb0206f4f7280799bec9d228a4f56a326a4ad1",
+      "through": "MS5-006 repository implementation gate plus accepted transport architecture and residual reconciliation",
+      "repository_head": "c43814961cb14d6623ef92e40d6cf4d72f8ef37e",
       "ms5_006_implementation_head": "ef6a08f03a94aabd6c15e9c02f6ed9470c65d3ce",
-      "ct102_test_result": "47 passed, 1 environment skip (host C compiler unavailable)",
+      "ct102_test_result": "48 passed, 1 environment skip (host C compiler unavailable)",
       "ct102_compileall": "passed",
       "ct102_authority_guard": "valid",
       "ct102_dependency_policy": "passed",
       "ct102_architecture_regression_scan": "passed",
+      "ct102_exact_stale_assumption_guard": "passed",
+      "ct102_corrected_broad_drift_audit": "reviewed-no-actionable-drift",
       "ct102_worktree": "clean",
       "architecture_correction_status": "accepted-in-ct102",
       "architecture_correction": "browser-https-at-wiregate-hub__esp32-plain-http",
-      "pinned_esp_idf_compile": "pending-after-reconciliation-review",
-      "device_storage_range_evidence": "pending-after-reconciliation-review"
+      "residual_reconciliation_status": "accepted-in-ct102",
+      "pinned_esp_idf_compile": "pending",
+      "device_storage_range_evidence": "pending"
     },
-    "next_work_item": "MS5 repository reconciliation review for residual transport or ESP32 first-release-role drift before resuming MS5-006 physical execution"
+    "next_work_item": "Await operator decision to resume MS5-006 physical execution; when resumed, verify the pinned ESP-IDF v6.0.3/toolchain on the dedicated ESP programming node before build/flash/device evidence."
   },
   "priority_workstream": {
     "name": "Kane Fabric Web Application",
@@ -144,5 +148,5 @@
       "mail aliases or economic/application semantics"
     ]
   },
-  "next_safe_action": "Continue repository reconciliation/review for residual stale transport, browser-TLS, local-AP, WireGuard-ordering, or overstated ESP32 first-release-role assumptions. The accepted topology is browser HTTPS to the Wiregate hub and plain HTTP from Wiregate to ESP32-S3. Do not begin pinned ESP-IDF or physical-device execution until the operator concludes this reconciliation review."
+  "next_safe_action": "Repository reconciliation is complete. The accepted topology is browser HTTPS to the Wiregate hub and plain HTTP from Wiregate to ESP32-S3; WireGuard remains a later management-transport gate. Await the operator's decision to resume MS5-006 physical execution. When resumed, use the dedicated ESP programming node, verify the exact pinned ESP-IDF v6.0.3/toolchain first, and do not install ESP-IDF or add USB passthrough in CT102."
 }
