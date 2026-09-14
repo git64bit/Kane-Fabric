@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "observed_date": "2026-09-12",
+  "observed_date": "2026-09-14",
   "project": {
     "repository": "git64bit/Kane-Fabric",
     "branch": "main",
@@ -8,7 +8,8 @@
     "milestone_4_accepted_implementation_head": "9f6013d1b8b44998047f71e2b3f3e9c55c9ed298",
     "pre_ms5_redesign_main_head": "3adf081791943c8fc1552580abf34068388f4c89",
     "ms5_roadmap_authority_head": "eadd3e6f9e1972781589c3104143a3939779d1cd",
-    "ms5_contract_acceptance_head": "4b9b9d3cbaaff08c90a63a7937fc2ac4efeb6dee"
+    "ms5_contract_acceptance_head": "4b9b9d3cbaaff08c90a63a7937fc2ac4efeb6dee",
+    "ms5_contract_correction_head": "025b55df42f3cc9d3613a2ae845952ce2bc033c7"
   },
   "deployment": {
     "proxmox_host": "srv-b",
@@ -17,13 +18,14 @@
     "os": "Debian GNU/Linux 12 (bookworm)",
     "checkout": {
       "path": "/tmp/kane-fabric-ms2",
-      "path_status": "current-observed-operational-path",
+      "path_status": "last-observed-accepted-operational-path",
       "origin": "https://github.com/git64bit/Kane-Fabric.git",
       "branch": "main",
       "upstream": "origin/main",
       "fetch_refspec": "+refs/heads/*:refs/remotes/origin/*",
       "last_observed_head": "4b9b9d3cbaaff08c90a63a7937fc2ac4efeb6dee",
-      "last_observed_worktree": "clean"
+      "last_observed_worktree": "clean",
+      "note": "CT102 has not yet accepted the bounded MS5-002/003 cross-contract correction published after this head."
     }
   },
   "operational_state": {
@@ -65,7 +67,7 @@
   "milestone": {
     "current": 5,
     "name": "Reference Physical Edge Architecture",
-    "phase": "ms5-browser-access-contract",
+    "phase": "ms5-contract-correction-pending-acceptance",
     "design": "docs/MILESTONE_5_DESIGN.md",
     "reference": "docs/ESP32_EDGE_REFERENCE.md",
     "approved_security_posture": {
@@ -80,12 +82,23 @@
       "wireguard_is_logical_identity": false
     },
     "accepted_work": {
-      "through": "MS5-003",
+      "through": "MS5-003 original contract set",
       "repository_head": "4b9b9d3cbaaff08c90a63a7937fc2ac4efeb6dee",
       "ct102_test_result": "18 passed, 0 failed",
       "ct102_compileall": "passed",
       "ct102_worktree": "clean",
       "observed_date": "2026-09-12"
+    },
+    "pending_bounded_correction": {
+      "repository_head": "025b55df42f3cc9d3613a2ae845952ce2bc033c7",
+      "scope": [
+        "activation validates the actual edge descriptor and rejects an inventory whose logical placement differs from the edge logical placement",
+        "activation state rejects rollback_inventory_sha256 when no active inventory exists",
+        "regression tests cover both invariants"
+      ],
+      "expected_contract_test_count": 20,
+      "status": "published-not-yet-accepted-on-CT102",
+      "effect": "bounded join of existing MS5-001/002 contracts; no roadmap or identity redesign"
     },
     "previous_milestone": {
       "number": 4,
@@ -93,7 +106,7 @@
       "status": "released",
       "gate_steps_complete": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
     },
-    "next_work_item": "MS5-004 browser secure-origin plus local AP/STA access contract"
+    "next_work_item": "Accept the bounded MS5 contract correction on CT102, then begin MS5-004 browser secure-origin plus local AP/STA access contract"
   },
   "forward_roadmap": {
     "ms6": "Civic geography extension: parcels + delivery points",
@@ -136,5 +149,5 @@
       "Mechanical Compiler removed Kane-specific trusted-header names and made that relying-party interface deployment-neutral on 2026-09-12"
     ]
   },
-  "next_safe_action": "Implement MS5-004 from docs/MILESTONE_5_DESIGN.md. Keep browser/TLS device identity separate from person or membership identity. Do not implement Mechanical Compiler authentication, membership, OIDC, or proxy ACL semantics inside Kane Fabric. Keep cross-project gates visible in docs/CONSUMER_INTERFACE_GATES.md."
+  "next_safe_action": "On CT102, verify the recorded checkout is clean at the last accepted head, fast-forward to current GitHub main, run the MS5 authority guard, compileall, and ms5/run-tests.sh. The bounded correction must produce 20 passing contract tests. If it passes, record the correction as accepted and proceed to MS5-004. Do not implement Mechanical Compiler authentication, membership, OIDC, or proxy ACL semantics inside Kane Fabric."
 }
