@@ -10,7 +10,9 @@
     "web_001_acceptance_head": "98873196438f87f946796d9b4ffd2ff2a5a135e4",
     "web_002_acceptance_head": "ef3c08f77442e1a8cefe6a0567b50e10ce010dd3",
     "web_003_acceptance_head": "b216a3d6e0fd7be51223754c9dc3459229498346",
-    "web_004_acceptance_head": "73252b6a3c87ba47b7f68f3e3206056607e1e53a"
+    "web_004_acceptance_head": "73252b6a3c87ba47b7f68f3e3206056607e1e53a",
+    "web_005_application_head": "73252b6a3c87ba47b7f68f3e3206056607e1e53a",
+    "web_005_checkpoint_head": "f83dac7ca2ef946edcd285be461a63eec339b59b"
   },
   "deployment": {
     "proxmox_host": "srv-b",
@@ -24,9 +26,9 @@
       "branch": "main",
       "upstream": "origin/main",
       "fetch_refspec": "+refs/heads/*:refs/remotes/origin/*",
-      "last_observed_head": "73252b6a3c87ba47b7f68f3e3206056607e1e53a",
+      "last_observed_head": "f83dac7ca2ef946edcd285be461a63eec339b59b",
       "last_observed_worktree": "clean",
-      "note": "CT102 accepted WEB-004 repository and real-browser failure/recovery gates at this implementation head on 2026-09-14."
+      "note": "CT102 accepted WEB-005 at the unchanged Web Application implementation head 73252b6 and documentation checkpoint f83dac7 on 2026-09-14."
     }
   },
   "operational_state": {
@@ -42,8 +44,6 @@
     "milestone_3_publication": {
       "status": "released",
       "substrate_content_sha256": "fe417a02222669d9b81c72dc717ab0178b54b1c13cd0d3e8510c6b4f25224bcc",
-      "release_record": "docs/MILESTONE_3_RELEASE.md",
-      "retained_original_package_found_at_web_002": false,
       "accepted_reproduction": {
         "directory": "/var/lib/kane-fabric/render/web-002/ms3-accepted-reproduction",
         "total_bytes": 7201386,
@@ -71,14 +71,14 @@
     "web_004_browser_acceptance": {
       "directory": "/var/lib/kane-fabric/render/web-004/browser-acceptance-73252b6",
       "evidence_sha256": "f9054cb884568e8503a8e7f416065aa5ea97bcd5b8082494a5ade00cb4db4b50",
-      "browser": "Chromium 151.0.7922.137 built on Debian GNU/Linux 12 (bookworm)",
-      "verified_then_offline": true,
-      "offline_no_new_artifact_fetch": true,
-      "corrupt_artifact_verification_failure": true,
-      "failed_verification_clears_presentation": true,
-      "offline_before_verification_fails_closed": true,
-      "connection_restored_retry_prompt": true,
-      "explicit_retry_recovery": true,
+      "status": "accepted"
+    },
+    "web_005_closeout": {
+      "directory": "/var/lib/kane-fabric/render/web-005/browser-closeout-f83dac7",
+      "browser_evidence_sha256": "5d56347b2551481a65cbaa2fc990dd845517aa1b7e20d55176b69914b489d2f9",
+      "edge_reassessment_sha256": "bccff3f369b200737742a7e902b2a8e3a5878b297a5ee9be9e44e08f65ffb488",
+      "browser_contract_stable": true,
+      "resume_ms5_006": true,
       "physical_platform_assumed": false,
       "status": "accepted"
     }
@@ -86,7 +86,7 @@
   "milestone": {
     "current": 5,
     "name": "Reference Physical Edge Architecture",
-    "phase": "ms5-006-deferred-for-web-application-priority-workstream",
+    "phase": "ms5-006-active-after-web-005",
     "design": "docs/MILESTONE_5_DESIGN.md",
     "reference": "docs/ESP32_EDGE_REFERENCE.md",
     "accepted_work": {
@@ -98,33 +98,20 @@
       "ct102_dependency_policy": "passed",
       "ct102_worktree": "clean"
     },
-    "next_work_item": "MS5-006 ESP32-S3 immutable artifact storage and HTTP byte-range implementation (deferred pending WEB-005 reassessment of the browser/edge contract)"
+    "next_work_item": "MS5-006 ESP32-S3 immutable artifact storage and HTTP byte-range implementation"
   },
   "priority_workstream": {
     "name": "Kane Fabric Web Application",
     "design": "docs/WEB_APPLICATION_DESIGN.md",
-    "status": "active",
-    "active_item": "WEB-005 real-browser acceptance against accepted Kane County artifacts and reassessment of edge requirements",
-    "edge_dependency": "none through accepted WEB-004; WEB-005 determines whether the browser contract is stable enough to resume physical-edge implementation",
+    "status": "completed-for-current-ms5-edge-requirements",
+    "active_item": null,
     "accepted_work": {
-      "through": "WEB-004 explicit verification/error/offline behavior visible to the user",
-      "repository_head": "73252b6a3c87ba47b7f68f3e3206056607e1e53a",
-      "repository_gate": {
-        "ct102_authority_guard": "valid",
-        "ct102_dependency_policy": "passed",
-        "javascript_syntax": "passed",
-        "unit_tests": "28 passed, 0 failed",
-        "ct102_worktree": "clean"
-      },
-      "real_browser_gate": {
-        "verification_failure": "passed",
-        "offline_behavior": "passed",
-        "explicit_retry_recovery": "passed",
-        "physical_platform_assumed": false,
-        "evidence_sha256": "f9054cb884568e8503a8e7f416065aa5ea97bcd5b8082494a5ade00cb4db4b50"
-      }
-    },
-    "resume_ms5_006_when": "WEB-005 concludes that the accepted browser-facing serving/storage contract is sufficiently stable for the default physical-edge implementation"
+      "through": "WEB-005 real-browser closeout and edge-requirements reassessment",
+      "application_implementation_head": "73252b6a3c87ba47b7f68f3e3206056607e1e53a",
+      "checkpoint_head": "f83dac7ca2ef946edcd285be461a63eec339b59b",
+      "browser_contract_stable": true,
+      "resume_ms5_006": true
+    }
   },
   "consumer_exposed_requirements": {
     "gate_register": "docs/CONSUMER_INTERFACE_GATES.md",
@@ -141,5 +128,5 @@
       "mail aliases or economic/application semantics"
     ]
   },
-  "next_safe_action": "Proceed with WEB-005 according to docs/WEB_APPLICATION_DESIGN.md. Consolidate real-browser acceptance of the accepted Kane County application behavior and explicitly reassess the concrete serving/storage requirements for resuming MS5-006. Do not redesign the already accepted browser artifact contract merely to fit the ESP32-S3 reference platform."
+  "next_safe_action": "Proceed with MS5-006 according to docs/MILESTONE_5_DESIGN.md. Implement the ESP32-S3 default-reference immutable artifact storage and exact HTTP byte-range serving contract established by WEB-005 without changing accepted MS3/MS4 identities or the Web Application protocol."
 }
