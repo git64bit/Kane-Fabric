@@ -29,7 +29,14 @@
       "fetch_refspec": "+refs/heads/*:refs/remotes/origin/*",
       "last_observed_head": "ef6a08f03a94aabd6c15e9c02f6ed9470c65d3ce",
       "last_observed_worktree": "clean",
-      "note": "CT102 accepted the corrected MS5-006 repository gate on 2026-09-14. The host C compile test was explicitly skipped because CT102 has no host C compiler; the authoritative pinned ESP-IDF compile remains pending."
+      "note": "CT102 accepted the corrected MS5-006 repository gate on 2026-09-14. The host C compile test was explicitly skipped because CT102 has no host C compiler."
+    },
+    "ms5_006_hardware_execution": {
+      "environment": "dedicated ESP programming node with direct USB access",
+      "ct102_installs_esp_idf": false,
+      "ct102_uses_usb_passthrough": false,
+      "direct_usb_required_for_reference_workflow": true,
+      "status": "next-session-resume-environment"
     }
   },
   "operational_state": {
@@ -101,7 +108,7 @@
       "pinned_esp_idf_compile": "pending",
       "device_storage_range_evidence": "pending"
     },
-    "next_work_item": "MS5-006 pinned ESP-IDF v6.0.3 compile of the ESP32-S3 reference storage/range implementation"
+    "next_work_item": "MS5-006 pinned ESP-IDF v6.0.3 compile and physical storage/range work on the dedicated ESP programming node with direct USB access"
   },
   "priority_workstream": {
     "name": "Kane Fabric Web Application",
@@ -131,5 +138,5 @@
       "mail aliases or economic/application semantics"
     ]
   },
-  "next_safe_action": "Compile the MS5-006 ESP32-S3 reference implementation with the pinned ESP-IDF v6.0.3/toolchain selection. Treat host-native Linux/macOS/Windows distribution support as a separate undecided concern; it is not required by the browser-facing Kane Fabric contract."
+  "next_safe_action": "Resume MS5-006 on the dedicated ESP programming node. Do not install ESP-IDF in CT102 and do not add Proxmox USB passthrough for this workflow. First verify the pinned ESP-IDF v6.0.3/toolchain there, then build, flash, and collect device storage/range evidence against the accepted repository implementation. Native Linux/macOS/Windows distribution support remains a separate undecided concern."
 }
