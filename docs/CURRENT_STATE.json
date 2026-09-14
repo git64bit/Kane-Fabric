@@ -25,7 +25,7 @@
       "fetch_refspec": "+refs/heads/*:refs/remotes/origin/*",
       "last_observed_head": "4b9b9d3cbaaff08c90a63a7937fc2ac4efeb6dee",
       "last_observed_worktree": "clean",
-      "note": "CT102 has not yet accepted the bounded MS5-002/003 cross-contract correction published after this head."
+      "note": "CT102 has not yet accepted the bounded MS5-001/002 cross-contract correction published after this head."
     }
   },
   "operational_state": {
