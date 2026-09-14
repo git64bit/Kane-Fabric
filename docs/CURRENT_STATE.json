@@ -9,7 +9,8 @@
     "ms5_005_acceptance_head": "aed812df8c5e37bb1843e022d7a7813dc7e8e862",
     "web_001_acceptance_head": "98873196438f87f946796d9b4ffd2ff2a5a135e4",
     "web_002_acceptance_head": "ef3c08f77442e1a8cefe6a0567b50e10ce010dd3",
-    "web_003_acceptance_head": "b216a3d6e0fd7be51223754c9dc3459229498346"
+    "web_003_acceptance_head": "b216a3d6e0fd7be51223754c9dc3459229498346",
+    "web_004_acceptance_head": "73252b6a3c87ba47b7f68f3e3206056607e1e53a"
   },
   "deployment": {
     "proxmox_host": "srv-b",
@@ -23,9 +24,9 @@
       "branch": "main",
       "upstream": "origin/main",
       "fetch_refspec": "+refs/heads/*:refs/remotes/origin/*",
-      "last_observed_head": "b216a3d6e0fd7be51223754c9dc3459229498346",
+      "last_observed_head": "73252b6a3c87ba47b7f68f3e3206056607e1e53a",
       "last_observed_worktree": "clean",
-      "note": "CT102 accepted WEB-003 repository and real-browser interaction gates at this implementation head on 2026-09-14."
+      "note": "CT102 accepted WEB-004 repository and real-browser failure/recovery gates at this implementation head on 2026-09-14."
     }
   },
   "operational_state": {
@@ -60,27 +61,24 @@
     "web_002_browser_acceptance": {
       "directory": "/var/lib/kane-fabric/render/web-002/browser-acceptance-ef3c08f",
       "evidence_sha256": "cef970419e4983c845ac19956f4d2f9a7245444d90acb0d81ee917c907090d5a",
-      "browser": "Chromium 151.0.7922.137 built on Debian GNU/Linux 12 (bookworm)",
-      "partition": "west",
-      "object_count": 2,
-      "overlay_count": 2,
-      "bounded_ms3_range_reads": true,
-      "verified_ms4_composition_reads": true,
-      "physical_platform_assumed": false,
       "status": "accepted"
     },
     "web_003_browser_acceptance": {
       "directory": "/var/lib/kane-fabric/render/web-003/browser-acceptance-b216a3d",
       "evidence_sha256": "7c0c4afbb2e7ee02586d13a051ded35366501cebf210e716cd9239ba5c05b369",
+      "status": "accepted"
+    },
+    "web_004_browser_acceptance": {
+      "directory": "/var/lib/kane-fabric/render/web-004/browser-acceptance-73252b6",
+      "evidence_sha256": "f9054cb884568e8503a8e7f416065aa5ea97bcd5b8082494a5ade00cb4db4b50",
       "browser": "Chromium 151.0.7922.137 built on Debian GNU/Linux 12 (bookworm)",
-      "partition": "west",
-      "zoom_control": true,
-      "keyboard_pan": true,
-      "reset_control": true,
-      "independent_substrate_visibility": true,
-      "independent_subscription_visibility": true,
-      "verified_object_inspection": true,
-      "bounded_artifact_access": true,
+      "verified_then_offline": true,
+      "offline_no_new_artifact_fetch": true,
+      "corrupt_artifact_verification_failure": true,
+      "failed_verification_clears_presentation": true,
+      "offline_before_verification_fails_closed": true,
+      "connection_restored_retry_prompt": true,
+      "explicit_retry_recovery": true,
       "physical_platform_assumed": false,
       "status": "accepted"
     }
@@ -100,35 +98,33 @@
       "ct102_dependency_policy": "passed",
       "ct102_worktree": "clean"
     },
-    "next_work_item": "MS5-006 ESP32-S3 immutable artifact storage and HTTP byte-range implementation (deferred while the Web Application workstream establishes the real browser consumer requirements)"
+    "next_work_item": "MS5-006 ESP32-S3 immutable artifact storage and HTTP byte-range implementation (deferred pending WEB-005 reassessment of the browser/edge contract)"
   },
   "priority_workstream": {
     "name": "Kane Fabric Web Application",
     "design": "docs/WEB_APPLICATION_DESIGN.md",
     "status": "active",
-    "active_item": "WEB-004 explicit verification/error/offline behavior visible to the user",
-    "edge_dependency": "none for WEB-001 through WEB-004; development/software artifact sources may satisfy the same browser contract",
+    "active_item": "WEB-005 real-browser acceptance against accepted Kane County artifacts and reassessment of edge requirements",
+    "edge_dependency": "none through accepted WEB-004; WEB-005 determines whether the browser contract is stable enough to resume physical-edge implementation",
     "accepted_work": {
-      "through": "WEB-003 geographic navigation, layer/subscription visibility, and inspection interaction",
-      "repository_head": "b216a3d6e0fd7be51223754c9dc3459229498346",
+      "through": "WEB-004 explicit verification/error/offline behavior visible to the user",
+      "repository_head": "73252b6a3c87ba47b7f68f3e3206056607e1e53a",
       "repository_gate": {
         "ct102_authority_guard": "valid",
         "ct102_dependency_policy": "passed",
         "javascript_syntax": "passed",
-        "unit_tests": "21 passed, 0 failed",
+        "unit_tests": "28 passed, 0 failed",
         "ct102_worktree": "clean"
       },
       "real_browser_gate": {
-        "browser": "Chromium 151.0.7922.137 built on Debian GNU/Linux 12 (bookworm)",
-        "interaction_controls": "passed",
-        "visibility_controls": "passed",
-        "object_inspection": "passed",
-        "bounded_artifact_access": "passed",
+        "verification_failure": "passed",
+        "offline_behavior": "passed",
+        "explicit_retry_recovery": "passed",
         "physical_platform_assumed": false,
-        "evidence_sha256": "7c0c4afbb2e7ee02586d13a051ded35366501cebf210e716cd9239ba5c05b369"
+        "evidence_sha256": "f9054cb884568e8503a8e7f416065aa5ea97bcd5b8082494a5ade00cb4db4b50"
       }
     },
-    "resume_ms5_006_when": "the Web Application establishes concrete serving/storage requirements or WEB-005 determines the browser contract is ready for physical-edge implementation"
+    "resume_ms5_006_when": "WEB-005 concludes that the accepted browser-facing serving/storage contract is sufficiently stable for the default physical-edge implementation"
   },
   "consumer_exposed_requirements": {
     "gate_register": "docs/CONSUMER_INTERFACE_GATES.md",
@@ -145,5 +141,5 @@
       "mail aliases or economic/application semantics"
     ]
   },
-  "next_safe_action": "Proceed with WEB-004 according to docs/WEB_APPLICATION_DESIGN.md. Make verification, network/offline failure, and recovery behavior explicit to the user while preserving the accepted MS3/MS4 verification boundary and platform-neutral artifact-source contract. Keep MS5-006 deferred."
+  "next_safe_action": "Proceed with WEB-005 according to docs/WEB_APPLICATION_DESIGN.md. Consolidate real-browser acceptance of the accepted Kane County application behavior and explicitly reassess the concrete serving/storage requirements for resuming MS5-006. Do not redesign the already accepted browser artifact contract merely to fit the ESP32-S3 reference platform."
 }
