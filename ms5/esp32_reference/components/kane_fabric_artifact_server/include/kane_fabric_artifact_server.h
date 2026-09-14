@@ -20,15 +20,16 @@ typedef struct {
 /*
  * Register the wildcard GET artifact handler.
  *
- * The caller owns both `instance` and the HTTP/HTTPS server. `instance` must
- * remain alive for the lifetime of the registered handler.
+ * The caller owns both `instance` and the ESP-IDF HTTP server. `instance`
+ * must remain alive for the lifetime of the registered handler.
  *
  * The caller MUST configure:
  *     httpd_config_t.uri_match_fn = httpd_uri_match_wildcard
  * before starting the server.
  *
- * This component is transport-neutral and can be registered on the
- * browser-trusted HTTPS server established by the MS5-004 contract.
+ * The Kane Fabric ESP32-S3 reference attaches this component to a plain HTTP
+ * server. Browser HTTPS and certificate trust terminate at the Wiregate hub;
+ * this component does not create, terminate, or manage browser TLS.
  */
 esp_err_t kf_artifact_server_register(
     httpd_handle_t server,

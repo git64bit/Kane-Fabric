@@ -78,13 +78,13 @@ accepted Fabric geography
 
 MS5-008 may use existing WireGuard infrastructure for runtime feasibility testing. That does not make the existing hub, VPN address, peer key, or topology part of the Kane Fabric logical contract.
 
-### 2.3 Mechanical Compiler public TLS does not solve the Fabric edge-origin problem
+### 2.3 Mechanical Compiler public TLS is evidence for the Wiregate pattern, not edge TLS
 
 The Mechanical Compiler's browser path terminates public TLS on centrally reachable infrastructure and then traverses private transport/proxy layers.
 
-MS5-004 has a different requirement: a normal browser must reach a local physical Fabric edge and obtain a secure context while central Fabric infrastructure may be unavailable.
+The accepted Kane Fabric MS5-004 topology applies the same role-separation principle locally: browser HTTPS terminates at the Wiregate hub and the hub reaches the ESP32-S3 reference edge over plain HTTP.
 
-Therefore the Mechanical Compiler TLS arrangement is useful operational evidence but is **not** an MS5 secure-origin solution.
+Mechanical Compiler's existing TLS deployment is therefore useful operational evidence for that separation, but it is not the Kane Fabric Wiregate implementation, browser-origin identity, or edge-management contract.
 
 ### 2.4 Future delivery-point identity must remain upstream of application authorization
 
@@ -181,27 +181,27 @@ Kane Fabric must not silently assume that the current hub, manual peer inventory
 
 MS5 may prove the ESP32 transport against a controlled hub. Before managed synchronization becomes production architecture, peer lifecycle, capacity, ownership, replacement, and failure isolation require an explicit design.
 
-### KF-MC-007 — local Fabric browser origin remains independent
+### KF-MC-007 — Wiregate browser origin remains independent
 
+**Status:** RESOLVED by accepted MS5 transport-architecture correction, 2026-09-14  
 **Owner:** Kane Fabric MS5-004  
-**Blocks:** MS5 browser secure-origin acceptance  
 **Does not block:** Mechanical Compiler
 
-Central public TLS and reverse-proxy TLS used by Mechanical Compiler do not satisfy the offline/local-browser requirement for the physical Fabric edge.
+Central public TLS and reverse-proxy TLS used by Mechanical Compiler do not themselves define the Kane Fabric browser origin. The accepted MS5-004 solution is a local Wiregate hub that terminates browser HTTPS and proxies plain HTTP to the ESP32-S3 reference edge.
 
-MS5-004 must solve device-local secure browser access without making a person, delivery point, membership group, WireGuard address, or physical device identifier into Fabric logical identity.
+The Wiregate/browser-origin identity remains independent of person, delivery point, membership group, WireGuard address, physical edge identifier, and Fabric logical content identity.
 
 ### KF-MC-008 — CA and credential hierarchies remain separate by role
 
 **Owner:** both projects / deployment operator  
 **Blocks:** any proposal to collapse trust roots merely for convenience
 
-Mechanical Compiler currently uses public TLS plus a local staging CA inside its service path. Kane Fabric MS5 separately needs a browser-serving device identity and may later use management credentials.
+Mechanical Compiler currently uses public TLS plus a local staging CA inside its service path. Kane Fabric MS5 separately uses a browser-serving Wiregate TLS identity and may later use edge management credentials.
 
 No current evidence justifies sharing:
 
 - Mechanical Compiler proxy certificates;
-- Fabric edge TLS keys;
+- Kane Fabric Wiregate TLS certificates or private keys;
 - WireGuard keys;
 - membership/identity issuer keys;
 - Fabric release-signing or geographic-promotion authority.
@@ -242,7 +242,7 @@ No newly discovered Mechanical Compiler gate blocks the current MS5 sequence.
 
 Relevant carried constraints:
 
-- **MS5-004:** solve local browser secure origin independently of Mechanical Compiler central TLS and independently of person/membership identity.
+- **MS5-004:** browser HTTPS terminates at the Wiregate hub; the hub reaches the ESP32-S3 reference edge over plain HTTP; browser TLS identity remains separate from person/membership and Fabric logical identity.
 - **MS5-008:** prove WireGuard only as management transport; do not promote the current `wg-pk` deployment into a fleet architecture by accident.
 - **MS5-010:** physical device replacement changes device-local identities only, never application/person/geographic identity.
 

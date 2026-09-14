@@ -2,7 +2,7 @@
 
 ## Status
 
-Active Milestone 3 design baseline.
+Historical Milestone 3 design baseline. Milestone 3 is released; current physical-edge authority is `docs/MILESTONE_5_DESIGN.md`.
 
 Milestone 3 produces the first deterministic browser-consumable Kane Fabric shared substrate for:
 
@@ -116,7 +116,7 @@ The format must support:
 
 The v1 fixed 16-byte prefix and indexed chunk layout are specifically intended to let a browser obtain only the index and selected compressed byte ranges from an ESP-IDF HTTP handler.
 
-Milestone 5 will implement and prove the final reference edge behavior, including the HTTP serving contract, storage layout, activation, recovery, and AP/STA experiments.
+At the time of Milestone 3, Milestone 5 was expected to prove the final reference edge behavior including AP/STA experiments. The later accepted MS5 transport correction supersedes that network assumption: browser HTTPS terminates at the Wiregate hub, the ESP32-S3 serves plain HTTP behind it, and an ESP32-hosted AP is not a browser requirement. The Milestone 3 package-format constraint remains unchanged.
 
 ## Browser proof
 

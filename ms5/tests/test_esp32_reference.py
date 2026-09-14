@@ -87,6 +87,29 @@ class Esp32ReferenceTests(unittest.TestCase):
         self.assertIn("HTTPS terminates at the Wiregate hub", app)
         self.assertNotIn("browser-trusted HTTPS server startup", app)
 
+    def test_reference_contract_docs_keep_tls_at_wiregate(self):
+        header = (
+            REFERENCE
+            / "components/kane_fabric_artifact_server/include/kane_fabric_artifact_server.h"
+        ).read_text()
+        gates = (REPO / "docs/CONSUMER_INTERFACE_GATES.md").read_text()
+        ms3 = (REPO / "docs/MILESTONE_3_DESIGN.md").read_text()
+
+        self.assertIn("plain HTTP", header)
+        self.assertIn("Wiregate hub", header)
+        self.assertNotIn("HTTP/HTTPS server", header)
+        self.assertNotIn("browser-trusted HTTPS server", header)
+
+        self.assertIn("browser HTTPS terminates at the Wiregate hub", gates)
+        self.assertNotIn(
+            "normal browser must reach a local physical Fabric edge and obtain a secure context",
+            gates,
+        )
+        self.assertNotIn("Fabric edge TLS keys", gates)
+
+        self.assertIn("Historical Milestone 3 design baseline", ms3)
+        self.assertIn("later accepted MS5 transport correction supersedes", ms3)
+
     def test_edge_image_staging_preserves_verified_artifacts(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
