@@ -119,7 +119,7 @@
       "pinned_esp_idf_compile": "pending-after-firmware-role-freeze",
       "device_storage_range_evidence": "pending-after-firmware-role-freeze"
     },
-    "next_work_item": "Accept the frozen ESP32-S3 v1 firmware responsibility profile in CT102 before resuming MS5-006 physical execution."
+    "next_work_item": "MS5-006 — accept the frozen ESP32-S3 v1 firmware responsibility profile in CT102 before resuming physical execution."
   },
   "priority_workstream": {
     "name": "Kane Fabric Web Application",
