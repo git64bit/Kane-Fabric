@@ -66,7 +66,7 @@ docs/CONSUMER_INTERFACE_GATES.md
 
 Do not recreate a second complete MS5 work sequence in another current document.
 
-## 3. Accepted MS5 checkpoint
+## 3. Accepted MS5 checkpoints
 
 MS5-001 through MS5-003 were originally accepted on CT102 on 2026-09-12 at:
 
@@ -108,13 +108,30 @@ MS5 contract tests: 20 passed, 0 failed
 worktree: clean
 ```
 
-This checkpoint is accepted. Do not rerun or reopen MS5-001..003 merely because documentation advances after this accepted head. Rerun only if an implementation, dependency, environment, or contradictory live observation invalidates the accepted gate.
+MS5-004 then added the browser secure-origin plus local AP/STA access contract. It requires a physical edge access profile that is bound to the actual edge instance and browser-TLS key provider, uses HTTPS rather than arbitrary LAN HTTP, preserves the boundary between browser/TLS identity and Fabric geography, and keeps AP+STA shared-radio/channel behavior as an explicit measurement obligation rather than an assumption.
+
+MS5-004 was accepted on CT102 on 2026-09-14 at:
+
+```text
+07f4f71f51b538bc1fc5d446691e0bbcfc03cd9c
+```
+
+Acceptance evidence:
+
+```text
+MS5 work-sequence authority guard: valid
+python compileall: PASS
+MS5 contract tests: 28 passed, 0 failed
+worktree: clean
+```
+
+This checkpoint is accepted. Do not rerun or reopen MS5-001..004 merely because documentation advances after this accepted head. Rerun only if an implementation, dependency, environment change, or contradictory live observation invalidates an accepted gate.
 
 The next normative work item is now:
 
 ```text
-MS5-004
-browser secure-origin plus local AP/STA access contract
+MS5-005
+ESP-IDF/toolchain and retained dependency selection plan
 ```
 
 ## 4. Approved physical-edge security position
@@ -219,7 +236,7 @@ SHA256 31e362b696a37f1b9c45ae355c5669511a3128c17a651108a62e20d1cedebd67
 
 GitHub `main` is software/documentation authority. CT102 is the real compiler/runtime/acceptance environment. An Assistant sandbox is not CT102.
 
-CT102 was last observed clean at `762041080fa51e6441546b7ba14bd07792676b9f`, where the corrected MS5-001..003 contract set passed its acceptance gate. GitHub `main` may be ahead by documentation-only material-checkpoint commits; that alone does not invalidate the accepted implementation gate.
+CT102 was last observed clean at `07f4f71f51b538bc1fc5d446691e0bbcfc03cd9c`, where MS5-004 and the previously accepted MS5 contracts passed the 28-test acceptance gate. GitHub `main` may be ahead by documentation-only material-checkpoint commits; that alone does not invalidate the accepted implementation gate.
 
 ## 9. Development discipline
 
@@ -232,19 +249,19 @@ CT102 was last observed clean at `762041080fa51e6441546b7ba14bd07792676b9f`, whe
 - Do not burn ESP32 eFuses as a Kane Fabric reference-edge requirement.
 - Do not make WireGuard, TLS, secure-element, device, person, or membership identity into Fabric logical identity.
 - Treat `docs/CONSUMER_INTERFACE_GATES.md` as a gate register, not a backlog that Kane Fabric owns.
-- Do not reopen MS5-001..003 unless a later implementation, dependency, environment change, or contradictory observation invalidates an accepted contract.
+- Do not reopen MS5-001..004 unless a later implementation, dependency, environment change, or contradictory observation invalidates an accepted contract.
 
 ## 10. Next safe action
 
 Proceed with:
 
 ```text
-MS5-004
-browser secure-origin plus local AP/STA access contract
+MS5-005
+ESP-IDF/toolchain and retained dependency selection plan
 ```
 
-Use `docs/MILESTONE_5_DESIGN.md` as the sole detailed work-sequence authority. Make the smallest coherent contract/implementation/test change needed for MS5-004 on GitHub `main`, then synchronize CT102 and run only the acceptance work invalidated by that change.
+Use `docs/MILESTONE_5_DESIGN.md` as the sole detailed work-sequence authority. MS5-005 must freeze a reproducible ESP-IDF/toolchain and retained-dependency plan with exact immutable versions, license review, and offline/vendored reproduction expectations. The earlier WireGuard compile observation remains feasibility evidence only and must not be converted into an accepted dependency without its later runtime/resource proof.
 
-Do not rerun the accepted MS5-001..003 gate merely because this handoff/current-state checkpoint advanced documentation beyond the CT102 acceptance head.
+Do not rerun the accepted MS5-001..004 gate merely because this handoff/current-state checkpoint advances documentation beyond the CT102 acceptance head.
 
-After MS5-004, continue in the normative order defined only by `docs/MILESTONE_5_DESIGN.md`.
+After MS5-005, continue in the normative order defined only by `docs/MILESTONE_5_DESIGN.md`.
