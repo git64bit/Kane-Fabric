@@ -10,9 +10,7 @@ The byte-identical accepted MS3 reproduction remains at `/var/lib/kane-fabric/re
 
 ## Web Application closeout
 
-WEB-001 through WEB-004 established the dependency-free platform-neutral browser application, verified MS3/MS4 composition, navigation/layer inspection, and explicit fail-closed verification/offline/retry behavior.
-
-WEB-005 passed on CT102 on 2026-09-14. The application implementation remained `73252b6a3c87ba47b7f68f3e3206056607e1e53a`; the later checkpoint `f83dac7ca2ef946edcd285be461a63eec339b59b` changed only status documentation.
+WEB-001 through WEB-005 are complete for the current MS5 edge-requirements purpose. The application implementation remained `73252b6a3c87ba47b7f68f3e3206056607e1e53a`; the later WEB-005 checkpoint `f83dac7ca2ef946edcd285be461a63eec339b59b` changed only status documentation.
 
 WEB-005 evidence:
 
@@ -24,15 +22,40 @@ browser contract stable      true
 resume MS5-006               true
 ```
 
-The Web Application is sufficient as the reference client/acceptance instrument for this stage. No UI-polish work is required before the physical-edge work proceeds.
+The current UI is sufficient as the reference client/acceptance instrument. UI polish is not required before physical-edge work proceeds.
 
-## Active work
+## MS5-006 status
 
-Milestone 5 is current. MS5-005 remains the last fully accepted MS5 implementation checkpoint at `aed812df8c5e37bb1843e022d7a7813dc7e8e862`. The active normative item is now **MS5-006**, the ESP32-S3 immutable artifact storage and HTTP byte-range reference implementation.
+MS5-006 is active. The repository implementation is accepted at:
 
-WEB-005 froze the edge-facing requirements needed now: immutable released MS3/MS4 bytes, ordinary GET for small files, exact closed single-range `206` serving for `.kfs`, explicit `Content-Length`/`Content-Range`/`Accept-Ranges`, rejection of unsupported range forms, browser CORS support, bounded direct-from-storage reads, and no device-specific browser API or geographic authority. Physical browser access must still satisfy the MS5-004 browser-trusted HTTPS secure-origin contract.
+```text
+ef6a08f03a94aabd6c15e9c02f6ed9470c65d3ce
+```
 
-Throughput/concurrency limits remain later measurement work. WireGuard runtime, firmware update mechanics, and physical replacement remain their existing later MS5 gates.
+CT102 repository acceptance:
+
+```text
+MS5 authority guard       valid
+dependency policy         PASS
+Python compileall         PASS
+MS5 tests                 42 passed, 1 environment skip
+host C compiler           absent on CT102
+host C compile            SKIPPED
+worktree                  clean
+```
+
+The single skip is deliberate environment classification: CT102 has no host C compiler. It is not implementation acceptance evidence. The authoritative C compilation gate is the pinned ESP-IDF v6.0.3 ESP32-S3 build and remains pending.
+
+The repository implementation preserves the WEB-005 edge contract: immutable read-only artifact storage, ordinary GET, exact closed single-range `206` behavior, bounded direct-from-storage reads, CORS/range headers, no device-specific browser API, and no geographic authority at the edge. The artifact component registers onto a caller-owned HTTP/HTTPS server so MS5-006 does not weaken the already accepted MS5-004 browser-trusted HTTPS requirement.
+
+Current remaining MS5-006 evidence:
+
+```text
+pinned ESP-IDF v6.0.3 compile    PENDING
+device storage/range evidence    PENDING
+```
+
+Native Linux/macOS/Windows distribution support is not part of the MS5-006 browser-facing contract and remains an independent, undecided product/distribution concern.
 
 ## Stable operational authorities
 
@@ -47,7 +70,7 @@ authoritative DB    /var/lib/kane-fabric/database/kane-county-fabric.gpkg
 DB SHA256           31e362b696a37f1b9c45ae355c5669511a3128c17a651108a62e20d1cedebd67
 ```
 
-CT102 was last observed clean at `f83dac7ca2ef946edcd285be461a63eec339b59b` after WEB-005 closeout. Repository-side MS5-006 work must be accepted there before pinned ESP-IDF/device evidence is attempted.
+CT102 was last observed clean at `ef6a08f03a94aabd6c15e9c02f6ed9470c65d3ce` after corrected MS5-006 repository acceptance.
 
 ## Execution discipline
 
