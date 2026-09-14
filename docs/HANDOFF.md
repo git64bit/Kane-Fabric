@@ -48,7 +48,7 @@ worktree                  clean
 
 The single skip is deliberate environment classification: CT102 has no host C compiler. It is not implementation acceptance evidence. The authoritative C compilation gate remains the pinned ESP-IDF v6.0.3 ESP32-S3 build.
 
-The accepted implementation already provides the useful storage/range behavior: immutable read-only artifact storage, ordinary GET, exact closed single-range `206` behavior, bounded direct-from-storage reads, CORS/range headers, no device-specific browser API, and no geographic authority at the edge.
+The accepted implementation already provides immutable read-only artifact storage, ordinary GET, exact closed single-range `206` behavior, bounded direct-from-storage reads, CORS/range headers, no device-specific browser API, and no geographic authority at the edge.
 
 ## Accepted MS5 transport architecture
 
@@ -59,8 +59,6 @@ browser -- HTTPS --> Wiregate hub -- HTTP --> ESP32-S3
 ```
 
 The correction removes `browser-tls-server` from the ESP32 key-provider role set, makes an ESP32-hosted AP non-required, keeps direct ESP32 HTTP as a diagnostic/backend path rather than the browser secure origin, and explicitly prevents WireGuard from becoming a prerequisite for MS5-007. Management/WireGuard remains MS5-008.
-
-The ESP32-S3 remains in the first release primarily to establish a real firmware lifecycle early. Its initial role is intentionally modest: immutable storage, bounded plain-HTTP serving, provisioning/replacement, and a base for later firmware responsibilities.
 
 The transport/key-role/browser-path correction was accepted in CT102 at:
 
@@ -83,9 +81,7 @@ worktree                        clean
 
 ## Residual reconciliation closeout
 
-A repository-wide tracked-file audit then found three residual areas carrying older assumptions: the active consumer gate register, the public ESP32 artifact-server header, and a forward-looking Milestone 3 AP/STA statement. Those were corrected in one bounded commit and protected by a regression test.
-
-The residual reconciliation was accepted in CT102 at:
+A repository-wide tracked-file audit then corrected residual older assumptions in the active consumer gate register, the public ESP32 artifact-server header, and a forward-looking Milestone 3 AP/STA statement. The residual reconciliation was accepted in CT102 at:
 
 ```text
 c43814961cb14d6623ef92e40d6cf4d72f8ef37e
@@ -103,25 +99,23 @@ host C compile                  SKIPPED
 worktree                        clean
 ```
 
-The remaining AP/TLS/WireGuard strings in tracked files are accepted-topology statements, explicit negations, historical annotations, or negative tests. In particular, `local-ap-http` remains only in a negative browser-access test that verifies such a transport is rejected; the active browser transport is `wiregate-hub-proxy`.
+The repository transport reconciliation is complete.
 
-The repository reconciliation review is therefore complete. No further actionable browser-TLS, local-AP, WireGuard-ordering, or overstated first-release ESP32-role drift was identified in that pass.
+## Accepted ESP32-S3 v1 firmware responsibility freeze
 
-## ESP32-S3 v1 firmware responsibility freeze
+The first-release firmware role is now explicitly frozen so later experiments cannot expand v1 merely because ESP-IDF supports additional features.
 
-Before physical work resumes, the first-release firmware role is being frozen explicitly rather than allowing the existing implementation or later experiments to define the product by accident.
-
-The candidate boundary defines three distinct classes:
+The accepted boundary has three distinct classes:
 
 1. **core runtime responsibilities:** firmware identity/serial diagnostics, deployment-network client attachment, read-only artifact storage, active-inventory verification, plain HTTP GET/range serving, fail-closed invalid-state behavior, and continued serving of the last valid generation without management connectivity;
 2. **required lifecycle responsibilities:** firmware source/build inputs/scripts tracked in Git, exact pinned build, identifiable firmware artifact, reproducible flash/reprovisioning, update/rollback/recovery proof, replacement identity preservation, and device acceptance evidence;
 3. **candidate-only capabilities:** WireGuard management transport, managed synchronization, automatic update transport, secure-element use, fleet telemetry, and richer discovery.
 
-Browser TLS/certificate lifecycle, browser authentication, ESP32-hosted browser AP behavior, geographic/release-signing authority, county-database/source-promotion work, browser GIS/rendering, membership/person identity, and fleet orchestration are explicitly outside the v1 firmware responsibility boundary.
+Browser TLS/certificate lifecycle, browser authentication, ESP32-hosted browser AP behavior, geographic/release-signing authority, county-database/source-promotion work, browser GIS/rendering, membership/person identity, and fleet orchestration are outside the v1 firmware responsibility boundary.
 
 The executable mirror is `ms5/tools/kane_fabric_firmware_v1.py`; normative prose remains in `docs/MILESTONE_5_DESIGN.md`.
 
-The candidate also freezes acceptance ownership:
+Acceptance ownership is frozen as:
 
 ```text
 CT102
@@ -143,24 +137,52 @@ Later MS5 integration
   constrained-resource coexistence
 ```
 
-MS5-008 is explicitly allowed to retain, reject, or defer WireGuard. A result of "do not retain WireGuard on ESP32-S3" does not make v1 firmware incomplete.
+MS5-008 may retain, reject, or defer WireGuard. A result of "do not retain WireGuard on ESP32-S3" does not make v1 firmware incomplete.
 
-This firmware-role freeze is a **published repository candidate pending CT102 acceptance**. Physical execution remains paused until the candidate contract and tests pass in CT102 and a material acceptance checkpoint is recorded.
+The firmware-role freeze was accepted in CT102 at:
+
+```text
+5d45fd600468060104341166adf23bb6465393d2
+```
+
+Acceptance evidence:
+
+```text
+firmware-v1 structural guard    PASS
+MS5 work-sequence authority     valid
+Python compileall               PASS
+MS5 tests                       54 passed, 1 environment skip
+host C compiler                 absent on CT102
+host C compile                  SKIPPED
+worktree                        clean
+```
+
+The single skip remains deliberate: CT102 has no host C compiler. It does not replace the authoritative pinned ESP-IDF build on the dedicated programming node.
+
+## Firmware source and execution ownership
+
+Firmware source belongs in GitHub even though CT102 remains outside the firmware build/USB path.
+
+Git tracks the firmware source, CMake/configuration inputs, pinned toolchain/dependency description, host-testable logic, build/flash/acceptance scripts, and documentation. Generated build outputs, serial captures, device logs, and physical acceptance evidence remain outside Git under the operational evidence tree unless a later release process explicitly publishes selected firmware artifacts.
+
+CT102 remains the repository/browser/contract acceptance environment. It must not acquire ESP-IDF merely to validate repository state, and it must not receive Proxmox USB passthrough for the reference firmware workflow.
 
 ## Hardware execution status
 
-Physical ESP32-S3 execution is **paused pending acceptance of the firmware v1 responsibility freeze**.
+Physical ESP32-S3 execution has not yet restarted, but it is no longer blocked by repository reconciliation or firmware-role definition. It may resume when the operator chooses.
 
-Do **not** install ESP-IDF in CT102 and do **not** add Proxmox USB passthrough. CT102 remains the repository/browser/contract acceptance environment. After the role freeze is accepted, the dedicated ESP programming node will own pinned ESP-IDF verification, build, flash, serial/device diagnostics, and physical storage/range evidence.
+The dedicated ESP programming node owns pinned ESP-IDF verification, build, flash, serial/device diagnostics, and physical storage/range evidence.
 
 Current hardware evidence remains:
 
 ```text
-pinned ESP-IDF v6.0.3 compile    PENDING after firmware-role freeze
-device storage/range evidence    PENDING after firmware-role freeze
+pinned ESP-IDF v6.0.3 compile    PENDING
+device storage/range evidence    PENDING
 ```
 
-Firmware source remains in the GitHub repository even though firmware compilation/USB work does not occur in CT102. Generated build/device evidence remains outside Git unless a later release process explicitly publishes selected firmware binaries as release artifacts.
+The first physical action is to verify the exact pinned ESP-IDF v6.0.3/toolchain environment. Only after that verification should the tracked `ms5/esp32_reference` firmware be compiled. Flash/storage/network/device integration follows only after a clean pinned build.
+
+Candidate-only capabilities must not be added to the core v1 runtime during this work. In particular, do not add WireGuard merely to support MS5-006 or MS5-007.
 
 Native Linux/macOS/Windows distribution support remains an independent, undecided product/distribution concern.
 
@@ -177,11 +199,11 @@ authoritative DB    /var/lib/kane-fabric/database/kane-county-fabric.gpkg
 DB SHA256           31e362b696a37f1b9c45ae355c5669511a3128c17a651108a62e20d1cedebd67
 ```
 
-CT102 was last observed clean at `58faa54638b60c50a688d4de3f23d211917cd525` after synchronizing the transport-reconciliation closeout. The accepted MS5-006 implementation baseline remains `ef6a08f03a94aabd6c15e9c02f6ed9470c65d3ce`; the accepted transport architecture is `9cdb0206f4f7280799bec9d228a4f56a326a4ad1`; the residual reconciliation acceptance head is `c43814961cb14d6623ef92e40d6cf4d72f8ef37e`.
+CT102 was last observed clean at `5d45fd600468060104341166adf23bb6465393d2` after accepting the firmware-v1 role freeze. The accepted MS5-006 implementation baseline remains `ef6a08f03a94aabd6c15e9c02f6ed9470c65d3ce`; the accepted transport architecture is `9cdb0206f4f7280799bec9d228a4f56a326a4ad1`; the residual reconciliation acceptance head is `c43814961cb14d6623ef92e40d6cf4d72f8ef37e`; the firmware-v1 role acceptance head is `5d45fd600468060104341166adf23bb6465393d2`.
 
 ## Next safe action
 
-Synchronize clean CT102 to the published firmware-role candidate and run only the invalidated repository gates: Python compileall, the MS5 work-sequence authority check, and the MS5 test suite. Do not begin ESP-IDF build/flash/device work until the role freeze is accepted and checkpointed.
+MS5-006 physical execution may resume when the operator chooses. Use the dedicated ESP programming node with direct USB access, verify the exact pinned ESP-IDF v6.0.3/toolchain first, then compile the tracked `ms5/esp32_reference` firmware. Do not begin flash/storage/network/device integration until the pinned build is clean, and do not promote candidate-only capabilities into the core v1 runtime without their later explicit MS5 acceptance gate.
 
 ## Execution discipline
 
