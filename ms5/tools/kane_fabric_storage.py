@@ -8,6 +8,7 @@ from collections.abc import Mapping, Sequence
 from pathlib import Path, PurePosixPath
 
 from ms5.tools.common import ContractError, canonical_json_bytes, nonempty_text, sha256_text
+from ms5.tools.kane_fabric_edge import validate_edge_instance
 
 INVENTORY_FORMAT = "kane-fabric-edge-storage-inventory"
 ACTIVATION_FORMAT = "kane-fabric-edge-activation-state"
@@ -144,6 +145,8 @@ def build_activation_state(
         rollback_inventory_sha256 = sha256_text(
             rollback_inventory_sha256, "rollback_inventory_sha256"
         )
+    if active_inventory_sha256 is None and rollback_inventory_sha256 is not None:
+        raise StorageContractError("rollback inventory requires an active inventory")
     if active_inventory_sha256 is not None and active_inventory_sha256 == rollback_inventory_sha256:
         raise StorageContractError("active and rollback inventories must differ")
     return {
@@ -176,10 +179,20 @@ def activate_inventory(
     state: Mapping[str, object],
     candidate: Mapping[str, object],
     *,
+    edge_instance: Mapping[str, object],
     verified_inventory_sha256: str,
 ) -> dict[str, object]:
     validate_activation_state(state)
     validate_inventory(candidate)
+    validate_edge_instance(edge_instance)
+
+    edge_logical = edge_instance["logical"]
+    expected_placement = edge_logical["logical_placement_sha256"]
+    if candidate["logical_placement_sha256"] != expected_placement:
+        raise StorageContractError(
+            "candidate inventory logical placement does not match edge logical placement"
+        )
+
     candidate_sha = str(candidate["inventory_sha256"])
     verified_sha = sha256_text(
         verified_inventory_sha256, "verified_inventory_sha256"
