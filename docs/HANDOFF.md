@@ -66,28 +66,19 @@ docs/CONSUMER_INTERFACE_GATES.md
 
 Do not recreate a second complete MS5 work sequence in another current document.
 
-## 3. Accepted MS5 checkpoint and pending bounded correction
+## 3. Accepted MS5 checkpoint
 
-MS5-001 through MS5-003 were accepted on CT102 on 2026-09-12 at:
+MS5-001 through MS5-003 were originally accepted on CT102 on 2026-09-12 at:
 
 ```text
 4b9b9d3cbaaff08c90a63a7937fc2ac4efeb6dee
 ```
 
-Acceptance evidence:
+with 18 passing contract tests.
 
-```text
-python compileall: PASS
-MS5 contract tests: 18 passed, 0 failed
-worktree: clean
-MS5 authority guard: valid
-```
+A later handoff review identified one bounded cross-contract gap: the edge descriptor and storage inventory each carried a `logical_placement_sha256`, but activation did not enforce equality between them. It also identified an undefined activation state in which rollback existed while no active inventory existed.
 
-The accepted contracts establish replaceable physical edges, no edge-held Fabric authority, no required irreversible ESP32 eFuse operation, optional/substitutable external key providers, storage identity independent of storage location, whole-inventory activation/rollback/recovery, bounded streaming verification, and separate replaceable TLS/management key roles.
-
-A handoff review then identified one real cross-contract gap: the edge descriptor and storage inventory each carried a `logical_placement_sha256`, but activation did not enforce equality between them. It also identified an undefined activation state in which rollback existed while no active inventory existed.
-
-A bounded correction is now published at implementation head:
+The bounded correction was implemented at:
 
 ```text
 025b55df42f3cc9d3613a2ae845952ce2bc033c7
@@ -102,12 +93,28 @@ The correction:
 
 This is a join/enforcement correction to the existing MS5-001/002 contracts. It does **not** redesign MS5, MS3/MS4 identity, or the roadmap.
 
-**The correction has not yet been accepted on CT102.** Therefore do not begin MS5-004 until the bounded correction passes CT102 acceptance.
-
-Expected MS5 contract-test count after the correction:
+The corrected MS5-001 through MS5-003 contract set was accepted on CT102 on 2026-09-14 at checkout head:
 
 ```text
-20 passed, 0 failed
+762041080fa51e6441546b7ba14bd07792676b9f
+```
+
+Acceptance evidence:
+
+```text
+MS5 work-sequence authority guard: valid
+python compileall: PASS
+MS5 contract tests: 20 passed, 0 failed
+worktree: clean
+```
+
+This checkpoint is accepted. Do not rerun or reopen MS5-001..003 merely because documentation advances after this accepted head. Rerun only if an implementation, dependency, environment, or contradictory live observation invalidates the accepted gate.
+
+The next normative work item is now:
+
+```text
+MS5-004
+browser secure-origin plus local AP/STA access contract
 ```
 
 ## 4. Approved physical-edge security position
@@ -212,7 +219,7 @@ SHA256 31e362b696a37f1b9c45ae355c5669511a3128c17a651108a62e20d1cedebd67
 
 GitHub `main` is software/documentation authority. CT102 is the real compiler/runtime/acceptance environment. An Assistant sandbox is not CT102.
 
-CT102 was last observed clean at the original MS5-003 acceptance head. GitHub `main` is now ahead by documentation/interface-gate updates plus the bounded executable correction above.
+CT102 was last observed clean at `762041080fa51e6441546b7ba14bd07792676b9f`, where the corrected MS5-001..003 contract set passed its acceptance gate. GitHub `main` may be ahead by documentation-only material-checkpoint commits; that alone does not invalidate the accepted implementation gate.
 
 ## 9. Development discipline
 
@@ -225,24 +232,19 @@ CT102 was last observed clean at the original MS5-003 acceptance head. GitHub `m
 - Do not burn ESP32 eFuses as a Kane Fabric reference-edge requirement.
 - Do not make WireGuard, TLS, secure-element, device, person, or membership identity into Fabric logical identity.
 - Treat `docs/CONSUMER_INTERFACE_GATES.md` as a gate register, not a backlog that Kane Fabric owns.
-- Do not reopen MS5-001..003 beyond the explicitly bounded placement/activation correction unless new evidence invalidates another accepted contract.
+- Do not reopen MS5-001..003 unless a later implementation, dependency, environment change, or contradictory observation invalidates an accepted contract.
 
 ## 10. Next safe action
 
-On CT102:
-
-1. verify `/tmp/kane-fabric-ms2` is clean and still at the last accepted MS5-003 head;
-2. fetch and fast-forward to current GitHub `main`;
-3. run the MS5 work-sequence authority guard;
-4. run Python compileall for `ms5`;
-5. run `bash ms5/run-tests.sh`;
-6. require **20 passing contract tests, 0 failures**, and a clean worktree.
-
-If that gate passes, record the bounded correction as accepted and proceed with:
+Proceed with:
 
 ```text
 MS5-004
 browser secure-origin plus local AP/STA access contract
 ```
+
+Use `docs/MILESTONE_5_DESIGN.md` as the sole detailed work-sequence authority. Make the smallest coherent contract/implementation/test change needed for MS5-004 on GitHub `main`, then synchronize CT102 and run only the acceptance work invalidated by that change.
+
+Do not rerun the accepted MS5-001..003 gate merely because this handoff/current-state checkpoint advanced documentation beyond the CT102 acceptance head.
 
 After MS5-004, continue in the normative order defined only by `docs/MILESTONE_5_DESIGN.md`.
