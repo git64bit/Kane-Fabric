@@ -74,9 +74,9 @@ class EdgeContractTests(unittest.TestCase):
 
 
 class StorageContractTests(unittest.TestCase):
-    def _inventory(self, content: bytes = b"abc"):
+    def _inventory(self, content: bytes = b"abc", placement: str = A):
         return build_inventory(
-            logical_placement_sha256=A,
+            logical_placement_sha256=placement,
             artifacts=[
                 {
                     "artifact_key": "substrate-manifest",
@@ -85,6 +85,16 @@ class StorageContractTests(unittest.TestCase):
                     "sha256": hashlib.sha256(content).hexdigest(),
                 }
             ],
+        )
+
+    def _edge(self, placement: str = A):
+        return build_edge_instance(
+            logical_placement_sha256=placement,
+            platform_class="esp32-s3-class",
+            instance_label="storage-node",
+            storage_backend="sd-card",
+            browser_transport="local-ap-https",
+            management_transport="none",
         )
 
     def test_inventory_is_deterministic(self):
@@ -130,7 +140,24 @@ class StorageContractTests(unittest.TestCase):
         state = build_activation_state(active_inventory_sha256=None, rollback_inventory_sha256=None)
         candidate = self._inventory()
         with self.assertRaises(StorageContractError):
-            activate_inventory(state, candidate, verified_inventory_sha256=B)
+            activate_inventory(
+                state,
+                candidate,
+                edge_instance=self._edge(),
+                verified_inventory_sha256=B,
+            )
+        self.assertIsNone(state["active_inventory_sha256"])
+
+    def test_activation_requires_matching_edge_logical_placement(self):
+        state = build_activation_state(active_inventory_sha256=None, rollback_inventory_sha256=None)
+        candidate = self._inventory(placement=B)
+        with self.assertRaises(StorageContractError):
+            activate_inventory(
+                state,
+                candidate,
+                edge_instance=self._edge(A),
+                verified_inventory_sha256=candidate["inventory_sha256"],
+            )
         self.assertIsNone(state["active_inventory_sha256"])
 
     def test_activation_swaps_whole_inventory_and_keeps_rollback(self):
@@ -151,10 +178,18 @@ class StorageContractTests(unittest.TestCase):
         next_state = activate_inventory(
             state,
             new,
+            edge_instance=self._edge(),
             verified_inventory_sha256=new["inventory_sha256"],
         )
         self.assertEqual(new["inventory_sha256"], next_state["active_inventory_sha256"])
         self.assertEqual(old["inventory_sha256"], next_state["rollback_inventory_sha256"])
+
+    def test_rollback_without_active_inventory_is_rejected(self):
+        with self.assertRaises(StorageContractError):
+            build_activation_state(
+                active_inventory_sha256=None,
+                rollback_inventory_sha256=B,
+            )
 
     def test_rollback_and_recovery(self):
         state = build_activation_state(active_inventory_sha256=A, rollback_inventory_sha256=B)
