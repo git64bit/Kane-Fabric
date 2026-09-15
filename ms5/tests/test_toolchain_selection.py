@@ -15,6 +15,7 @@ from ms5.tools.kane_fabric_toolchain import (
 ROOT = Path(__file__).resolve().parents[2]
 SELECTION_PATH = ROOT / "ms5" / "toolchain-selection.json"
 MANIFEST_PATH = ROOT / "third_party" / "manifest.json"
+ESP_PROJECT_DEFAULTS_PATH = ROOT / "ms5" / "esp32_reference" / "sdkconfig.defaults"
 
 
 class ToolchainSelectionTests(unittest.TestCase):
@@ -28,6 +29,11 @@ class ToolchainSelectionTests(unittest.TestCase):
 
     def test_manifest_binding_valid(self):
         validate_manifest_binding(self.selection, self.manifest)
+
+    def test_esp_reference_project_defaults_to_selected_target(self):
+        defaults = ESP_PROJECT_DEFAULTS_PATH.read_text(encoding="utf-8").splitlines()
+        target_line = f'CONFIG_IDF_TARGET="{self.selection["target"]}"'
+        self.assertIn(target_line, defaults)
 
     def test_moving_sdk_tag_is_rejected(self):
         value = copy.deepcopy(self.selection)
