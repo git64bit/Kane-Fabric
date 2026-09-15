@@ -30,9 +30,13 @@ esp_err_t kf_storage_mount_raw_fat_readonly(const kf_storage_ro_config_t *config
         .format_if_mount_failed = false,
         .max_files = config->max_open_files,
         .allocation_unit_size = 0,
-        .read_only = true,
     };
 
+    /*
+     * ESP-IDF v6.0.3 does not expose a read_only field in
+     * esp_vfs_fat_mount_config_t. Read-only raw-flash behavior is provided by
+     * esp_vfs_fat_spiflash_mount_ro() itself.
+     */
     return esp_vfs_fat_spiflash_mount_ro(
         config->base_path,
         config->partition_label,
