@@ -114,8 +114,12 @@ static esp_err_t send_file_region(
 
 static esp_err_t artifact_get_handler(httpd_req_t *req)
 {
+    if (req == NULL) {
+        return ESP_ERR_INVALID_ARG;
+    }
+
     const kf_artifact_server_t *ctx = (const kf_artifact_server_t *)req->user_ctx;
-    if (ctx == NULL || req->uri == NULL) {
+    if (ctx == NULL) {
         return ESP_FAIL;
     }
 
