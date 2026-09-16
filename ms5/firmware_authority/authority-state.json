@@ -1,0 +1,22 @@
+{
+  "format": "kane-fabric-firmware-authority-state",
+  "version": 1,
+  "role": "firmware-authority",
+  "deployment_class": "unprivileged-lxc-lxd-container",
+  "container_name": "firmware-authority",
+  "network_identity": null,
+  "enabled_device_families": [
+    "esp32-s3"
+  ],
+  "private_signing_key_created": false,
+  "signing_enabled": false,
+  "acceptance_gate": "MS5-009",
+  "authority_boundary": {
+    "build_authority_is_signing_authority": false,
+    "distribution_is_signing_authority": false,
+    "edge_private_signing_key_present": false,
+    "container_private_signing_key_file_present": false,
+    "hardware_backed_signer_required_for_activation": true,
+    "operator_presence_required_for_release_signing": true
+  }
+}
