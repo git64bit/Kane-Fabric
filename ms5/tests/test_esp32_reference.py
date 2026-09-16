@@ -16,6 +16,11 @@ REFERENCE = REPO / "ms5" / "esp32_reference"
 
 
 class Esp32ReferenceTests(unittest.TestCase):
+    def test_reference_hardware_defaults_pin_target_and_flash_size(self):
+        defaults = (REFERENCE / "sdkconfig.defaults").read_text().splitlines()
+        self.assertIn('CONFIG_IDF_TARGET="esp32s3"', defaults)
+        self.assertIn("CONFIG_ESPTOOLPY_FLASHSIZE_16MB=y", defaults)
+
     def test_host_range_core_compiles_and_passes(self):
         compiler = shutil.which("cc")
         if compiler is None:
