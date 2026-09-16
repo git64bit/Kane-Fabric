@@ -85,12 +85,37 @@
       }
     },
     "firmware_authority_host": {
-      "platform": "Dell Precision",
+      "hostname": "annales",
+      "platform": "Dell Precision 5820 Tower",
+      "architecture": "x86_64",
       "cpe_address": "10.110.0.9/22",
-      "host_os_family": "Ubuntu",
-      "container_stack": "LXD",
+      "lan_address": "10.0.0.36/24",
+      "host_os": "Ubuntu 24.04.5 LTS",
+      "kernel": "6.8.0-139-generic",
+      "container_stack": "LXD 5.21.7 LTS",
       "proxmox": false,
-      "existing_role": "RAG/LLM infrastructure",
+      "existing_role": "RAG/LLM infrastructure plus unrelated witness/infra containers",
+      "baseline_document": "docs/CPE_ANNALES_LXD_BASELINE.md",
+      "lxd": {
+        "project": "default",
+        "storage_pool": "default",
+        "storage_driver": "dir",
+        "storage_source": "/var/snap/lxd/common/lxd/storage-pools/default",
+        "managed_bridge": "lxdbr0",
+        "bridge_ipv4": "10.56.172.1/24",
+        "profile": "default",
+        "server_clustered": false,
+        "https_listen": ":8443",
+        "certificate_fingerprint_sha256": "004fc19b4870633d10c8b647f0ab47f96757676b030fa8c1a44470672a6769d1",
+        "observed_running_instances": [
+          "annales-corpus",
+          "annales-infer",
+          "annales-train",
+          "infra",
+          "witness-hubzilla",
+          "witness-ipfs"
+        ]
+      },
       "firmware_authority_container": {
         "name": "firmware-authority",
         "deployment_class": "unprivileged LXD container",
@@ -98,7 +123,7 @@
         "private_signing_key_created": false,
         "signing_enabled": false,
         "acceptance_gate": "MS5-009",
-        "status": "repository-scaffold-accepted-in-ct102; Dell read-only LXD inventory pending"
+        "status": "repository-scaffold-accepted-in-ct102; first annales read-only inventory recorded; resource/profile/network/device inventory pending"
       }
     }
   },
@@ -126,12 +151,12 @@
   "milestone": {
     "current": 5,
     "name": "Reference Physical Edge Architecture",
-    "phase": "cpe-firmware-authority-repository-accepted-dell-inventory-pending",
+    "phase": "firmware-authority-annales-read-only-discovery",
     "design": "docs/MILESTONE_5_DESIGN.md",
     "reference": "docs/ESP32_EDGE_REFERENCE.md",
     "cpe": "docs/CIVICVS_PROJECT_ENVIRONMENT.md",
     "accepted_work": {
-      "through": "CT102 CPE SSOT and Firmware Authority repository acceptance plus separately accepted physical CPE build and USB-role baseline",
+      "through": "CT102 CPE SSOT/Firmware Authority repository acceptance plus first read-only annales LXD host inventory",
       "ct102_repository_head": "84ca59a06c6fd4d4b81461d99d3f6d3889a43328",
       "ms5_006_implementation_head": "ef6a08f03a94aabd6c15e9c02f6ed9470c65d3ce",
       "ct102_test_result": "69 passed, 1 expected environment skip (host C compiler unavailable in CT102)",
@@ -144,18 +169,19 @@
       "cpe_program_role": "accepted",
       "cpe_terminal_role": "accepted",
       "clean_reference_board_security_baseline": "accepted",
+      "annales_lxd_first_inventory": "recorded",
       "first_device_flash": "pending",
       "device_storage_range_evidence": "pending",
       "firmware_authority_scaffold_ct102_acceptance": "accepted"
     },
-    "next_work_item": "Perform a bounded read-only inventory of the Dell Precision at 10.110.0.9 to freeze its actual Ubuntu/LXD host identity, version, projects, storage pools, profiles, networks, existing instances, resources, passthrough state, and management/file-transfer path before any firmware-authority container mutation."
+    "next_work_item": "Continue bounded read-only annales discovery: host resources, exact default profile, default storage configuration, lxdbr0 configuration, and expanded existing-container device mappings needed to ensure Firmware Authority receives no GPU or inherited device passthrough."
   },
   "priority_workstream": {
     "name": "Firmware Authority Node",
     "design": "ms5/firmware_authority/README.md",
-    "status": "repository-scaffold-accepted-in-ct102; Dell read-only inventory pending",
+    "status": "repository-scaffold-accepted-in-ct102; annales host/LXD baseline recorded; resource/profile/network/device discovery pending",
     "scaffold_head": "e42ec17f0ccd6de39c2b5b6987063a424a22a649",
     "repository_acceptance_head": "84ca59a06c6fd4d4b81461d99d3f6d3889a43328"
   },
-  "next_safe_action": "Inspect the Dell Precision at 10.110.0.9 read-only to freeze its actual Ubuntu/LXD storage, project, profile, network, instance, resource, passthrough, and management/file-transfer baseline before creating firmware-authority. Do not use pct on the Dell, do not mutate LXD during discovery, and do not assign the authority container a CPE address until justified. First controlled ESP32-S3 flash remains separately pending on fw."
+  "next_safe_action": "On annales, remain read-only: inspect host resources, `lxc profile show default`, `lxc storage show default`, `lxc network show lxdbr0`, and expanded device/resource configuration of existing RAG/LLM containers before creating firmware-authority. Do not mutate LXD, do not assign a CPE address, and do not add GPU/device passthrough to Firmware Authority. First controlled ESP32-S3 flash remains separately pending on fw."
 }
