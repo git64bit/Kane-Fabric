@@ -52,6 +52,40 @@
       "address_policy": "limited; independent CPE address only when architectural role requires it",
       "virtualization_host_model": "physical virtualization host normally owns CPE/WireGuard membership; containers/VMs remain on host-private virtualization networks and are managed through the host control plane unless an explicit independent CPE role is justified"
     },
+    "proxmox_host": {
+      "hostname": "srv-b",
+      "platform": "HP ProLiant DL360 G7",
+      "architecture": "x86_64",
+      "host_os": "Debian GNU/Linux 12 (bookworm)",
+      "kernel": "6.8.12-9-pve",
+      "proxmox": "pve-manager 8.4.0",
+      "lan_address": "10.0.0.12/24",
+      "lan_bridge": "vmbr0",
+      "cpe_address": "10.110.0.12/32",
+      "wireguard_interface": "wg0",
+      "private_bridge": "vmbr1",
+      "private_bridge_address": "10.20.0.1/24",
+      "management_services": [
+        "SSH TCP/22",
+        "Proxmox TCP/8006",
+        "Webmin TCP/10000"
+      ],
+      "observed_running_containers": [
+        "CT100 mechcomp",
+        "CT101 mcproxy",
+        "CT102 kane-fabric"
+      ],
+      "kane_container": {
+        "id": 102,
+        "hostname": "kane-fabric",
+        "service_address": "10.20.0.12/24",
+        "gateway": "10.20.0.1",
+        "bridge": "vmbr1",
+        "unprivileged": true,
+        "autostart": true,
+        "independent_cpe_identity": false
+      }
+    },
     "build_hardware_workstation": {
       "hostname": "fw",
       "cpe_address": "10.110.0.4/22",
@@ -193,7 +227,7 @@
     "reference": "docs/ESP32_EDGE_REFERENCE.md",
     "cpe": "docs/CIVICVS_PROJECT_ENVIRONMENT.md",
     "accepted_work": {
-      "through": "CT102 CPE SSOT/Firmware Authority repository acceptance plus completed read-only annales LXD placement discovery",
+      "through": "CT102 CPE SSOT/Firmware Authority repository acceptance plus completed read-only annales LXD placement discovery and completed srv-b host-mediated CPE baseline",
       "ct102_repository_head": "84ca59a06c6fd4d4b81461d99d3f6d3889a43328",
       "ms5_006_implementation_head": "ef6a08f03a94aabd6c15e9c02f6ed9470c65d3ce",
       "ct102_test_result": "69 passed, 1 expected environment skip (host C compiler unavailable in CT102)",
@@ -202,6 +236,7 @@
       "ct102_firmware_authority_contract": "passed",
       "ct102_database_authority_readable": true,
       "ct102_worktree": "clean",
+      "srv_b_host_control_plane_baseline": "recorded",
       "pinned_esp_idf_compile_on_fw": "passed",
       "cpe_program_role": "accepted",
       "cpe_terminal_role": "accepted",
@@ -222,5 +257,5 @@
     "scaffold_head": "e42ec17f0ccd6de39c2b5b6987063a424a22a649",
     "repository_acceptance_head": "84ca59a06c6fd4d4b81461d99d3f6d3889a43328"
   },
-  "next_safe_action": "Freeze the inert firmware-authority container specification from the recorded annales baseline before creating it. The normal model is host-mediated CPE membership: annales remains the WireGuard/CPE endpoint and firmware-authority remains on lxdbr0 without its own CPE address. Do not add GPU, host-directory passthrough, proxy devices, signing keys, or a WireGuard peer. First controlled ESP32-S3 flash remains separately pending on fw."
+  "next_safe_action": "Freeze the inert firmware-authority container specification from the recorded annales baseline before creating it. The normal model is host-mediated CPE membership: srv-b remains the Proxmox/WireGuard endpoint for CT102, and annales remains the LXD/WireGuard endpoint for firmware-authority. Do not add GPU, host-directory passthrough, proxy devices, signing keys, or a WireGuard peer to firmware-authority. First controlled ESP32-S3 flash remains separately pending on fw."
 }
