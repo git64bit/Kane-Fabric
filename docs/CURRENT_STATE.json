@@ -12,7 +12,8 @@
     "ms5_transport_architecture_acceptance_head": "9cdb0206f4f7280799bec9d228a4f56a326a4ad1",
     "ms5_residual_reconciliation_acceptance_head": "c43814961cb14d6623ef92e40d6cf4d72f8ef37e",
     "ms5_firmware_v1_role_acceptance_head": "5d45fd600468060104341166adf23bb6465393d2",
-    "firmware_authority_scaffold_head": "e42ec17f0ccd6de39c2b5b6987063a424a22a649"
+    "firmware_authority_scaffold_head": "e42ec17f0ccd6de39c2b5b6987063a424a22a649",
+    "cpe_firmware_authority_repository_acceptance_head": "84ca59a06c6fd4d4b81461d99d3f6d3889a43328"
   },
   "deployment": {
     "proxmox_host": "srv-b",
@@ -26,9 +27,9 @@
       "branch": "main",
       "upstream": "origin/main",
       "fetch_refspec": "+refs/heads/*:refs/remotes/origin/*",
-      "last_observed_head": "5d45fd600468060104341166adf23bb6465393d2",
+      "last_observed_head": "84ca59a06c6fd4d4b81461d99d3f6d3889a43328",
       "last_observed_worktree": "clean",
-      "note": "Last accepted CT102 checkpoint remains the ESP32-S3 v1 firmware responsibility freeze. Later CPE/Firmware-Authority repository work is published on GitHub main but has not yet been accepted in CT102."
+      "note": "CT102 accepted the CPE SSOT and Firmware Authority repository scaffold on 2026-09-16. Python compileall passed; the MS5 suite was 69 passed with one expected CT102 host-compiler skip; the configured authoritative database remained readable and the worktree was clean."
     },
     "ms5_006_hardware_execution": {
       "environment": "fw / CPE Build and Hardware Workstation",
@@ -97,7 +98,7 @@
         "private_signing_key_created": false,
         "signing_enabled": false,
         "acceptance_gate": "MS5-009",
-        "status": "repository-scaffold-only; Dell read-only LXD inventory pending"
+        "status": "repository-scaffold-accepted-in-ct102; Dell read-only LXD inventory pending"
       }
     }
   },
@@ -125,30 +126,36 @@
   "milestone": {
     "current": 5,
     "name": "Reference Physical Edge Architecture",
-    "phase": "physical-cpe-baseline-recorded-first-flash-pending-firmware-authority-scaffold-published",
+    "phase": "cpe-firmware-authority-repository-accepted-dell-inventory-pending",
     "design": "docs/MILESTONE_5_DESIGN.md",
     "reference": "docs/ESP32_EDGE_REFERENCE.md",
     "cpe": "docs/CIVICVS_PROJECT_ENVIRONMENT.md",
     "accepted_work": {
-      "through": "CT102 firmware-v1 role freeze plus separately observed/accepted physical CPE build and USB-role baseline",
-      "ct102_repository_head": "5d45fd600468060104341166adf23bb6465393d2",
+      "through": "CT102 CPE SSOT and Firmware Authority repository acceptance plus separately accepted physical CPE build and USB-role baseline",
+      "ct102_repository_head": "84ca59a06c6fd4d4b81461d99d3f6d3889a43328",
       "ms5_006_implementation_head": "ef6a08f03a94aabd6c15e9c02f6ed9470c65d3ce",
-      "ct102_test_result": "54 passed, 1 environment skip (host C compiler unavailable)",
+      "ct102_test_result": "69 passed, 1 expected environment skip (host C compiler unavailable in CT102)",
+      "ct102_compileall": "passed",
+      "ct102_cpe_ssot_guard": "passed",
+      "ct102_firmware_authority_contract": "passed",
+      "ct102_database_authority_readable": true,
+      "ct102_worktree": "clean",
       "pinned_esp_idf_compile_on_fw": "passed",
       "cpe_program_role": "accepted",
       "cpe_terminal_role": "accepted",
       "clean_reference_board_security_baseline": "accepted",
       "first_device_flash": "pending",
       "device_storage_range_evidence": "pending",
-      "firmware_authority_scaffold_ct102_acceptance": "pending"
+      "firmware_authority_scaffold_ct102_acceptance": "accepted"
     },
-    "next_work_item": "Accept the CPE/Firmware-Authority repository correction in CT102, then perform a read-only Dell Precision LXD inventory before any Firmware Authority container mutation. First ESP32-S3 controlled flash remains pending on fw."
+    "next_work_item": "Perform a bounded read-only inventory of the Dell Precision at 10.110.0.9 to freeze its actual Ubuntu/LXD host identity, version, projects, storage pools, profiles, networks, existing instances, resources, passthrough state, and management/file-transfer path before any firmware-authority container mutation."
   },
   "priority_workstream": {
     "name": "Firmware Authority Node",
     "design": "ms5/firmware_authority/README.md",
-    "status": "repository-scaffold-published; CPE host now recorded; CT102 acceptance and Dell read-only inventory pending",
-    "scaffold_head": "e42ec17f0ccd6de39c2b5b6987063a424a22a649"
+    "status": "repository-scaffold-accepted-in-ct102; Dell read-only inventory pending",
+    "scaffold_head": "e42ec17f0ccd6de39c2b5b6987063a424a22a649",
+    "repository_acceptance_head": "84ca59a06c6fd4d4b81461d99d3f6d3889a43328"
   },
-  "next_safe_action": "Synchronize CT102 using its recorded checkout /tmp/kane-fabric-ms2 and accept the repository-only CPE/Firmware-Authority changes without inventing a srv-b file path. After that, inspect the Dell Precision at 10.110.0.9 read-only to freeze its actual Ubuntu/LXD storage, profile, network, instance, resource, and management baseline before creating firmware-authority. Do not use pct on the Dell and do not assign the authority container a CPE address until justified."
+  "next_safe_action": "Inspect the Dell Precision at 10.110.0.9 read-only to freeze its actual Ubuntu/LXD storage, project, profile, network, instance, resource, passthrough, and management/file-transfer baseline before creating firmware-authority. Do not use pct on the Dell, do not mutate LXD during discovery, and do not assign the authority container a CPE address until justified. First controlled ESP32-S3 flash remains separately pending on fw."
 }
