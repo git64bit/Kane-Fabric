@@ -14,7 +14,8 @@
     "ms5_residual_reconciliation_acceptance_head": "c43814961cb14d6623ef92e40d6cf4d72f8ef37e",
     "ms5_firmware_v1_role_acceptance_head": "5d45fd600468060104341166adf23bb6465393d2",
     "firmware_authority_scaffold_head": "e42ec17f0ccd6de39c2b5b6987063a424a22a649",
-    "cpe_firmware_authority_repository_acceptance_head": "84ca59a06c6fd4d4b81461d99d3f6d3889a43328"
+    "cpe_firmware_authority_repository_acceptance_head": "84ca59a06c6fd4d4b81461d99d3f6d3889a43328",
+    "cpe_firmware_authority_inert_container_acceptance_head": "2b7c74ea631f30615ca10e8c79934748a96c7941"
   },
   "deployment": {
     "proxmox_host": "srv-b",
@@ -28,9 +29,9 @@
       "branch": "main",
       "upstream": "origin/main",
       "fetch_refspec": "+refs/heads/*:refs/remotes/origin/*",
-      "last_observed_head": "84ca59a06c6fd4d4b81461d99d3f6d3889a43328",
+      "last_observed_head": "2b7c74ea631f30615ca10e8c79934748a96c7941",
       "last_observed_worktree": "clean",
-      "note": "CT102 accepted the CPE SSOT and Firmware Authority repository scaffold on 2026-09-16. Python compileall passed; the MS5 suite was 69 passed with one expected CT102 host-compiler skip; the configured authoritative database remained readable and the worktree was clean."
+      "note": "CT102 accepted the inert Firmware Authority container checkpoint on 2026-09-16. Python compileall passed; the MS5 suite ran 70 tests with one expected CT102 host-compiler skip; the configured authoritative database remained readable; development-state checks all passed; and the worktree was clean."
     },
     "ms5_006_hardware_execution": {
       "environment": "fw / CPE Build and Hardware Workstation",
@@ -132,6 +133,7 @@
       "proxmox": false,
       "existing_role": "RAG/LLM infrastructure plus unrelated witness/infra containers",
       "baseline_document": "docs/CPE_ANNALES_LXD_BASELINE.md",
+      "acceptance_document": "docs/CPE_FIRMWARE_AUTHORITY_ACCEPTANCE.md",
       "resources": {
         "cpu": "Intel Xeon W-2223, 4 cores / 8 threads",
         "memory_total_gib": 66.0,
@@ -157,7 +159,7 @@
         "server_clustered": false,
         "https_listen": ":8443",
         "certificate_fingerprint_sha256": "004fc19b4870633d10c8b647f0ab47f96757676b030fa8c1a44470672a6769d1",
-        "cached_images": 0,
+        "cached_images_before_authority_creation": 0,
         "release_image_remotes_available": [
           "images",
           "ubuntu",
@@ -168,7 +170,7 @@
           "Webmin TCP/10000",
           "LXD TCP/8443 and local unix control"
         ],
-        "observed_running_instances": [
+        "observed_running_instances_before_authority_creation": [
           "annales-corpus",
           "annales-infer",
           "annales-train",
@@ -180,21 +182,40 @@
           "annales-infer",
           "annales-train"
         ],
-        "observed_explicit_cpu_or_memory_limits": false
+        "observed_explicit_cpu_or_memory_limits_before_authority_creation": false
       },
       "firmware_authority_container": {
         "name": "firmware-authority",
         "deployment_class": "unprivileged LXD container",
         "lxd_project": "default",
+        "profile": "default",
         "storage_pool": "default",
+        "storage_driver": "dir",
+        "requested_root_disk_size": "16GiB",
+        "root_quota_accepted_as_enforced": false,
+        "limits_cpu": "2",
+        "limits_memory": "2GiB",
+        "autostart": true,
+        "unprivileged": true,
+        "base_image_fingerprint": "6330af160fc7a345119549990a92e7cba23c25bc846e4906729f525d6ddd1b19",
+        "base_image_description": "ubuntu 24.04 LTS amd64 (minimal release) (20260905)",
         "network": "lxdbr0 NAT",
+        "observed_dynamic_ipv4": "10.56.172.112/24",
         "network_identity": null,
+        "wireguard_peer": false,
         "gpu_required": false,
+        "gpu_device_present": false,
         "host_directory_passthrough_initial": false,
+        "proxy_device_present": false,
+        "usb_signer_present": false,
         "private_signing_key_created": false,
+        "persistent_private_signing_key_file_present": false,
         "signing_enabled": false,
+        "hardware_signer_attached": false,
+        "installed_authority_state_blob_sha1": "26c869d2d913045fd884e53cbb7e7c2c11b39466",
         "acceptance_gate": "MS5-009",
-        "status": "repository-scaffold-accepted-in-ct102; annales placement discovery complete; initial inert container specification pending"
+        "acceptance_result": "ANNALES_FIRMWARE_AUTHORITY_ACCEPTANCE=PASS",
+        "status": "inert-container-accepted; signing-disabled; activation remains gated by MS5-009"
       }
     }
   },
@@ -222,19 +243,20 @@
   "milestone": {
     "current": 5,
     "name": "Reference Physical Edge Architecture",
-    "phase": "firmware-authority-container-contract-freeze",
+    "phase": "firmware-authority-inert-container-accepted",
     "design": "docs/MILESTONE_5_DESIGN.md",
     "reference": "docs/ESP32_EDGE_REFERENCE.md",
     "cpe": "docs/CIVICVS_PROJECT_ENVIRONMENT.md",
     "accepted_work": {
-      "through": "CT102 CPE SSOT/Firmware Authority repository acceptance plus completed read-only annales LXD placement discovery and completed srv-b host-mediated CPE baseline",
-      "ct102_repository_head": "84ca59a06c6fd4d4b81461d99d3f6d3889a43328",
+      "through": "CT102 full MS5 acceptance at 2b7c74e plus accepted inert firmware-authority container on annales and completed srv-b host-mediated CPE baseline",
+      "ct102_repository_head": "2b7c74ea631f30615ca10e8c79934748a96c7941",
       "ms5_006_implementation_head": "ef6a08f03a94aabd6c15e9c02f6ed9470c65d3ce",
-      "ct102_test_result": "69 passed, 1 expected environment skip (host C compiler unavailable in CT102)",
+      "ct102_test_result": "70 tests passed, 1 expected environment skip (host C compiler unavailable in CT102)",
       "ct102_compileall": "passed",
       "ct102_cpe_ssot_guard": "passed",
       "ct102_firmware_authority_contract": "passed",
       "ct102_database_authority_readable": true,
+      "ct102_dev_state_checks": "all true",
       "ct102_worktree": "clean",
       "srv_b_host_control_plane_baseline": "recorded",
       "pinned_esp_idf_compile_on_fw": "passed",
@@ -244,18 +266,21 @@
       "annales_lxd_first_inventory": "recorded",
       "annales_lxd_resource_profile_device_inventory": "recorded",
       "annales_lxd_final_placement_inventory": "recorded",
+      "firmware_authority_inert_container_annales_acceptance": "accepted",
+      "firmware_authority_acceptance_document": "docs/CPE_FIRMWARE_AUTHORITY_ACCEPTANCE.md",
+      "firmware_authority_scaffold_ct102_acceptance": "accepted",
       "first_device_flash": "pending",
-      "device_storage_range_evidence": "pending",
-      "firmware_authority_scaffold_ct102_acceptance": "accepted"
+      "device_storage_range_evidence": "pending"
     },
-    "next_work_item": "Freeze the initial inert firmware-authority LXD container contract using the completed annales baseline: exact Ubuntu release image identity, explicit CPU/RAM/root-disk limits, unprivileged state, autostart, default project/storage, lxdbr0 NAT, and explicit absence of GPU, proxy, host-directory, WireGuard/CPE, and signing-key state."
+    "next_work_item": "Return to the physical ESP32-S3 edge workflow on fw for the first controlled flash and runtime evidence. The Firmware Authority container remains deliberately inert until MS5-009 freezes and accepts its external hardware-backed signer and authorization envelope."
   },
   "priority_workstream": {
     "name": "Firmware Authority Node",
     "design": "ms5/firmware_authority/README.md",
-    "status": "repository-scaffold-accepted-in-ct102; annales placement discovery complete; initial inert container specification pending",
+    "status": "inert container accepted on annales; repository and acceptance evidence accepted in CT102; signing remains disabled pending MS5-009",
     "scaffold_head": "e42ec17f0ccd6de39c2b5b6987063a424a22a649",
-    "repository_acceptance_head": "84ca59a06c6fd4d4b81461d99d3f6d3889a43328"
+    "repository_acceptance_head": "84ca59a06c6fd4d4b81461d99d3f6d3889a43328",
+    "inert_container_acceptance_head": "2b7c74ea631f30615ca10e8c79934748a96c7941"
   },
-  "next_safe_action": "Freeze the inert firmware-authority container specification from the recorded annales baseline before creating it. The normal model is host-mediated CPE membership: srv-b remains the Proxmox/WireGuard endpoint for CT102, and annales remains the LXD/WireGuard endpoint for firmware-authority. Do not add GPU, host-directory passthrough, proxy devices, signing keys, or a WireGuard peer to firmware-authority. First controlled ESP32-S3 flash remains separately pending on fw."
+  "next_safe_action": "Use fw / 10.110.0.4 for the first controlled ESP32-S3 flash and runtime evidence. Leave firmware-authority on annales inert: no WireGuard peer, no GPU, no host-directory passthrough, no proxy device, no USB signer, no persistent private signing key, and no signing activation until MS5-009 explicitly authorizes those changes."
 }
