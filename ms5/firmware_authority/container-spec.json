@@ -1,0 +1,60 @@
+{
+  "format": "kane-fabric-firmware-authority-container-spec",
+  "version": 1,
+  "physical_host": {
+    "hostname": "annales",
+    "cpe_address": "10.110.0.9/22",
+    "control_plane": "LXD 5.21.7 LTS"
+  },
+  "instance": {
+    "name": "firmware-authority",
+    "type": "container",
+    "project": "default",
+    "profile": "default",
+    "unprivileged": true,
+    "boot_autostart": true
+  },
+  "image": {
+    "remote": "ubuntu-minimal",
+    "alias_observed": "24.04",
+    "fingerprint": "6330af160fc7a345119549990a92e7cba23c25bc846e4906729f525d6ddd1b19",
+    "serial": "20260905",
+    "description": "ubuntu 24.04 LTS amd64 (minimal release) (20260905)",
+    "release": "noble",
+    "version": "24.04",
+    "architecture": "amd64",
+    "image_type": "container",
+    "pinned_by": "fingerprint"
+  },
+  "resources": {
+    "limits_cpu": "2",
+    "limits_memory": "2GiB",
+    "root_disk_size": "16GiB",
+    "storage_pool": "default"
+  },
+  "network": {
+    "device": "eth0",
+    "network": "lxdbr0",
+    "mode": "host-private NAT",
+    "independent_cpe_address": false,
+    "wireguard_peer": false
+  },
+  "prohibited_initial_devices": {
+    "gpu": true,
+    "host_directory_passthrough": true,
+    "proxy": true,
+    "usb_signer": true
+  },
+  "authority_state": {
+    "private_signing_key_created": false,
+    "persistent_private_signing_key_file_in_container": false,
+    "signing_enabled": false,
+    "hardware_signer_attached": false,
+    "activation_gate": "MS5-009"
+  },
+  "creation_policy": {
+    "create_stopped_first": true,
+    "inspect_expanded_config_before_start": true,
+    "start_only_after_contract_match": true
+  }
+}
