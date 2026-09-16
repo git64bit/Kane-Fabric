@@ -4,7 +4,9 @@
 
 Observed read-only on 2026-09-16 from the existing administrative shell on the physical host. This document records the live LXD-host facts needed before any Firmware Authority container mutation.
 
-It is subordinate to `docs/CIVICVS_PROJECT_ENVIRONMENT.md` and does not authorize container creation, network assignment, signer attachment, or any other state change.
+It is subordinate to `docs/CIVICVS_PROJECT_ENVIRONMENT.md` and does not authorize signer attachment or Firmware Authority activation.
+
+The initial host-placement discovery is now complete. The next step may freeze and create the inert `firmware-authority` container using the observed host/LXD baseline.
 
 ## Physical host
 
@@ -23,6 +25,8 @@ LAN                      10.0.0.36/24
 
 `10.110.0.9` is the physical host's CPE identity. It is not the future `firmware-authority` container identity.
 
+The CPE virtualization model is documented in `docs/CPE_HOST_CONTROL_PLANE_MODEL.md`: the physical virtualization host normally owns CPE/WireGuard membership, while its containers remain on private host-managed networks unless an explicit exception is justified.
+
 ## Host resources
 
 Observed with `lxc info --resources`:
@@ -38,19 +42,19 @@ RAM used                 5.19 GiB
 RAM free                 60.81 GiB
 
 GPU                      NVIDIA GeForce RTX 3050 6GB
-GPU PCI                   0000:65:00.0
-GPU driver                nvidia 595.91.07
-GPU UUID                  GPU-99e86230-ea5f-754c-955c-357f6cc5043d
+GPU PCI                  0000:65:00.0
+GPU driver               nvidia 595.91.07
+GPU UUID                 GPU-99e86230-ea5f-754c-955c-357f6cc5043d
 
 NIC                      Intel I219-LM
 NIC                      eno1 / 1 Gbit/s full duplex
 ```
 
-The host therefore has ample CPU/RAM headroom for a small Firmware Authority container. That observation does not authorize an unbounded container; resource limits should be explicit when the container contract is frozen.
+The host has ample CPU/RAM headroom for a small Firmware Authority container. That does not authorize an unbounded container; resource limits should be explicit in the container contract.
 
 The NVIDIA GPU belongs to existing compute workloads. Firmware Authority has no GPU requirement and must not receive a GPU device.
 
-Observed physical disks include four approximately 477 GiB S5-512 devices, one approximately 238 GiB Samsung PM881 device containing mounted host partitions, and one approximately 5.46 TiB USB WDC device. This inventory does **not** establish free capacity for the active LXD `default` pool; filesystem free-space inspection remains required before sizing the container root disk.
+Observed physical disks include four approximately 477 GiB S5-512 devices, one approximately 238 GiB Samsung PM881 device containing mounted host partitions, and one approximately 5.46 TiB USB WDC device.
 
 ## Host networking
 
@@ -87,7 +91,7 @@ HTTPS listen             :8443
 TLS certificate SHA-256  004fc19b4870633d10c8b647f0ab47f96757676b030fa8c1a44470672a6769d1
 ```
 
-The LXD API advertises the physical CPE address `10.110.0.9:8443` in addition to LAN, bridge, loopback/IPv6-derived addresses. No decision has been made to use the remote LXD API as the Kane operator path.
+The LXD API advertises the physical CPE address `10.110.0.9:8443` in addition to LAN, bridge, loopback/IPv6-derived addresses. Local administrative use currently occurs through the existing host shell and the local `lxc` client. No requirement has been established to use the remote LXD API for Kane operations.
 
 ## LXD project
 
@@ -97,7 +101,7 @@ Only one project was observed:
 default (current)
 ```
 
-No Kane-specific LXD project exists yet. The first Firmware Authority container can therefore either use the existing default project or justify creation of a dedicated project; no project split is assumed before that design decision.
+No Kane-specific LXD project exists. The initial Firmware Authority container can use the existing default project; creating a dedicated project would require a separate measured isolation requirement.
 
 ## Storage
 
@@ -111,11 +115,21 @@ state       CREATED
 used by     existing instances, snapshots, and the default profile
 ```
 
+The pool source resolves to the host root filesystem:
+
+```text
+filesystem                /dev/md0p1
+filesystem type           ext4
+mount point               /
+filesystem size           935 GiB
+used                      84 GiB
+available                 803 GiB
+utilization               10%
+```
+
 The server reports `dir` as its active storage driver. Other drivers are supported by the host but are not active merely because LXD reports support for them.
 
-Do not introduce ZFS, LVM, Ceph, Btrfs, or another pool solely for Firmware Authority without a measured requirement.
-
-The exact free space of the filesystem backing this `dir` pool has not yet been recorded.
+Do not introduce ZFS, LVM, Ceph, Btrfs, or another pool solely for Firmware Authority without a measured requirement. The existing `default` pool has ample observed capacity for a small authority container.
 
 ## Network
 
@@ -133,7 +147,9 @@ IPv6 NAT      true
 
 All six current containers use this bridge, directly or through the default profile.
 
-This makes `lxdbr0` a viable non-CPE network attachment for a future Firmware Authority container, but that attachment is not frozen until the container design gate. A container on `lxdbr0` can use ordinary NATed connectivity without consuming a scarce `10.110.0.0/22` CPE address.
+`lxdbr0` is the accepted initial network attachment for the inert Firmware Authority container. It provides ordinary NATed connectivity without consuming a scarce `10.110.0.0/22` CPE address.
+
+The physical host remains the CPE/WireGuard participant. The container does not receive its own CPE/WireGuard address by default.
 
 ## Default profile
 
@@ -155,7 +171,24 @@ devices:
 
 The default profile contributes only the root disk and bridged NIC. It contains no GPU, host-directory passthrough, proxy device, CPU limit, memory limit, or privileged-container setting.
 
-Firmware Authority must not rely on accidental absence of limits; explicit CPU, memory, disk, privilege, autostart, and device policy should be frozen in its own instance configuration or dedicated profile.
+Firmware Authority must not rely on accidental absence of limits; explicit CPU, memory, disk, privilege, autostart, and device policy must be frozen for the authority instance.
+
+## Images and remotes
+
+No cached local LXD images were present when observed.
+
+Configured image remotes include:
+
+```text
+images                https://images.lxd.canonical.com
+ubuntu                https://cloud-images.ubuntu.com/releases/
+ubuntu-daily          https://cloud-images.ubuntu.com/daily/
+ubuntu-minimal        https://cloud-images.ubuntu.com/minimal/releases/
+ubuntu-minimal-daily  https://cloud-images.ubuntu.com/minimal/daily/
+local                 unix://
+```
+
+Use a release image, not a daily image, for the authority container. The exact base image alias/fingerprint must be captured when the container is created so later reconstruction does not depend on a moving remote alias.
 
 ## Existing instances
 
@@ -199,45 +232,71 @@ witness-ipfs
   static eth0 10.56.172.201
 ```
 
-GPU passthrough is therefore instance-specific to `annales-infer` and `annales-train`; it is **not** inherited from the default profile. Firmware Authority must receive no GPU device.
+GPU passthrough is instance-specific to `annales-infer` and `annales-train`; it is **not** inherited from the default profile. Firmware Authority must receive no GPU device.
 
-Host-directory passthrough is also instance-specific. Firmware Authority should begin with no host-directory disk passthrough; any later signer/device exposure must be an explicit, separately reviewed authority-boundary decision.
+Host-directory passthrough is also instance-specific. Firmware Authority begins with no host-directory disk passthrough; any later signer/device exposure is an explicit authority-boundary change.
 
-The witness containers' WireGuard addresses are configured inside those workloads and do not establish a rule that every LXD container receives a CPE address.
+The witness containers' WireGuard addresses are workload-specific exceptions. They do not establish a rule that every LXD container receives a CPE address.
 
-## Firmware Authority boundary after second inventory
+## Host management surfaces
 
-Still unchanged:
+The following host services were active when observed:
+
+```text
+SSH                    active, TCP/22
+Webmin                 active, TCP/10000
+LXD daemon             active, TCP/8443 plus local unix control
+```
+
+The existing administrative shell plus local `lxc` command is the reference control path for the initial Firmware Authority deployment.
+
+Webmin remains available for human-oriented host/file administration. The repository does not assume that a file exists on `annales` merely because it was generated elsewhere; any transfer must still be explicit and verified.
+
+Remote LXD API use is not required for the initial deployment.
+
+## Firmware Authority boundary after completed placement discovery
 
 ```text
 container name                 firmware-authority
 deployment class               unprivileged LXD container
+LXD project                    default
+storage pool                   default / dir
+network                        lxdbr0 / NAT
 container CPE identity         NOT ASSIGNED
 private signing key created    NO
 persistent private key file    PROHIBITED
 signing enabled                NO
 GPU requirement                NONE
+GPU device                     NONE
 host-directory passthrough     NONE initially
-network candidate              lxdbr0 / NAT, not yet frozen
+remote LXD API requirement     NONE
 operational acceptance         MS5-009
 ```
 
-The second inventory is sufficient to freeze several negative requirements:
+The placement discovery freezes these negative requirements:
 
 - no GPU device;
 - no inherited host-directory passthrough;
 - no inherited proxy device;
 - no independent CPE address merely because the container exists;
 - no use of Proxmox/`pct` conventions;
-- no new storage driver without a measured requirement.
+- no new storage driver or project without a measured requirement;
+- no daily/moving image accepted as reproducible release input without recording the resolved image identity.
 
-## Remaining read-only discovery before container creation
+## Next gate
 
-Only the following host facts remain unresolved for the initial container placement gate:
+The host-side discovery required before container design is complete.
 
-- filesystem free space backing `/var/snap/lxd/common/lxd/storage-pools/default`;
-- cached/available LXD image path to use for the base Ubuntu container;
-- actual operator management path intended for routine Kane work on `annales`;
-- actual file-transfer method intended for Kane artifacts on this host.
+The next gate is to freeze the initial inert container specification, including:
 
-No state-changing LXD command is authorized by this baseline.
+- exact Ubuntu release image and resolved image fingerprint;
+- CPU limit;
+- memory limit;
+- root-disk size;
+- unprivileged security state;
+- autostart policy;
+- `default` project and `default` storage pool;
+- `lxdbr0` NAT attachment;
+- explicit absence of GPU, proxy, host-directory, WireGuard/CPE, and signing-key state.
+
+Only after that specification is recorded should the `firmware-authority` container be created.
