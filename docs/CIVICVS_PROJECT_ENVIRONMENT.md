@@ -4,7 +4,7 @@
 
 The CIVICVS Project Environment is the physical and operational development substrate for Kane Fabric. It joins physical hosts, network identities, build environments, hardware interfaces, and operator workflows without making any one chassis part of Fabric logical identity.
 
-This document is the Kane-Fabric SSOT for stable CPE infrastructure. A successor must read it before issuing commands against `fw`, the Dell Precision host, or any Firmware Authority container.
+This document is the Kane-Fabric SSOT for stable CPE infrastructure. A successor must read it before issuing commands against `srv-b`, `fw`, `annales`, CT102, or the Firmware Authority container.
 
 The CPE is infrastructure, not a credential store. Do not record passwords, WireGuard private/preshared keys, private SSH/TLS keys, API tokens, stored Webmin passwords, or firmware-signing private keys here.
 
@@ -19,14 +19,79 @@ hub/reference gateway: 10.110.0.1
 
 CPE addresses are intentionally limited. A container or VM does not receive an independent CPE address merely because it exists. Assign one only when an architectural requirement justifies an independently addressable CPE role.
 
-Current physical CPE hosts relevant to Kane Fabric:
+Current physical CPE hosts relevant to Kane Fabric include:
 
 ```text
-10.110.0.4  fw              CPE Build and Hardware Workstation
-10.110.0.9  Dell Precision  Ubuntu/LXD host; future Firmware Authority host
+10.110.0.4  fw       CPE Build and Hardware Workstation
+10.110.0.9  annales  Dell Precision 5820 / Ubuntu LXD host
 ```
 
+`srv-b` is also a physical CPE/WireGuard virtualization host, but its exact CPE address has not yet been recorded in this repository and must not be invented.
+
 These are physical/infrastructure identities. They are not Fabric geographic identity and do not become firmware release identity.
+
+## Host-mediated virtualization model
+
+The normal CPE virtualization rule is:
+
+```text
+physical virtualization host owns normal CPE/WireGuard membership
+        !=
+container/VM automatically receives CPE/WireGuard membership
+```
+
+The physical host is the CPE/WireGuard endpoint and the management boundary. Containers remain on the host's private virtualization network and are managed through the host-native control plane unless a later architecture gate explicitly requires an independent CPE identity.
+
+Reference pattern:
+
+```text
+CPE / WireGuard 10.110.0.0/22
+        |
+        +-- srv-b physical host
+        |     control plane: Proxmox / pct
+        |     |
+        |     `-- CT102 kane-fabric
+        |         service network: 10.20.0.12/24
+        |
+        +-- annales physical host / 10.110.0.9
+        |     control plane: Ubuntu LXD / lxc
+        |     |
+        |     `-- firmware-authority
+        |         private network: lxdbr0 / NAT
+        |         CPE address: not assigned
+        |
+        `-- fw physical host / 10.110.0.4
+              direct bare-metal CPE workstation
+```
+
+CT102 does not need an independent WireGuard peer for normal Kane administration because it is managed through `srv-b` with `pct`. Likewise, `firmware-authority` does not need a WireGuard peer because it is managed through `annales` with LXD and can use `lxdbr0` for ordinary network access.
+
+Existing containers such as `witness-hubzilla` and `witness-ipfs` that carry their own WireGuard interfaces are explicit workload-specific exceptions, not the default CPE provisioning model.
+
+Detailed rationale: `docs/CPE_HOST_CONTROL_PLANE_MODEL.md`.
+
+---
+
+## `srv-b` — Proxmox CPE virtualization host
+
+`srv-b` is the physical Proxmox host for Kane Fabric CT102. Its host CPE/WireGuard membership is distinct from the private service network used by its CTs.
+
+```text
+control plane              Proxmox / pct
+Kane container             CT102 / kane-fabric
+CT102 service address      10.20.0.12/24
+CT102 checkout             /tmp/kane-fabric-ms2
+CT102 operational root     /var/lib/kane-fabric
+```
+
+Normal management is host-mediated:
+
+```bash
+pct status 102
+pct exec 102 -- ...
+```
+
+Do not put the `fw` filesystem model or the `annales` LXD control plane onto `srv-b`.
 
 ---
 
@@ -70,8 +135,6 @@ Webmin                    TCP/10000 TLS
 The physical chassis facts are reconstruction information, not identity requirements for a replacement workstation.
 
 ### CPE account boundary
-
-The isolated project account is:
 
 ```text
 account                   cpe-build
@@ -133,8 +196,6 @@ The direct ESP-IDF `export.sh` path is not the CPE operator contract. CPE wrappe
 
 ### Accepted pinned build
 
-The first exact pinned ESP32-S3 build on `fw` completed successfully before first flash:
-
 ```text
 Creating ESP32-S3 image...
 Generated kane_fabric_ms5_edge_reference.bin
@@ -146,8 +207,6 @@ free                     84%
 This proves the tracked project builds on the physical CPE workstation with the selected target/toolchain. It does not prove flash/boot/runtime behavior.
 
 ### Operator commands
-
-The CPE operator interface includes:
 
 ```text
 cpe-status
@@ -174,9 +233,7 @@ The wrappers, not ad-hoc environment sourcing, are the normal operator path.
 
 ## Fixed switched-USB topology on `fw`
 
-A four-port switched VIA Labs USB hub is physically fixed to the only workstation USB port on that side of the chassis. The hub ports are physically labeled.
-
-Front-panel numbering does not match Linux's internal branch order:
+A four-port switched VIA Labs USB hub is physically fixed to the workstation. The hub ports are physically labeled.
 
 ```text
 CPE-USB-1  front port 1  USB branch 1.1.2  PROGRAM
@@ -199,7 +256,7 @@ expected interface: Silicon Labs CP2102 UART
 VID:PID: 10c4:ea60
 ```
 
-Three identities must remain distinct:
+Three identities remain distinct:
 
 ```text
 physical workstation/hub socket  -> /dev/serial/by-path/...
@@ -211,8 +268,6 @@ Persist physical roles by path and validate the attached interface. Never persis
 
 ### Reference ESP32-S3
 
-The clean Kane-Fabric reference board currently accepted for first flash has native USB identity:
-
 ```text
 Espressif USB Serial/JTAG
 VID:PID    303a:1001
@@ -222,8 +277,8 @@ PSRAM      8 MB
 USB mode   USB-Serial/JTAG
 flags      0x00000000
 Key0-5     USER/EMPTY
-Secure Boot       Disabled
-Flash Encryption  Disabled
+Secure Boot        Disabled
+Flash Encryption   Disabled
 SPI_BOOT_CRYPT_CNT 0
 ```
 
@@ -242,8 +297,6 @@ That board is deliberately set aside intact and is **not** the Kane-Fabric refer
 ## TrivialHTTP CPE role
 
 The CPE also builds TrivialHTTP from `git64bit/kane-map`.
-
-On `fw`, Linux and Windows outputs live outside the source checkout:
 
 ```text
 /home/cpe-build/build/TrivialHTTP/linux-x86_64/trivialhttp
@@ -266,90 +319,98 @@ macOS is deliberately not cross-built on `fw`. Native GitHub-hosted macOS accept
 
 ---
 
-## Dell Precision — CPE LXD host
+## `annales` — Dell Precision CPE LXD host
 
-### Known current role
+Detailed observed host state is recorded in `docs/CPE_ANNALES_LXD_BASELINE.md`.
 
-The second physical CPE host relevant to Kane Fabric is a Dell Precision:
+### Current host
 
 ```text
-physical platform         Dell Precision
-CPE/Wiregate address      10.110.0.9/22
-host OS family            Ubuntu
-container stack           LXD
-Proxmox                    no
-existing primary role     RAG/LLM infrastructure
+hostname                  annales
+physical platform         Dell Precision 5820 Tower
+CPE/WireGuard             10.110.0.9/22
+LAN                       10.0.0.36/24
+OS                        Ubuntu 24.04.5 LTS
+kernel                    6.8.0-139-generic
+container stack           LXD 5.21.7 LTS
+existing primary role     RAG/LLM infrastructure plus unrelated containers
 future Kane role          host for Firmware Authority Node
 ```
 
-The host already exists on the CPE/Wiregate network. **10.110.0.9 is the physical Dell host's network identity.**
+The host already exists on the CPE/Wiregate network. **10.110.0.9 is the physical host's network identity.**
 
-The future `firmware-authority` LXD container does not yet have an independently assigned CPE address. `network identity: NOT ASSIGNED` in Firmware Authority state refers to the container, not to the Dell host.
+The future `firmware-authority` LXD container does not have an independently assigned CPE address. `network identity: NOT ASSIGNED` refers to the container, not the host.
 
-The Dell's existing GPU-backed LXD workloads are outside Kane Fabric. The Firmware Authority requires no GPU access and must not disturb or inherit those workloads merely because it shares the physical host.
+### Accepted host placement baseline
+
+```text
+LXD project               default
+storage pool              default / dir
+storage backing FS        /dev/md0p1 ext4 mounted at /
+storage available         ~803 GiB observed
+managed network           lxdbr0
+lxdbr0 IPv4               10.56.172.1/24, NAT
+lxdbr0 IPv6               fd42:bdf1:d776:c506::1/64, NAT
+default profile           root on default + eth0 on lxdbr0
+host SSH                  TCP/22
+host Webmin               TCP/10000
+LXD API                   TCP/8443 + local unix control
+```
+
+The default profile contains no GPU, host-directory passthrough, proxy device, CPU limit, memory limit, or privileged-container setting.
+
+GPU passthrough is instance-local only to `annales-infer` and `annales-train`; it is not inherited. Firmware Authority requires no GPU and must receive none.
+
+Existing witness containers with their own WireGuard interfaces are exceptions and do not change the host-mediated default.
 
 ### Firmware Authority placement
 
-Planned placement:
-
 ```text
-Dell Precision physical host (10.110.0.9)
+annales physical host / 10.110.0.9
 └── Ubuntu LXD
     └── unprivileged container: firmware-authority
+        LXD project: default
+        storage: default / dir
+        network: lxdbr0 / NAT
+        GPU: none
+        host-directory passthrough: none initially
         private signing key file: prohibited
         signing: disabled until MS5-009
-        independent CPE address: not yet assigned
+        independent CPE address: not assigned
 ```
 
-The LXD host is inside the authority trust boundary because containers share the host kernel. The intended mitigation is that persistent firmware-signing private key custody remains outside the container in a hardware-backed signer selected and accepted at MS5-009.
+The LXD host is inside the authority trust boundary because containers share the host kernel. Persistent firmware-signing private key custody remains outside the container in a hardware-backed signer selected and accepted at MS5-009.
 
-### Required Dell discovery before mutation
-
-The Dell is not Proxmox and `pct` commands do not apply.
-
-Before any Firmware Authority container is created or modified, perform a bounded **read-only** LXD/host inventory and record at minimum:
-
-- actual host hostname and Ubuntu release;
-- LXD version;
-- LXD projects;
-- storage pools;
-- profiles;
-- networks/bridges;
-- existing instances and naming conventions relevant to collision avoidance;
-- available CPU/RAM/storage appropriate to the authority container;
-- current device/GPU passthrough configuration so Kane work does not disturb it;
-- management/file-transfer path actually used for this host.
-
-Do not invent a host staging directory, bridge, storage pool, profile, container address, or transfer path before that inventory is returned.
+The initial host-side discovery required before container specification is complete. The next gate is to freeze exact container CPU/RAM/root-disk/autostart/image identity and then create the inert container without signing authority.
 
 ---
 
 ## Execution-domain discipline
 
-These environments use different control planes:
-
 ```text
-srv-b / CT102
-  Proxmox
+srv-b
+  physical CPE/WireGuard virtualization host
+  Proxmox control plane
   host commands: pct ...
   CT102 checkout: /tmp/kane-fabric-ms2
 
-fw
+fw / 10.110.0.4
   bare-metal Ubuntu
   operator entry: cpe-shell
   CPE project root: /home/cpe-build
   no pct
 
-Dell Precision / 10.110.0.9
-  Ubuntu LXD
-  LXD control plane
+annales / 10.110.0.9
+  physical CPE/WireGuard virtualization host
+  Ubuntu LXD control plane
+  host commands: lxc ...
+  container network: lxdbr0 unless explicitly changed
   no pct
-  exact management and storage paths must be observed before use
 ```
 
 A path valid on one host must never be assumed to exist on another.
 
-A file created by an Assistant or downloaded through the chat UI is not present on `srv-b`, `fw`, or the Dell merely because its filename is known. A host-side path is valid only after it has been established by SSOT or observed live.
+A file created by an Assistant or downloaded through the chat UI is not present on `srv-b`, `fw`, or `annales` merely because its filename is known. A host-side path is valid only after it has been established by SSOT or observed live.
 
 This is a permanent anti-drift rule.
 
@@ -359,7 +420,7 @@ This is a permanent anti-drift rule.
 
 All CPE physical hosts are replaceable infrastructure.
 
-Replacing `fw` requires re-accepting its physical USB paths and pinned build environment before flashing. Replacing the Dell requires re-establishing LXD host/container acceptance before Firmware Authority use.
+Replacing `fw` requires re-accepting its physical USB paths and pinned build environment before flashing. Replacing a virtualization host requires re-establishing its host CPE identity, native control plane, private virtualization network, and hosted-service acceptance.
 
 Neither replacement changes:
 
