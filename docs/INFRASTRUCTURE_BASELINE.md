@@ -19,6 +19,37 @@ Initial allocation:
 
 The initial allocation is deliberately conservative and may be resized when measured workload justifies it.
 
+### 1.1 `srv-b` physical-host baseline
+
+Observed read-only on 2026-09-16:
+
+```text
+hostname                  srv-b
+hardware                  HP ProLiant DL360 G7
+architecture              x86_64
+host OS                   Debian GNU/Linux 12 (bookworm)
+kernel                    6.8.12-9-pve
+Proxmox                   pve-manager 8.4.0
+LAN                       10.0.0.12/24 via vmbr0
+CPE/WireGuard             10.110.0.12/32 via wg0
+private CT bridge         vmbr1 / 10.20.0.1/24
+SSH                       TCP/22
+Proxmox UI/API            TCP/8006
+Webmin                    TCP/10000
+```
+
+Current observed containers:
+
+```text
+CT100  mechcomp      running
+CT101  mcproxy       running
+CT102  kane-fabric   running
+```
+
+The CPE/WireGuard identity belongs to the **physical Proxmox host**, not automatically to its CTs. CT102 remains on the private `vmbr1` service network at `10.20.0.12/24` and is administered through the host with `pct`.
+
+This is the same host-mediated control-plane model used by `annales`/LXD: virtualization host on CPE/WireGuard, guests on private virtualization networks unless an explicit exception is justified. See `docs/CPE_HOST_CONTROL_PLANE_MODEL.md`.
+
 ## 2. Host-level conformance authority
 
 CT102 does not define an independent container standard for properties shared with other containers on `srv-b`.
@@ -168,7 +199,7 @@ reconstruction-code/     historical software/reference checkouts
 database/                active Kane Fabric database
 staging/                 candidate/reconciliation/promotion workspace
 rollback/                rollback artifacts
-audit/                   operational/reconstruction audit output
+audit/                    operational/reconstruction audit output
 render/                   compiled substrate/subscription artifacts
 ```
 
