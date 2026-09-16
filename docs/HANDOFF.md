@@ -8,11 +8,9 @@ Milestones 0–4 are complete. The accepted MS3 substrate identity is `fe417a022
 
 The authoritative Kane Fabric runtime/test environment remains CT102 `kane-fabric` on Proxmox host `srv-b`, with operational state rooted at `/var/lib/kane-fabric` and the recorded checkout at `/tmp/kane-fabric-ms2`.
 
-## Current accepted CT102 repository checkpoint
+## Accepted CT102 repository checkpoint
 
-The earlier firmware-v1 responsibility freeze remains historically accepted at `5d45fd600468060104341166adf23bb6465393d2`. The repository subsequently advanced through the CPE SSOT repair, Firmware Authority scaffold, annales placement discovery, inert-container contract, physical deployment, and acceptance evidence.
-
-CT102 accepted the complete current implementation/evidence checkpoint at:
+CT102 accepted the complete implementation/evidence checkpoint at:
 
 ```text
 2b7c74ea631f30615ca10e8c79934748a96c7941
@@ -23,112 +21,45 @@ Acceptance evidence on 2026-09-16:
 ```text
 Python compileall                  PASS
 MS5 tests                          70 passed, 1 expected environment skip
-CPE SSOT structural guard          PASS
-Firmware Authority contract tests  PASS
 configured Fabric DB authority     readable / accepted-geographic-state
 development-state checks           all true
 worktree                            clean
 branch/upstream/origin/refspec      conformant
 ```
 
-The single skip is expected because CT102 deliberately has no host C compiler. The authoritative pinned ESP-IDF compile has already passed on `fw`.
+The single skip is expected because CT102 deliberately has no host C compiler. Later documentation/state-record commits advance GitHub `main` beyond `2b7c74e...`; they do not convert into a new CT102 acceptance claim unless CT102 is explicitly rerun.
 
-Later documentation/state-record commits may advance GitHub `main` beyond `2b7c74e...`; they do not invalidate the implementation and evidence exercised at that accepted CT102 head.
-
-## CPE host-mediated control-plane model
-
-The stable virtualization rule is explicit:
+## CPE execution domains
 
 ```text
-physical virtualization host owns normal CPE/WireGuard membership
-        !=
-container/VM automatically receives CPE/WireGuard membership
+srv-b / 10.110.0.12
+  Proxmox / pct
+  CT102 private service address 10.20.0.12/24
+
+fw / 10.110.0.4
+  bare-metal Ubuntu
+  CPE wrappers
+  ESP-IDF build / direct USB programming / runtime evidence
+
+annales / 10.110.0.9
+  Ubuntu LXD / lxc
+  firmware-authority on lxdbr0 private NAT
 ```
 
-Current physical CPE hosts relevant to Kane Fabric:
+Do not transfer filesystem paths, control-plane commands, or guest-network assumptions between these environments.
 
-```text
-10.110.0.4   fw       bare-metal CPE Build and Hardware Workstation
-10.110.0.9   annales  Dell Precision 5820 / Ubuntu LXD host
-10.110.0.12  srv-b    HP ProLiant DL360 G7 / Proxmox host
-```
+## Firmware Authority Node — complete inert deployment
 
-Virtualized workloads remain on host-private service networks and are administered through the host-native control plane unless a specific later design requires an independent CPE identity.
-
-### `srv-b`
-
-Observed physical host baseline:
-
-```text
-hostname                  srv-b
-hardware                  HP ProLiant DL360 G7
-OS                        Debian GNU/Linux 12
-kernel                    6.8.12-9-pve
-Proxmox                   pve-manager 8.4.0
-LAN                       10.0.0.12/24 via vmbr0
-CPE/WireGuard             10.110.0.12/32 via wg0
-private CT bridge         vmbr1 / 10.20.0.1/24
-management                SSH :22 / Proxmox :8006 / Webmin :10000
-```
-
-CT102 is `10.20.0.12/24` on `vmbr1`, gateway `10.20.0.1`, and is managed through `srv-b` with `pct`. CT102 has no independent CPE/WireGuard identity.
-
-Current observed CT inventory is CT100 `mechcomp`, CT101 `mcproxy`, and CT102 `kane-fabric`; only CT102 is Kane Fabric.
-
-### `fw`
-
-`fw` is the dedicated physical Kane-Fabric build/programming workstation. The current implementation is a bare-metal Lenovo ThinkCentre Edge 62z running Ubuntu 24.04.4 LTS, x86-64, current kernel `6.8.0-139-generic`.
-
-The project environment is isolated under `/home/cpe-build`; `/home/civicus-build` is legacy and must not be sourced, modified, reused, or treated as part of the CPE.
-
-The exact pinned ESP-IDF v6.0.3 / ESP32-S3 build has already succeeded on `fw`. The first firmware image was generated at size `0x28180` against a `0x100000` smallest application partition, leaving 84% free. This is physical build evidence, not flash/runtime evidence.
-
-The fixed switched hub is accepted as:
-
-```text
-CPE-USB-1  branch 1.1.2  PROGRAM   Espressif USB Serial/JTAG 303a:1001
-CPE-USB-2  branch 1.1.3  TERMINAL  Silicon Labs CP2102 UART  10c4:ea60
-CPE-USB-3  branch 1.1.1  spare/test
-CPE-USB-4  branch 1.1.4  spare/test
-```
-
-The clean reference ESP32-S3 is MAC `b8:f8:62:e2:d5:2c`, revision v0.2, 8 MB PSRAM, Security Flags `0x00000000`, Secure Boot disabled, and Flash Encryption disabled. It is currently left connected to CPE-USB-1 / PROGRAM. First controlled flash remains pending.
-
-A separate pre-secured experimental board ending `B8:F8:62:E2:D2:84` is excluded from the reference workflow and is left intact.
-
-### TrivialHTTP
-
-`fw` builds native Linux x86-64 and MinGW Windows x86-64 TrivialHTTP outputs from `git64bit/kane-map`; macOS is accepted through native macOS CI rather than cross-built on `fw`. At Kane-map commit `5d323196f877ceb86c8042afeadc7b44b6eaedbd`, the synchronized outputs were:
-
-```text
-Linux x86-64 SHA-256   ae822f27001ee9496a80a79d9e4a7ce8bbdec8ac5d050e60b5d4c27623ad1807
-Windows x86-64 SHA-256 4ec4c7504191b82dec81d92cd57653ef420d93da403930f88c3ed264bcf49f6a
-```
-
-## Firmware Authority Node
-
-The non-secret repository scaffold was introduced at `e42ec17f0ccd6de39c2b5b6987063a424a22a649`. The repository-side CPE/Firmware Authority scaffold was accepted in CT102 at `84ca59a...`; the complete inert-container deployment and acceptance evidence was then exercised in CT102 at `2b7c74e...`.
-
-The physical host is `annales`, a Dell Precision 5820 on the CPE/WireGuard network at `10.110.0.9/22`. It runs Ubuntu 24.04.5 LTS with LXD 5.21.7 LTS and carries unrelated RAG/LLM workloads.
-
-The inert Firmware Authority container is now created and accepted:
+The inert Firmware Authority deployment is accepted on `annales`.
 
 ```text
 container                   firmware-authority
 state                       RUNNING
-image                       Ubuntu 24.04 minimal / Noble
 image fingerprint           6330af160fc7a345119549990a92e7cba23c25bc846e4906729f525d6ddd1b19
-LXD project                 default
-profile                     default
-storage                     default / dir
-requested root size         16 GiB
-root quota accepted         NO — dir backend observation does not establish enforced quota
-CPU limit                   2
-RAM limit                   2 GiB
+CPU / RAM                    2 / 2 GiB
 unprivileged                yes
 autostart                   yes
 network                     lxdbr0 / NAT
-observed DHCP IPv4          10.56.172.112/24
 container CPE identity      none
 WireGuard                   absent
 GPU                         none
@@ -136,76 +67,162 @@ host-directory passthrough none
 proxy device                none
 USB signer                  none
 private signing key         NOT CREATED
-persistent private key      PROHIBITED
 signing                     DISABLED
-hardware signer             not attached
-operational activation      gated by MS5-009
+activation                  gated by MS5-009
 ```
 
-`10.56.172.112` is an observed dynamic lease, not a logical identity and not a CPE address. `10.110.0.9` remains the physical `annales` host identity.
-
-The installed non-secret authority state was fetched from the exact accepted repository commit and verified by Git blob identity before bootstrap. The installed `authority-state.json` blob identity is:
-
-```text
-26c869d2d913045fd884e53cbb7e7c2c11b39466
-```
-
-The accepted container created only:
-
-```text
-/etc/civicus-firmware-authority/STATUS
-/etc/civicus-firmware-authority/authority-state.json
-/var/lib/civicus-firmware-authority/{incoming,manifests,authorizations,public-keys,evidence}/
-```
-
-The state directories contained no files at acceptance. The final physical check ended with:
+Final physical acceptance ended with:
 
 ```text
 ANNALES_FIRMWARE_AUTHORITY_ACCEPTANCE=PASS
 ```
 
-Detailed physical acceptance evidence is recorded in `docs/CPE_FIRMWARE_AUTHORITY_ACCEPTANCE.md`.
+Detailed evidence: `docs/CPE_FIRMWARE_AUTHORITY_ACCEPTANCE.md`.
 
-This completes the **inert Firmware Authority deployment**, not signing activation. No signer/provider/algorithm or authorization envelope has been frozen. Those remain MS5-009 work.
+Do not return to `annales` for ordinary ESP32 work. Leave the container inert until MS5-009 explicitly freezes and accepts the external hardware-backed signer and authorization envelope.
 
-## Stable operational authorities
+## ESP32-S3 physical checkpoint — accepted first flash and cold boot
 
-```text
-repository                    git64bit/Kane-Fabric
-branch                        main
-CPE SSOT                      docs/CIVICVS_PROJECT_ENVIRONMENT.md
-host-control-plane model      docs/CPE_HOST_CONTROL_PLANE_MODEL.md
-Proxmox host                  srv-b / 10.110.0.12
-Kane runtime/test container   CT102 / kane-fabric / 10.20.0.12
-CT102 checkout                /tmp/kane-fabric-ms2
-accepted CT102 HEAD           2b7c74ea631f30615ca10e8c79934748a96c7941
-operational root              /var/lib/kane-fabric
-authoritative DB              /var/lib/kane-fabric/database/kane-county-fabric.gpkg
-DB SHA256                     31e362b696a37f1b9c45ae355c5669511a3128c17a651108a62e20d1cedebd67
-CPE build/program host        fw / 10.110.0.4
-Firmware Authority host       annales / 10.110.0.9
-Firmware Authority container  firmware-authority / lxdbr0 private NAT
-```
+`fw` is the dedicated build/programming workstation. `/home/cpe-build` is the CPE project home; `/home/civicus-build` is legacy and must not be used.
 
-## Execution-domain rule
+Fixed USB roles:
 
 ```text
-srv-b / 10.110.0.12
-  Proxmox / pct
-  private CT network vmbr1 / 10.20.0.0/24
-
-fw / 10.110.0.4
-  bare-metal Ubuntu / cpe-shell and CPE wrappers
-
-annales / 10.110.0.9
-  Ubuntu LXD / lxc
-  private container network lxdbr0 / 10.56.172.0/24 NAT
+CPE-USB-1  branch 1.1.2  PROGRAM   Espressif USB Serial/JTAG 303a:1001
+CPE-USB-2  branch 1.1.3  TERMINAL  Silicon Labs CP2102 UART  10c4:ea60
 ```
 
-Do not transfer filesystem paths, control-plane commands, or guest-network assumptions between these environments.
+Reference board:
+
+```text
+chip                       ESP32-S3 QFN56 revision v0.2
+PSRAM                      8 MB
+MAC                        b8:f8:62:e2:d5:2c
+Secure Boot                disabled
+Flash Encryption           disabled
+Security Flags             0x00000000
+reference flash            16 MB
+```
+
+A separate pre-secured experimental board ending `B8:F8:62:E2:D2:84` is excluded and must remain untouched.
+
+### First controlled flash
+
+The first controlled flash and cold boot succeeded. The initial boot exposed a reproducibility defect: physical flash was 16 MB while the binary header inherited ESP-IDF's 2 MB default.
+
+The repository default was corrected at:
+
+```text
+d26ec418751b7b2f82a8814297204e1b62bceda4
+```
+
+Tracked defaults now include:
+
+```text
+CONFIG_IDF_TARGET="esp32s3"
+CONFIG_ESPTOOLPY_FLASHSIZE_16MB=y
+```
+
+After regenerating the build configuration, `cpe-flash` used:
+
+```text
+--chip esp32s3
+--flash-size 16MB
+```
+
+The corrected firmware was reflashed successfully; bootloader, partition table, and application each completed written-data hash verification.
+
+A PROGRAM→TERMINAL power transition produced a true cold boot:
+
+```text
+rst:0x1 (POWERON)
+SPI Flash Size : 16MB
+App version: d26ec41
+```
+
+The earlier `16384k` versus `2048k` warning was absent. The application reached `app_main()` normally without reset loop, panic, or fatal error.
+
+Detailed evidence: `docs/CPE_ESP32_FIRST_FLASH_ACCEPTANCE.md`.
+
+Current physical state:
+
+```text
+PROGRAM / CPE-USB-1    OFF
+TERMINAL / CPE-USB-2   ON
+```
+
+Do not switch ports merely to verify them. Switch back to PROGRAM only when another firmware flash is actually required.
+
+## Current MS5-006 boundary
+
+The current firmware is still the MS5-006 build probe. It proves that the storage/range components link under the pinned toolchain, but it intentionally does not yet start networking or mount a physical artifact partition.
+
+Already accepted on physical hardware:
+
+```text
+pinned ESP-IDF/toolchain build       PASS
+PROGRAM role                         PASS
+TERMINAL role                        PASS
+reference-board security baseline    PASS
+first controlled flash               PASS
+cold boot after power loss           PASS
+firmware identity diagnostics        PASS
+esp32s3 target pin                   PASS
+16 MB flash geometry                 PASS
+```
+
+Still pending:
+
+```text
+prepared read-only artifact storage
+active-inventory verification
+real plain-HTTP GET
+exact closed byte-range runtime behavior
+fail-closed invalid-active-state behavior
+Wiregate browser path
+firmware authenticity/update/rollback/recovery
+replacement/reprovisioning proof
+constrained-resource acceptance
+```
+
+## TrivialHTTP
+
+`fw` also builds TrivialHTTP from `git64bit/kane-map`.
+
+At Kane-map commit `5d323196f877ceb86c8042afeadc7b44b6eaedbd`:
+
+```text
+Linux x86-64 SHA-256   ae822f27001ee9496a80a79d9e4a7ce8bbdec8ac5d050e60b5d4c27623ad1807
+Windows x86-64 SHA-256 4ec4c7504191b82dec81d92cd57653ef420d93da403930f88c3ed264bcf49f6a
+```
+
+macOS arm64 and x86-64 are accepted through native GitHub-hosted macOS CI rather than cross-built on `fw`.
+
+## Stable authorities/checkpoints
+
+```text
+repository                         git64bit/Kane-Fabric
+branch                             main
+accepted CT102 HEAD                2b7c74ea631f30615ca10e8c79934748a96c7941
+ESP32 accepted firmware source     d26ec418751b7b2f82a8814297204e1b62bceda4
+ESP32 physical acceptance doc      docs/CPE_ESP32_FIRST_FLASH_ACCEPTANCE.md
+CPE SSOT                           docs/CIVICVS_PROJECT_ENVIRONMENT.md
+host-control-plane model           docs/CPE_HOST_CONTROL_PLANE_MODEL.md
+Kane runtime/test container        CT102 / kane-fabric / 10.20.0.12
+operational root                   /var/lib/kane-fabric
+authoritative DB                   /var/lib/kane-fabric/database/kane-county-fabric.gpkg
+DB SHA256                          31e362b696a37f1b9c45ae355c5669511a3128c17a651108a62e20d1cedebd67
+CPE build/program host             fw / 10.110.0.4
+Firmware Authority host            annales / 10.110.0.9
+Firmware Authority container       firmware-authority / lxdbr0 private NAT
+```
 
 ## Next safe action
 
-The inert Firmware Authority deployment is complete. Leave it inert until MS5-009 explicitly freezes and accepts the external hardware-backed signer and firmware authorization envelope.
+Stay on `fw`.
 
-The next physical Milestone 5 action is the first controlled ESP32-S3 flash on `fw`, followed by runtime/storage/range evidence. Do not return to `annales` merely to continue ordinary ESP32 edge work.
+Leave PROGRAM off and TERMINAL on until a new firmware flash is actually required.
+
+Continue MS5-006 by implementing and physically proving prepared read-only artifact storage and active-inventory verification on the reference ESP32-S3. After that, prove real plain-HTTP GET and exact closed byte-range behavior.
+
+Do not activate Firmware Authority signing during this work; MS5-009 remains the signing-activation boundary.

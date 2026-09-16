@@ -55,14 +55,46 @@ smallest app partition    0x100000
 free                      84%
 ```
 
+The reference build defaults now explicitly pin:
+
+```text
+CONFIG_IDF_TARGET="esp32s3"
+CONFIG_ESPTOOLPY_FLASHSIZE_16MB=y
+```
+
 The fixed USB roles are accepted:
 
 ```text
 CPE-USB-1 / branch 1.1.2 / PROGRAM  / Espressif 303a:1001
-CPE-USB-2 / branch 1.1.3 / TERMINAL / Silicon Labs 10c4:ea60
+CPE-USB-2 / branch 1.1.3 / TERMINAL / Silicon Labs CP2102 10c4:ea60
 ```
 
-The clean reference board is ESP32-S3 revision v0.2 with 8 MB PSRAM, MAC `b8:f8:62:e2:d5:2c`, Security Flags `0x00000000`, Secure Boot disabled, and Flash Encryption disabled. It is currently left connected to PROGRAM. The first controlled Kane Fabric flash remains pending.
+The clean reference board is ESP32-S3 revision v0.2 with 8 MB PSRAM, MAC `b8:f8:62:e2:d5:2c`, 16 MB flash, Security Flags `0x00000000`, Secure Boot disabled, and Flash Encryption disabled.
+
+The first controlled Kane Fabric flash and subsequent cold boot are accepted. The initial boot exposed a 2 MB image-header default against the 16 MB physical flash; that reproducibility defect was corrected at Kane-Fabric commit:
+
+```text
+d26ec418751b7b2f82a8814297204e1b62bceda4
+```
+
+After regenerating the effective `sdkconfig`, the corrected flash command used `--chip esp32s3 --flash-size 16MB`. A corrective reflash passed written-data hash verification for bootloader, partition table, and application. The following PROGRAM-to-TERMINAL power transition produced a real cold boot:
+
+```text
+rst:0x1 (POWERON)
+SPI Flash Size : 16MB
+App version: d26ec41
+```
+
+The previous 16 MB physical / 2 MB image-header warning was absent. Detailed evidence is recorded in `docs/CPE_ESP32_FIRST_FLASH_ACCEPTANCE.md`.
+
+Current runtime connection:
+
+```text
+PROGRAM / CPE-USB-1    OFF
+TERMINAL / CPE-USB-2   ON
+```
+
+Switch back to PROGRAM only when another firmware flash is actually required.
 
 ## MS5-006 components
 
@@ -72,6 +104,6 @@ The clean reference board is ESP32-S3 revision v0.2 with 8 MB PSRAM, MAC `b8:f8:
 - `host_test`: host compiler tests for the pure HTTP/range core.
 - `main`: build-probe application used to ensure the components link under the pinned ESP-IDF toolchain.
 
-The current build probe intentionally does not yet start networking or mount a particular physical partition. Runtime integration later attaches the artifact component to a plain HTTP server and implements the frozen v1 runtime role. HTTPS remains at the Wiregate hub.
+The current build probe intentionally does not yet start networking or mount a particular physical partition. Runtime integration next attaches prepared read-only artifact storage, verifies the active inventory, and then starts the plain HTTP artifact server. HTTPS remains at the Wiregate hub.
 
 For the implementation contract, read `docs/MS5_006_STORAGE_HTTP_IMPLEMENTATION.md`.

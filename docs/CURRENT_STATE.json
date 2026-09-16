@@ -15,7 +15,9 @@
     "ms5_firmware_v1_role_acceptance_head": "5d45fd600468060104341166adf23bb6465393d2",
     "firmware_authority_scaffold_head": "e42ec17f0ccd6de39c2b5b6987063a424a22a649",
     "cpe_firmware_authority_repository_acceptance_head": "84ca59a06c6fd4d4b81461d99d3f6d3889a43328",
-    "cpe_firmware_authority_inert_container_acceptance_head": "2b7c74ea631f30615ca10e8c79934748a96c7941"
+    "cpe_firmware_authority_inert_container_acceptance_head": "2b7c74ea631f30615ca10e8c79934748a96c7941",
+    "cpe_esp32_first_flash_source_head": "d26ec418751b7b2f82a8814297204e1b62bceda4",
+    "cpe_esp32_first_flash_record_head": "cf744c5dc6342f0a0ab8c73f46fb7dba31c64109"
   },
   "deployment": {
     "proxmox_host": "srv-b",
@@ -42,8 +44,13 @@
       "pinned_esp_idf_build": "passed",
       "program_role": "accepted",
       "terminal_role": "accepted",
-      "first_flash": "pending",
-      "status": "physical-cpe-baseline-accepted-first-flash-pending"
+      "firmware_source_head": "d26ec418751b7b2f82a8814297204e1b62bceda4",
+      "first_flash": "accepted",
+      "cold_boot": "accepted",
+      "flash_geometry": "16MB accepted and physically proved",
+      "first_flash_acceptance_document": "docs/CPE_ESP32_FIRST_FLASH_ACCEPTANCE.md",
+      "current_connection": "CPE-USB-2 / TERMINAL",
+      "status": "first-flash-cold-boot-and-16mb-reference-geometry-accepted"
     }
   },
   "cpe": {
@@ -114,11 +121,16 @@
         "mac": "b8:f8:62:e2:d5:2c",
         "chip": "ESP32-S3 QFN56 revision v0.2",
         "psram": "8MB",
+        "flash_size": "16MB",
         "secure_boot": "disabled",
         "flash_encryption": "disabled",
         "security_flags": "0x00000000",
-        "current_connection": "CPE-USB-1 / PROGRAM",
-        "first_flash": "pending"
+        "firmware_source_head": "d26ec418751b7b2f82a8814297204e1b62bceda4",
+        "runtime_app_version": "d26ec41",
+        "cold_boot_reset_reason": "POWERON",
+        "current_connection": "CPE-USB-2 / TERMINAL",
+        "first_flash": "accepted",
+        "flash_geometry_acceptance": "accepted"
       }
     },
     "firmware_authority_host": {
@@ -243,12 +255,12 @@
   "milestone": {
     "current": 5,
     "name": "Reference Physical Edge Architecture",
-    "phase": "firmware-authority-inert-container-accepted",
+    "phase": "ms5-006-device-runtime-integration",
     "design": "docs/MILESTONE_5_DESIGN.md",
     "reference": "docs/ESP32_EDGE_REFERENCE.md",
     "cpe": "docs/CIVICVS_PROJECT_ENVIRONMENT.md",
     "accepted_work": {
-      "through": "CT102 full MS5 acceptance at 2b7c74e plus accepted inert firmware-authority container on annales and completed srv-b host-mediated CPE baseline",
+      "through": "CT102 full MS5 acceptance at 2b7c74e, accepted inert firmware-authority deployment on annales, and accepted ESP32-S3 first controlled flash/cold boot with corrected 16 MB reference flash geometry on fw",
       "ct102_repository_head": "2b7c74ea631f30615ca10e8c79934748a96c7941",
       "ms5_006_implementation_head": "ef6a08f03a94aabd6c15e9c02f6ed9470c65d3ce",
       "ct102_test_result": "70 tests passed, 1 expected environment skip (host C compiler unavailable in CT102)",
@@ -263,24 +275,27 @@
       "cpe_program_role": "accepted",
       "cpe_terminal_role": "accepted",
       "clean_reference_board_security_baseline": "accepted",
+      "first_device_flash": "accepted",
+      "first_device_cold_boot": "accepted",
+      "reference_flash_geometry": "accepted / 16MB",
+      "esp32_first_flash_acceptance_document": "docs/CPE_ESP32_FIRST_FLASH_ACCEPTANCE.md",
       "annales_lxd_first_inventory": "recorded",
       "annales_lxd_resource_profile_device_inventory": "recorded",
       "annales_lxd_final_placement_inventory": "recorded",
       "firmware_authority_inert_container_annales_acceptance": "accepted",
       "firmware_authority_acceptance_document": "docs/CPE_FIRMWARE_AUTHORITY_ACCEPTANCE.md",
       "firmware_authority_scaffold_ct102_acceptance": "accepted",
-      "first_device_flash": "pending",
       "device_storage_range_evidence": "pending"
     },
-    "next_work_item": "Return to the physical ESP32-S3 edge workflow on fw for the first controlled flash and runtime evidence. The Firmware Authority container remains deliberately inert until MS5-009 freezes and accepts its external hardware-backed signer and authorization envelope."
+    "next_work_item": "Continue MS5-006 on fw by implementing and physically proving prepared read-only artifact storage and active-inventory verification on the reference ESP32-S3, followed by real plain-HTTP GET and exact closed byte-range behavior. The Firmware Authority container remains deliberately inert until MS5-009."
   },
   "priority_workstream": {
-    "name": "Firmware Authority Node",
-    "design": "ms5/firmware_authority/README.md",
-    "status": "inert container accepted on annales; repository and acceptance evidence accepted in CT102; signing remains disabled pending MS5-009",
-    "scaffold_head": "e42ec17f0ccd6de39c2b5b6987063a424a22a649",
-    "repository_acceptance_head": "84ca59a06c6fd4d4b81461d99d3f6d3889a43328",
-    "inert_container_acceptance_head": "2b7c74ea631f30615ca10e8c79934748a96c7941"
+    "name": "ESP32-S3 MS5-006 Runtime Integration",
+    "design": "ms5/esp32_reference/README.md",
+    "status": "first controlled flash and cold boot accepted; esp32s3 target and 16MB reference flash geometry pinned and physically proved; storage/inventory runtime remains next",
+    "firmware_source_head": "d26ec418751b7b2f82a8814297204e1b62bceda4",
+    "physical_acceptance_document": "docs/CPE_ESP32_FIRST_FLASH_ACCEPTANCE.md",
+    "current_connection": "CPE-USB-2 / TERMINAL"
   },
-  "next_safe_action": "Use fw / 10.110.0.4 for the first controlled ESP32-S3 flash and runtime evidence. Leave firmware-authority on annales inert: no WireGuard peer, no GPU, no host-directory passthrough, no proxy device, no USB signer, no persistent private signing key, and no signing activation until MS5-009 explicitly authorizes those changes."
+  "next_safe_action": "Stay on fw / 10.110.0.4. Leave PROGRAM off and TERMINAL on until a new firmware flash is actually required. Continue MS5-006 with prepared read-only artifact storage and active-inventory verification, then real HTTP GET/range runtime proof. Leave firmware-authority on annales inert: no WireGuard peer, no GPU, no host-directory passthrough, no proxy device, no USB signer, no persistent private signing key, and no signing activation until MS5-009 explicitly authorizes those changes."
 }
