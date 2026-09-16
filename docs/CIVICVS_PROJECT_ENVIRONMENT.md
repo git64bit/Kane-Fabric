@@ -22,11 +22,10 @@ CPE addresses are intentionally limited. A container or VM does not receive an i
 Current physical CPE hosts relevant to Kane Fabric include:
 
 ```text
-10.110.0.4  fw       CPE Build and Hardware Workstation
-10.110.0.9  annales  Dell Precision 5820 / Ubuntu LXD host
+10.110.0.4   fw       CPE Build and Hardware Workstation
+10.110.0.9   annales  Dell Precision 5820 / Ubuntu LXD host
+10.110.0.12  srv-b    HP ProLiant DL360 G7 / Proxmox host
 ```
-
-`srv-b` is also a physical CPE/WireGuard virtualization host, but its exact CPE address has not yet been recorded in this repository and must not be invented.
 
 These are physical/infrastructure identities. They are not Fabric geographic identity and do not become firmware release identity.
 
@@ -47,11 +46,11 @@ Reference pattern:
 ```text
 CPE / WireGuard 10.110.0.0/22
         |
-        +-- srv-b physical host
+        +-- srv-b physical host / 10.110.0.12
         |     control plane: Proxmox / pct
+        |     private bridge: vmbr1 / 10.20.0.0/24
         |     |
-        |     `-- CT102 kane-fabric
-        |         service network: 10.20.0.12/24
+        |     `-- CT102 kane-fabric / 10.20.0.12
         |
         +-- annales physical host / 10.110.0.9
         |     control plane: Ubuntu LXD / lxc
@@ -76,12 +75,43 @@ Detailed rationale: `docs/CPE_HOST_CONTROL_PLANE_MODEL.md`.
 
 `srv-b` is the physical Proxmox host for Kane Fabric CT102. Its host CPE/WireGuard membership is distinct from the private service network used by its CTs.
 
+Observed host baseline on 2026-09-16:
+
+```text
+hostname                  srv-b
+hardware                  HP ProLiant DL360 G7
+architecture              x86_64
+OS                        Debian GNU/Linux 12 (bookworm)
+kernel                    6.8.12-9-pve
+Proxmox                   pve-manager 8.4.0
+LAN                       10.0.0.12/24 via vmbr0
+CPE/WireGuard             10.110.0.12/32 via wg0
+private CT bridge         vmbr1 / 10.20.0.1/24
+host SSH                  TCP/22
+Proxmox UI/API            TCP/8006
+host Webmin               TCP/10000
+WireGuard service         wg-quick@wg0 active
+```
+
+Current observed CT inventory:
+
+```text
+CT100  mechcomp      running
+CT101  mcproxy       running
+CT102  kane-fabric   running
+```
+
+Kane Fabric CT102 remains:
+
 ```text
 control plane              Proxmox / pct
-Kane container             CT102 / kane-fabric
 CT102 service address      10.20.0.12/24
+CT102 gateway              10.20.0.1
+CT102 network              vmbr1
 CT102 checkout             /tmp/kane-fabric-ms2
 CT102 operational root     /var/lib/kane-fabric
+CT102 privilege            unprivileged
+CT102 autostart            enabled
 ```
 
 Normal management is host-mediated:
@@ -90,6 +120,8 @@ Normal management is host-mediated:
 pct status 102
 pct exec 102 -- ...
 ```
+
+CT102 has no independent CPE/WireGuard address. Its service-network identity `10.20.0.12/24` is separate from the physical host's CPE identity `10.110.0.12/32`.
 
 Do not put the `fw` filesystem model or the `annales` LXD control plane onto `srv-b`.
 
@@ -388,10 +420,11 @@ The initial host-side discovery required before container specification is compl
 ## Execution-domain discipline
 
 ```text
-srv-b
+srv-b / 10.110.0.12
   physical CPE/WireGuard virtualization host
   Proxmox control plane
   host commands: pct ...
+  private CT network: vmbr1 / 10.20.0.0/24
   CT102 checkout: /tmp/kane-fabric-ms2
 
 fw / 10.110.0.4
