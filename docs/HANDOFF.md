@@ -10,33 +10,34 @@ The authoritative Kane Fabric runtime/test environment remains CT102 `kane-fabri
 
 ## Current accepted CT102 repository checkpoint
 
-The earlier firmware-v1 responsibility freeze remains historically accepted at `5d45fd600468060104341166adf23bb6465393d2`. The repository has since advanced through the CPE SSOT repair and Firmware Authority scaffold.
+The earlier firmware-v1 responsibility freeze remains historically accepted at `5d45fd600468060104341166adf23bb6465393d2`. The repository subsequently advanced through the CPE SSOT repair, Firmware Authority scaffold, annales placement discovery, inert-container contract, physical deployment, and acceptance evidence.
 
-CT102 accepted the current implementation at:
+CT102 accepted the complete current implementation/evidence checkpoint at:
 
 ```text
-84ca59a06c6fd4d4b81461d99d3f6d3889a43328
+2b7c74ea631f30615ca10e8c79934748a96c7941
 ```
 
 Acceptance evidence on 2026-09-16:
 
 ```text
 Python compileall                  PASS
-MS5 tests                          69 passed, 1 expected environment skip
+MS5 tests                          70 passed, 1 expected environment skip
 CPE SSOT structural guard          PASS
 Firmware Authority contract tests  PASS
 configured Fabric DB authority     readable / accepted-geographic-state
+development-state checks           all true
 worktree                            clean
 branch/upstream/origin/refspec      conformant
 ```
 
 The single skip is expected because CT102 deliberately has no host C compiler. The authoritative pinned ESP-IDF compile has already passed on `fw`.
 
-Later documentation-only checkpoints record additional physical CPE observations without invalidating the implementation/tests exercised at `84ca59a...`.
+Later documentation/state-record commits may advance GitHub `main` beyond `2b7c74e...`; they do not invalidate the implementation and evidence exercised at that accepted CT102 head.
 
 ## CPE host-mediated control-plane model
 
-The stable virtualization rule is now explicit:
+The stable virtualization rule is explicit:
 
 ```text
 physical virtualization host owns normal CPE/WireGuard membership
@@ -106,37 +107,66 @@ Windows x86-64 SHA-256 4ec4c7504191b82dec81d92cd57653ef420d93da403930f88c3ed264b
 
 ## Firmware Authority Node
 
-The non-secret repository scaffold was introduced at `e42ec17f0ccd6de39c2b5b6987063a424a22a649` and is accepted in CT102 as part of the `84ca59a...` checkpoint. This accepts the repository contract only; it does **not** activate signing authority.
+The non-secret repository scaffold was introduced at `e42ec17f0ccd6de39c2b5b6987063a424a22a649`. The repository-side CPE/Firmware Authority scaffold was accepted in CT102 at `84ca59a...`; the complete inert-container deployment and acceptance evidence was then exercised in CT102 at `2b7c74e...`.
 
-The physical host is `annales`, a Dell Precision 5820 already on the CPE/WireGuard network at `10.110.0.9/22`. It runs Ubuntu 24.04.5 LTS with LXD 5.21.7 LTS and carries unrelated RAG/LLM workloads.
+The physical host is `annales`, a Dell Precision 5820 on the CPE/WireGuard network at `10.110.0.9/22`. It runs Ubuntu 24.04.5 LTS with LXD 5.21.7 LTS and carries unrelated RAG/LLM workloads.
 
-Read-only placement discovery is complete:
-
-```text
-LXD project               default
-storage                   default / dir
-storage available         ~803 GiB observed
-private network           lxdbr0 / 10.56.172.0/24 NAT
-GPU                       RTX 3050 used only by existing infer/train containers
-host management           SSH :22 / Webmin :10000 / LXD :8443 + unix control
-```
-
-Initial Firmware Authority placement remains:
+The inert Firmware Authority container is now created and accepted:
 
 ```text
-annales physical host / 10.110.0.9
-└── LXD
-    └── unprivileged container: firmware-authority
-        network: lxdbr0 / NAT
-        GPU: none
-        host-directory passthrough: none initially
-        private signing key file: prohibited
-        signing: disabled
-        container CPE identity: not assigned
-        operational acceptance: MS5-009
+container                   firmware-authority
+state                       RUNNING
+image                       Ubuntu 24.04 minimal / Noble
+image fingerprint           6330af160fc7a345119549990a92e7cba23c25bc846e4906729f525d6ddd1b19
+LXD project                 default
+profile                     default
+storage                     default / dir
+requested root size         16 GiB
+root quota accepted         NO — dir backend observation does not establish enforced quota
+CPU limit                   2
+RAM limit                   2 GiB
+unprivileged                yes
+autostart                   yes
+network                     lxdbr0 / NAT
+observed DHCP IPv4          10.56.172.112/24
+container CPE identity      none
+WireGuard                   absent
+GPU                         none
+host-directory passthrough none
+proxy device                none
+USB signer                  none
+private signing key         NOT CREATED
+persistent private key      PROHIBITED
+signing                     DISABLED
+hardware signer             not attached
+operational activation      gated by MS5-009
 ```
 
-`10.110.0.9` is the physical host identity. The Firmware Authority container does not receive a CPE address merely because it exists.
+`10.56.172.112` is an observed dynamic lease, not a logical identity and not a CPE address. `10.110.0.9` remains the physical `annales` host identity.
+
+The installed non-secret authority state was fetched from the exact accepted repository commit and verified by Git blob identity before bootstrap. The installed `authority-state.json` blob identity is:
+
+```text
+26c869d2d913045fd884e53cbb7e7c2c11b39466
+```
+
+The accepted container created only:
+
+```text
+/etc/civicus-firmware-authority/STATUS
+/etc/civicus-firmware-authority/authority-state.json
+/var/lib/civicus-firmware-authority/{incoming,manifests,authorizations,public-keys,evidence}/
+```
+
+The state directories contained no files at acceptance. The final physical check ended with:
+
+```text
+ANNALES_FIRMWARE_AUTHORITY_ACCEPTANCE=PASS
+```
+
+Detailed physical acceptance evidence is recorded in `docs/CPE_FIRMWARE_AUTHORITY_ACCEPTANCE.md`.
+
+This completes the **inert Firmware Authority deployment**, not signing activation. No signer/provider/algorithm or authorization envelope has been frozen. Those remain MS5-009 work.
 
 ## Stable operational authorities
 
@@ -148,12 +178,13 @@ host-control-plane model      docs/CPE_HOST_CONTROL_PLANE_MODEL.md
 Proxmox host                  srv-b / 10.110.0.12
 Kane runtime/test container   CT102 / kane-fabric / 10.20.0.12
 CT102 checkout                /tmp/kane-fabric-ms2
-last accepted CT102 HEAD      84ca59a06c6fd4d4b81461d99d3f6d3889a43328
+accepted CT102 HEAD           2b7c74ea631f30615ca10e8c79934748a96c7941
 operational root              /var/lib/kane-fabric
 authoritative DB              /var/lib/kane-fabric/database/kane-county-fabric.gpkg
 DB SHA256                     31e362b696a37f1b9c45ae355c5669511a3128c17a651108a62e20d1cedebd67
 CPE build/program host        fw / 10.110.0.4
 Firmware Authority host       annales / 10.110.0.9
+Firmware Authority container  firmware-authority / lxdbr0 private NAT
 ```
 
 ## Execution-domain rule
@@ -175,6 +206,6 @@ Do not transfer filesystem paths, control-plane commands, or guest-network assum
 
 ## Next safe action
 
-The host-control-plane model and both virtualization-host baselines are now recorded. The next Firmware Authority gate is to freeze the **initial inert LXD container specification** from the completed `annales` baseline: Ubuntu release image identity, explicit CPU/RAM/root-disk limits, unprivileged state, autostart policy, default project/storage, `lxdbr0` NAT, and explicit absence of GPU, proxy, host-directory, WireGuard/CPE, and signing-key state.
+The inert Firmware Authority deployment is complete. Leave it inert until MS5-009 explicitly freezes and accepts the external hardware-backed signer and firmware authorization envelope.
 
-The first controlled ESP32-S3 flash on `fw` remains separately pending.
+The next physical Milestone 5 action is the first controlled ESP32-S3 flash on `fw`, followed by runtime/storage/range evidence. Do not return to `annales` merely to continue ordinary ESP32 edge work.
