@@ -5,6 +5,7 @@
     "repository": "git64bit/Kane-Fabric",
     "branch": "main",
     "cpe_ssot": "docs/CIVICVS_PROJECT_ENVIRONMENT.md",
+    "cpe_host_control_plane_model": "docs/CPE_HOST_CONTROL_PLANE_MODEL.md",
     "milestone_3_published_main_head": "84293aeb381db596f4c3233473c350fda6c5426d",
     "milestone_4_accepted_implementation_head": "9f6013d1b8b44998047f71e2b3f3e9c55c9ed298",
     "ms5_005_acceptance_head": "aed812df8c5e37bb1843e022d7a7813dc7e8e862",
@@ -48,7 +49,8 @@
     "network": {
       "cidr": "10.110.0.0/22",
       "hub_reference_address": "10.110.0.1",
-      "address_policy": "limited; independent CPE address only when architectural role requires it"
+      "address_policy": "limited; independent CPE address only when architectural role requires it",
+      "virtualization_host_model": "physical virtualization host normally owns CPE/WireGuard membership; containers/VMs remain on host-private virtualization networks and are managed through the host control plane unless an explicit independent CPE role is justified"
     },
     "build_hardware_workstation": {
       "hostname": "fw",
@@ -108,6 +110,9 @@
         "storage_pool": "default",
         "storage_driver": "dir",
         "storage_source": "/var/snap/lxd/common/lxd/storage-pools/default",
+        "storage_backing_filesystem": "/dev/md0p1 ext4 mounted at /",
+        "storage_filesystem_size_gib": 935,
+        "storage_filesystem_available_gib_observed": 803,
         "managed_bridge": "lxdbr0",
         "bridge_ipv4": "10.56.172.1/24",
         "bridge_ipv4_nat": true,
@@ -118,6 +123,17 @@
         "server_clustered": false,
         "https_listen": ":8443",
         "certificate_fingerprint_sha256": "004fc19b4870633d10c8b647f0ab47f96757676b030fa8c1a44470672a6769d1",
+        "cached_images": 0,
+        "release_image_remotes_available": [
+          "images",
+          "ubuntu",
+          "ubuntu-minimal"
+        ],
+        "host_management_services": [
+          "SSH TCP/22",
+          "Webmin TCP/10000",
+          "LXD TCP/8443 and local unix control"
+        ],
         "observed_running_instances": [
           "annales-corpus",
           "annales-infer",
@@ -135,14 +151,16 @@
       "firmware_authority_container": {
         "name": "firmware-authority",
         "deployment_class": "unprivileged LXD container",
+        "lxd_project": "default",
+        "storage_pool": "default",
+        "network": "lxdbr0 NAT",
         "network_identity": null,
-        "network_candidate": "lxdbr0 NAT; not yet frozen",
         "gpu_required": false,
         "host_directory_passthrough_initial": false,
         "private_signing_key_created": false,
         "signing_enabled": false,
         "acceptance_gate": "MS5-009",
-        "status": "repository-scaffold-accepted-in-ct102; annales host/resource/profile/network/device baseline recorded; free-space/image/operator-path discovery pending"
+        "status": "repository-scaffold-accepted-in-ct102; annales placement discovery complete; initial inert container specification pending"
       }
     }
   },
@@ -170,12 +188,12 @@
   "milestone": {
     "current": 5,
     "name": "Reference Physical Edge Architecture",
-    "phase": "firmware-authority-annales-placement-discovery",
+    "phase": "firmware-authority-container-contract-freeze",
     "design": "docs/MILESTONE_5_DESIGN.md",
     "reference": "docs/ESP32_EDGE_REFERENCE.md",
     "cpe": "docs/CIVICVS_PROJECT_ENVIRONMENT.md",
     "accepted_work": {
-      "through": "CT102 CPE SSOT/Firmware Authority repository acceptance plus two read-only annales LXD placement inventories",
+      "through": "CT102 CPE SSOT/Firmware Authority repository acceptance plus completed read-only annales LXD placement discovery",
       "ct102_repository_head": "84ca59a06c6fd4d4b81461d99d3f6d3889a43328",
       "ms5_006_implementation_head": "ef6a08f03a94aabd6c15e9c02f6ed9470c65d3ce",
       "ct102_test_result": "69 passed, 1 expected environment skip (host C compiler unavailable in CT102)",
@@ -190,18 +208,19 @@
       "clean_reference_board_security_baseline": "accepted",
       "annales_lxd_first_inventory": "recorded",
       "annales_lxd_resource_profile_device_inventory": "recorded",
+      "annales_lxd_final_placement_inventory": "recorded",
       "first_device_flash": "pending",
       "device_storage_range_evidence": "pending",
       "firmware_authority_scaffold_ct102_acceptance": "accepted"
     },
-    "next_work_item": "Finish read-only annales placement discovery: filesystem free space backing the default LXD dir pool, available/cached LXD image path, and actual operator management/file-transfer services. Then freeze the initial firmware-authority container resource/network/storage contract before any creation."
+    "next_work_item": "Freeze the initial inert firmware-authority LXD container contract using the completed annales baseline: exact Ubuntu release image identity, explicit CPU/RAM/root-disk limits, unprivileged state, autostart, default project/storage, lxdbr0 NAT, and explicit absence of GPU, proxy, host-directory, WireGuard/CPE, and signing-key state."
   },
   "priority_workstream": {
     "name": "Firmware Authority Node",
     "design": "ms5/firmware_authority/README.md",
-    "status": "repository-scaffold-accepted-in-ct102; annales host/resource/profile/network/device baseline recorded; final placement discovery pending",
+    "status": "repository-scaffold-accepted-in-ct102; annales placement discovery complete; initial inert container specification pending",
     "scaffold_head": "e42ec17f0ccd6de39c2b5b6987063a424a22a649",
     "repository_acceptance_head": "84ca59a06c6fd4d4b81461d99d3f6d3889a43328"
   },
-  "next_safe_action": "On annales, remain read-only: inspect filesystem capacity backing `/var/snap/lxd/common/lxd/storage-pools/default`, list cached LXD images/remotes, and inspect active SSH/Webmin/LXD management listeners/services before freezing the initial firmware-authority container contract. Do not mutate LXD, do not assign a CPE address, and do not add GPU/device passthrough. First controlled ESP32-S3 flash remains separately pending on fw."
+  "next_safe_action": "Freeze the inert firmware-authority container specification from the recorded annales baseline before creating it. The normal model is host-mediated CPE membership: annales remains the WireGuard/CPE endpoint and firmware-authority remains on lxdbr0 without its own CPE address. Do not add GPU, host-directory passthrough, proxy devices, signing keys, or a WireGuard peer. First controlled ESP32-S3 flash remains separately pending on fw."
 }
