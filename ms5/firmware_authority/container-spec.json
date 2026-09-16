@@ -1,6 +1,6 @@
 {
   "format": "kane-fabric-firmware-authority-container-spec",
-  "version": 1,
+  "version": 2,
   "physical_host": {
     "hostname": "annales",
     "cpe_address": "10.110.0.9/22",
@@ -29,13 +29,17 @@
   "resources": {
     "limits_cpu": "2",
     "limits_memory": "2GiB",
-    "root_disk_size": "16GiB",
-    "storage_pool": "default"
+    "storage_pool": "default",
+    "storage_driver": "dir",
+    "root_disk_size_requested": "16GiB",
+    "root_disk_quota_enforced": false,
+    "root_disk_quota_reason": "The default dir pool is backed by /dev/md0p1 ext4 without an observed project-quota mount option; the running guest reports the shared 935GiB host filesystem capacity. The 16GiB size remains recorded configuration metadata, not an accepted enforced ceiling."
   },
   "network": {
     "device": "eth0",
     "network": "lxdbr0",
     "mode": "host-private NAT",
+    "address_assignment": "dynamic",
     "independent_cpe_address": false,
     "wireguard_peer": false
   },
