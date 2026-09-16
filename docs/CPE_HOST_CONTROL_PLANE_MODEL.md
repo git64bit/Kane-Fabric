@@ -13,36 +13,56 @@ This is a deliberate design rule, not an incidental implementation detail.
 ```text
 CPE / WireGuard 10.110.0.0/22
         |
-        +-- virtualization host
-        |       CPE/WireGuard identity on the physical host
-        |       host-local virtualization control plane
+        +-- srv-b / 10.110.0.12
+        |       Proxmox / pct
         |       |
-        |       +-- container / VM
-        |       +-- container / VM
-        |       `-- container / VM
+        |       `-- CT102 / 10.20.0.12
         |
-        `-- other physical CPE hosts
+        +-- annales / 10.110.0.9
+        |       LXD / lxc
+        |       |
+        |       `-- firmware-authority / lxdbr0
+        |
+        `-- fw / 10.110.0.4
+                bare-metal CPE workstation
 ```
 
 The host is the management and network boundary. The normal container/VM does not receive a WireGuard peer or CPE address merely because it is hosted on a CPE machine.
 
 ## `srv-b` / Proxmox
 
-`srv-b` is the physical Proxmox host and is the WireGuard/CPE participant for its virtualization environment. Kane Fabric CTs are managed from the host with the Proxmox control plane:
+`srv-b` is the physical Proxmox host and the WireGuard/CPE participant for its virtualization environment.
+
+Observed host identity on 2026-09-16:
 
 ```text
-srv-b physical host
-  CPE/WireGuard endpoint: host
+hostname                  srv-b
+hardware                  HP ProLiant DL360 G7
+OS                        Debian GNU/Linux 12 (bookworm)
+kernel                    6.8.12-9-pve
+Proxmox                   pve-manager 8.4.0
+LAN                       10.0.0.12/24 via vmbr0
+CPE/WireGuard             10.110.0.12/32 via wg0
+private CT bridge         vmbr1 / 10.20.0.1/24
+management                SSH :22, Proxmox :8006, Webmin :10000
+```
+
+Kane Fabric CTs are managed from the host with the Proxmox control plane:
+
+```text
+srv-b physical host / 10.110.0.12
   control plane: Proxmox / pct
+  private bridge: vmbr1 / 10.20.0.0/24
   |
   `-- CT102 kane-fabric
       service address: 10.20.0.12/24
+      gateway: 10.20.0.1
       control: pct exec 102 -- ...
 ```
 
 CT102 does not need an independent CPE/WireGuard identity for ordinary Kane Fabric administration. Its service-network address and its management relationship to `srv-b` are separate from the host's CPE identity.
 
-The exact CPE/WireGuard address of `srv-b` is not recorded in the current Kane-Fabric SSOT and must not be invented. It may be added after direct observation.
+Other currently observed CTs are CT100 `mechcomp` and CT101 `mcproxy`; co-location does not make them Kane Fabric resources.
 
 ## `annales` / LXD
 
