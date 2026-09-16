@@ -1,9 +1,10 @@
 {
-  "schema_version": 1,
-  "observed_date": "2026-09-14",
+  "schema_version": 2,
+  "observed_date": "2026-09-16",
   "project": {
     "repository": "git64bit/Kane-Fabric",
     "branch": "main",
+    "cpe_ssot": "docs/CIVICVS_PROJECT_ENVIRONMENT.md",
     "milestone_3_published_main_head": "84293aeb381db596f4c3233473c350fda6c5426d",
     "milestone_4_accepted_implementation_head": "9f6013d1b8b44998047f71e2b3f3e9c55c9ed298",
     "ms5_005_acceptance_head": "aed812df8c5e37bb1843e022d7a7813dc7e8e862",
@@ -11,12 +12,7 @@
     "ms5_transport_architecture_acceptance_head": "9cdb0206f4f7280799bec9d228a4f56a326a4ad1",
     "ms5_residual_reconciliation_acceptance_head": "c43814961cb14d6623ef92e40d6cf4d72f8ef37e",
     "ms5_firmware_v1_role_acceptance_head": "5d45fd600468060104341166adf23bb6465393d2",
-    "web_001_acceptance_head": "98873196438f87f946796d9b4ffd2ff2a5a135e4",
-    "web_002_acceptance_head": "ef3c08f77442e1a8cefe6a0567b50e10ce010dd3",
-    "web_003_acceptance_head": "b216a3d6e0fd7be51223754c9dc3459229498346",
-    "web_004_acceptance_head": "73252b6a3c87ba47b7f68f3e3206056607e1e53a",
-    "web_005_application_head": "73252b6a3c87ba47b7f68f3e3206056607e1e53a",
-    "web_005_checkpoint_head": "f83dac7ca2ef946edcd285be461a63eec339b59b"
+    "firmware_authority_scaffold_head": "e42ec17f0ccd6de39c2b5b6987063a424a22a649"
   },
   "deployment": {
     "proxmox_host": "srv-b",
@@ -32,14 +28,77 @@
       "fetch_refspec": "+refs/heads/*:refs/remotes/origin/*",
       "last_observed_head": "5d45fd600468060104341166adf23bb6465393d2",
       "last_observed_worktree": "clean",
-      "note": "CT102 accepted the ESP32-S3 v1 firmware responsibility freeze on 2026-09-14. The firmware-role structural guard and MS5 work-sequence authority were valid; Python compileall passed; the final MS5 suite was 54 passed with one expected host-compiler environment skip."
+      "note": "Last accepted CT102 checkpoint remains the ESP32-S3 v1 firmware responsibility freeze. Later CPE/Firmware-Authority repository work is published on GitHub main but has not yet been accepted in CT102."
     },
     "ms5_006_hardware_execution": {
-      "environment": "dedicated ESP programming node with direct USB access",
+      "environment": "fw / CPE Build and Hardware Workstation",
+      "cpe_address": "10.110.0.4/22",
       "ct102_installs_esp_idf": false,
       "ct102_uses_usb_passthrough": false,
       "direct_usb_required_for_reference_workflow": true,
-      "status": "firmware-v1-role-freeze-accepted-awaiting-physical-resume"
+      "pinned_esp_idf_build": "passed",
+      "program_role": "accepted",
+      "terminal_role": "accepted",
+      "first_flash": "pending",
+      "status": "physical-cpe-baseline-accepted-first-flash-pending"
+    }
+  },
+  "cpe": {
+    "network": {
+      "cidr": "10.110.0.0/22",
+      "hub_reference_address": "10.110.0.1",
+      "address_policy": "limited; independent CPE address only when architectural role requires it"
+    },
+    "build_hardware_workstation": {
+      "hostname": "fw",
+      "cpe_address": "10.110.0.4/22",
+      "platform": "Lenovo ThinkCentre Edge 62z / bare metal",
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.8.0-139-generic",
+      "project_account": "cpe-build",
+      "project_home": "/home/cpe-build",
+      "legacy_home_prohibited": "/home/civicus-build",
+      "program": {
+        "hub_port": "CPE-USB-1",
+        "usb_branch": "1.1.2",
+        "path": "/dev/serial/by-path/pci-0000:00:1a.0-usb-0:1.1.2:1.0",
+        "expected_vid_pid": "303a:1001",
+        "status": "accepted"
+      },
+      "terminal": {
+        "hub_port": "CPE-USB-2",
+        "usb_branch": "1.1.3",
+        "path": "/dev/serial/by-path/pci-0000:00:1a.0-usb-0:1.1.3:1.0-port0",
+        "expected_vid_pid": "10c4:ea60",
+        "status": "accepted"
+      },
+      "reference_board": {
+        "mac": "b8:f8:62:e2:d5:2c",
+        "chip": "ESP32-S3 QFN56 revision v0.2",
+        "psram": "8MB",
+        "secure_boot": "disabled",
+        "flash_encryption": "disabled",
+        "security_flags": "0x00000000",
+        "current_connection": "CPE-USB-1 / PROGRAM",
+        "first_flash": "pending"
+      }
+    },
+    "firmware_authority_host": {
+      "platform": "Dell Precision",
+      "cpe_address": "10.110.0.9/22",
+      "host_os_family": "Ubuntu",
+      "container_stack": "LXD",
+      "proxmox": false,
+      "existing_role": "RAG/LLM infrastructure",
+      "firmware_authority_container": {
+        "name": "firmware-authority",
+        "deployment_class": "unprivileged LXD container",
+        "network_identity": null,
+        "private_signing_key_created": false,
+        "signing_enabled": false,
+        "acceptance_gate": "MS5-009",
+        "status": "repository-scaffold-only; Dell read-only LXD inventory pending"
+      }
     }
   },
   "operational_state": {
@@ -54,103 +113,42 @@
     },
     "milestone_3_publication": {
       "status": "released",
-      "substrate_content_sha256": "fe417a02222669d9b81c72dc717ab0178b54b1c13cd0d3e8510c6b4f25224bcc",
-      "accepted_reproduction": {
-        "directory": "/var/lib/kane-fabric/render/web-002/ms3-accepted-reproduction",
-        "total_bytes": 7201386,
-        "component_identities_match_release": true,
-        "authoritative_database_unchanged": true
-      }
+      "substrate_content_sha256": "fe417a02222669d9b81c72dc717ab0178b54b1c13cd0d3e8510c6b4f25224bcc"
     },
     "milestone_4_release": {
       "status": "released",
-      "proof_directory": "/var/lib/kane-fabric/render/ms4-proof",
       "release_proof_sha256": "3235cd4f7b7041138fe05708dbb077c07dc3ce8b8ec7a390141489460ac40634",
       "composition_sha256": "a58c8398248cee05b7baad9ae289fe0581bdb3624ce1aff3aa8a49721f92ee53",
       "bundle_inventory_sha256": "1e109d4621ce738e3e35b93c23ecab0d5c9a0d4166aad5d72f4e2eff397ad0d3"
-    },
-    "web_002_browser_acceptance": {
-      "directory": "/var/lib/kane-fabric/render/web-002/browser-acceptance-ef3c08f",
-      "evidence_sha256": "cef970419e4983c845ac19956f4d2f9a7245444d90acb0d81ee917c907090d5a",
-      "status": "accepted"
-    },
-    "web_003_browser_acceptance": {
-      "directory": "/var/lib/kane-fabric/render/web-003/browser-acceptance-b216a3d",
-      "evidence_sha256": "7c0c4afbb2e7ee02586d13a051ded35366501cebf210e716cd9239ba5c05b369",
-      "status": "accepted"
-    },
-    "web_004_browser_acceptance": {
-      "directory": "/var/lib/kane-fabric/render/web-004/browser-acceptance-73252b6",
-      "evidence_sha256": "f9054cb884568e8503a8e7f416065aa5ea97bcd5b8082494a5ade00cb4db4b50",
-      "status": "accepted"
-    },
-    "web_005_closeout": {
-      "directory": "/var/lib/kane-fabric/render/web-005/browser-closeout-f83dac7",
-      "browser_evidence_sha256": "5d56347b2551481a65cbaa2fc990dd845517aa1b7e20d55176b69914b489d2f9",
-      "edge_reassessment_sha256": "bccff3f369b200737742a7e902b2a8e3a5878b297a5ee9be9e44e08f65ffb488",
-      "browser_contract_stable": true,
-      "resume_ms5_006": true,
-      "physical_platform_assumed": false,
-      "status": "accepted",
-      "note": "Historical WEB-005 acceptance is retained. The accepted Wiregate-HTTPS / ESP32-HTTP correction supersedes its edge-TLS topology assumption without rewriting this evidence."
     }
   },
   "milestone": {
     "current": 5,
     "name": "Reference Physical Edge Architecture",
-    "phase": "ms5-firmware-v1-role-frozen-awaiting-physical-resume",
+    "phase": "physical-cpe-baseline-recorded-first-flash-pending-firmware-authority-scaffold-published",
     "design": "docs/MILESTONE_5_DESIGN.md",
     "reference": "docs/ESP32_EDGE_REFERENCE.md",
+    "cpe": "docs/CIVICVS_PROJECT_ENVIRONMENT.md",
     "accepted_work": {
-      "through": "MS5-006 repository implementation gate plus accepted transport architecture, residual reconciliation, and ESP32-S3 v1 firmware responsibility freeze",
-      "repository_head": "5d45fd600468060104341166adf23bb6465393d2",
+      "through": "CT102 firmware-v1 role freeze plus separately observed/accepted physical CPE build and USB-role baseline",
+      "ct102_repository_head": "5d45fd600468060104341166adf23bb6465393d2",
       "ms5_006_implementation_head": "ef6a08f03a94aabd6c15e9c02f6ed9470c65d3ce",
       "ct102_test_result": "54 passed, 1 environment skip (host C compiler unavailable)",
-      "ct102_compileall": "passed",
-      "ct102_authority_guard": "valid",
-      "ct102_dependency_policy": "passed",
-      "ct102_architecture_regression_scan": "passed",
-      "ct102_exact_stale_assumption_guard": "passed",
-      "ct102_corrected_broad_drift_audit": "reviewed-no-actionable-drift",
-      "ct102_firmware_v1_role_structural_guard": "passed",
-      "ct102_ms5_work_sequence_authority": "valid",
-      "ct102_worktree": "clean",
-      "architecture_correction_status": "accepted-in-ct102",
-      "architecture_correction": "browser-https-at-wiregate-hub__esp32-plain-http",
-      "residual_reconciliation_status": "accepted-in-ct102",
-      "firmware_v1_role_freeze_status": "accepted-in-ct102",
-      "pinned_esp_idf_compile": "pending",
-      "device_storage_range_evidence": "pending"
+      "pinned_esp_idf_compile_on_fw": "passed",
+      "cpe_program_role": "accepted",
+      "cpe_terminal_role": "accepted",
+      "clean_reference_board_security_baseline": "accepted",
+      "first_device_flash": "pending",
+      "device_storage_range_evidence": "pending",
+      "firmware_authority_scaffold_ct102_acceptance": "pending"
     },
-    "next_work_item": "MS5-006 — when physical execution is resumed, verify the exact pinned ESP-IDF v6.0.3/toolchain on the dedicated ESP programming node and compile the tracked ms5/esp32_reference firmware before flash/device integration."
+    "next_work_item": "Accept the CPE/Firmware-Authority repository correction in CT102, then perform a read-only Dell Precision LXD inventory before any Firmware Authority container mutation. First ESP32-S3 controlled flash remains pending on fw."
   },
   "priority_workstream": {
-    "name": "Kane Fabric Web Application",
-    "design": "docs/WEB_APPLICATION_DESIGN.md",
-    "status": "completed-for-current-ms5-edge-requirements",
-    "active_item": null,
-    "accepted_work": {
-      "through": "WEB-005 real-browser closeout and edge-requirements reassessment",
-      "application_implementation_head": "73252b6a3c87ba47b7f68f3e3206056607e1e53a",
-      "checkpoint_head": "f83dac7ca2ef946edcd285be461a63eec339b59b",
-      "browser_contract_stable": true,
-      "resume_ms5_006": true
-    }
+    "name": "Firmware Authority Node",
+    "design": "ms5/firmware_authority/README.md",
+    "status": "repository-scaffold-published; CPE host now recorded; CT102 acceptance and Dell read-only inventory pending",
+    "scaffold_head": "e42ec17f0ccd6de39c2b5b6987063a424a22a649"
   },
-  "consumer_exposed_requirements": {
-    "gate_register": "docs/CONSUMER_INTERFACE_GATES.md",
-    "fabric_owned": [
-      "accepted parcel/classification source data",
-      "persistent delivery-point identity",
-      "building/parcel/delivery-point geographic relationships"
-    ],
-    "not_fabric_owned": [
-      "person/account authentication",
-      "application membership or authorization",
-      "proxy ACL semantics",
-      "consumer-owned request identity",
-      "mail aliases or economic/application semantics"
-    ]
-  },
-  "next_safe_action": "The ESP32-S3 v1 firmware responsibility freeze is accepted. Physical MS5-006 execution may resume when the operator chooses. Use the dedicated ESP programming node with direct USB access, verify the exact pinned ESP-IDF v6.0.3/toolchain first, then compile the tracked ms5/esp32_reference firmware. Do not install ESP-IDF or add USB passthrough in CT102. Do not add candidate-only capabilities such as WireGuard to the core v1 runtime unless their later MS5 gate explicitly retains them."
+  "next_safe_action": "Synchronize CT102 using its recorded checkout /tmp/kane-fabric-ms2 and accept the repository-only CPE/Firmware-Authority changes without inventing a srv-b file path. After that, inspect the Dell Precision at 10.110.0.9 read-only to freeze its actual Ubuntu/LXD storage, profile, network, instance, resource, and management baseline before creating firmware-authority. Do not use pct on the Dell and do not assign the authority container a CPE address until justified."
 }

@@ -1,40 +1,49 @@
 # Kane Fabric Session Start
 
-This document defines the fast path for resuming Kane Fabric development. It exists to prevent each new Assistant from spending most of a session rediscovering stable deployment facts that have already been observed and recorded.
+This document defines the fast path for resuming Kane Fabric development without rediscovering or inventing stable infrastructure facts.
 
 ## Read order
 
 At the beginning of a development session:
 
 1. read live GitHub `main`;
-2. read `docs/HANDOFF.md` for the durable system mental model and historical evidence;
-3. read `docs/CURRENT_STATE.json` for the compact latest observed operational checkpoint;
-4. read `docs/DEVELOPMENT_PROCESS.md` for execution rules;
-5. read only the current milestone documents needed for the next action.
+2. read `docs/HANDOFF.md`;
+3. read `docs/CURRENT_STATE.json`;
+4. read `docs/DEVELOPMENT_PROCESS.md`;
+5. **before physical CPE, ESP, TrivialHTTP, or Firmware Authority work, read `docs/CIVICVS_PROJECT_ENVIRONMENT.md`;**
+6. read only the current milestone documents needed for the next action.
 
-Do not reread every historical release/handoff unless a current document points to it for exact evidence.
+Do not use private chat history as a substitute for these records.
 
 ## Stable facts are not discovery tasks
 
-The following are stable facts until a deliberate change or a failed verification proves otherwise:
+The following remain stable until deliberately changed or contradicted by a failed verification:
 
-- repository: `git64bit/Kane-Fabric`;
-- development branch: `main`;
-- Proxmox host: `srv-b`;
-- Kane Fabric container: CT102, hostname `kane-fabric`;
-- operational state root: `/var/lib/kane-fabric`;
-- current checkout path: the path recorded in `docs/CURRENT_STATE.json`;
-- normal host-to-container execution: `pct exec 102 -- ...`;
-- database test entry point: `bash database/run-tests.sh`;
-- substrate test entry point: `bash substrate/run-tests.sh`.
+```text
+repository                   git64bit/Kane-Fabric
+branch                       main
+Proxmox host                 srv-b
+Kane Fabric container        CT102 / kane-fabric
+CT102 checkout               /tmp/kane-fabric-ms2
+operational root             /var/lib/kane-fabric
+CPE network                  10.110.0.0/22
+CPE build/program host       fw / 10.110.0.4
+Firmware Authority host      Dell Precision / 10.110.0.9
+```
 
-A successor must **use the recorded checkout path first**. Do not search `/tmp`, `/opt`, `/srv`, `/root`, or `/var/lib` for another checkout unless the recorded path is missing, is not the expected repository, or the one-command check reports a contradiction.
+The physical host control planes are different:
 
-Likewise, accepted test results in `docs/CURRENT_STATE.json` are not rerun merely because a new Assistant arrived. Rerun a gate when implementation affecting that gate changed, the environment changed materially, a dependency changed, or a contradictory observation appears.
+```text
+srv-b  -> Proxmox -> pct
+fw     -> bare-metal Ubuntu -> cpe-shell / CPE wrappers
+Dell   -> Ubuntu LXD -> LXD control plane
+```
 
-## One-command CT check
+Do not use `pct` on the Dell. Do not assume `/home/cpe-build` exists on `srv-b` or the Dell. Do not assume a file path merely because an Assistant generated a file with that filename.
 
-From `srv-b`, after confirming CT102 is running, run the repository state checker at the recorded checkout path:
+## CT102 one-command check
+
+From `srv-b`, after confirming CT102 is running:
 
 ```bash
 pct status 102
@@ -44,55 +53,51 @@ pct exec 102 -- bash -lc '
 '
 ```
 
-The literal path above reflects the current recorded operational checkout. If `docs/CURRENT_STATE.json` later changes the path, use that recorded path instead; this document should be updated at the same material checkpoint.
+The literal checkout path above is the current recorded operational path. If `docs/CURRENT_STATE.json` later changes it, use the recorded path and update this document at the same material checkpoint.
 
-The checker is read-only. It reports:
+The checker is read-only. It verifies repository identity, branch/upstream/refspec/worktree state, the relation between live and recorded HEAD, the configured database authority, and the recorded next safe action.
 
-- recorded milestone/checkpoint;
-- live repository identity, branch, HEAD, upstream, refspec and worktree state;
-- relation between live HEAD and the last observed CT HEAD;
-- configured current database if one has been established;
-- otherwise the small set of GeoPackage candidates under the operational database directory;
-- the exact next safe action recorded in `CURRENT_STATE.json`.
+Use `--deep` only when full database SHA-256 and validation are required.
 
-Use `--deep` only when database SHA-256 and full Fabric database validation are actually needed:
+## CPE physical work
 
-```bash
-bash development/kane-fabric-dev-state.sh --deep
+For `fw`, use the operator contract recorded in `docs/CIVICVS_PROJECT_ENVIRONMENT.md`. The normal entry is `cpe-shell`, followed by CPE wrappers such as `cpe-status`, `cpe-ports`, `cpe-chip-info`, `cpe-build`, `cpe-flash`, and `cpe-monitor`.
+
+Do not source or reuse `/home/civicus-build`. The isolated project home is `/home/cpe-build`.
+
+The fixed hardware roles are:
+
+```text
+CPE-USB-1 / branch 1.1.2 / PROGRAM
+CPE-USB-2 / branch 1.1.3 / TERMINAL
 ```
 
-Do not pay the deep-validation/hash cost on every ordinary session start.
+At the current checkpoint the clean ESP32-S3 is connected to PROGRAM and the first controlled flash remains pending.
+
+## Dell / Firmware Authority work
+
+The Dell Precision is already a physical CPE host at `10.110.0.9`; the future `firmware-authority` container does not yet have an independently assigned CPE address.
+
+Before any Dell mutation, run a bounded read-only LXD/host inventory. The exact hostname, LXD version, projects, storage pools, profiles, bridges, instance naming, resource availability, passthrough state, and management/file-transfer path must be observed before they are used.
+
+Do not invent a storage pool, bridge, container IP, host staging path, or transfer path.
 
 ## Repository freshness
 
-GitHub `main` remains software authority. `CURRENT_STATE.json` deliberately records the **last observed CT state**, not a promise that CT102 equals the latest GitHub commit forever.
+GitHub `main` is software authority. `CURRENT_STATE.json` records the last observed accepted operational checkpoint, not a guarantee that CT102 already equals current `main`.
 
-A documentation-only advance of `main` does not invalidate already accepted implementation tests. Before a state-changing operation, compare/fetch/synchronize deliberately. Before ordinary read-only analysis, it is enough to know and report the relation between the live CT checkout and current GitHub `main`.
+Never fast-forward a dirty or unexpected checkout blindly. Compare branch, upstream, refspec, origin, worktree, and current HEAD before synchronization.
 
-Do not fast-forward blindly when the worktree is dirty, the branch/upstream is unexpected, or local commits are ahead.
-
-## Documentation cadence
-
-Do not update handoff/state files after every command group. That creates a commit, makes CT102 appear stale again, and causes recursive synchronization churn.
-
-Batch documentation at **material checkpoints**, for example:
-
-- an acceptance gate passes or fails in a way that changes the next safe action;
-- the current operational database/path/hash is established or changes;
-- a milestone implementation boundary changes;
-- an authority, deployment path, branch policy, or invariant changes;
-- a new non-obvious exception is discovered.
-
-Ordinary intermediate observations should be carried through the current bounded gate and recorded together at its end.
+Accepted tests are not rerun merely because a new session began. Rerun only the gates invalidated by changed implementation, dependency/environment changes, or contradictory live observations.
 
 ## Contradictions
 
-If the one-command check contradicts a stable recorded fact:
+If a stable fact is contradicted:
 
-1. stop before destructive/state-changing work;
+1. stop before state-changing work;
 2. inspect only the contradicted area;
-3. determine whether the live state or documentation is wrong;
-4. update `docs/CURRENT_STATE.json` and the durable handoff at the same material checkpoint;
+3. determine whether live state or documentation is wrong;
+4. correct `CURRENT_STATE.json`, `HANDOFF.md`, and the relevant SSOT document at the same material checkpoint;
 5. continue from the corrected state.
 
-Do not respond to one contradiction by rediscovering the entire project.
+A successor should not need private chat history to reconstruct stable project topology.

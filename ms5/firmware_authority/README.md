@@ -1,34 +1,46 @@
 # Firmware Authority implementation boundary
 
-This directory is the non-secret repository side of the Kane Fabric Firmware Authority Node.
-It is subordinate to `docs/MILESTONE_5_DESIGN.md`; it does not create a new Milestone 5 work sequence.
+This directory is the non-secret repository side of the Kane Fabric Firmware Authority Node. It is subordinate to `docs/MILESTONE_5_DESIGN.md`; it does not create a parallel Milestone 5 work sequence.
+
+The physical CPE placement is recorded in `docs/CIVICVS_PROJECT_ENVIRONMENT.md`.
 
 Current state is deliberately inert:
 
 ```text
 Firmware Authority Node
-status: architectural placeholder / implementation scaffold
+status: repository scaffold only
+physical host: Dell Precision / 10.110.0.9
 container: firmware-authority
+container network identity: NOT ASSIGNED
 private signing key: NOT CREATED
 signing: DISABLED
-network identity: NOT ASSIGNED
 operational acceptance: MS5-009
 ```
 
-The reference deployment is an **unprivileged LXC/LXD container on a separate physical host** from the CPE build/programming workstation. The container may hold policy, canonical release manifests, public verification keys, signatures/authorizations after activation, and audit/evidence records. It must not hold an ordinary persistent firmware-signing private-key file.
+The **physical Dell host already has CPE/Wiregate address `10.110.0.9/22`**. `network identity: NOT ASSIGNED` refers only to the future `firmware-authority` container. Do not conflate the host address with a container address.
 
-A later MS5-009 gate must select and accept the hardware-backed signer and its provider-specific interface. Until that gate, this repository contains no private-key generation or signing command.
+## Physical placement
+
+The reference deployment is an **unprivileged LXD container on the separate Dell Precision Ubuntu/LXD host**. The Dell already carries unrelated RAG/LLM workloads. The Firmware Authority does not require GPU access and Kane Fabric must not disturb existing GPU/device passthrough merely because it shares that physical host.
+
+The Dell host is inside the authority trust boundary because LXD containers share the host kernel. Persistent firmware-signing private key custody therefore remains outside the container in a hardware-backed signer selected and accepted by MS5-009.
+
+Before any container creation or mutation, perform a bounded **read-only LXD inventory** and record the actual host hostname/Ubuntu release, LXD version, projects, storage pools, profiles, networks/bridges, existing instances, available resources, passthrough state, and management/file-transfer path. Do not invent any of those values. The Dell is not Proxmox; `pct` commands do not apply.
 
 ## Role separation
 
 ```text
-CPE build/programming workstation
+CPE build/programming workstation: fw / 10.110.0.4
   builds firmware and produces artifact/provenance evidence
 
-Firmware Authority Node
+Firmware Authority host: Dell Precision / 10.110.0.9
+  Ubuntu/LXD host for the authority role
+
+Firmware Authority container: firmware-authority
   verifies proposed release material
   prepares/normalizes the release manifest
   requests operator-authorized signing from an external hardware-backed signer
+  does not contain an ordinary persistent signing private-key file
 
 Firmware Distribution
   stores/delivers firmware + manifest + authorization
@@ -44,6 +56,7 @@ Build authority is not signing authority. Distribution is not signing authority.
 ## Release manifest
 
 The repository contract is implemented by `ms5/tools/kane_fabric_firmware_authority.py`.
+
 A release manifest identifies at minimum:
 
 - device family and target;
@@ -54,6 +67,6 @@ A release manifest identifies at minimum:
 - rollback floor and recovery compatibility;
 - deterministic manifest SHA-256.
 
-The manifest contract is intentionally device-family generic. ESP32-S3 is the first enabled family; Zigbee-capable and future device families are added as explicit families rather than creating a separate signing authority per platform.
+The manifest contract is device-family generic. ESP32-S3 is the first enabled family; Zigbee-capable and future families are added as explicit families rather than creating a separate signing authority per platform.
 
-The cryptographic authorization envelope is not frozen yet because the hardware-backed signing provider has not been selected. MS5-009 must freeze that representation together with algorithm/key-provider selection and real verification evidence.
+The cryptographic authorization envelope is not frozen yet because the hardware-backed signing provider has not been selected. Until MS5-009 freezes the signer/provider/algorithm and real verification evidence, this repository contains no private-key generation or operational signing command.
