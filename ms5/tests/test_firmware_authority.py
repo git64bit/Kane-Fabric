@@ -68,6 +68,36 @@ class FirmwareAuthorityTests(unittest.TestCase):
         )
         validate_authority_state(state)
 
+    def test_inert_container_spec_is_pinned_and_host_mediated(self):
+        spec = json.loads(
+            (REPO / "ms5/firmware_authority/container-spec.json").read_text()
+        )
+        self.assertEqual("annales", spec["physical_host"]["hostname"])
+        self.assertEqual("firmware-authority", spec["instance"]["name"])
+        self.assertEqual("default", spec["instance"]["project"])
+        self.assertTrue(spec["instance"]["unprivileged"])
+        self.assertTrue(spec["instance"]["boot_autostart"])
+        self.assertEqual(
+            "6330af160fc7a345119549990a92e7cba23c25bc846e4906729f525d6ddd1b19",
+            spec["image"]["fingerprint"],
+        )
+        self.assertEqual("fingerprint", spec["image"]["pinned_by"])
+        self.assertEqual("2", spec["resources"]["limits_cpu"])
+        self.assertEqual("2GiB", spec["resources"]["limits_memory"])
+        self.assertEqual("16GiB", spec["resources"]["root_disk_size"])
+        self.assertEqual("lxdbr0", spec["network"]["network"])
+        self.assertFalse(spec["network"]["independent_cpe_address"])
+        self.assertFalse(spec["network"]["wireguard_peer"])
+        self.assertTrue(spec["prohibited_initial_devices"]["gpu"])
+        self.assertTrue(spec["prohibited_initial_devices"]["host_directory_passthrough"])
+        self.assertTrue(spec["prohibited_initial_devices"]["proxy"])
+        self.assertTrue(spec["prohibited_initial_devices"]["usb_signer"])
+        self.assertFalse(spec["authority_state"]["private_signing_key_created"])
+        self.assertFalse(spec["authority_state"]["signing_enabled"])
+        self.assertFalse(spec["authority_state"]["hardware_signer_attached"])
+        self.assertTrue(spec["creation_policy"]["create_stopped_first"])
+        self.assertTrue(spec["creation_policy"]["inspect_expanded_config_before_start"])
+
     def test_authority_document_keeps_ms5_009_activation_boundary(self):
         text = (REPO / "docs/MS5_FIRMWARE_AUTHORITY_NODE.md").read_text()
         self.assertIn("MS5-009", text)
