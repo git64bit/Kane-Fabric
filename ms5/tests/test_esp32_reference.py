@@ -20,7 +20,7 @@ class Esp32ReferenceTests(unittest.TestCase):
         compiler = shutil.which("cc")
         if compiler is None:
             self.skipTest(
-                "host C compiler unavailable; authoritative pinned ESP-IDF compile remains pending"
+                "host C compiler unavailable in CT102; authoritative pinned ESP-IDF compile is accepted on fw"
             )
         with tempfile.TemporaryDirectory() as tmp:
             binary = Path(tmp) / "http-core-test"
@@ -57,8 +57,9 @@ class Esp32ReferenceTests(unittest.TestCase):
     def test_storage_mount_is_raw_read_only(self):
         source = (REFERENCE / "components/kane_fabric_storage/kane_fabric_storage.c").read_text()
         self.assertIn("esp_vfs_fat_spiflash_mount_ro", source)
+        self.assertIn("esp_vfs_fat_spiflash_unmount_ro", source)
         self.assertIn(".format_if_mount_failed = false", source)
-        self.assertIn(".read_only = true", source)
+        self.assertNotIn(".read_only = true", source)
         self.assertNotIn("format_rw", source)
 
     def test_components_depend_only_on_esp_idf_builtins(self):
