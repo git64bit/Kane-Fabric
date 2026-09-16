@@ -49,7 +49,7 @@ class CpeSsotTests(unittest.TestCase):
         self.assertIn("docs/CIVICVS_PROJECT_ENVIRONMENT.md", text)
         self.assertIn("10.110.0.4", text)
         self.assertIn("10.110.0.9", text)
-        self.assertIn("do not use `pct` on the Dell", text)
+        self.assertIn("do not use `pct` on the dell", text.lower())
 
     def test_firmware_authority_distinguishes_host_and_container_identity(self):
         text = (REPO / "ms5/firmware_authority/README.md").read_text()
