@@ -8,33 +8,41 @@ Milestones 0–4 are complete. The accepted MS3 substrate identity is `fe417a022
 
 The authoritative Kane Fabric runtime/test environment remains CT102 `kane-fabric` on Proxmox host `srv-b`, with operational state rooted at `/var/lib/kane-fabric` and the recorded checkout at `/tmp/kane-fabric-ms2`.
 
-## Accepted MS5 repository baseline
+## Current accepted CT102 repository checkpoint
 
-The MS5-006 repository implementation remains accepted at `ef6a08f03a94aabd6c15e9c02f6ed9470c65d3ce`. The accepted transport architecture is `9cdb0206f4f7280799bec9d228a4f56a326a4ad1`; residual reconciliation is `c43814961cb14d6623ef92e40d6cf4d72f8ef37e`; and the ESP32-S3 v1 firmware responsibility freeze is accepted in CT102 at `5d45fd600468060104341166adf23bb6465393d2`.
+The earlier firmware-v1 responsibility freeze remains historically accepted at `5d45fd600468060104341166adf23bb6465393d2`. The repository has since advanced through the CPE SSOT repair and Firmware Authority scaffold.
 
-That CT102 checkpoint produced:
+CT102 accepted the current implementation at:
 
 ```text
-firmware-v1 structural guard    PASS
-MS5 work-sequence authority     valid
-Python compileall               PASS
-MS5 tests                       54 passed, 1 environment skip
-host C compiler                 absent on CT102
-host C compile                  SKIPPED
-worktree                        clean
+84ca59a06c6fd4d4b81461d99d3f6d3889a43328
 ```
 
-CT102 deliberately does not build or flash ESP firmware and does not receive USB passthrough for the reference workflow.
+Acceptance evidence on 2026-09-16:
+
+```text
+Python compileall                  PASS
+MS5 tests                          69 passed, 1 expected environment skip
+CPE SSOT structural guard          PASS
+Firmware Authority contract tests  PASS
+configured Fabric DB authority     readable / accepted-geographic-state
+worktree                            clean
+branch/upstream/origin/refspec      conformant
+```
+
+The single skip is expected because CT102 deliberately has no host C compiler. The authoritative pinned ESP-IDF compile has already passed on `fw`.
+
+A later documentation-only checkpoint records this acceptance but does not invalidate the implementation/tests exercised at `84ca59a...`.
 
 ## CIVICVS Project Environment
 
-The physical CPE is now explicitly recorded in `docs/CIVICVS_PROJECT_ENVIRONMENT.md`. That document is the SSOT for the physical build/programming workstation, fixed USB topology, CPE network identities, TrivialHTTP build role, and Dell/LXD Firmware Authority host placement.
+The physical CPE is explicitly recorded in `docs/CIVICVS_PROJECT_ENVIRONMENT.md`. That document is the SSOT for the physical build/programming workstation, fixed USB topology, CPE network identities, TrivialHTTP build role, and Dell/LXD Firmware Authority host placement.
 
 Current CPE physical hosts:
 
 ```text
 10.110.0.4  fw              CPE Build and Hardware Workstation
-10.110.0.9  Dell Precision  Ubuntu/LXD host; future Firmware Authority host
+10.110.0.9  Dell Precision  Ubuntu/LXD host; Firmware Authority host
 ```
 
 These are infrastructure identities, not Fabric logical/geographic identities.
@@ -71,7 +79,7 @@ Windows x86-64 SHA-256 4ec4c7504191b82dec81d92cd57653ef420d93da403930f88c3ed264b
 
 ## Firmware Authority Node
 
-The non-secret repository scaffold was introduced at `e42ec17f0ccd6de39c2b5b6987063a424a22a649`. It is not yet an accepted operational signing authority and has not yet been accepted in CT102.
+The non-secret repository scaffold was introduced at `e42ec17f0ccd6de39c2b5b6987063a424a22a649` and is now accepted in CT102 as part of the `84ca59a...` checkpoint. This accepts the repository contract only; it does **not** activate signing authority.
 
 The physical host is the Dell Precision already on the CPE/Wiregate network at `10.110.0.9/22`. The host runs Ubuntu with LXD, not Proxmox, and already carries unrelated RAG/LLM workloads. Kane Fabric must not disturb those workloads or inherit GPU passthrough merely because the authority container shares that physical host.
 
@@ -100,6 +108,7 @@ CPE SSOT                      docs/CIVICVS_PROJECT_ENVIRONMENT.md
 Proxmox host                  srv-b
 Kane runtime/test container   CT102 / kane-fabric
 CT102 checkout                /tmp/kane-fabric-ms2
+last accepted CT102 HEAD      84ca59a06c6fd4d4b81461d99d3f6d3889a43328
 operational root              /var/lib/kane-fabric
 authoritative DB              /var/lib/kane-fabric/database/kane-county-fabric.gpkg
 DB SHA256                     31e362b696a37f1b9c45ae355c5669511a3128c17a651108a62e20d1cedebd67
@@ -121,6 +130,6 @@ A path valid on one host is not valid on another merely because an Assistant pro
 
 ## Next safe action
 
-The repository now contains the missing CPE topology but CT102 still reflects the last accepted firmware-v1 checkpoint. The next repository gate is to synchronize CT102 using its recorded checkout `/tmp/kane-fabric-ms2` and run only the tests invalidated by the CPE/Firmware Authority additions.
+The CPE SSOT and Firmware Authority repository scaffold are accepted in CT102. The next Firmware Authority gate is a **read-only Dell Precision/LXD inventory** before any container creation, profile/network/storage mutation, signer passthrough, or address assignment.
 
-After repository acceptance, the Firmware Authority workstream proceeds with a read-only Dell/LXD inventory before any container creation or mutation. The first controlled ESP32-S3 flash on `fw` remains separately pending.
+The first controlled ESP32-S3 flash on `fw` remains separately pending.
