@@ -9,18 +9,18 @@ This file records progressively accepted descriptor-driven Illinois condominium 
 Accepted executable/schema repository HEAD:
 
 ```text
-f2c995f7610a273031926cf681facd20dce1ad22
+dd60b817bd12cf76683e9e61686d66bccec58047
 ```
 
 Observed on `srv-b` / CT102 (`kane-fabric`) at `/tmp/kane-fabric-ms2`:
 
 ```text
-web/run-tests.sh                    60/60 PASS
-web/run-admin-browser-acceptance.sh 62/62 PASS
+web/run-tests.sh                    62/62 PASS
+web/run-admin-browser-acceptance.sh 67/67 PASS
 worktree                            clean
 ```
 
-The real Chromium gate verified the exact canonical SHA-256 identity of every enabled descriptor. The descriptor-v1 `unit` / `format` contract hardening at this checkpoint changed no descriptor bytes or canonical identities.
+The real Chromium gate verified the exact canonical SHA-256 identity of every enabled descriptor. The previously accepted descriptor-v1 `unit` / `format` contract hardening remains in force, and all twelve earlier descriptor identities remained unchanged.
 
 ## Accepted descriptors
 
@@ -38,6 +38,7 @@ The real Chromium gate verified the exact canonical SHA-256 identity of every en
 | `us.il.condominium.maintenance` | Common-element maintenance, repairs/replacement/restoration, improvements, emergencies, and unit-access events | `a89c2e8e165a696f709dcba93ee67f091b07817550d04468b1802a81e31e939c` |
 | `us.il.condominium.turnover` | Developer control, first owner-board election, Section 18.2 turnover delivery, and developer-era contract review | `945facfa9b66cbdf5b2e80e1966108f8cd62ddb32381d712a0cf72c6a3fcb846` |
 | `us.il.condominium.termination` | Property-wide sale, objecting-owner protections, and unanimous removal from the Act | `87d94c88ec36fb372731720ba2c2b58cb6180bdc990eeb9b3b67e2488858b733` |
+| `us.il.condominium.complaints` | Association complaint policy, complaint cases, Ombudsperson assistance boundaries, and Department confidentiality | `d4e0209770982841a98ecaf495a2547642e882680df6bc86d5e317c12ab00521` |
 
 ## Boundary
 
