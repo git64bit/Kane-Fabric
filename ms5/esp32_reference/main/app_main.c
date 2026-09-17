@@ -1,5 +1,7 @@
 #include "esp_err.h"
+#include "esp_event.h"
 #include "esp_log.h"
+#include "esp_netif.h"
 #include "kane_fabric_artifact_server.h"
 #include "kane_fabric_storage.h"
 
@@ -112,6 +114,30 @@ void app_main(void)
         KF_MS5_006_PROBE_INVENTORY_FILE_SHA256,
         (unsigned)PROBE_VERIFICATION.artifact_count
     );
+
+    result = esp_netif_init();
+    if (result != ESP_OK) {
+        ESP_LOGE(
+            TAG,
+            "MS5-006 network stack init failed closed: %s",
+            esp_err_to_name(result)
+        );
+        cleanup_after_http_failure();
+        return;
+    }
+
+    result = esp_event_loop_create_default();
+    if (result != ESP_OK) {
+        ESP_LOGE(
+            TAG,
+            "MS5-006 default event loop init failed closed: %s",
+            esp_err_to_name(result)
+        );
+        cleanup_after_http_failure();
+        return;
+    }
+
+    ESP_LOGI(TAG, "MS5-006 ESP-IDF network runtime initialized");
 
     httpd_config_t http_config = HTTPD_DEFAULT_CONFIG();
     http_config.uri_match_fn = httpd_uri_match_wildcard;
