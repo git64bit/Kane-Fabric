@@ -2,25 +2,25 @@
 
 Date: 2026-09-17
 
-This file records progressively accepted descriptor-driven Illinois condominium Civic Infrastructure slices. It complements the first-render acceptance in `docs/ADMINISTRATIVE_DESCRIPTOR_ACCEPTANCE.md`.
+This file records progressively accepted descriptor-driven Illinois condominium Civic Infrastructure slices. It complements the cumulative acceptance history in `docs/ADMINISTRATIVE_DESCRIPTOR_ACCEPTANCE.md`.
 
 ## Accepted CT102 baseline
 
-Accepted repository HEAD:
+Accepted executable/schema repository HEAD:
 
 ```text
-5bf7d312bebe6b4c2e0a13f7893a0c045b1bf1c4
+f2c995f7610a273031926cf681facd20dce1ad22
 ```
 
 Observed on `srv-b` / CT102 (`kane-fabric`) at `/tmp/kane-fabric-ms2`:
 
 ```text
-web/run-tests.sh                    57/57 PASS
+web/run-tests.sh                    60/60 PASS
 web/run-admin-browser-acceptance.sh 62/62 PASS
 worktree                            clean
 ```
 
-The real Chromium gate verified the exact canonical SHA-256 identity of every enabled descriptor.
+The real Chromium gate verified the exact canonical SHA-256 identity of every enabled descriptor. The descriptor-v1 `unit` / `format` contract hardening at this checkpoint changed no descriptor bytes or canonical identities.
 
 ## Accepted descriptors
 
