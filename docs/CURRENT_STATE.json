@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "observed_date": "2026-09-16",
+  "observed_date": "2026-09-17",
   "project": {
     "repository": "git64bit/Kane-Fabric",
     "branch": "main",
@@ -10,9 +10,13 @@
     "milestone_4_accepted_implementation_head": "9f6013d1b8b44998047f71e2b3f3e9c55c9ed298",
     "ms5_005_acceptance_head": "aed812df8c5e37bb1843e022d7a7813dc7e8e862",
     "ms5_006_repository_acceptance_head": "ef6a08f03a94aabd6c15e9c02f6ed9470c65d3ce",
+    "ms5_006_device_runtime_source_head": "7aa3c836bae470704d051a36a6261a1140e9d3d0",
+    "ms5_006_device_runtime_acceptance_head": "d38c008d798be3cb674c6fb1517a6768ebfdb8cb",
     "ms5_transport_architecture_acceptance_head": "9cdb0206f4f7280799bec9d228a4f56a326a4ad1",
     "ms5_residual_reconciliation_acceptance_head": "c43814961cb14d6623ef92e40d6cf4d72f8ef37e",
-    "ms5_firmware_v1_role_acceptance_head": "5d45fd600468060104341166adf23bb6465393d2",
+    "ms5_firmware_v1_role_acceptance_head": "1cdd3bb3541295332869d20cf9d83ad3cd89e100",
+    "ms5_administrative_edge_boundary_head": "c303b3b7321300d087d23d2f1cc195adeca573ec",
+    "ms5_administrative_architecture_head": "523649fb4a7a461710bfc6d32bb561eb1ad24d28",
     "firmware_authority_scaffold_head": "e42ec17f0ccd6de39c2b5b6987063a424a22a649",
     "cpe_firmware_authority_repository_acceptance_head": "84ca59a06c6fd4d4b81461d99d3f6d3889a43328",
     "cpe_firmware_authority_inert_container_acceptance_head": "2b7c74ea631f30615ca10e8c79934748a96c7941",
@@ -44,13 +48,22 @@
       "pinned_esp_idf_build": "passed",
       "program_role": "accepted",
       "terminal_role": "accepted",
-      "firmware_source_head": "d26ec418751b7b2f82a8814297204e1b62bceda4",
+      "firmware_source_head": "7aa3c836bae470704d051a36a6261a1140e9d3d0",
       "first_flash": "accepted",
       "cold_boot": "accepted",
       "flash_geometry": "16MB accepted and physically proved",
+      "read_only_storage": "accepted",
+      "active_inventory_verification": "accepted",
+      "plain_http_get": "accepted",
+      "closed_byte_range": "accepted",
+      "invalid_range_failures": "accepted",
+      "path_traversal_rejection": "accepted",
+      "invalid_active_storage_fail_closed": "accepted",
+      "known_good_restore": "accepted",
       "first_flash_acceptance_document": "docs/CPE_ESP32_FIRST_FLASH_ACCEPTANCE.md",
-      "current_connection": "CPE-USB-2 / TERMINAL",
-      "status": "first-flash-cold-boot-and-16mb-reference-geometry-accepted"
+      "device_runtime_acceptance_document": "docs/CPE_ESP32_MS5_006_DEVICE_RUNTIME_ACCEPTANCE.md",
+      "current_connection": "CPE-USB-1 / PROGRAM",
+      "status": "ms5-006-device-runtime-accepted"
     }
   },
   "cpe": {
@@ -125,12 +138,13 @@
         "secure_boot": "disabled",
         "flash_encryption": "disabled",
         "security_flags": "0x00000000",
-        "firmware_source_head": "d26ec418751b7b2f82a8814297204e1b62bceda4",
-        "runtime_app_version": "d26ec41",
+        "firmware_source_head": "7aa3c836bae470704d051a36a6261a1140e9d3d0",
+        "runtime_app_version": "7aa3c83",
         "cold_boot_reset_reason": "POWERON",
-        "current_connection": "CPE-USB-2 / TERMINAL",
+        "current_connection": "CPE-USB-1 / PROGRAM",
         "first_flash": "accepted",
-        "flash_geometry_acceptance": "accepted"
+        "flash_geometry_acceptance": "accepted",
+        "device_runtime_acceptance": "accepted"
       }
     },
     "firmware_authority_host": {
@@ -255,15 +269,15 @@
   "milestone": {
     "current": 5,
     "name": "Reference Physical Edge Architecture",
-    "phase": "ms5-006-device-runtime-integration",
+    "phase": "ms5-007-administrative-contract-web-integration",
     "design": "docs/MILESTONE_5_DESIGN.md",
-    "reference": "docs/ESP32_EDGE_REFERENCE.md",
+    "reference": "docs/ADMINISTRATIVE_EDGE_BOUNDARY.md",
     "cpe": "docs/CIVICVS_PROJECT_ENVIRONMENT.md",
     "accepted_work": {
-      "through": "CT102 full MS5 acceptance at 2b7c74e, accepted inert firmware-authority deployment on annales, and accepted ESP32-S3 first controlled flash/cold boot with corrected 16 MB reference flash geometry on fw",
+      "through": "MS5-006 physical ESP32-S3 runtime accepted at 7aa3c83; bounded participant edge versus administrative county/web/category/contract boundary frozen; firmware is no longer the active development bottleneck",
       "ct102_repository_head": "2b7c74ea631f30615ca10e8c79934748a96c7941",
-      "ms5_006_implementation_head": "ef6a08f03a94aabd6c15e9c02f6ed9470c65d3ce",
-      "ct102_test_result": "70 tests passed, 1 expected environment skip (host C compiler unavailable in CT102)",
+      "ms5_006_implementation_head": "7aa3c836bae470704d051a36a6261a1140e9d3d0",
+      "ct102_test_result": "70 tests passed, 1 expected environment skip (host C compiler unavailable in CT102) at the last CT102 acceptance checkpoint",
       "ct102_compileall": "passed",
       "ct102_cpe_ssot_guard": "passed",
       "ct102_firmware_authority_contract": "passed",
@@ -279,23 +293,28 @@
       "first_device_cold_boot": "accepted",
       "reference_flash_geometry": "accepted / 16MB",
       "esp32_first_flash_acceptance_document": "docs/CPE_ESP32_FIRST_FLASH_ACCEPTANCE.md",
-      "annales_lxd_first_inventory": "recorded",
-      "annales_lxd_resource_profile_device_inventory": "recorded",
-      "annales_lxd_final_placement_inventory": "recorded",
+      "esp32_device_runtime_acceptance": "accepted",
+      "esp32_device_runtime_acceptance_document": "docs/CPE_ESP32_MS5_006_DEVICE_RUNTIME_ACCEPTANCE.md",
+      "device_storage_range_evidence": "accepted",
+      "device_invalid_active_storage_fail_closed": "accepted",
+      "device_known_good_restore": "accepted",
+      "administrative_edge_boundary": "accepted architecture direction",
+      "administrative_edge_boundary_document": "docs/ADMINISTRATIVE_EDGE_BOUNDARY.md",
+      "administrative_workstream": "administration/README.md",
       "firmware_authority_inert_container_annales_acceptance": "accepted",
       "firmware_authority_acceptance_document": "docs/CPE_FIRMWARE_AUTHORITY_ACCEPTANCE.md",
-      "firmware_authority_scaffold_ct102_acceptance": "accepted",
-      "device_storage_range_evidence": "pending"
+      "firmware_authority_scaffold_ct102_acceptance": "accepted"
     },
-    "next_work_item": "Continue MS5-006 on fw by implementing and physically proving prepared read-only artifact storage and active-inventory verification on the reference ESP32-S3, followed by real plain-HTTP GET and exact closed byte-range behavior. The Firmware Authority container remains deliberately inert until MS5-009."
+    "next_work_item": "MS5-007: define the administrative county/web/category/contract model for bounded participant publications, beginning with condominium association/unit identity, geographic references, visibility classes, and web composition; then integrate one focused edge publication through Wiregate without requiring the ESP32-S3 to mirror the county substrate."
   },
   "priority_workstream": {
-    "name": "ESP32-S3 MS5-006 Runtime Integration",
-    "design": "ms5/esp32_reference/README.md",
-    "status": "first controlled flash and cold boot accepted; esp32s3 target and 16MB reference flash geometry pinned and physically proved; storage/inventory runtime remains next",
-    "firmware_source_head": "d26ec418751b7b2f82a8814297204e1b62bceda4",
-    "physical_acceptance_document": "docs/CPE_ESP32_FIRST_FLASH_ACCEPTANCE.md",
-    "current_connection": "CPE-USB-2 / TERMINAL"
+    "name": "Administrative County/Web/Category/Contract Development",
+    "design": "administration/README.md",
+    "boundary": "docs/ADMINISTRATIVE_EDGE_BOUNDARY.md",
+    "status": "active; MS5-006 physical edge runtime accepted and firmware development paused until administrative contracts or later lifecycle gates require a return to ESP32-S3",
+    "edge_runtime_status": "accepted",
+    "edge_firmware_source_head": "7aa3c836bae470704d051a36a6261a1140e9d3d0",
+    "physical_acceptance_document": "docs/CPE_ESP32_MS5_006_DEVICE_RUNTIME_ACCEPTANCE.md"
   },
-  "next_safe_action": "Stay on fw / 10.110.0.4. Leave PROGRAM off and TERMINAL on until a new firmware flash is actually required. Continue MS5-006 with prepared read-only artifact storage and active-inventory verification, then real HTTP GET/range runtime proof. Leave firmware-authority on annales inert: no WireGuard peer, no GPU, no host-directory passthrough, no proxy device, no USB signer, no persistent private signing key, and no signing activation until MS5-009 explicitly authorizes those changes."
+  "next_safe_action": "Continue in the administrative county/web/category/contract layer. Define the bounded participant publication and association/unit/category/visibility contracts before additional ESP32 specialization. Leave the accepted ESP32-S3 runtime unchanged unless those contracts expose a concrete edge requirement. Leave firmware-authority on annales inert: no WireGuard peer, no GPU, no host-directory passthrough, no proxy device, no USB signer, no persistent private signing key, and no signing activation until MS5-009 explicitly authorizes those changes."
 }
