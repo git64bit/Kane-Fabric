@@ -26,6 +26,7 @@ const descriptorUrls = {
   enforcement: new URL("../administration/descriptors/illinois/condominium/enforcement.v1.json", import.meta.url),
   maintenance: new URL("../administration/descriptors/illinois/condominium/maintenance.v1.json", import.meta.url),
   turnover: new URL("../administration/descriptors/illinois/condominium/turnover.v1.json", import.meta.url),
+  termination: new URL("../administration/descriptors/illinois/condominium/termination.v1.json", import.meta.url),
 };
 
 async function loadDescriptor(name) {
@@ -44,6 +45,7 @@ const summaries = {
   enforcement: { descriptor_id: "us.il.condominium.enforcement", descriptor_version: 1, pages: 1, sections: 4, controls: 43, collections: 2 },
   maintenance: { descriptor_id: "us.il.condominium.maintenance", descriptor_version: 1, pages: 1, sections: 4, controls: 37, collections: 2 },
   turnover: { descriptor_id: "us.il.condominium.turnover", descriptor_version: 1, pages: 1, sections: 4, controls: 43, collections: 2 },
+  termination: { descriptor_id: "us.il.condominium.termination", descriptor_version: 1, pages: 1, sections: 4, controls: 42, collections: 2 },
 };
 
 for (const [name, expected] of Object.entries(summaries)) {
@@ -209,6 +211,24 @@ test("turnover descriptor preserves first-board, delivery, and contract-review b
   assert.equal(category.options.length, 5);
 });
 
+test("termination descriptor preserves property-sale and removal-from-Act boundaries", async () => {
+  const descriptor = await loadDescriptor("termination");
+  assert.equal(descriptor.scope.as_of_date, "2026-09-17");
+  const framework = descriptor.pages[0].sections.find((section) => section.id === "statewide-termination-framework");
+  assert.match(framework.controls.find((control) => control.id === "sale-vote-thresholds").text, /majority.*66 2\/3%.*75%/);
+  assert.match(framework.controls.find((control) => control.id === "sale-objection-window").text, /within 20 days/);
+  assert.match(framework.controls.find((control) => control.id === "objector-proceeds-rule").text, /greater of the fair-appraised value.*outstanding balance/);
+  assert.match(framework.controls.find((control) => control.id === "valuation-panel-rule").text, /at least 2 of the 3/);
+  assert.match(framework.controls.find((control) => control.id === "removal-unanimity-rule").text, /all unit owners.*all lienholders.*owned in common/);
+  assert.ok(framework.controls.every((control) => control.data_role === "infrastructure"));
+
+  const objectors = descriptor.pages[0].sections.find((section) => section.id === "objecting-owner-instance");
+  const objectorCollection = objectors.controls.find((control) => control.id === "termination-objectors");
+  const appraisal = objectorCollection.item_controls.find((control) => control.id === "termination-objector-appraised-value");
+  assert.equal(appraisal.unit, "USD");
+  assert.equal(appraisal.format, "currency");
+});
+
 test("records descriptor preserves statewide access rules as infrastructure notices", async () => {
   const descriptor = await loadDescriptor("records");
   const access = descriptor.pages[0].sections.find((section) => section.id === "member-examination-framework");
@@ -249,7 +269,7 @@ test("descriptor presentation placement remains separate from semantic binding",
 test("generic descriptor browser code contains no Illinois condominium domain vocabulary", async () => {
   const engine = await readFile(new URL("./admin-descriptor.js", import.meta.url), "utf8");
   const bootstrap = await readFile(new URL("./admin-app.js", import.meta.url), "utf8");
-  const domainWords = /Illinois|condominium|insurance|budget|assessment|reserve|governance|board|election|management|manager|license|resale|disclosure|lender|mortgage|\bproperty\b|plat|surveyor|tax|county|parish|\blien\b|foreclosure|encumbrancer|violation|\bfine\b|common[- ]element|emergency repair|unit access|developer|turnover/i;
+  const domainWords = /Illinois|condominium|insurance|budget|assessment|reserve|governance|board|election|management|manager|license|resale|disclosure|lender|mortgage|\bproperty\b|plat|surveyor|tax|county|parish|\blien\b|foreclosure|encumbrancer|violation|\bfine\b|common[- ]element|emergency repair|unit access|developer|turnover|objecting[- ]owner|relocation costs|removal from.*Act/i;
   assert.doesNotMatch(engine, domainWords);
   assert.doesNotMatch(bootstrap, domainWords);
 });
@@ -258,8 +278,8 @@ test("administrative bootstrap selects multiple descriptors without hard-coded f
   const bootstrap = JSON.parse(await readFile(new URL("./admin-app.json", import.meta.url), "utf8"));
   assert.equal(bootstrap.format, "kane-fabric-administrative-bootstrap");
   assert.equal(bootstrap.version, 1);
-  assert.equal(bootstrap.descriptor_sources.length, 11);
-  const expected = ["insurance", "records", "finance", "governance", "management", "resale", "property", "collections", "enforcement", "maintenance", "turnover"];
+  assert.equal(bootstrap.descriptor_sources.length, 12);
+  const expected = ["insurance", "records", "finance", "governance", "management", "resale", "property", "collections", "enforcement", "maintenance", "turnover", "termination"];
   expected.forEach((name, index) => {
     assert.match(bootstrap.descriptor_sources[index].url, new RegExp(`administration/descriptors/illinois/condominium/${name}\\.v1\\.json$`));
   });
