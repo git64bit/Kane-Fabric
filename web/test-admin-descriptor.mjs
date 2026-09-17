@@ -22,6 +22,7 @@ const recordsDescriptorUrl = new URL("../administration/descriptors/illinois/con
 const financeDescriptorUrl = new URL("../administration/descriptors/illinois/condominium/finance.v1.json", import.meta.url);
 const governanceDescriptorUrl = new URL("../administration/descriptors/illinois/condominium/governance.v1.json", import.meta.url);
 const managementDescriptorUrl = new URL("../administration/descriptors/illinois/condominium/management.v1.json", import.meta.url);
+const resaleDescriptorUrl = new URL("../administration/descriptors/illinois/condominium/resale.v1.json", import.meta.url);
 
 async function loadDescriptor(url) {
   return JSON.parse(await readFile(url, "utf8"));
@@ -157,6 +158,37 @@ test("management descriptor preserves licensing and fund-safeguard boundaries", 
   assert.equal(amount.format, "currency");
 });
 
+test("Illinois condominium resale descriptor validates", async () => {
+  const descriptor = await loadDescriptor(resaleDescriptorUrl);
+  assert.equal(validateAdministrativeDescriptor(descriptor), descriptor);
+  assert.deepEqual(descriptorSummary(descriptor), {
+    descriptor_id: "us.il.condominium.resale",
+    descriptor_version: 1,
+    pages: 1,
+    sections: 4,
+    controls: 30,
+    collections: 3,
+  });
+});
+
+test("resale descriptor preserves current-effective disclosure and timing boundary", async () => {
+  const descriptor = await loadDescriptor(resaleDescriptorUrl);
+  assert.equal(descriptor.scope.as_of_date, "2026-09-17");
+  assert.match(descriptor.scope.admission_rule, /January 1, 2027/);
+
+  const framework = descriptor.pages[0].sections.find((section) => section.id === "statewide-resale-framework");
+  assert.match(framework.controls.find((control) => control.id === "association-response-deadline").text, /10 business days/);
+  assert.match(framework.controls.find((control) => control.id === "resale-rush-framework").text, /\$100.*72 hours/);
+  assert.match(framework.controls.find((control) => control.id === "lender-notice-framework").text, /Within 15 days/);
+  assert.ok(framework.controls.every((control) => control.data_role === "infrastructure"));
+
+  const inventory = descriptor.pages[0].sections.find((section) => section.id === "current-disclosure-inventory");
+  const collection = inventory.controls.find((control) => control.id === "resale-disclosure-items");
+  const category = collection.item_controls.find((control) => control.id === "resale-disclosure-category");
+  assert.equal(category.options.length, 9);
+  assert.ok(!category.options.some((option) => option.value === "collection_policy"));
+});
+
 test("records descriptor preserves statewide access rules as infrastructure notices", async () => {
   const descriptor = await loadDescriptor(recordsDescriptorUrl);
   const access = descriptor.pages[0].sections.find((section) => section.id === "member-examination-framework");
@@ -197,19 +229,20 @@ test("descriptor presentation placement remains separate from semantic binding",
 test("generic descriptor browser code contains no Illinois condominium domain vocabulary", async () => {
   const engine = await readFile(new URL("./admin-descriptor.js", import.meta.url), "utf8");
   const bootstrap = await readFile(new URL("./admin-app.js", import.meta.url), "utf8");
-  assert.doesNotMatch(engine, /Illinois|condominium|insurance|budget|assessment|reserve|governance|board|election|management|manager|license|county|parish/i);
-  assert.doesNotMatch(bootstrap, /Illinois|condominium|insurance|budget|assessment|reserve|governance|board|election|management|manager|license|county|parish/i);
+  assert.doesNotMatch(engine, /Illinois|condominium|insurance|budget|assessment|reserve|governance|board|election|management|manager|license|resale|disclosure|lender|mortgage|county|parish/i);
+  assert.doesNotMatch(bootstrap, /Illinois|condominium|insurance|budget|assessment|reserve|governance|board|election|management|manager|license|resale|disclosure|lender|mortgage|county|parish/i);
 });
 
 test("administrative bootstrap selects multiple descriptors without hard-coded form controls", async () => {
   const bootstrap = JSON.parse(await readFile(new URL("./admin-app.json", import.meta.url), "utf8"));
   assert.equal(bootstrap.format, "kane-fabric-administrative-bootstrap");
   assert.equal(bootstrap.version, 1);
-  assert.equal(bootstrap.descriptor_sources.length, 5);
+  assert.equal(bootstrap.descriptor_sources.length, 6);
   assert.match(bootstrap.descriptor_sources[0].url, /administration\/descriptors\/illinois\/condominium\/insurance\.v1\.json$/);
   assert.match(bootstrap.descriptor_sources[1].url, /administration\/descriptors\/illinois\/condominium\/records\.v1\.json$/);
   assert.match(bootstrap.descriptor_sources[2].url, /administration\/descriptors\/illinois\/condominium\/finance\.v1\.json$/);
   assert.match(bootstrap.descriptor_sources[3].url, /administration\/descriptors\/illinois\/condominium\/governance\.v1\.json$/);
   assert.match(bootstrap.descriptor_sources[4].url, /administration\/descriptors\/illinois\/condominium\/management\.v1\.json$/);
+  assert.match(bootstrap.descriptor_sources[5].url, /administration\/descriptors\/illinois\/condominium\/resale\.v1\.json$/);
   assert.ok(bootstrap.descriptor_sources.every((source) => source.enabled !== false));
 });
