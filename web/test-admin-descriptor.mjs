@@ -71,6 +71,36 @@ test("finance descriptor carries generic unit and format metadata", async () => 
   assert.equal(years.format, "integer");
 });
 
+test("descriptor schema declares generic unit and format metadata", async () => {
+  const schema = JSON.parse(await readFile(new URL("../administration/descriptors/descriptor-v1.schema.json", import.meta.url), "utf8"));
+  const properties = schema.$defs.control.properties;
+  assert.deepEqual(properties.unit, { type: "string", minLength: 1 });
+  assert.deepEqual(properties.format, { type: "string", minLength: 1 });
+});
+
+test("descriptor rejects malformed unit metadata", async () => {
+  const descriptor = await loadDescriptor("finance");
+  const budget = descriptor.pages[0].sections.find((section) => section.id === "annual-budget-summary");
+  const expense = budget.controls.find((control) => control.id === "anticipated-common-expenses");
+  expense.unit = "";
+  assert.throws(
+    () => validateAdministrativeDescriptor(descriptor),
+    (error) => error instanceof AdministrativeDescriptorError && error.path.endsWith(".unit"),
+  );
+});
+
+test("descriptor rejects malformed format metadata", async () => {
+  const descriptor = await loadDescriptor("finance");
+  const assessments = descriptor.pages[0].sections.find((section) => section.id === "assessment-administration");
+  const separate = assessments.controls.find((control) => control.id === "separate-assessments");
+  const years = separate.item_controls.find((control) => control.id === "separate-assessment-years");
+  years.format = 42;
+  assert.throws(
+    () => validateAdministrativeDescriptor(descriptor),
+    (error) => error instanceof AdministrativeDescriptorError && error.path.endsWith(".format"),
+  );
+});
+
 test("governance descriptor preserves current statewide meeting and election rules", async () => {
   const descriptor = await loadDescriptor("governance");
   const framework = descriptor.pages[0].sections.find((section) => section.id === "statewide-governance-framework");
