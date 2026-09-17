@@ -6,6 +6,7 @@
 #include <inttypes.h>
 #include <limits.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
 
@@ -92,24 +93,32 @@ static esp_err_t send_file_region(
         return ESP_FAIL;
     }
 
-    char buffer[KF_IO_BUFFER_BYTES];
+    char *buffer = malloc(KF_IO_BUFFER_BYTES);
+    if (buffer == NULL) {
+        return ESP_ERR_NO_MEM;
+    }
+
     uint64_t remaining = length;
+    esp_err_t result = ESP_OK;
 
     while (remaining > 0U) {
-        const size_t wanted = remaining > sizeof(buffer)
-            ? sizeof(buffer)
+        const size_t wanted = remaining > KF_IO_BUFFER_BYTES
+            ? KF_IO_BUFFER_BYTES
             : (size_t)remaining;
         const size_t got = fread(buffer, 1U, wanted, stream);
         if (got == 0U) {
-            return ESP_FAIL;
+            result = ESP_FAIL;
+            break;
         }
-        esp_err_t err = raw_send_all(req, buffer, got);
-        if (err != ESP_OK) {
-            return err;
+        result = raw_send_all(req, buffer, got);
+        if (result != ESP_OK) {
+            break;
         }
         remaining -= (uint64_t)got;
     }
-    return ESP_OK;
+
+    free(buffer);
+    return result;
 }
 
 static esp_err_t artifact_get_handler(httpd_req_t *req)
