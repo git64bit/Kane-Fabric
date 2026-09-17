@@ -1,0 +1,218 @@
+{
+  "format": "kane-fabric-administrative-descriptor",
+  "format_version": 1,
+  "descriptor_id": "us.il.condominium.insurance",
+  "descriptor_version": 1,
+  "title": "Illinois Condominium — Insurance",
+  "help": "Initial statewide Infrastructure slice for condominium insurance. The descriptor separates statewide legal structure from association-specific instance data and does not treat the browser or an edge device as the authority for either.",
+  "scope": {
+    "country_code": "US",
+    "state_code": "IL",
+    "label": "Illinois statewide condominium infrastructure",
+    "applies_to": "condominium_association",
+    "admission_rule": "Statewide Illinois applicability is required. County-specific, municipal, association-customary, or uncertain requirements are deferred until separately modeled."
+  },
+  "categories": [
+    { "id": "insurance.association", "label": "Association insurance" },
+    { "id": "insurance.unit_owner_rule", "label": "Unit-owner insurance rule" }
+  ],
+  "authorities": [
+    {
+      "id": "il-condo-act-12",
+      "kind": "state_statute",
+      "citation": "765 ILCS 605/12",
+      "url": "https://www.ilga.gov/Legislation/ILCS/Articles?ActID=2200&ChapterID=62",
+      "summary": "Illinois Condominium Property Act insurance section."
+    },
+    {
+      "id": "il-condo-act-19-a-5",
+      "kind": "state_statute",
+      "citation": "765 ILCS 605/19(a)(5)",
+      "url": "https://www.ilga.gov/legislation/ilcs/fulltext?DocName=076506050K19",
+      "summary": "Requires every association to keep and maintain all current association insurance policies among association records."
+    }
+  ],
+  "pages": [
+    {
+      "id": "insurance",
+      "title": "Insurance",
+      "help": "Statewide Illinois insurance structure and the current association-specific records that instantiate it.",
+      "sections": [
+        {
+          "id": "statewide-insurance-framework",
+          "title": "Statewide framework",
+          "help": "These statements describe statewide Illinois condominium infrastructure. They are not editable association assertions.",
+          "authority_refs": ["il-condo-act-12", "il-condo-act-19-a-5"],
+          "layout": { "columns": 12 },
+          "controls": [
+            {
+              "id": "association-insurance-required",
+              "kind": "notice",
+              "text": "Illinois condominium law establishes required association insurance coverage, including property insurance and commercial general liability insurance; Section 12 also addresses fidelity bond and directors/officers coverage.",
+              "authority_refs": ["il-condo-act-12"],
+              "data_role": "infrastructure",
+              "layout": { "row": 1, "column": 1, "span": 6 }
+            },
+            {
+              "id": "current-policies-record",
+              "kind": "notice",
+              "text": "All current policies of insurance of the association are records the association must keep and maintain.",
+              "authority_refs": ["il-condo-act-19-a-5"],
+              "data_role": "infrastructure",
+              "layout": { "row": 1, "column": 7, "span": 6 }
+            },
+            {
+              "id": "unit-owner-coverage-framework",
+              "kind": "notice",
+              "text": "Illinois law permits an association, through the declaration, bylaws, or rule, to require specified unit-owner insurance. The existence and source of such a requirement are association-specific facts rather than a universal statewide unit-owner mandate.",
+              "authority_refs": ["il-condo-act-12"],
+              "data_role": "infrastructure",
+              "layout": { "row": 2, "column": 1, "span": 12 }
+            }
+          ]
+        },
+        {
+          "id": "current-association-policies",
+          "title": "Current association policies",
+          "help": "Record the current policy set. Multiple policies are expected and are represented as a descriptor-driven collection rather than hard-coded policy rows.",
+          "authority_refs": ["il-condo-act-19-a-5"],
+          "layout": { "columns": 12 },
+          "controls": [
+            {
+              "id": "association-policy-collection",
+              "kind": "collection",
+              "label": "Insurance policies",
+              "binding": "association.insurance.policies",
+              "help": "Each item represents one current association insurance policy. Policy metadata are association-instance values; the statewide requirement to maintain the current policies is Infrastructure.",
+              "authority_refs": ["il-condo-act-19-a-5"],
+              "data_role": "association_instance",
+              "min_items": 1,
+              "item_label": "Policy",
+              "actions": { "add_label": "Add policy", "remove_label": "Remove policy" },
+              "item_layout": { "columns": 12 },
+              "layout": { "row": 1, "column": 1, "span": 12 },
+              "item_controls": [
+                {
+                  "id": "policy-insurer-name",
+                  "kind": "text",
+                  "label": "Insurer",
+                  "binding": "insurer_name",
+                  "required": true,
+                  "help": "Legal or trade name shown on the policy.",
+                  "data_role": "association_instance",
+                  "layout": { "row": 1, "column": 1, "span": 4 }
+                },
+                {
+                  "id": "policy-number",
+                  "kind": "text",
+                  "label": "Policy number",
+                  "binding": "policy_number",
+                  "required": true,
+                  "data_role": "association_instance",
+                  "layout": { "row": 1, "column": 5, "span": 4 }
+                },
+                {
+                  "id": "policy-coverage-class",
+                  "kind": "select",
+                  "label": "Coverage class",
+                  "binding": "coverage_class",
+                  "required": true,
+                  "options": [
+                    { "value": "property", "label": "Property" },
+                    { "value": "commercial_general_liability", "label": "Commercial general liability" },
+                    { "value": "fidelity_bond", "label": "Fidelity bond" },
+                    { "value": "directors_officers", "label": "Directors and officers" },
+                    { "value": "other", "label": "Other" }
+                  ],
+                  "authority_refs": ["il-condo-act-12"],
+                  "data_role": "association_instance",
+                  "layout": { "row": 1, "column": 9, "span": 4 }
+                },
+                {
+                  "id": "policy-effective-date",
+                  "kind": "date",
+                  "label": "Effective date",
+                  "binding": "effective_date",
+                  "data_role": "association_instance",
+                  "layout": { "row": 2, "column": 1, "span": 3 }
+                },
+                {
+                  "id": "policy-expiration-date",
+                  "kind": "date",
+                  "label": "Expiration date",
+                  "binding": "expiration_date",
+                  "data_role": "association_instance",
+                  "layout": { "row": 2, "column": 4, "span": 3 }
+                },
+                {
+                  "id": "policy-document-reference",
+                  "kind": "textarea",
+                  "label": "Policy document reference",
+                  "binding": "document_reference",
+                  "rows": 2,
+                  "help": "Reference or locator for the retained current policy. The descriptor does not require one particular storage system.",
+                  "data_role": "association_instance",
+                  "layout": { "row": 2, "column": 7, "span": 6 }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "unit-owner-insurance-rule",
+          "title": "Unit-owner insurance rule",
+          "help": "This captures whether the association has exercised the authority described by Illinois law. It does not convert an association-specific governance choice into statewide Infrastructure.",
+          "authority_refs": ["il-condo-act-12"],
+          "layout": { "columns": 12 },
+          "controls": [
+            {
+              "id": "unit-owner-rule-status",
+              "kind": "select",
+              "label": "Association requirement",
+              "binding": "association.insurance.unit_owner_requirement.status",
+              "required": true,
+              "default": "not_recorded",
+              "options": [
+                { "value": "not_recorded", "label": "Not yet recorded" },
+                { "value": "not_required", "label": "No association requirement recorded" },
+                { "value": "required_declaration", "label": "Required by declaration" },
+                { "value": "required_bylaws", "label": "Required by bylaws" },
+                { "value": "required_rule", "label": "Required by rule" }
+              ],
+              "authority_refs": ["il-condo-act-12"],
+              "data_role": "association_instance",
+              "layout": { "row": 1, "column": 1, "span": 4 }
+            },
+            {
+              "id": "unit-owner-rule-reference",
+              "kind": "text",
+              "label": "Governing-document reference",
+              "binding": "association.insurance.unit_owner_requirement.reference",
+              "placeholder": "Article / section / rule reference",
+              "help": "Record where the association-specific requirement is established.",
+              "data_role": "association_instance",
+              "layout": { "row": 1, "column": 5, "span": 4 }
+            },
+            {
+              "id": "unit-owner-rule-notes",
+              "kind": "textarea",
+              "label": "Notes",
+              "binding": "association.insurance.unit_owner_requirement.notes",
+              "rows": 3,
+              "data_role": "association_instance",
+              "layout": { "row": 1, "column": 9, "span": 4 }
+            },
+            {
+              "id": "unit-owner-rule-source-reminder",
+              "kind": "notice",
+              "text": "The Administrative Web records the source and current association choice. It does not infer that every Illinois unit owner has the same insurance obligation.",
+              "authority_refs": ["il-condo-act-12"],
+              "data_role": "infrastructure",
+              "layout": { "row": 2, "column": 1, "span": 12 }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

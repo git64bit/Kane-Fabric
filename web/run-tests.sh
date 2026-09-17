@@ -5,4 +5,5 @@ node --test \
   "$ROOT/test-app-config.mjs" \
   "$ROOT/test-app-view.mjs" \
   "$ROOT/test-app-interaction.mjs" \
-  "$ROOT/test-app-status.mjs"
+  "$ROOT/test-app-status.mjs" \
+  "$ROOT/test-admin-descriptor.mjs"
