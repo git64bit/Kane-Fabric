@@ -53,12 +53,13 @@ The first accepted insurance descriptor canonical SHA-256 is:
 | Maintenance, repairs & unit access | `0ea41fd43447bdcf44a552474013abf26707842a` | 53/53 | 52/52 | `a89c2e8e165a696f709dcba93ee67f091b07817550d04468b1802a81e31e939c` |
 | Developer control & turnover | `5edcec8448b46b1f4ee0950e0cac42ff92c72b9f` | 55/55 | 57/57 | `945facfa9b66cbdf5b2e80e1966108f8cd62ddb32381d712a0cf72c6a3fcb846` |
 | Sale of property & removal from Act | `5bf7d312bebe6b4c2e0a13f7893a0c045b1bf1c4` | 57/57 | 62/62 | `87d94c88ec36fb372731720ba2c2b58cb6180bdc990eeb9b3b67e2488858b733` |
+| Complaint procedure & Ombudsperson | `dd60b817bd12cf76683e9e61686d66bccec58047` | 62/62 | 67/67 | `d4e0209770982841a98ecaf495a2547642e882680df6bc86d5e317c12ab00521` |
 
 Finance implementation was first introduced at `3774742e5433518e054422c4f80b11f3f8f529d1`. Its initial real-browser gate reached 16/17 because HTML serialization rendered an ampersand as `&amp;`; `17ebb856057ad3137792b95ea15f69b9014cd63f` changed only the independent browser validator to decode textual checks while preserving raw serialized-DOM SHA checks. No finance descriptor or browser implementation changed in that hotfix.
 
 ## Descriptor-contract hardening acceptance
 
-After the twelve descriptor slices above were accepted, the generic descriptor contract was tightened at:
+After the first twelve descriptor slices above were accepted, the generic descriptor contract was tightened at:
 
 ```text
 f2c995f7610a273031926cf681facd20dce1ad22
@@ -72,17 +73,25 @@ web/run-admin-browser-acceptance.sh 62/62 PASS
 worktree                            clean
 ```
 
-This checkpoint formalizes already-used presentation metadata without changing any accepted descriptor bytes:
+This checkpoint formalized already-used presentation metadata without changing accepted descriptor bytes:
 
 - `unit` and `format` are explicit optional non-empty strings in `descriptor-v1.schema.json`;
 - `validateAdministrativeDescriptor()` rejects malformed `unit` or `format` metadata, including nested collection controls;
 - `format_version` remains 1 because the change is backward-compatible;
 - all twelve canonical descriptor SHA-256 values remained unchanged.
 
-The latest accepted repository/browser acceptance HEAD is therefore:
+The complaint slice subsequently reused that hardened v1 contract without requiring any renderer or schema change. The latest accepted repository/browser acceptance HEAD is therefore:
 
 ```text
-f2c995f7610a273031926cf681facd20dce1ad22
+dd60b817bd12cf76683e9e61686d66bccec58047
+```
+
+Latest observed CT102 evidence:
+
+```text
+web/run-tests.sh                    62/62 PASS
+web/run-admin-browser-acceptance.sh 67/67 PASS
+worktree                            clean
 ```
 
 ## Real-browser acceptance path
@@ -118,7 +127,7 @@ Accepted:
 - control type, labels, help, authority references, layout, options, conditional presentation, repeating collections, units, and presentation formats are descriptor-driven;
 - semantic bindings remain distinct from presentation placement;
 - descriptors are versioned and represented by canonical SHA-256 identity;
-- twelve current-effective Illinois condominium Infrastructure domains render together in real Chromium;
+- thirteen current-effective Illinois condominium Infrastructure domains render together in real Chromium;
 - statewide Infrastructure notices and association-instance data are represented separately within the descriptor model;
 - future-effective statutory changes are not silently promoted into current Infrastructure.
 
