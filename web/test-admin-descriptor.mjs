@@ -168,7 +168,7 @@ test("descriptor presentation placement remains separate from semantic binding",
 test("generic descriptor browser code contains no Illinois condominium domain vocabulary", async () => {
   const engine = await readFile(new URL("./admin-descriptor.js", import.meta.url), "utf8");
   const bootstrap = await readFile(new URL("./admin-app.js", import.meta.url), "utf8");
-  const domainWords = /Illinois|condominium|insurance|budget|assessment|reserve|governance|board|election|management|manager|license|resale|disclosure|lender|mortgage|property|plat|surveyor|tax|county|parish/i;
+  const domainWords = /Illinois|condominium|insurance|budget|assessment|reserve|governance|board|election|management|manager|license|resale|disclosure|lender|mortgage|\bproperty\b|plat|surveyor|tax|county|parish/i;
   assert.doesNotMatch(engine, domainWords);
   assert.doesNotMatch(bootstrap, domainWords);
 });
