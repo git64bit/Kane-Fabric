@@ -79,6 +79,12 @@ test("identity contract requires the original declaration recording reference", 
   );
 });
 
+test("identity contract accepts opaque pre-computerized recording references", () => {
+  const value = fixture();
+  value.association_anchor.original_declaration_recording_reference = "Synthetic Tract Book 14, Page 27";
+  assert.equal(validateAssociationUnitIdentity(value), value);
+});
+
 test("identity contract rejects malformed jurisdiction codes", () => {
   const value = fixture();
   value.association_anchor.jurisdiction.state_code = "Illinois";
