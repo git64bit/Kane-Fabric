@@ -29,6 +29,11 @@
       "label": "Illinois Condominium Infrastructure — Management, Licensing & Service Contracts",
       "url": "../administration/descriptors/illinois/condominium/management.v1.json",
       "enabled": true
+    },
+    {
+      "label": "Illinois Condominium Infrastructure — Resale Disclosures",
+      "url": "../administration/descriptors/illinois/condominium/resale.v1.json",
+      "enabled": true
     }
   ]
 }
