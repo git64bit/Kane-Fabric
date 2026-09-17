@@ -71,33 +71,62 @@ release_proof_sha256      3235cd4f7b7041138fe05708dbb077c07dc3ce8b8ec7a390141489
 
 Exit gate: **PASSED**. A real browser consumed the accepted Kane substrate and composed two independently versioned subscriptions through two explicit logical partitions. Cross-boundary replication retained logical object identity, and different physical placement metadata did not change logical placement identity.
 
-## Milestone 5 — Reference physical edge architecture
+## Milestone 5 — Reference physical edge architecture + administrative/browser integration
 
 **Status: CURRENT**
 
 Design authority: `docs/MILESTONE_5_DESIGN.md`
 
-Purpose: map the released MS3/MS4 logical identities onto a real, replaceable ESP32-S3-class edge appliance without making the microcontroller, a network address, a cryptographic key, or an optional secure element part of Fabric logical identity.
+Administrative/edge boundary: `docs/ADMINISTRATIVE_EDGE_BOUNDARY.md`
 
-The ESP32-S3 is intentionally present in the first release to establish a real firmware lifecycle before Kane Fabric matures around a software-only architecture. Its initial role is deliberately modest: immutable artifact storage, bounded plain-HTTP serving, provisioning/replacement, and a base for later firmware responsibilities.
+Development-order directive: `docs/BROWSER_FIRST_ONLINE_FIRST_DIRECTIVE.md`
+
+Purpose: prove a real, replaceable ESP32-S3-class bounded participant edge while preserving the authority and identity boundaries needed for the county-wide administrative/browser infrastructure.
+
+MS5 no longer assumes every edge stores the complete Kane County substrate. A participant edge may hold a focused publication such as one condominium association and its unit-level data while referencing accepted county/building identities through explicit contracts.
+
+The ESP32-S3 is intentionally present in the first release to establish a real firmware lifecycle before Kane Fabric matures around a software-only architecture. Its role is deliberately modest: immutable bounded artifact storage, plain-HTTP serving, local provisioning/replacement, fail-closed verification, and a base for later firmware lifecycle responsibilities.
+
+The MS5-006 physical device-runtime gate is accepted. The current priority is administrative/browser integration rather than additional firmware specialization.
+
+The active development order is:
+
+```text
+Browser-First product architecture
+        +
+Online-First implementation order
+        ↓
+full online Kane County interface
+        ↓
+categories + participant contracts
+        ↓
+bounded participant-publication composition
+        ↓
+shared browser modules/contracts stabilize
+        ↓
+local/offline browser reduction
+```
+
+The online-first order must not become SaaS-first. Participant data remains portable and independently retainable; civic identities do not depend on one hosted account system; and another county operator must be able to conform without inheriting Kane County private operational state.
 
 The security posture is intentionally proportionate to the system:
 
-- edge publication data is public and independently integrity-checked;
+- public Fabric geography and any public participant material remain independently integrity-checked;
+- restricted/private participant material, where supported by the administrative contract, does not turn the ESP32 into a person/account authority;
 - physical compromise of one edge device is expected to be recoverable and local;
 - the ESP32-S3 is replaceable compute/radio/storage, not a permanent root of trust;
 - Kane Fabric does not require irreversible eFuse burning, secure-boot fuses, or flash-encryption fuses for the reference edge;
 - a separate secure element may be used by a deployment through an explicit key-provider boundary, but is not required by the Fabric format or device identity model;
-- authoritative signing, CA, promotion, and release keys never reside on the edge;
+- authoritative signing, CA, promotion, category, contract, and geographic-release authority never resides on the edge;
 - fleet-class firmware/provisioning failures and authority/signing compromise are systemic threats and receive stronger controls than individual physical device loss;
-- browser TLS terminates at the Wiregate hub and is not an ESP32 device-local role;
-- Wiregate/browser TLS, management/WireGuard, optional secure-element, hardware, partition, subscription, and substrate identities remain separate.
+- browser TLS terminates at Wiregate/admin infrastructure and is not an ESP32 device-local role;
+- Wiregate/browser TLS, management/WireGuard, optional secure-element, hardware, county, association, unit, category, partition, subscription, and participant-publication identities remain separate.
 
-MS5 owns the reference edge contract and proof: storage/activation, Wiregate browser HTTPS termination, hub-to-edge plain HTTP and byte-range serving, ESP-IDF implementation, management-transport feasibility, firmware authenticity/update/recovery, resource evidence, and replacement/reprovisioning. An ESP32-hosted AP is not a browser requirement.
+MS5 owns the reference edge contract and integration proof: storage/activation, Wiregate/browser secure origin, bounded hub-to-edge plain HTTP and byte-range serving, ESP-IDF implementation, management-transport feasibility, firmware authenticity/update/recovery, resource evidence, replacement/reprovisioning, and online browser composition with a focused participant publication.
 
-WireGuard is a preferred management/synchronization candidate because an ESP32-S3 build has been demonstrated with the maintained external component, but runtime operation, recovery, resource cost, and coexistence with Fabric serving remain to be proven. WireGuard is never a Fabric logical identity and is not a prerequisite for the browser path.
+WireGuard remains a management/synchronization candidate. Runtime operation, recovery, resource cost, and coexistence with Fabric serving remain to be proven. WireGuard is never a Fabric logical identity and is not a prerequisite for the browser path.
 
-Exit gate: a normal browser consumes the accepted MS3 substrate plus accepted MS4 partition/subscription generations through Wiregate HTTPS from real ESP32-S3 reference hardware serving plain HTTP while CT102 is unavailable; replacing or reprovisioning the physical edge does not change those logical identities; local device compromise cannot create geographic authority or release-signing authority.
+Current MS5 integration exit direction: a normal online browser composes accepted Kane County geography with a valid focused participant publication through the administrative/Wiregate path; the participant edge serves only its bounded publication; the browser validates the same logical identities regardless of physical edge replacement; loss of management/upstream connectivity does not silently redefine already activated participant content; later firmware lifecycle/replacement/resource gates pass without moving county/category/contract authority onto the ESP32.
 
 ## Milestone 6 — Civic geography extension: parcels + delivery points
 
@@ -136,23 +165,23 @@ Work includes:
 - status/health reporting that does not create geographic authority;
 - recovery when management transport is unavailable or credentials are replaced.
 
-Exit gate: a replacement edge can obtain, verify, and activate the same logical Fabric generations through the management plane without changing substrate, partition, or subscription identity.
+Exit gate: a replacement edge can obtain, verify, and activate the same logical participant publication generations through the management plane without changing county, association, unit, category, partition, subscription, or participant-publication identity.
 
 ## Milestone 8 — Multi-node distribution
 
 **Status: PLANNED**
 
-Purpose: prove that logical partitions and subscriptions can be placed, sharded, and replicated across multiple replaceable nodes without changing browser application semantics or logical identities.
+Purpose: prove that logical publications can be placed, sharded, and replicated across multiple replaceable nodes without changing browser application semantics or logical identities.
 
 Work includes replication, sharding, overlapping placement, node loss, node replacement, and browser composition across the chosen physical distribution model.
 
-Exit gate: loss or replacement of one physical node does not force changes to logical partition identity, subscription identity, substrate identity, or consumer semantics.
+Exit gate: loss or replacement of one physical node does not force changes to county, partition, subscription, participant-publication, or consumer semantics.
 
 ## Kane Fabric 1.0 release gate
 
 The first Kane Fabric release is planned after Milestones 0–8 are accepted.
 
-The 1.0 claim is depth before breadth: Kane County operates end-to-end from accepted geographic authority through deterministic publication, subscriptions/partitions, real constrained edge hardware, civic delivery-point geography, managed synchronization, and multi-node distribution.
+The 1.0 claim is depth before breadth: Kane County operates end-to-end from accepted geographic authority through deterministic publication, administrative/browser composition, bounded participant edges, civic delivery-point geography, managed synchronization, and multi-node distribution.
 
 A second-county deployment is deliberately not a prerequisite for 1.0. The reusable contracts must remain county-generic, but actual second-county proof follows release rather than delaying the first complete Kane County system.
 
