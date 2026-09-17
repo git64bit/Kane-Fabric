@@ -6,6 +6,7 @@
     "branch": "main",
     "cpe_ssot": "docs/CIVICVS_PROJECT_ENVIRONMENT.md",
     "cpe_host_control_plane_model": "docs/CPE_HOST_CONTROL_PLANE_MODEL.md",
+    "browser_first_online_first_directive": "docs/BROWSER_FIRST_ONLINE_FIRST_DIRECTIVE.md",
     "milestone_3_published_main_head": "84293aeb381db596f4c3233473c350fda6c5426d",
     "milestone_4_accepted_implementation_head": "9f6013d1b8b44998047f71e2b3f3e9c55c9ed298",
     "ms5_005_acceptance_head": "aed812df8c5e37bb1843e022d7a7813dc7e8e862",
@@ -17,6 +18,9 @@
     "ms5_firmware_v1_role_acceptance_head": "1cdd3bb3541295332869d20cf9d83ad3cd89e100",
     "ms5_administrative_edge_boundary_head": "c303b3b7321300d087d23d2f1cc195adeca573ec",
     "ms5_administrative_architecture_head": "523649fb4a7a461710bfc6d32bb561eb1ad24d28",
+    "browser_first_online_first_directive_head": "960601375ec2edbb17e75e87ee33707e135ac705",
+    "web_online_first_design_head": "35a185b9f4df2914b8030d7db3be6b8a29744eb3",
+    "handoff_online_first_head": "509e76f6d39d2ff0352cfd47b2b8e5e923be5439",
     "firmware_authority_scaffold_head": "e42ec17f0ccd6de39c2b5b6987063a424a22a649",
     "cpe_firmware_authority_repository_acceptance_head": "84ca59a06c6fd4d4b81461d99d3f6d3889a43328",
     "cpe_firmware_authority_inert_container_acceptance_head": "2b7c74ea631f30615ca10e8c79934748a96c7941",
@@ -37,7 +41,7 @@
       "fetch_refspec": "+refs/heads/*:refs/remotes/origin/*",
       "last_observed_head": "2b7c74ea631f30615ca10e8c79934748a96c7941",
       "last_observed_worktree": "clean",
-      "note": "CT102 accepted the inert Firmware Authority container checkpoint on 2026-09-16. Python compileall passed; the MS5 suite ran 70 tests with one expected CT102 host-compiler skip; the configured authoritative database remained readable; development-state checks all passed; and the worktree was clean."
+      "note": "CT102 acceptance remains historical at 2b7c74e. It has not yet accepted the later MS5-006 device-runtime documentation, administrative-edge correction, or Browser-First/Online-First directive. Synchronize CT102 to current GitHub main and rerun relevant repository/runtime checks before making a new CT102 acceptance claim."
     },
     "ms5_006_hardware_execution": {
       "environment": "fw / CPE Build and Hardware Workstation",
@@ -62,8 +66,9 @@
       "known_good_restore": "accepted",
       "first_flash_acceptance_document": "docs/CPE_ESP32_FIRST_FLASH_ACCEPTANCE.md",
       "device_runtime_acceptance_document": "docs/CPE_ESP32_MS5_006_DEVICE_RUNTIME_ACCEPTANCE.md",
+      "repository_suite_after_boundary_correction": "72 tests passed on fw at 419b520b18cdcd0bd09162835d3f36b80e146906",
       "current_connection": "CPE-USB-1 / PROGRAM",
-      "status": "ms5-006-device-runtime-accepted"
+      "status": "ms5-006-device-runtime-accepted; firmware work paused during online administrative/browser development"
     }
   },
   "cpe": {
@@ -269,22 +274,20 @@
   "milestone": {
     "current": 5,
     "name": "Reference Physical Edge Architecture",
-    "phase": "ms5-007-administrative-contract-web-integration",
+    "phase": "ms5-007-online-administrative-browser-contracts",
     "design": "docs/MILESTONE_5_DESIGN.md",
     "reference": "docs/ADMINISTRATIVE_EDGE_BOUNDARY.md",
+    "development_order": "docs/BROWSER_FIRST_ONLINE_FIRST_DIRECTIVE.md",
     "cpe": "docs/CIVICVS_PROJECT_ENVIRONMENT.md",
     "accepted_work": {
-      "through": "MS5-006 physical ESP32-S3 runtime accepted at 7aa3c83; bounded participant edge versus administrative county/web/category/contract boundary frozen; firmware is no longer the active development bottleneck",
+      "through": "MS5-006 physical ESP32-S3 runtime accepted at 7aa3c83; bounded participant edge versus administrative county/web/category/contract boundary frozen; Browser-First retained and Online-First implementation order frozen; firmware is no longer the active development bottleneck",
       "ct102_repository_head": "2b7c74ea631f30615ca10e8c79934748a96c7941",
-      "ms5_006_implementation_head": "7aa3c836bae470704d051a36a6261a1140e9d3d0",
-      "ct102_test_result": "70 tests passed, 1 expected environment skip (host C compiler unavailable in CT102) at the last CT102 acceptance checkpoint",
-      "ct102_compileall": "passed",
-      "ct102_cpe_ssot_guard": "passed",
-      "ct102_firmware_authority_contract": "passed",
+      "ct102_acceptance_scope": "historical checkpoint only; later administrative/browser directive commits not yet accepted in CT102",
+      "ct102_test_result": "70 tests passed, 1 expected environment skip at historical checkpoint",
+      "ct102_compileall": "passed at historical checkpoint",
       "ct102_database_authority_readable": true,
-      "ct102_dev_state_checks": "all true",
-      "ct102_worktree": "clean",
-      "srv_b_host_control_plane_baseline": "recorded",
+      "ct102_worktree": "clean at historical checkpoint",
+      "ms5_006_implementation_head": "7aa3c836bae470704d051a36a6261a1140e9d3d0",
       "pinned_esp_idf_compile_on_fw": "passed",
       "cpe_program_role": "accepted",
       "cpe_terminal_role": "accepted",
@@ -298,23 +301,32 @@
       "device_storage_range_evidence": "accepted",
       "device_invalid_active_storage_fail_closed": "accepted",
       "device_known_good_restore": "accepted",
+      "fw_repository_suite_after_boundary_correction": "72 tests passed at 419b520b18cdcd0bd09162835d3f36b80e146906",
       "administrative_edge_boundary": "accepted architecture direction",
       "administrative_edge_boundary_document": "docs/ADMINISTRATIVE_EDGE_BOUNDARY.md",
       "administrative_workstream": "administration/README.md",
+      "browser_first_online_first_directive": "active",
+      "browser_first_online_first_directive_document": "docs/BROWSER_FIRST_ONLINE_FIRST_DIRECTIVE.md",
       "firmware_authority_inert_container_annales_acceptance": "accepted",
       "firmware_authority_acceptance_document": "docs/CPE_FIRMWARE_AUTHORITY_ACCEPTANCE.md",
       "firmware_authority_scaffold_ct102_acceptance": "accepted"
     },
-    "next_work_item": "MS5-007: define the administrative county/web/category/contract model for bounded participant publications, beginning with condominium association/unit identity, geographic references, visibility classes, and web composition; then integrate one focused edge publication through Wiregate without requiring the ESP32-S3 to mirror the county substrate."
+    "next_work_item": "MS5-007 administrative/browser integration: synchronize CT102 to current main, then build the full online Kane County browser/interface first and use it to define/test category, association/unit, participant-publication, visibility, and source-adapter contracts. Defer the reduced offline/local browser until the online contracts and shared browser modules stabilize. Do not return to ESP32 specialization unless a concrete contract requirement or later MS5 lifecycle gate requires it."
   },
   "priority_workstream": {
-    "name": "Administrative County/Web/Category/Contract Development",
-    "design": "administration/README.md",
+    "name": "Online County Browser + Administrative Category/Contract Development",
+    "design": "docs/WEB_APPLICATION_DESIGN.md",
+    "administrative_workstream": "administration/README.md",
     "boundary": "docs/ADMINISTRATIVE_EDGE_BOUNDARY.md",
-    "status": "active; MS5-006 physical edge runtime accepted and firmware development paused until administrative contracts or later lifecycle gates require a return to ESP32-S3",
+    "development_order": "docs/BROWSER_FIRST_ONLINE_FIRST_DIRECTIVE.md",
+    "browser_first": true,
+    "online_first": true,
+    "offline_browser_status": "deferred until online interface/contracts/shared modules stabilize; must be a reduction of the same application, not a separate schema or product",
+    "status": "active; MS5-006 physical edge runtime accepted and firmware development paused",
     "edge_runtime_status": "accepted",
     "edge_firmware_source_head": "7aa3c836bae470704d051a36a6261a1140e9d3d0",
-    "physical_acceptance_document": "docs/CPE_ESP32_MS5_006_DEVICE_RUNTIME_ACCEPTANCE.md"
+    "physical_acceptance_document": "docs/CPE_ESP32_MS5_006_DEVICE_RUNTIME_ACCEPTANCE.md",
+    "target_environment": "srv-b host-mediated CT102 administrative/runtime environment after synchronization to current GitHub main"
   },
-  "next_safe_action": "Continue in the administrative county/web/category/contract layer. Define the bounded participant publication and association/unit/category/visibility contracts before additional ESP32 specialization. Leave the accepted ESP32-S3 runtime unchanged unless those contracts expose a concrete edge requirement. Leave firmware-authority on annales inert: no WireGuard peer, no GPU, no host-directory passthrough, no proxy device, no USB signer, no persistent private signing key, and no signing activation until MS5-009 explicitly authorizes those changes."
+  "next_safe_action": "Move from fw to srv-b / CT102. Synchronize the CT102 checkout to current GitHub main and rerun the relevant repository/runtime checks before making a new CT102 acceptance claim. Then begin the full online county browser/interface and administrative category/participant-contract work. Keep offline/local browser reduction deferred and keep the accepted ESP32-S3 runtime unchanged unless a concrete contract requirement or later MS5 lifecycle gate requires a return to firmware. Leave firmware-authority on annales inert until MS5-009."
 }
