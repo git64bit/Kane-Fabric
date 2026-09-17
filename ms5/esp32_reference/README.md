@@ -1,8 +1,8 @@
 # ESP32-S3 Reference Components
 
-This directory contains the default physical-edge implementation used by Milestone 5. It is a reference implementation, not a platform definition. Fabric logical identity and the Web Application protocol remain platform-neutral.
+This directory contains the default physical-edge implementation used by Milestone 5. It is a reference implementation, not a platform definition. Fabric logical identity, county administration, and the Web Application protocol remain platform-neutral.
 
-The physical build/programming environment is documented in `docs/CIVICVS_PROJECT_ENVIRONMENT.md`.
+The physical build/programming environment is documented in `docs/CIVICVS_PROJECT_ENVIRONMENT.md`. The administrative/edge boundary is `docs/ADMINISTRATIVE_EDGE_BOUNDARY.md`.
 
 ## First-release role freeze
 
@@ -14,7 +14,7 @@ The frozen v1 responsibility profile is mirrored in `ms5/tools/kane_fabric_firmw
 
 ### Core runtime responsibilities
 
-The initial firmware is a small deterministic Fabric artifact appliance. Its core runtime responsibilities include serial build/state diagnostics, deployment-network client attachment, read-only artifact storage, active-inventory verification, plain HTTP immutable artifact serving, exact closed byte-range behavior, fail-closed invalid-state handling, and continued serving of the last valid generation when management/upstream connectivity is unavailable.
+The initial firmware is a small deterministic Fabric artifact appliance. Its core runtime responsibilities include serial build/state diagnostics, deployment-network client attachment, read-only bounded participant artifact storage, active-inventory verification, plain HTTP immutable artifact serving, exact closed byte-range behavior, fail-closed invalid-state handling, and continued serving of the last valid generation when management/upstream connectivity is unavailable.
 
 ### Required lifecycle responsibilities
 
@@ -22,12 +22,18 @@ V1 also requires an exact pinned build, identifiable firmware artifact, reproduc
 
 ### Explicitly not v1 firmware responsibilities
 
-The ESP32-S3 does not own browser HTTPS/certificate lifecycle, browser authentication, a browser-facing ESP32 access point, Fabric geographic/release-signing authority, county-database mutation/promotion, browser GIS/rendering, application membership/person identity, or fleet orchestration.
+The ESP32-S3 does not own browser HTTPS/certificate lifecycle, browser authentication, a browser-facing ESP32 access point, Fabric geographic/release-signing authority, county-database mutation/promotion, county-wide substrate replication, the county web map, category/publication-contract administration, browser GIS/rendering, application membership/person identity, or fleet orchestration.
 
-Browser TLS remains at the Wiregate hub:
+A participant edge is therefore not expected to hold all Kane County data. It may hold a focused publication such as one condominium association and its unit-level participant artifacts while referencing accepted county/building identities defined by the administrative contracts.
+
+Browser/admin integration remains above the edge:
 
 ```text
-browser -- HTTPS --> Wiregate hub -- HTTP --> ESP32-S3
+browser -- HTTPS --> Wiregate / administrative web view
+                         |\
+                         | +--> accepted county publication
+                         |
+                         +-- HTTP --> ESP32-S3 bounded participant publication
 ```
 
 ### Candidate-only later capabilities
@@ -40,70 +46,53 @@ Candidate-only capabilities include WireGuard management transport, managed arti
 
 **`fw` / CPE Build and Hardware Workstation acceptance** verifies the exact pinned build, flash/boot behavior, serial firmware identity, read-only storage mounting, active-inventory verification, and real HTTP GET/range/fail-closed behavior on the reference hardware.
 
-**Later MS5 integration acceptance** proves the Wiregate browser path, management-loss behavior, firmware update/rollback/recovery, physical replacement, and constrained-resource coexistence.
+**Later MS5 integration acceptance** proves focused participant-publication integration with the administrative web path, management-loss behavior, firmware update/rollback/recovery, physical replacement, and constrained-resource coexistence.
 
-## Current physical checkpoint
+## Accepted physical checkpoint
 
-`fw` is the accepted build/programming workstation at CPE address `10.110.0.4/22`.
-
-The exact pinned ESP-IDF v6.0.3 `esp32s3` build has succeeded there:
+MS5-006 physical device-runtime acceptance is complete. The accepted firmware implementation head is:
 
 ```text
-firmware image            kane_fabric_ms5_edge_reference.bin
-binary size               0x28180
-smallest app partition    0x100000
-free                      84%
+7aa3c836bae470704d051a36a6261a1140e9d3d0
 ```
 
-The reference build defaults now explicitly pin:
+The reference board is ESP32-S3 QFN56 revision v0.2 with 8 MB PSRAM and 16 MB flash. The accepted runtime physically proved:
+
+- pinned ESP-IDF v6.0.3 / `esp32s3` build identity;
+- PROGRAM and TERMINAL roles;
+- 16 MB flash geometry;
+- Wi-Fi provisioning and station/DHCP operation;
+- read-only Fabric partition mount;
+- inventory/artifact verification before serving;
+- plain HTTP `200` artifact delivery;
+- exact closed byte-range `206` delivery;
+- invalid/unsupported range `416` handling;
+- traversal rejection;
+- deliberate corrupted active storage failing closed before networking/service exposure;
+- restoration of the accepted Fabric image and exact artifact SHA-256 recovery.
+
+Detailed evidence is recorded in:
 
 ```text
-CONFIG_IDF_TARGET="esp32s3"
-CONFIG_ESPTOOLPY_FLASHSIZE_16MB=y
+docs/CPE_ESP32_FIRST_FLASH_ACCEPTANCE.md
+docs/CPE_ESP32_MS5_006_DEVICE_RUNTIME_ACCEPTANCE.md
 ```
 
-The fixed USB roles are accepted:
+## Current development state
 
-```text
-CPE-USB-1 / branch 1.1.2 / PROGRAM  / Espressif 303a:1001
-CPE-USB-2 / branch 1.1.3 / TERMINAL / Silicon Labs CP2102 10c4:ea60
-```
+Firmware is no longer the active workstream. The current probe image remains an MS5-006 physical integration artifact, not a production condominium publication.
 
-The clean reference board is ESP32-S3 revision v0.2 with 8 MB PSRAM, MAC `b8:f8:62:e2:d5:2c`, 16 MB flash, Security Flags `0x00000000`, Secure Boot disabled, and Flash Encryption disabled.
+The next development work is administrative under `administration/README.md`: define the county-facing categories, participant-publication contract, association/unit identity/reference semantics, visibility classes, web/map composition, and independent-county-operator conformance boundary.
 
-The first controlled Kane Fabric flash and subsequent cold boot are accepted. The initial boot exposed a 2 MB image-header default against the 16 MB physical flash; that reproducibility defect was corrected at Kane-Fabric commit:
-
-```text
-d26ec418751b7b2f82a8814297204e1b62bceda4
-```
-
-After regenerating the effective `sdkconfig`, the corrected flash command used `--chip esp32s3 --flash-size 16MB`. A corrective reflash passed written-data hash verification for bootloader, partition table, and application. The following PROGRAM-to-TERMINAL power transition produced a real cold boot:
-
-```text
-rst:0x1 (POWERON)
-SPI Flash Size : 16MB
-App version: d26ec41
-```
-
-The previous 16 MB physical / 2 MB image-header warning was absent. Detailed evidence is recorded in `docs/CPE_ESP32_FIRST_FLASH_ACCEPTANCE.md`.
-
-Current runtime connection:
-
-```text
-PROGRAM / CPE-USB-1    OFF
-TERMINAL / CPE-USB-2   ON
-```
-
-Switch back to PROGRAM only when another firmware flash is actually required.
+Return to this firmware tree when those contracts are concrete enough to provision the first real bounded participant publication, or when MS5-008 through MS5-011 lifecycle tests require firmware changes.
 
 ## MS5-006 components
 
 - `kane_fabric_http`: pure C strict byte-range and artifact-path validation.
-- `kane_fabric_artifact_server`: VFS-backed bounded artifact serving for an ESP-IDF HTTP server supplied by the caller.
-- `kane_fabric_storage`: read-only raw FAT partition mounting for host-generated immutable artifact images.
+- `kane_fabric_artifact_server`: VFS-backed bounded artifact serving for ESP-IDF HTTP.
+- `kane_fabric_storage`: read-only raw FAT partition mounting and active inventory verification.
+- `kane_fabric_network`: deployment Wi-Fi provisioning and station attachment.
 - `host_test`: host compiler tests for the pure HTTP/range core.
-- `main`: build-probe application used to ensure the components link under the pinned ESP-IDF toolchain.
-
-The current build probe intentionally does not yet start networking or mount a particular physical partition. Runtime integration next attaches prepared read-only artifact storage, verifies the active inventory, and then starts the plain HTTP artifact server. HTTPS remains at the Wiregate hub.
+- `main`: physical integration application used for the accepted MS5-006 runtime proof.
 
 For the implementation contract, read `docs/MS5_006_STORAGE_HTTP_IMPLEMENTATION.md`.
