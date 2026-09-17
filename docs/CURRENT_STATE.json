@@ -48,6 +48,9 @@
     "administrative_association_unit_identity_contract_acceptance_head": "a1629361063f4dd2806bcddade05f7cb9b1548ed",
     "administrative_association_unit_identity_evidence_acceptance_head": "4b24dc0e7eb50511bfbd9b9f530f67c1ef46357d",
     "administrative_association_unit_identity_acceptance_document": "docs/ADMINISTRATIVE_ASSOCIATION_UNIT_IDENTITY_ACCEPTANCE.md",
+    "administrative_initial_baseline_status": "complete",
+    "administrative_initial_baseline_document": "docs/ADMINISTRATIVE_BASELINE_ACCEPTANCE.md",
+    "administrative_initial_baseline_documentation_head": "67d845ebceaec584688d35f7572983121d6bbfe2",
     "firmware_authority_scaffold_head": "e42ec17f0ccd6de39c2b5b6987063a424a22a649",
     "cpe_firmware_authority_repository_acceptance_head": "84ca59a06c6fd4d4b81461d99d3f6d3889a43328",
     "cpe_firmware_authority_inert_container_acceptance_head": "2b7c74ea631f30615ca10e8c79934748a96c7941",
@@ -68,7 +71,7 @@
       "fetch_refspec": "+refs/heads/*:refs/remotes/origin/*",
       "last_observed_head": "4b24dc0e7eb50511bfbd9b9f530f67c1ef46357d",
       "last_observed_worktree": "clean",
-      "note": "CT102 accepted the source-neutral association/unit identity contract at a162936 with 70/70 repository tests, then accepted the pre-computerized recording-reference regression/evidence hardening at 4b24dc0 with 71/71 tests. The thirteen-descriptor real-browser acceptance remains independently anchored at dd60b81 with 67/67 Chromium checks and unchanged descriptor identities."
+      "note": "CT102 accepted the source-neutral association/unit identity contract at a162936 with 70/70 repository tests, then accepted the pre-computerized recording-reference regression/evidence hardening at 4b24dc0 with 71/71 tests. The thirteen-descriptor real-browser acceptance remains independently anchored at dd60b81 with 67/67 Chromium checks and unchanged descriptor identities. The initial Administrative/Civic Infrastructure baseline is closed by docs/ADMINISTRATIVE_BASELINE_ACCEPTANCE.md; its documentation-only closure has not yet replaced the last observed executable acceptance head."
     },
     "ms5_006_hardware_execution": {
       "environment": "fw / CPE Build and Hardware Workstation",
@@ -301,19 +304,21 @@
   "milestone": {
     "current": 5,
     "name": "Reference Physical Edge Architecture",
-    "phase": "ms5-007-online-administrative-browser-contracts",
+    "phase": "ms5-007-participant-publication-integration",
     "design": "docs/MILESTONE_5_DESIGN.md",
     "reference": "docs/ADMINISTRATIVE_EDGE_BOUNDARY.md",
     "development_order": "docs/BROWSER_FIRST_ONLINE_FIRST_DIRECTIVE.md",
     "cpe": "docs/CIVICVS_PROJECT_ENVIRONMENT.md",
     "accepted_work": {
-      "through": "MS5-006 physical ESP32-S3 runtime accepted at 7aa3c83; thirteen Illinois condominium Administrative Web descriptor domains accepted through dd60b81; source-neutral association/unit identity architecture accepted at 199e090, contract accepted at a162936, and pre-computerized recording-reference evidence hardening accepted at 4b24dc0; firmware application shape remains intentionally deferred while the Administrative Web defines the Infrastructure boundary",
+      "through": "MS5-006 physical ESP32-S3 runtime accepted at 7aa3c83; thirteen Illinois condominium Administrative Web descriptor domains accepted through dd60b81; source-neutral association/unit identity architecture accepted at 199e090, contract accepted at a162936, and pre-computerized recording-reference hardening accepted at 4b24dc0. The initial Administrative/Civic Infrastructure baseline is complete and closed by docs/ADMINISTRATIVE_BASELINE_ACCEPTANCE.md.",
       "ct102_repository_head": "4b24dc0e7eb50511bfbd9b9f530f67c1ef46357d",
-      "ct102_acceptance_scope": "thirteen descriptor-driven Illinois condominium Infrastructure domains remain browser-accepted; source-neutral association/unit identity validation and the opaque pre-computerized recording-reference boundary are repository-accepted in CT102",
+      "ct102_acceptance_scope": "initial Administrative/Civic Infrastructure executable baseline accepted: thirteen browser-accepted statewide descriptor domains plus source-neutral association/unit identity validation and opaque recording-reference support",
       "ct102_test_result": "web/run-tests.sh: 71 passed, 0 failed, 0 skipped at 4b24dc0",
       "ct102_compileall": "passed at historical checkpoint; not invalidated by browser/contract work",
       "ct102_database_authority_readable": true,
       "ct102_worktree": "clean at 4b24dc0",
+      "administrative_initial_baseline": "complete",
+      "administrative_initial_baseline_document": "docs/ADMINISTRATIVE_BASELINE_ACCEPTANCE.md",
       "administrative_descriptor_architecture": "accepted descriptor-driven direction",
       "administrative_descriptor_architecture_document": "docs/ADMINISTRATIVE_DESCRIPTOR_ARCHITECTURE.md",
       "administrative_descriptor_browser_acceptance": "67/67 real Chromium DOM checks passed at dd60b81; all thirteen descriptor hashes verified and all twelve prior descriptor identities unchanged",
@@ -349,24 +354,25 @@
       "firmware_authority_acceptance_document": "docs/CPE_FIRMWARE_AUTHORITY_ACCEPTANCE.md",
       "firmware_authority_scaffold_ct102_acceptance": "accepted"
     },
-    "next_work_item": "Obtain the actual original Kings Row condominium declaration recording reference and at least one unit's Recorder-level legal/plat reference from Kane County public land records. Do not define canonicalization or derived association/unit logical identifiers until those raw public recording values are established."
+    "next_work_item": "Begin the next leg with a bounded participant-publication contract that consumes the accepted county geography, administrative descriptors, and association/unit identity anchors. Do not reopen the initial baseline unless a concrete participant-publication or interoperability requirement demonstrates a missing primitive."
   },
   "priority_workstream": {
-    "name": "Descriptor-Driven Illinois Condominium Civic Infrastructure",
+    "name": "Bounded Participant Publication Integration",
     "design": "docs/WEB_APPLICATION_DESIGN.md",
     "descriptor_architecture": "docs/ADMINISTRATIVE_DESCRIPTOR_ARCHITECTURE.md",
     "descriptor_acceptance": "docs/ADMINISTRATIVE_DESCRIPTOR_ACCEPTANCE.md",
+    "administrative_baseline": "docs/ADMINISTRATIVE_BASELINE_ACCEPTANCE.md",
     "administrative_workstream": "administration/README.md",
     "boundary": "docs/ADMINISTRATIVE_EDGE_BOUNDARY.md",
     "development_order": "docs/BROWSER_FIRST_ONLINE_FIRST_DIRECTIVE.md",
     "browser_first": true,
     "online_first": true,
     "offline_browser_status": "deferred until the full online Infrastructure model and shared descriptor/browser capabilities stabilize; must be a reduction of the same application, not a separate schema or product",
-    "status": "active; thirteen descriptor-driven Illinois condominium Infrastructure domains are browser-accepted, and the source-neutral association/unit identity contract plus pre-computerized recording-reference boundary are repository-accepted in CT102; derived identifiers remain deferred pending real Recorder evidence",
-    "edge_runtime_status": "accepted physical runtime, application role deliberately unresolved",
+    "status": "initial Administrative/Civic Infrastructure baseline complete; next leg is a bounded participant publication composed into the accepted county/web view",
+    "edge_runtime_status": "accepted physical runtime, application role deliberately unresolved until the participant-publication contract is concrete",
     "edge_firmware_source_head": "7aa3c836bae470704d051a36a6261a1140e9d3d0",
     "physical_acceptance_document": "docs/CPE_ESP32_MS5_006_DEVICE_RUNTIME_ACCEPTANCE.md",
-    "target_environment": "srv-b host-mediated CT102 administrative/runtime environment; latest repository-test acceptance 4b24dc0 with 71/71 tests; latest descriptor real-browser acceptance dd60b81 with 67/67 Chromium checks"
+    "target_environment": "srv-b host-mediated CT102 administrative/runtime environment; latest executable repository-test acceptance 4b24dc0 with 71/71 tests; latest descriptor real-browser acceptance dd60b81 with 67/67 Chromium checks"
   },
-  "next_safe_action": "Obtain and record the actual Kane County Recorder reference for the original Kings Row condominium declaration and at least one unit's Recorder legal/plat reference. Until those raw values are established, do not define canonicalization, derived association/unit identifiers, participant-publication generations, or ESP32 specialization."
+  "next_safe_action": "Synchronize CT102 to the documentation-only baseline closure, verify a clean worktree, then start the next leg by defining one bounded participant-publication contract against the accepted baseline. Do not resume broad statutory enumeration or derived identity work as part of initialization."
 }
