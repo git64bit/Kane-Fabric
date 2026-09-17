@@ -54,6 +54,11 @@
       "label": "Illinois Condominium Infrastructure — Maintenance, Repairs & Unit Access",
       "url": "../administration/descriptors/illinois/condominium/maintenance.v1.json",
       "enabled": true
+    },
+    {
+      "label": "Illinois Condominium Infrastructure — Developer Control & Turnover",
+      "url": "../administration/descriptors/illinois/condominium/turnover.v1.json",
+      "enabled": true
     }
   ]
 }
