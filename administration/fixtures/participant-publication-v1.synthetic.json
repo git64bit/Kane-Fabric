@@ -1,0 +1,50 @@
+{
+  "format": "kane-fabric-participant-publication",
+  "format_version": 1,
+  "association_unit_identity": {
+    "format": "kane-fabric-association-unit-identity",
+    "format_version": 1,
+    "association_anchor": {
+      "jurisdiction": {
+        "country_code": "US",
+        "state_code": "IL"
+      },
+      "recording_authority_reference": "synthetic-public-recording-authority",
+      "original_declaration_recording_reference": "Synthetic Tract Book 14, Page 27"
+    },
+    "unit_anchors": [
+      {
+        "recorded_unit_designation": "Synthetic Unit 1",
+        "recorded_unit_reference": "Synthetic Unit Book 2, Page 9"
+      }
+    ]
+  },
+  "descriptor_instances": [
+    {
+      "descriptor_id": "us.il.condominium.property",
+      "descriptor_version": 1,
+      "subject": {
+        "kind": "association"
+      },
+      "geographic_refs": [
+        {
+          "kind": "building",
+          "dataset_key": "synthetic-buildings",
+          "release_key": "synthetic-release-1",
+          "source_content_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+          "object_key": "synthetic-building-1"
+        }
+      ],
+      "data": {
+        "association": {
+          "property": {
+            "condominium_name": "Synthetic Participant Condominium",
+            "declaration": {
+              "record_reference": "Synthetic Tract Book 14, Page 27"
+            }
+          }
+        }
+      }
+    }
+  ]
+}

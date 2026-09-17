@@ -1,0 +1,145 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kane-fabric.invalid/contracts/participant-publication-v1.schema.json",
+  "title": "Kane Fabric Participant Publication v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "format",
+    "format_version",
+    "association_unit_identity",
+    "descriptor_instances"
+  ],
+  "properties": {
+    "format": {
+      "const": "kane-fabric-participant-publication"
+    },
+    "format_version": {
+      "const": 1
+    },
+    "association_unit_identity": {
+      "$ref": "association-unit-identity-v1.schema.json"
+    },
+    "descriptor_instances": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/descriptorInstance"
+      }
+    }
+  },
+  "$defs": {
+    "unitAnchor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "recorded_unit_designation",
+        "recorded_unit_reference"
+      ],
+      "properties": {
+        "recorded_unit_designation": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recorded_unit_reference": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "subject": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind"],
+          "properties": {
+            "kind": {
+              "const": "association"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "unit_anchor"],
+          "properties": {
+            "kind": {
+              "const": "unit"
+            },
+            "unit_anchor": {
+              "$ref": "#/$defs/unitAnchor"
+            }
+          }
+        }
+      ]
+    },
+    "geographicReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "dataset_key",
+        "release_key",
+        "source_content_sha256",
+        "object_key"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "dataset_key": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "release_key": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_content_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "object_key": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "descriptorInstance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "descriptor_id",
+        "descriptor_version",
+        "subject",
+        "geographic_refs",
+        "data"
+      ],
+      "properties": {
+        "descriptor_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "descriptor_version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "subject": {
+          "$ref": "#/$defs/subject"
+        },
+        "geographic_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/geographicReference"
+          }
+        },
+        "data": {
+          "type": "object"
+        }
+      }
+    }
+  }
+}
