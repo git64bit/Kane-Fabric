@@ -16,13 +16,38 @@ Historical milestone handoffs preserve historical procedure and evidence. They d
 
 Use these documents for different purposes:
 
-- `docs/HANDOFF.md` — durable system mental model, historical evidence, non-obvious invariants, current milestone narrative;
+- `docs/HANDOFF.md` — durable system mental model, accepted checkpoints, non-obvious invariants, current workstream narrative, and exact next safe action;
 - `docs/CURRENT_STATE.json` — compact machine-readable latest observed operational checkpoint;
 - `docs/SESSION_START.md` — low-churn session-resume procedure;
-- `docs/CIVICVS_PROJECT_ENVIRONMENT.md` — physical CPE hosts, CPE network identities, `fw` build/programming environment, fixed USB topology, Dell/LXD Firmware Authority placement, and cross-host execution boundaries;
+- `docs/BROWSER_FIRST_ONLINE_FIRST_DIRECTIVE.md` — current browser implementation-order authority;
+- `administration/README.md` — active administrative county/web/category/contract workstream;
+- `docs/WEB_APPLICATION_DESIGN.md` — browser application design authority;
+- `docs/CIVICVS_PROJECT_ENVIRONMENT.md` — physical CPE hosts, CPE network identities, `fw` build/programming environment, fixed USB topology, `annales`/LXD Firmware Authority placement, and cross-host execution boundaries;
 - current milestone design/handoff — milestone-specific implementation and acceptance detail.
 
 `CURRENT_STATE.json` is a recorded observation, not a substitute for live authority. It deliberately distinguishes the last observed operational state from the current GitHub `main` commit.
+
+## Current implementation order
+
+Kane Fabric remains Browser-First, but implementation is now Online-First.
+
+The current development sequence is:
+
+```text
+full online Kane County browser/interface
+        ↓
+administrative categories + participant contracts
+        ↓
+bounded participant-publication composition
+        ↓
+shared browser modules/contracts stabilize
+        ↓
+local/offline browser reduction
+```
+
+The reduced offline browser is a derivative of the same application architecture. It is not a separate product or schema.
+
+This ordering is an implementation rule, not a relaxation of the anti-capture architecture. The online operator must not become the exclusive custodian of participant data or the source of civic identity merely because online development happens first.
 
 ## Authority map
 
@@ -32,10 +57,10 @@ Kane Fabric separates these authorities:
 | --- | --- |
 | GitHub `git64bit/Kane-Fabric`, branch `main` | software, contracts, migrations, tests, documentation, small deterministic manifests |
 | Proxmox host `srv-b` | CT lifecycle, host conformance, host firewall/network policy, host-to-CT execution |
-| CT102 `kane-fabric` | real Kane Fabric runtime/test/compiler environment for repository/data gates |
+| CT102 `kane-fabric` | real Kane Fabric runtime/test/compiler environment for repository/data/browser/admin gates |
 | `/var/lib/kane-fabric` inside CT102 | operational databases, immutable evidence, staging, rollback, audit, compiled artifacts |
 | `fw` / `10.110.0.4` | CPE build and hardware workstation: pinned ESP-IDF build, direct USB programming/terminal, physical ESP acceptance, TrivialHTTP Linux/Windows builds |
-| Dell Precision / `10.110.0.9` | Ubuntu/LXD physical host for the future Firmware Authority container; existing unrelated workloads remain separate |
+| `annales` / `10.110.0.9` | Ubuntu/LXD physical host for the accepted inert `firmware-authority` container; unrelated RAG/LLM and witness workloads remain separate |
 
 These roles must not be collapsed. An Assistant sandbox is none of them.
 
@@ -51,10 +76,12 @@ Start with:
 2. read `docs/HANDOFF.md`;
 3. read `docs/CURRENT_STATE.json`;
 4. read `docs/SESSION_START.md`;
-5. before physical ESP/CPE/TrivialHTTP/Firmware Authority work, read `docs/CIVICVS_PROJECT_ENVIRONMENT.md`;
-6. read only the current milestone documents needed for the next action;
-7. use recorded paths/control planes directly unless a live check contradicts them;
-8. investigate only the contradicted fact.
+5. read `docs/BROWSER_FIRST_ONLINE_FIRST_DIRECTIVE.md`;
+6. read `administration/README.md` and `docs/WEB_APPLICATION_DESIGN.md` for the active workstream;
+7. before physical ESP/CPE/TrivialHTTP/Firmware Authority work, read `docs/CIVICVS_PROJECT_ENVIRONMENT.md`;
+8. read only the current milestone documents needed for the next action;
+9. use recorded paths/control planes directly unless a live check contradicts them;
+10. investigate only the contradicted fact.
 
 Stable facts are not discovery tasks.
 
@@ -62,7 +89,7 @@ Stable facts are not discovery tasks.
 
 ### `srv-b` / CT102
 
-Kane Fabric runtime/data commands execute inside CT102 through Proxmox host `srv-b`:
+Kane Fabric runtime/data/browser/admin commands execute inside CT102 through Proxmox host `srv-b`:
 
 ```bash
 pct status 102
@@ -78,7 +105,9 @@ The current recorded CT102 checkout is:
 
 A stopped/unavailable CT is infrastructure state, not an application test failure.
 
-Do not substitute CT100, CT101, `fw`, the Dell, or an Assistant sandbox for CT102 repository/data acceptance.
+Do not substitute CT100, CT101, `fw`, `annales`, or an Assistant sandbox for CT102 repository/data/browser acceptance.
+
+The current administrative/browser workstream belongs here after the checkout is synchronized to current GitHub `main` and the relevant gates are rerun.
 
 ### `fw`
 
@@ -98,13 +127,33 @@ Normal work is performed through the CPE wrappers recorded in `docs/CIVICVS_PROJ
 
 `/home/civicus-build` is legacy and must not be sourced, modified, reused, or treated as the CPE environment.
 
-### Dell Precision / Firmware Authority host
+MS5-006 physical device runtime is accepted at firmware source `7aa3c836bae470704d051a36a6261a1140e9d3d0`. Firmware work is currently paused while the online administrative/browser contracts are developed.
 
-The Dell at `10.110.0.9` runs Ubuntu/LXD, not Proxmox. `pct` does not apply.
+Do not reflash or specialize the ESP32 during ordinary county/web/category/contract work unless a concrete contract requirement or a later MS5 lifecycle gate intentionally returns work to `fw`.
 
-Before any Firmware Authority mutation, obtain the bounded read-only LXD/host inventory required by `docs/CIVICVS_PROJECT_ENVIRONMENT.md`. Do not invent the host hostname, LXD storage pool, project, profile, bridge, instance naming, host staging path, management path, transfer path, or container network identity.
+### `annales` / Firmware Authority host
 
-The physical Dell host already has CPE address `10.110.0.9`; this does not assign an address to the future `firmware-authority` container.
+`annales` at `10.110.0.9` runs Ubuntu/LXD, not Proxmox. `pct` does not apply.
+
+The `firmware-authority` LXD container already exists and its inert deployment is accepted.
+
+Current accepted boundary:
+
+```text
+container                   firmware-authority
+network                     lxdbr0 / private NAT
+independent CPE identity    none
+WireGuard                   absent
+GPU                         none
+host-directory passthrough none
+proxy device                none
+USB signer                  none
+persistent private key      none
+signing                     DISABLED
+activation                  gated by MS5-009
+```
+
+Do not invent a new bridge, CPE address, passthrough device, signer path, or authority activation merely because the container exists.
 
 ## Cross-host anti-drift rule
 
@@ -112,10 +161,10 @@ A valid path or command on one host is not evidence that it exists on another.
 
 In particular:
 
-- `/tmp/kane-fabric-ms2` is the recorded CT102 checkout, not an `fw` or Dell path;
-- `/home/cpe-build` is the `fw` CPE home, not a `srv-b` or Dell path;
-- `pct` belongs to `srv-b`/Proxmox, not `fw` or the Dell;
-- LXD control-plane operations belong to the Dell, not `srv-b`;
+- `/tmp/kane-fabric-ms2` is the recorded CT102 checkout, not an `fw` or `annales` path;
+- `/home/cpe-build` is the `fw` CPE home, not a `srv-b` or `annales` path;
+- `pct` belongs to `srv-b`/Proxmox, not `fw` or `annales`;
+- LXD control-plane operations belong to `annales`, not `srv-b`;
 - an Assistant-generated/downloadable file is not present on any remote host until its placement has been established by SSOT or observed live.
 
 Never issue a state-changing command containing an unrecorded host path merely because that path would be convenient.
@@ -208,6 +257,26 @@ record one material checkpoint
 
 Do not insert documentation commits after every intermediate observation. Batch ordinary observations into a material checkpoint.
 
+## Browser/admin development loop
+
+For the current workstream, prefer this sequence:
+
+```text
+accepted county geography + existing browser foundation
+        ↓
+define one administrative contract slice
+        ↓
+exercise it in the full online browser/interface
+        ↓
+add repository tests for the stabilized contract
+        ↓
+accept in CT102 / real browser as appropriate
+        ↓
+repeat
+```
+
+Do not begin by designing the offline-only form. Once the online contracts and shared browser modules are stable, produce the offline/local form by source substitution and removal of network-only conveniences.
+
 ## Documentation/checkpoint cadence
 
 Update `CURRENT_STATE.json`, `HANDOFF.md`, `SESSION_START.md`, and the applicable environment/milestone SSOT at a material checkpoint, including when:
@@ -217,7 +286,7 @@ Update `CURRENT_STATE.json`, `HANDOFF.md`, `SESSION_START.md`, and the applicabl
 - a physical CPE host or hardware mapping is accepted or replaced;
 - a new non-obvious invariant or exception is discovered;
 - operational DB path/hash changes;
-- an implementation boundary changes.
+- an implementation boundary or development-order rule changes.
 
 A documentation-only commit after an accepted test does not by itself invalidate that test. Record the implementation/test HEAD actually exercised and rerun only when relevant code/environment changed.
 
@@ -228,10 +297,11 @@ Use the least expensive useful gate and make claims only at the level actually r
 1. static/repository review;
 2. synthetic/local unit tests;
 3. repository regression tests inside CT102;
-4. exact pinned firmware build on `fw` when firmware build inputs change;
-5. physical device flash/runtime evidence on `fw` when device behavior is under test;
-6. real Kane County read-only/derived-data gate inside CT102;
-7. deliberately scoped authority-changing/release evidence.
+4. real browser/admin integration in the accepted CT102 environment when browser-visible behavior changes;
+5. exact pinned firmware build on `fw` when firmware build inputs change;
+6. physical device flash/runtime evidence on `fw` when device behavior is under test;
+7. real Kane County read-only/derived-data gate inside CT102;
+8. deliberately scoped authority-changing/release evidence.
 
 Accepted tests are not rerun merely because a new Assistant/session started.
 
@@ -294,24 +364,25 @@ create tarball
 
 Do not prescribe SCP/SSH as the default there unless deployment policy deliberately changes.
 
-The Dell's management/file-transfer path has not yet been frozen. Do not copy the `srv-b` workflow to the Dell by assumption; establish it during the Dell read-only inventory.
+`annales`/LXD management is host-mediated. Do not copy `srv-b` filesystem paths or Proxmox transfer assumptions onto `annales`. If a later MS5-009 signer/authority workflow requires a durable transfer path, freeze and document that path at that gate.
 
 ## Project boundaries
 
 CT102 is Kane Fabric. CT100 and CT101 are Mechanical Compiler infrastructure and must not be repurposed for Kane Fabric merely because they share `srv-b`.
 
-The Dell's existing RAG/LLM workloads are likewise separate from Kane Fabric. Co-location does not imply application trust, resource ownership, or permission to alter GPU/device passthrough.
+`annales`' existing RAG/LLM and witness workloads are likewise separate from Kane Fabric. Co-location does not imply application trust, resource ownership, or permission to alter GPU/device passthrough.
 
 ## Handoff rule
 
 At material checkpoints, durable state must capture:
 
 - current milestone and implementation boundary;
+- current Browser-First/Online-First development order when relevant;
 - live/last-observed checkout path, branch, HEAD, upstream, refspec, and worktree state where applicable;
 - current operational DB path/hash when established;
 - accepted CT102 gates and implementation HEAD actually tested;
 - accepted `fw` build/device/USB facts when they change;
-- Dell/LXD host/container facts once observed;
+- `annales`/LXD host/container facts when they change;
 - deliberate exclusions and trust boundaries;
 - exact next safe action.
 
@@ -325,3 +396,5 @@ The MS-2 branch/refspec incident and later handoff/access failures established t
 2. preserve compact current-state checkpoints and verify them directly instead of reconstructing the whole environment every session.
 
 The 2026-09-16 CPE reconciliation added a third permanent lesson: **physical development infrastructure must be recorded in GitHub SSOT as soon as it becomes a stable project dependency.** The `fw` build/programming environment and fixed USB topology had been accepted operationally without being preserved in Kane-Fabric, which allowed a later command to incorrectly assume an `fw` filesystem path existed on `srv-b`. The CPE SSOT and cross-host anti-drift rule exist to prevent recurrence.
+
+The 2026-09-17 administrative/browser correction added a fourth permanent lesson: **Browser-First is a product/interface boundary, not a mandate to implement the offline form before the online form.** The full online interface may be developed first, provided the shared contracts remain portable and the later offline form is a reduction rather than a fork.
