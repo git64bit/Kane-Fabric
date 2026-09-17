@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import re
 import sys
 from html import unescape
@@ -20,6 +21,39 @@ WEB = ROOT / "web"
 BOOTSTRAP = WEB / "admin-app.json"
 
 
+def canonicalize_number(value: float) -> str:
+    """Match ECMAScript JSON.stringify number spelling for finite JSON numbers."""
+    if not math.isfinite(value):
+        raise ValueError("non-finite number is not valid descriptor JSON")
+    if value == 0:
+        return "0"
+
+    text = repr(value).lower()
+    if "e" not in text:
+        return text[:-2] if text.endswith(".0") else text
+
+    mantissa, exponent_text = text.split("e")
+    exponent = int(exponent_text)
+    negative = mantissa.startswith("-")
+    unsigned = mantissa[1:] if negative else mantissa
+    digits = unsigned.replace(".", "")
+
+    # ECMAScript emits fixed notation for values in [1e-6, 1e21).
+    if 1e-6 <= abs(value) < 1e21:
+        point = 1 + exponent
+        if point <= 0:
+            fixed = "0." + "0" * (-point) + digits
+        elif point >= len(digits):
+            fixed = digits + "0" * (point - len(digits))
+        else:
+            fixed = digits[:point] + "." + digits[point:]
+        return ("-" if negative else "") + fixed
+
+    coefficient = unsigned[:-2] if unsigned.endswith(".0") else unsigned
+    exponent_part = ("+" if exponent >= 0 else "") + str(exponent)
+    return ("-" if negative else "") + coefficient + "e" + exponent_part
+
+
 def canonicalize(value: object) -> str:
     if isinstance(value, list):
         return "[" + ",".join(canonicalize(entry) for entry in value) + "]"
@@ -28,6 +62,8 @@ def canonicalize(value: object) -> str:
             json.dumps(key, ensure_ascii=False) + ":" + canonicalize(value[key])
             for key in sorted(value)
         ) + "}"
+    if isinstance(value, float):
+        return canonicalize_number(value)
     return json.dumps(value, ensure_ascii=False, separators=(",", ":"))
 
 
