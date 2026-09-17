@@ -19,6 +19,11 @@
       "label": "Illinois Condominium Infrastructure — Budget, Assessments & Reserves",
       "url": "../administration/descriptors/illinois/condominium/finance.v1.json",
       "enabled": true
+    },
+    {
+      "label": "Illinois Condominium Infrastructure — Governance, Meetings & Elections",
+      "url": "../administration/descriptors/illinois/condominium/governance.v1.json",
+      "enabled": true
     }
   ]
 }
