@@ -21,6 +21,10 @@
     "browser_first_online_first_directive_head": "960601375ec2edbb17e75e87ee33707e135ac705",
     "web_online_first_design_head": "35a185b9f4df2914b8030d7db3be6b8a29744eb3",
     "handoff_online_first_head": "509e76f6d39d2ff0352cfd47b2b8e5e923be5439",
+    "administrative_descriptor_architecture_head": "3eee5523ce5689eff6e06542ff68b08fd8c2198f",
+    "administrative_descriptor_repository_acceptance_head": "7b8b116d5b43660d4260a21f0dc7ea85ec6bc753",
+    "administrative_descriptor_browser_acceptance_head": "7b8b116d5b43660d4260a21f0dc7ea85ec6bc753",
+    "administrative_descriptor_acceptance_document": "docs/ADMINISTRATIVE_DESCRIPTOR_ACCEPTANCE.md",
     "firmware_authority_scaffold_head": "e42ec17f0ccd6de39c2b5b6987063a424a22a649",
     "cpe_firmware_authority_repository_acceptance_head": "84ca59a06c6fd4d4b81461d99d3f6d3889a43328",
     "cpe_firmware_authority_inert_container_acceptance_head": "2b7c74ea631f30615ca10e8c79934748a96c7941",
@@ -39,9 +43,9 @@
       "branch": "main",
       "upstream": "origin/main",
       "fetch_refspec": "+refs/heads/*:refs/remotes/origin/*",
-      "last_observed_head": "2b7c74ea631f30615ca10e8c79934748a96c7941",
+      "last_observed_head": "7b8b116d5b43660d4260a21f0dc7ea85ec6bc753",
       "last_observed_worktree": "clean",
-      "note": "CT102 acceptance remains historical at 2b7c74e. It has not yet accepted the later MS5-006 device-runtime documentation, administrative-edge correction, or Browser-First/Online-First directive. Synchronize CT102 to current GitHub main and rerun relevant repository/runtime checks before making a new CT102 acceptance claim."
+      "note": "CT102 accepted the first descriptor-driven Administrative Web implementation at 7b8b116. web/run-tests.sh passed 35/35 and real Chromium rendered the descriptor path with 10/10 checks. Later commits add acceptance tooling/documentation and do not alter the accepted browser implementation."
     },
     "ms5_006_hardware_execution": {
       "environment": "fw / CPE Build and Hardware Workstation",
@@ -68,7 +72,7 @@
       "device_runtime_acceptance_document": "docs/CPE_ESP32_MS5_006_DEVICE_RUNTIME_ACCEPTANCE.md",
       "repository_suite_after_boundary_correction": "72 tests passed on fw at 419b520b18cdcd0bd09162835d3f36b80e146906",
       "current_connection": "CPE-USB-1 / PROGRAM",
-      "status": "ms5-006-device-runtime-accepted; firmware work paused during online administrative/browser development"
+      "status": "ms5-006-device-runtime-accepted; application shape intentionally deferred while descriptor-driven Administrative Web defines the Infrastructure boundary"
     }
   },
   "cpe": {
@@ -280,13 +284,17 @@
     "development_order": "docs/BROWSER_FIRST_ONLINE_FIRST_DIRECTIVE.md",
     "cpe": "docs/CIVICVS_PROJECT_ENVIRONMENT.md",
     "accepted_work": {
-      "through": "MS5-006 physical ESP32-S3 runtime accepted at 7aa3c83; bounded participant edge versus administrative county/web/category/contract boundary frozen; Browser-First retained and Online-First implementation order frozen; firmware is no longer the active development bottleneck",
-      "ct102_repository_head": "2b7c74ea631f30615ca10e8c79934748a96c7941",
-      "ct102_acceptance_scope": "historical checkpoint only; later administrative/browser directive commits not yet accepted in CT102",
-      "ct102_test_result": "70 tests passed, 1 expected environment skip at historical checkpoint",
-      "ct102_compileall": "passed at historical checkpoint",
+      "through": "MS5-006 physical ESP32-S3 runtime accepted at 7aa3c83; first descriptor-driven Administrative Web slice accepted in CT102 at 7b8b116; firmware application shape is intentionally deferred while the Administrative Web defines the Infrastructure boundary",
+      "ct102_repository_head": "7b8b116d5b43660d4260a21f0dc7ea85ec6bc753",
+      "ct102_acceptance_scope": "first descriptor-driven administrative/browser slice accepted; environment, 35-test web suite, and real Chromium rendering gate accepted; full repository regression suite not rerun for this browser-only change",
+      "ct102_test_result": "web/run-tests.sh: 35 passed, 0 failed, 0 skipped at 7b8b116",
+      "ct102_compileall": "passed at historical checkpoint; not invalidated by browser-only descriptor work",
       "ct102_database_authority_readable": true,
-      "ct102_worktree": "clean at historical checkpoint",
+      "ct102_worktree": "clean at 7b8b116",
+      "administrative_descriptor_architecture": "accepted initial descriptor-driven direction",
+      "administrative_descriptor_architecture_document": "docs/ADMINISTRATIVE_DESCRIPTOR_ARCHITECTURE.md",
+      "administrative_descriptor_browser_acceptance": "10/10 real Chromium DOM checks passed at 7b8b116",
+      "administrative_descriptor_acceptance_document": "docs/ADMINISTRATIVE_DESCRIPTOR_ACCEPTANCE.md",
       "ms5_006_implementation_head": "7aa3c836bae470704d051a36a6261a1140e9d3d0",
       "pinned_esp_idf_compile_on_fw": "passed",
       "cpe_program_role": "accepted",
@@ -311,22 +319,24 @@
       "firmware_authority_acceptance_document": "docs/CPE_FIRMWARE_AUTHORITY_ACCEPTANCE.md",
       "firmware_authority_scaffold_ct102_acceptance": "accepted"
     },
-    "next_work_item": "MS5-007 administrative/browser integration: synchronize CT102 to current main, then build the full online Kane County browser/interface first and use it to define/test category, association/unit, participant-publication, visibility, and source-adapter contracts. Defer the reduced offline/local browser until the online contracts and shared browser modules stabilize. Do not return to ESP32 specialization unless a concrete contract requirement or later MS5 lifecycle gate requires it."
+    "next_work_item": "Expand the full-featured descriptor-driven Administrative Web across statewide Illinois condominium Civic Infrastructure. Use only statewide externally grounded obligations and record categories as Infrastructure; represent association-specific values as instances and defer county-specific, municipal, uncertain, participant, security, offline, and edge-device concerns until their boundaries are established."
   },
   "priority_workstream": {
-    "name": "Online County Browser + Administrative Category/Contract Development",
+    "name": "Descriptor-Driven Illinois Condominium Civic Infrastructure",
     "design": "docs/WEB_APPLICATION_DESIGN.md",
+    "descriptor_architecture": "docs/ADMINISTRATIVE_DESCRIPTOR_ARCHITECTURE.md",
+    "descriptor_acceptance": "docs/ADMINISTRATIVE_DESCRIPTOR_ACCEPTANCE.md",
     "administrative_workstream": "administration/README.md",
     "boundary": "docs/ADMINISTRATIVE_EDGE_BOUNDARY.md",
     "development_order": "docs/BROWSER_FIRST_ONLINE_FIRST_DIRECTIVE.md",
     "browser_first": true,
     "online_first": true,
-    "offline_browser_status": "deferred until online interface/contracts/shared modules stabilize; must be a reduction of the same application, not a separate schema or product",
-    "status": "active; MS5-006 physical edge runtime accepted and firmware development paused",
-    "edge_runtime_status": "accepted",
+    "offline_browser_status": "deferred until the full online Infrastructure model and shared descriptor/browser capabilities stabilize; must be a reduction of the same application, not a separate schema or product",
+    "status": "active; first JSON descriptor-driven Administrative Web slice accepted in CT102; Illinois condominium Infrastructure expansion is now the design driver",
+    "edge_runtime_status": "accepted physical runtime, application role deliberately unresolved",
     "edge_firmware_source_head": "7aa3c836bae470704d051a36a6261a1140e9d3d0",
     "physical_acceptance_document": "docs/CPE_ESP32_MS5_006_DEVICE_RUNTIME_ACCEPTANCE.md",
-    "target_environment": "srv-b host-mediated CT102 administrative/runtime environment after synchronization to current GitHub main"
+    "target_environment": "srv-b host-mediated CT102 administrative/runtime environment; first descriptor/browser implementation accepted at 7b8b116"
   },
-  "next_safe_action": "Move from fw to srv-b / CT102. Synchronize the CT102 checkout to current GitHub main and rerun the relevant repository/runtime checks before making a new CT102 acceptance claim. Then begin the full online county browser/interface and administrative category/participant-contract work. Keep offline/local browser reduction deferred and keep the accepted ESP32-S3 runtime unchanged unless a concrete contract requirement or later MS5 lifecycle gate requires a return to firmware. Leave firmware-authority on annales inert until MS5-009."
+  "next_safe_action": "Synchronize CT102 to current GitHub main, rerun bash web/run-tests.sh and bash web/run-admin-browser-acceptance.sh, then continue expanding the descriptor-driven Illinois condominium Civic Infrastructure from evident statewide obligations and records. Do not resume ESP32 application specialization until the Administrative Web establishes a concrete bounded edge role."
 }
