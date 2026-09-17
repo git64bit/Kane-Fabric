@@ -59,6 +59,11 @@
       "label": "Illinois Condominium Infrastructure — Developer Control & Turnover",
       "url": "../administration/descriptors/illinois/condominium/turnover.v1.json",
       "enabled": true
+    },
+    {
+      "label": "Illinois Condominium Infrastructure — Sale of Property & Removal from Act",
+      "url": "../administration/descriptors/illinois/condominium/termination.v1.json",
+      "enabled": true
     }
   ]
 }
