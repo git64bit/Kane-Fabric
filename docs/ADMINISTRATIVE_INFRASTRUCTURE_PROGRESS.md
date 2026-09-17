@@ -9,14 +9,14 @@ This file records progressively accepted descriptor-driven Illinois condominium 
 Accepted repository HEAD:
 
 ```text
-dbabf44ad294c8472517bd1c6cef53e84707bb95
+6f93403ca04c1e1ac22e96e19c02413d46bbc217
 ```
 
 Observed on `srv-b` / CT102 (`kane-fabric`) at `/tmp/kane-fabric-ms2`:
 
 ```text
-web/run-tests.sh                    49/49 PASS
-web/run-admin-browser-acceptance.sh 42/42 PASS
+web/run-tests.sh                    51/51 PASS
+web/run-admin-browser-acceptance.sh 47/47 PASS
 worktree                            clean
 ```
 
@@ -34,6 +34,7 @@ The real Chromium gate verified the exact canonical SHA-256 identity of every en
 | `us.il.condominium.resale` | Current-effective resale disclosure package, request timing, fees, and lender notices | `313cfab81d563cc31577f60b23429e138aa53fb2f5e2dd1466337c478b99936d` |
 | `us.il.condominium.property` | Recorded declaration/plat identity, unit/common-element interests, legal form, and separate real-estate tax treatment | `52ca1db95ea93fec294da92e476e776b8d72be2951479fa5c6a9819881cf7e0c` |
 | `us.il.condominium.collections` | Assessment collection, statutory liens, remedies, successor liability, and collection-fee boundaries | `3bc9ec8a2227fffdb551df606e2584f42e5c8dc238143a24996bd8868cb2e1f7` |
+| `us.il.condominium.enforcement` | Rule adoption, violation administration, hearing process, and reasonable-fine boundaries | `31db69d53302a7baa203a63c37224a8a56a66a915db946389e81f34d4efcbfce` |
 
 ## Boundary
 
