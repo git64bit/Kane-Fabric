@@ -12,6 +12,7 @@ import hashlib
 import json
 import re
 import sys
+from html import unescape
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -75,6 +76,7 @@ def main() -> int:
         raise SystemExit(f"usage: {Path(sys.argv[0]).name} DOM_DUMP.html")
 
     html = Path(sys.argv[1]).read_text(encoding="utf-8")
+    decoded_html = unescape(html)
     bootstrap = json.loads(BOOTSTRAP.read_text(encoding="utf-8"))
     sources = [source for source in bootstrap.get("descriptor_sources", []) if source.get("enabled", True)]
     if not sources:
@@ -82,22 +84,22 @@ def main() -> int:
     descriptors = [descriptor_info(source) for source in sources]
 
     checks = {
-        "administrative_header": "Administrative Infrastructure" in html,
-        "descriptor_loaded_without_error": "Administrative descriptor not loaded" not in html,
-        "all_descriptor_titles": all(str(info["title"]) in html for info in descriptors),
+        "administrative_header": "Administrative Infrastructure" in decoded_html,
+        "descriptor_loaded_without_error": "Administrative descriptor not loaded" not in decoded_html,
+        "all_descriptor_titles": all(str(info["title"]) in decoded_html for info in descriptors),
         "all_descriptor_exact_sha256": all(f"SHA-256 {info['sha256']}" in html for info in descriptors),
         "all_descriptor_summaries": all(
-            f"Descriptor v{info['version']} · {info['sections']} sections · {info['controls']} controls" in html
+            f"Descriptor v{info['version']} · {info['sections']} sections · {info['controls']} controls" in decoded_html
             for info in descriptors
         ),
-        "insurance_policy_collection": "Insurance policies" in html,
-        "insurance_add_policy_action": "Add policy" in html,
-        "records_inventory": "Statewide required record inventory" in html,
-        "records_add_record_set_action": "Add record set" in html,
-        "records_access_rule": "10 business days" in html,
-        "finance_budget_framework": "Statewide fiscal framework" in html,
-        "finance_budget_line_collection": "Add budget line" in html,
-        "finance_separate_assessment_collection": "Add separate assessment" in html,
+        "insurance_policy_collection": "Insurance policies" in decoded_html,
+        "insurance_add_policy_action": "Add policy" in decoded_html,
+        "records_inventory": "Statewide required record inventory" in decoded_html,
+        "records_add_record_set_action": "Add record set" in decoded_html,
+        "records_access_rule": "10 business days" in decoded_html,
+        "finance_budget_framework": "Statewide fiscal framework" in decoded_html,
+        "finance_budget_line_collection": "Add budget line" in decoded_html,
+        "finance_separate_assessment_collection": "Add separate assessment" in decoded_html,
         "finance_unit_metadata_rendered": re.search(r'class="admin-unit">USD</small>', html) is not None,
         "form_input_rendered": re.search(r"<input(?:\s|>)", html) is not None,
         "form_select_rendered": re.search(r"<select(?:\s|>)", html) is not None,
