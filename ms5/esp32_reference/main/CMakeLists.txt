@@ -1,6 +1,6 @@
 idf_component_register(
     SRCS "app_main.c"
-    REQUIRES log kane_fabric_artifact_server kane_fabric_network kane_fabric_storage
+    REQUIRES esp_event esp_netif esp_wifi log kane_fabric_artifact_server kane_fabric_network kane_fabric_storage
 )
 
 # MS5-006 physical integration probe only. This is not an accepted Fabric
