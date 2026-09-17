@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { webcrypto } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 import {
@@ -8,6 +9,17 @@ import {
   sha256CanonicalJson,
   validateAdministrativeDescriptor,
 } from "./admin-descriptor.js";
+
+// The application executes in a browser, where Web Crypto is a global Web API.
+// Older Node runtimes used by repository tests expose the same API through
+// node:crypto rather than as globalThis.crypto. Supply only that test-runtime
+// compatibility shim; the browser module remains free of Node-specific imports.
+if (!globalThis.crypto) {
+  Object.defineProperty(globalThis, "crypto", {
+    value: webcrypto,
+    configurable: true,
+  });
+}
 
 const descriptorUrl = new URL("../administration/descriptors/illinois/condominium/insurance.v1.json", import.meta.url);
 
