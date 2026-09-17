@@ -29,7 +29,7 @@ The real Chromium gate verified the exact canonical SHA-256 identity of every en
 | `us.il.condominium.insurance` | Association insurance and policy-instance data | `2128aac622601577c88a7ee08f348cbcffdda249b59851da20a8f299e847da4c` |
 | `us.il.condominium.records` | Section 19 record inventory and member examination framework | `ca54d0820092635e4efe13e2d2912ae8ef34adea731f95d3276fc6fc24bf65ef` |
 | `us.il.condominium.finance` | Budget, assessments, reserves, and fiscal administration | `b1cab5d9d1978e9ceca388f716a6c6e92c97f97bd08fff8f13fa6cb965f07893` |
-| `us.il.condominium.governance` | Board, meetings, notices, elections, and voting | `2c124b5253c78fe9ceca388f716a6c6e92c97f97bd08fff8f13fa6cb965f07893` |
+| `us.il.condominium.governance` | Board, meetings, notices, elections, and voting | `2c124b5253c78e9ceca388f716a6c6e92c97f97bd08fff8f13fa6cb965f07893` |
 | `us.il.condominium.management` | Community-association management licensing, management arrangement, fund safeguards, and service-contract inventory | `b9760a1278690b0625a9fa02b2848bb7626f4217580b304a4ac2c63b60c653c1` |
 | `us.il.condominium.resale` | Current-effective resale disclosure package, request timing, fees, and lender notices | `313cfab81d563cc31577f60b23429e138aa53fb2f5e2dd1466337c478b99936d` |
 | `us.il.condominium.property` | Recorded declaration/plat identity, unit/common-element interests, legal form, and separate real-estate tax treatment | `52ca1db95ea93fec294da92e476e776b8d72be2951479fa5c6a9819881cf7e0c` |
