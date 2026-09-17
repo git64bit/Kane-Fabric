@@ -24,6 +24,7 @@ const descriptorUrls = {
   property: new URL("../administration/descriptors/illinois/condominium/property.v1.json", import.meta.url),
   collections: new URL("../administration/descriptors/illinois/condominium/collections.v1.json", import.meta.url),
   enforcement: new URL("../administration/descriptors/illinois/condominium/enforcement.v1.json", import.meta.url),
+  maintenance: new URL("../administration/descriptors/illinois/condominium/maintenance.v1.json", import.meta.url),
 };
 
 async function loadDescriptor(name) {
@@ -40,6 +41,7 @@ const summaries = {
   property: { descriptor_id: "us.il.condominium.property", descriptor_version: 1, pages: 1, sections: 4, controls: 46, collections: 4 },
   collections: { descriptor_id: "us.il.condominium.collections", descriptor_version: 1, pages: 1, sections: 4, controls: 42, collections: 2 },
   enforcement: { descriptor_id: "us.il.condominium.enforcement", descriptor_version: 1, pages: 1, sections: 4, controls: 43, collections: 2 },
+  maintenance: { descriptor_id: "us.il.condominium.maintenance", descriptor_version: 1, pages: 1, sections: 4, controls: 37, collections: 2 },
 };
 
 for (const [name, expected] of Object.entries(summaries)) {
@@ -168,6 +170,24 @@ test("enforcement descriptor preserves rule-adoption and fine due-process bounda
   assert.equal(fine.format, "currency");
 });
 
+test("maintenance descriptor preserves repair, improvement, emergency, and unit-access boundaries", async () => {
+  const descriptor = await loadDescriptor("maintenance");
+  assert.equal(descriptor.scope.as_of_date, "2026-09-17");
+  const framework = descriptor.pages[0].sections.find((section) => section.id === "statewide-maintenance-framework");
+  assert.match(framework.controls.find((control) => control.id === "common-element-duty").text, /maintenance, replacement, and improvement/);
+  assert.match(framework.controls.find((control) => control.id === "repair-limit-boundary").text, /do not apply to expenditures for repair, replacement, or restoration/);
+  assert.match(framework.controls.find((control) => control.id === "improvement-petition-rule").text, /exceeding 5%.*20%.*21 days.*30 days/);
+  assert.match(framework.controls.find((control) => control.id === "emergency-definition").text, /immediate danger to the structural integrity/);
+  assert.match(framework.controls.find((control) => control.id === "unit-access-rule").text, /access to each unit/);
+  assert.ok(framework.controls.every((control) => control.data_role === "infrastructure"));
+
+  const events = descriptor.pages[0].sections.find((section) => section.id === "maintenance-events");
+  const collection = events.controls.find((control) => control.id === "maintenance-events-collection");
+  const cost = collection.item_controls.find((control) => control.id === "maintenance-event-cost");
+  assert.equal(cost.unit, "USD");
+  assert.equal(cost.format, "currency");
+});
+
 test("records descriptor preserves statewide access rules as infrastructure notices", async () => {
   const descriptor = await loadDescriptor("records");
   const access = descriptor.pages[0].sections.find((section) => section.id === "member-examination-framework");
@@ -208,7 +228,7 @@ test("descriptor presentation placement remains separate from semantic binding",
 test("generic descriptor browser code contains no Illinois condominium domain vocabulary", async () => {
   const engine = await readFile(new URL("./admin-descriptor.js", import.meta.url), "utf8");
   const bootstrap = await readFile(new URL("./admin-app.js", import.meta.url), "utf8");
-  const domainWords = /Illinois|condominium|insurance|budget|assessment|reserve|governance|board|election|management|manager|license|resale|disclosure|lender|mortgage|\bproperty\b|plat|surveyor|tax|county|parish|\blien\b|foreclosure|encumbrancer|violation|\bfine\b/i;
+  const domainWords = /Illinois|condominium|insurance|budget|assessment|reserve|governance|board|election|management|manager|license|resale|disclosure|lender|mortgage|\bproperty\b|plat|surveyor|tax|county|parish|\blien\b|foreclosure|encumbrancer|violation|\bfine\b|common[- ]element|emergency repair|unit access/i;
   assert.doesNotMatch(engine, domainWords);
   assert.doesNotMatch(bootstrap, domainWords);
 });
@@ -217,8 +237,8 @@ test("administrative bootstrap selects multiple descriptors without hard-coded f
   const bootstrap = JSON.parse(await readFile(new URL("./admin-app.json", import.meta.url), "utf8"));
   assert.equal(bootstrap.format, "kane-fabric-administrative-bootstrap");
   assert.equal(bootstrap.version, 1);
-  assert.equal(bootstrap.descriptor_sources.length, 9);
-  const expected = ["insurance", "records", "finance", "governance", "management", "resale", "property", "collections", "enforcement"];
+  assert.equal(bootstrap.descriptor_sources.length, 10);
+  const expected = ["insurance", "records", "finance", "governance", "management", "resale", "property", "collections", "enforcement", "maintenance"];
   expected.forEach((name, index) => {
     assert.match(bootstrap.descriptor_sources[index].url, new RegExp(`administration/descriptors/illinois/condominium/${name}\\.v1\\.json$`));
   });
