@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kane-fabric.invalid/schema/association-unit-identity-v1.json",
+  "title": "Kane Fabric Association and Unit Identity v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format", "format_version", "association_anchor", "unit_anchors"],
+  "properties": {
+    "format": { "const": "kane-fabric-association-unit-identity" },
+    "format_version": { "const": 1 },
+    "association_anchor": { "$ref": "#/$defs/associationAnchor" },
+    "unit_anchors": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/unitAnchor" }
+    }
+  },
+  "$defs": {
+    "jurisdiction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["country_code", "state_code"],
+      "properties": {
+        "country_code": { "type": "string", "pattern": "^[A-Z]{2}$" },
+        "state_code": { "type": "string", "pattern": "^[A-Z]{2}$" }
+      }
+    },
+    "associationAnchor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["jurisdiction", "recording_authority_reference", "original_declaration_recording_reference"],
+      "properties": {
+        "jurisdiction": { "$ref": "#/$defs/jurisdiction" },
+        "recording_authority_reference": { "type": "string", "minLength": 1 },
+        "original_declaration_recording_reference": { "type": "string", "minLength": 1 }
+      }
+    },
+    "unitAnchor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["recorded_unit_designation", "recorded_unit_reference"],
+      "properties": {
+        "recorded_unit_designation": { "type": "string", "minLength": 1 },
+        "recorded_unit_reference": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}
