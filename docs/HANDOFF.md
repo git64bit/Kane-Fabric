@@ -6,83 +6,201 @@ A new Assistant should read these in order before proposing implementation work:
 
 1. `docs/CURRENT_STATE.json`
 2. `docs/BROWSER_FIRST_ONLINE_FIRST_DIRECTIVE.md`
-3. `administration/README.md`
-4. `docs/WEB_APPLICATION_DESIGN.md`
-5. `docs/ADMINISTRATIVE_EDGE_BOUNDARY.md`
-6. `docs/MILESTONE_5_DESIGN.md`
-7. `docs/CIVICVS_PROJECT_ENVIRONMENT.md`
-8. `docs/CPE_HOST_CONTROL_PLANE_MODEL.md`
+3. `docs/ADMINISTRATIVE_DESCRIPTOR_ARCHITECTURE.md`
+4. `docs/ADMINISTRATIVE_DESCRIPTOR_ACCEPTANCE.md`
+5. `administration/README.md`
+6. `docs/WEB_APPLICATION_DESIGN.md`
+7. `docs/ADMINISTRATIVE_EDGE_BOUNDARY.md`
+8. `docs/MILESTONE_5_DESIGN.md`
+9. `docs/CIVICVS_PROJECT_ENVIRONMENT.md`
+10. `docs/CPE_HOST_CONTROL_PLANE_MODEL.md`
 
-The normative detailed MS5 sequence remains in `docs/MILESTONE_5_DESIGN.md`.
+The normative detailed MS5 sequence remains in `docs/MILESTONE_5_DESIGN.md`, but the active application-design workstream is now descriptor-driven Civic Infrastructure.
 
 ## Current strategic direction
 
-Kane Fabric remains **Browser-First**.
+Kane Fabric remains **Browser-First** and implementation remains **Online-First**.
 
-The active implementation order is now **Online-First**:
+The full-featured Administrative Web is now the project’s design instrument for discovering and stabilizing Civic Infrastructure. The current sequence is:
 
 ```text
-full online Kane County browser/interface
+accepted Kane County geography
         ↓
-county categories + participant contracts
+full-featured descriptor-driven Administrative Web
         ↓
-bounded participant-publication composition
+statewide Illinois condominium Infrastructure model
         ↓
-freeze shared browser modules/contracts
+separate Infrastructure from association-instance and participant data
         ↓
-reduce the same application to local/offline operation
+derive participant-publication contract
+        ↓
+derive bounded edge-device role
+        ↓
+resume ESP32 specialization only if that role requires it
 ```
 
-Browser-First means the browser is the durable human client and browser-visible contracts remain platform-neutral. It does **not** mean the disconnected/offline form must be implemented first.
+The edge contract no longer defines the Administrative Web. The Administrative Web defines enough of the common Infrastructure model that a later bounded edge contract can be derived from it.
 
-The offline/local browser is a later reduction of the same application architecture, not a separate product, schema, or contract family.
+Browser-First means the browser is the durable human client and browser-visible contracts remain platform-neutral. Online-First means the complete useful application is developed before its reduced local/offline form. The offline/local browser remains a later reduction of the same application, not a separate product or schema.
 
-The authoritative development-order document is `docs/BROWSER_FIRST_ONLINE_FIRST_DIRECTIVE.md`.
+## Civic Infrastructure admission rule
 
-## Active workstream
+The current content jurisdiction is deliberately narrow:
 
-The active priority workstream is:
+```text
+United States
+└── Illinois
+    └── condominium infrastructure
+```
 
-**Administrative County / Web / Category / Contract Development**
+The Administrative Web should model what is common across Illinois condominium associations and externally grounded in statewide law, regulation, registration, insurance, taxes, licensing, contracts, required records, or other statewide obligations.
 
-The immediate implementation surface is the **full online Kane County browser/interface**.
+If a requirement is county-specific, municipal, merely customary, uncertain, or not demonstrably statewide, defer it rather than promoting it into common Infrastructure.
 
-The next work is to make the administrative model concrete in that interface:
+Other states are not current content targets. The descriptor engine itself must remain jurisdiction-neutral so a future operator can supply different descriptor content for another state or a different local-government structure such as a parish.
 
-- category/object model;
-- association/participating-organization identity;
-- unit or participant-object identity;
-- bounded participant publication manifest/generation contract;
-- references to accepted county/building identities;
-- public/restricted/private visibility semantics;
-- online composition of participant publications into the county map;
-- source-neutral browser loaders/adapters;
-- independent county-operator conformance rules.
+## Infrastructure versus association-instance data
 
-The first concrete participant reference case is a condominium association with unit-level data.
+The Administrative Web must distinguish:
 
-Do not return to ESP32 programming merely because one of these administrative contracts is unresolved.
+```text
+Infrastructure definition
+  statewide meaning / authority / requirement / record category
 
-## Infrastructure versus SaaS boundary
+Association instance
+  actual insurer / policy / contract / date / registration / document / value
 
-Online-First must not become SaaS-First.
+Participant data
+  later homeowner/resident assertions and publications
+```
 
-The online interface may provide useful network conveniences such as discovery, aggregation, richer search, current availability, administrative workflows, and authentication required to obtain restricted content.
+Public/private/restricted classification is separate from this authority distinction.
 
-Those services must not become:
+A statewide Infrastructure definition may require an association-specific value without making that value itself statewide authority.
 
-- civic identity;
-- the exclusive datastore for participant data;
-- a proprietary account prerequisite for locally retained data;
-- a requirement that an independent county operator inherit Kane County private operational state.
+## Descriptor-driven application rule
 
-County, association, unit, category, publication-generation, geographic, and physical-edge identities remain separate.
+The browser does not hard-code Illinois condominium forms.
 
-Participant data must remain portable and independently retainable.
+Everything reasonably representable as descriptor data should be in versioned JSON, including:
 
-## Released foundation
+- page and section structure;
+- field/control identity;
+- type and validation;
+- labels and help text;
+- statutory/legal authority references;
+- select options;
+- repeating collections;
+- row/column placement and spans;
+- sizes represented by the descriptor vocabulary;
+- conditional presentation;
+- semantic bindings;
+- descriptor identity/version.
 
-Milestones 0 through 4 are released.
+The JavaScript renderer provides generic capabilities. It must not know what Illinois, a condominium, insurance, a county, or a parish means.
+
+Semantic identity must remain independent of screen placement. Moving a control must not change the underlying civic-data identity.
+
+Descriptors are versioned and canonicalizable/hashable. The browser presents the canonical SHA-256 identity of a loaded descriptor.
+
+Authoritative architecture document:
+
+```text
+docs/ADMINISTRATIVE_DESCRIPTOR_ARCHITECTURE.md
+```
+
+## First accepted descriptor slice
+
+The first real descriptor slice is Illinois condominium insurance.
+
+Reference descriptor:
+
+```text
+administration/descriptors/illinois/condominium/insurance.v1.json
+```
+
+Descriptor schema:
+
+```text
+administration/descriptors/descriptor-v1.schema.json
+```
+
+It demonstrates:
+
+- statewide Infrastructure notices and authority references;
+- association-instance policy records;
+- a repeating current-policy collection;
+- text/date/select/textarea controls;
+- help text and layout supplied from JSON;
+- a distinction between statewide legal structure and association-specific unit-owner insurance requirements.
+
+This is a proof of the descriptor architecture, not a claim that the insurance model is complete.
+
+## Administrative descriptor acceptance — accepted
+
+The first descriptor-driven implementation is accepted in CT102 at:
+
+```text
+7b8b116d5b43660d4260a21f0dc7ea85ec6bc753
+```
+
+Repository/browser unit suite:
+
+```text
+bash web/run-tests.sh
+35 passed
+0 failed
+0 skipped
+```
+
+Real Chromium render evidence:
+
+```text
+BROWSER=/bin/chromium
+10/10 Administrative Descriptor DOM checks passed
+admin_browser_render=PASS
+DOM bytes: 16254
+```
+
+Acceptance record:
+
+```text
+docs/ADMINISTRATIVE_DESCRIPTOR_ACCEPTANCE.md
+```
+
+Repository-owned repeat gate added after the observed acceptance:
+
+```text
+bash web/run-admin-browser-acceptance.sh
+```
+
+The tooling/documentation commits after `7b8b116` do not modify the accepted application implementation.
+
+## Acceptance scope
+
+The descriptor checkpoint accepts that:
+
+- the JSON bootstrap and descriptor load in real Chromium;
+- the generic renderer can construct the current Administrative Web slice from JSON;
+- descriptor identity can be represented by canonical SHA-256;
+- generic input/select/textarea/collection capabilities work for this slice;
+- the engine remains separate from Illinois condominium domain vocabulary.
+
+It does **not** accept or claim:
+
+- final visual design or usability;
+- persistent storage;
+- authentication/authorization;
+- encrypted private delivery;
+- abuse resistance;
+- offline/local behavior;
+- complete Illinois condominium legal/administrative coverage;
+- a participant-publication contract;
+- an ESP32 application shape.
+
+## Released geographic foundation
+
+Milestones 0 through 4 remain released.
 
 Accepted MS3 substrate content identity:
 
@@ -109,9 +227,9 @@ The authoritative county database remains:
 SHA-256 31e362b696a37f1b9c45ae355c5669511a3128c17a651108a62e20d1cedebd67
 ```
 
-## MS5-006 physical edge status — accepted
+## MS5-006 physical edge status — accepted and paused
 
-The ESP32-S3 MS5-006 device-runtime gate is complete.
+The ESP32-S3 MS5-006 device-runtime gate remains complete.
 
 Accepted firmware source:
 
@@ -150,43 +268,42 @@ Ran 72 tests
 OK
 ```
 
-The ESP32 is therefore not the current development bottleneck.
+The physical runtime is therefore available as a proven bounded artifact-serving reference platform, but the project deliberately does **not** yet know what final participant application shape belongs on it.
 
-## Physical-edge role
+Do not infer the future edge schema from the existing firmware. Resume ESP32 application specialization only after the Administrative Web exposes a concrete bounded participant role or a later MS5 lifecycle gate intentionally resumes firmware work.
 
-The ESP32-S3 is a **bounded participant edge**, not a miniature county server.
+## Board-independent participation principle
 
-It may eventually hold a focused publication such as one condominium association and its unit-level material. It is not required to hold the complete Kane County substrate.
+The Civic Infrastructure must not require a condominium board to authorize homeowner participation.
 
-The edge does not own:
+Kane Fabric may know that an accepted building is a condominium and may know statewide Infrastructure facts about condominium associations. Later participant publications may be contributed by independently participating residents without those participants being treated as the corporate association or Board.
 
-- county geographic authority;
-- county web/map composition;
-- category/schema authority;
-- participant-contract authority;
-- person/account identity;
-- browser HTTPS termination.
+The Administrative Web must therefore avoid making Board approval a prerequisite for technical participation or civic-data visibility.
 
-Browser HTTPS terminates at Wiregate/admin infrastructure. The ESP32 reference edge serves bounded immutable artifacts by plain HTTP behind that boundary.
+## Physical-edge provisioning direction — deferred design input
 
-## Later MS5 work still pending
+A future edge may be provisioned to a participant who demonstrates access to mail delivery at a claimed location through the SASE process. That fact should be treated narrowly as provisioning evidence, not as proof of ownership, legal residence, Board membership, or corporate authority.
 
-MS5 is not fully closed.
+Same-association peer discovery may eventually be useful, but no discovery protocol or ESP32 data model should be frozen until the Administrative Web establishes the participant-publication boundary.
 
-Later gates remain:
+## Infrastructure versus SaaS boundary
 
-- MS5-007 real online browser/admin composition with a focused participant edge publication;
-- MS5-008 management transport / WireGuard feasibility: retain, reject, or defer;
-- MS5-009 firmware authenticity, update, rollback, and recovery;
-- MS5-010 physical replacement/reprovisioning identity preservation;
-- MS5-011 constrained-resource/concurrent-workload acceptance;
-- MS5-012 release evidence and closeout.
+Online-First must not become SaaS-First.
 
-These later edge/lifecycle gates do not block current administrative county/web/category/contract development.
+The online interface may eventually provide network conveniences such as discovery, aggregation, richer search, current availability, administrative workflows, and authentication required for restricted content.
+
+Those services must not become:
+
+- civic identity;
+- exclusive participant-data custody;
+- a proprietary account prerequisite for locally retained data;
+- a requirement that another operator inherit Kane County private operational state.
+
+The descriptor language and browser engine must be reusable independently of Kane County's internal deployment.
 
 ## Firmware Authority status
 
-The `firmware-authority` LXD container on `annales` is accepted but deliberately inert.
+The `firmware-authority` LXD container on `annales` remains accepted but deliberately inert.
 
 ```text
 host                        annales / 10.110.0.9
@@ -209,12 +326,12 @@ Do not activate signing, attach a signer, add an independent WireGuard peer, or 
 srv-b / 10.110.0.12
   Proxmox host / pct control plane
   CT102 kane-fabric on private 10.20.0.12/24
-  current administrative/runtime development environment
+  active administrative/runtime development environment
 
 fw / 10.110.0.4
   bare-metal Ubuntu
   ESP-IDF build / USB programming / physical ESP32 acceptance
-  firmware work is currently paused
+  firmware application work paused
 
 annales / 10.110.0.9
   Ubuntu LXD
@@ -223,56 +340,50 @@ annales / 10.110.0.9
 
 Do not transfer filesystem paths or control-plane commands between these environments.
 
-CT102 does not receive an independent CPE/WireGuard identity merely because it is the current administrative development environment. Normal management is host-mediated through `srv-b` and `pct`.
+CT102 does not receive an independent CPE/WireGuard identity merely because it is the active administrative development environment. Normal management is host-mediated through `srv-b` and `pct`.
 
-## Current development environment transition
+## Later MS5 work still pending
 
-The previous work ended on `fw` only because that was the physical MS5-006 programming workstation.
+MS5 is not fully closed.
 
-Current development should move back to `srv-b` / CT102 for county, web, category, contract, database, and browser work.
+Later gates remain, but their detailed shape may be informed by the Administrative Web work:
 
-GitHub `main` remains the software/documentation authority. Before new administrative implementation is accepted, CT102 must be synchronized to current `main` and its relevant repository/runtime checks rerun there.
+- MS5-007 administrative/browser integration and eventual bounded participant composition;
+- MS5-008 management transport / WireGuard feasibility;
+- MS5-009 firmware authenticity, update, rollback, and recovery;
+- MS5-010 physical replacement/reprovisioning identity preservation;
+- MS5-011 constrained-resource/concurrent-workload acceptance;
+- MS5-012 release evidence and closeout.
 
-The old CT102 acceptance checkpoint at `2b7c74e...` remains historical evidence; do not describe it as acceptance of later administrative commits until CT102 is explicitly rerun.
-
-## Current online-browser target
-
-The next implementation should start from the existing web application and accepted MS3/MS4 browser modules, not from a new framework or an offline-only page.
-
-Reference target:
-
-```text
-accepted Kane County geography
-        +
-administrative categories/contracts
-        +
-bounded condominium publication
-        =
-full online county browser/interface
-```
-
-The online reference interface should be used to discover and stabilize the complete category/contract model.
-
-Only after those contracts and reusable browser modules stabilize should the project produce the reduced offline/local form by substituting local sources and removing network-only conveniences.
+Do not let these later edge/lifecycle gates constrain the complete online Administrative Web prematurely.
 
 ## Independent operator criterion
 
-Before it is realistic to ask an independent operator to join the Civic Infrastructure for another Illinois county, the administrative contracts must be portable enough that the operator does not need Kane County's:
+The generic descriptor engine must not contain Kane County or Illinois domain assumptions.
+
+For the current Illinois implementation, descriptor content should be portable to another Illinois county without changing the statewide condominium semantics. A future state implementation should be able to supply a different profile without rewriting generic rendering capabilities.
+
+An independent operator must not need Kane County's:
 
 - hostnames;
 - filesystem paths;
 - private keys;
 - internal GeoPackage schema as an external API;
-- account database;
-- proprietary service state;
+- proprietary account database;
+- service state;
 - ESP32 hardware identity.
-
-The operator should be able to implement the published jurisdiction/category/participant/browser contracts using its own infrastructure and jurisdiction-specific sources.
 
 ## Next safe action
 
-Do **not** continue firmware development on `fw`.
+Do **not** continue ESP32 application development on `fw`.
 
-Move to the host-mediated CT102 administrative environment on `srv-b`, synchronize the CT102 checkout to current GitHub `main`, verify the administrative/browser repository state, and then begin the online county/category/participant contract work.
+From `srv-b`, synchronize CT102 to current GitHub `main`, then run:
 
-Leave the accepted ESP32-S3 runtime unchanged until a concrete administrative contract exposes a necessary edge change or a later MS5 lifecycle gate is deliberately resumed.
+```bash
+bash web/run-tests.sh
+bash web/run-admin-browser-acceptance.sh
+```
+
+After those gates pass on current `main`, continue expanding the full-featured descriptor-driven Illinois condominium Civic Infrastructure from evident statewide obligations and required records.
+
+Use the application to discover which concepts belong to Infrastructure and which are association-instance or later participant data. Defer uncertain or non-statewide concepts rather than guessing.
