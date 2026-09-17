@@ -9,14 +9,14 @@ This file records progressively accepted descriptor-driven Illinois condominium 
 Accepted repository HEAD:
 
 ```text
-0ea41fd43447bdcf44a552474013abf26707842a
+5edcec8448b46b1f4ee0950e0cac42ff92c72b9f
 ```
 
 Observed on `srv-b` / CT102 (`kane-fabric`) at `/tmp/kane-fabric-ms2`:
 
 ```text
-web/run-tests.sh                    53/53 PASS
-web/run-admin-browser-acceptance.sh 52/52 PASS
+web/run-tests.sh                    55/55 PASS
+web/run-admin-browser-acceptance.sh 57/57 PASS
 worktree                            clean
 ```
 
@@ -36,6 +36,7 @@ The real Chromium gate verified the exact canonical SHA-256 identity of every en
 | `us.il.condominium.collections` | Assessment collection, statutory liens, remedies, successor liability, and collection-fee boundaries | `3bc9ec8a2227fffdb551df606e2584f42e5c8dc238143a24996bd8868cb2e1f7` |
 | `us.il.condominium.enforcement` | Rule adoption, violation administration, hearing process, and reasonable-fine boundaries | `31db69d53302a7baa203a63c37224a8a56a66a915db946389e81f34d4efcbfce` |
 | `us.il.condominium.maintenance` | Common-element maintenance, repairs/replacement/restoration, improvements, emergencies, and unit-access events | `a89c2e8e165a696f709dcba93ee67f091b07817550d04468b1802a81e31e939c` |
+| `us.il.condominium.turnover` | Developer control, first owner-board election, Section 18.2 turnover delivery, and developer-era contract review | `945facfa9b66cbdf5b2e80e1966108f8cd62ddb32381d712a0cf72c6a3fcb846` |
 
 ## Boundary
 
