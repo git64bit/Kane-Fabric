@@ -12,18 +12,49 @@ Start with:
 
 1. `docs/HANDOFF.md`
 2. `docs/CURRENT_STATE.json`
-3. `docs/DEVELOPMENT_PROCESS.md`
-4. `docs/ROADMAP.md`
-5. active milestone design: `docs/MILESTONE_5_DESIGN.md`
-6. hardware boundary: `docs/ESP32_EDGE_REFERENCE.md`
+3. `docs/BROWSER_FIRST_ONLINE_FIRST_DIRECTIVE.md`
+4. `administration/README.md`
+5. `docs/WEB_APPLICATION_DESIGN.md`
+6. `docs/DEVELOPMENT_PROCESS.md`
+7. `docs/ROADMAP.md`
+8. active milestone design: `docs/MILESTONE_5_DESIGN.md`
+9. CPE/environment authority: `docs/CIVICVS_PROJECT_ENVIRONMENT.md`
 
 Current milestone:
 
 **Milestone 5 — Reference Physical Edge Architecture**
 
-Milestones 1–4 are released. MS5 maps the accepted MS3/MS4 logical contracts onto a real, replaceable ESP32-S3-class edge without making hardware identity, network identity, cryptographic keys, or storage location part of Fabric logical identity.
+The physical ESP32-S3 MS5-006 runtime gate is accepted. Firmware is no longer the active development bottleneck.
 
-The ESP32-S3 is intentionally present in the first release to establish Kane Fabric's firmware lifecycle early. Its initial role is modest: immutable artifact storage, bounded plain-HTTP serving, physical provisioning/replacement, and a foundation for later edge responsibilities. Browser HTTPS terminates at the Wiregate hub rather than on the ESP32-S3.
+The active priority workstream is now **Administrative County/Web/Category/Contract Development**.
+
+Kane Fabric remains **Browser-First**, but the implementation order is now **Online-First**:
+
+```text
+full online Kane County browser/interface
+        ↓
+county categories + participant contracts
+        ↓
+bounded participant-publication composition
+        ↓
+freeze shared browser modules/contracts
+        ↓
+reduce the same application to local/offline operation
+```
+
+The offline browser is a later reduction of the same application, not a separate product or schema.
+
+The full directive is `docs/BROWSER_FIRST_ONLINE_FIRST_DIRECTIVE.md`.
+
+## Current architecture boundary
+
+The ESP32-S3 is a bounded edge device, not a miniature county server.
+
+A participant edge may hold a focused publication such as one condominium association and its unit-level data. It is not required to carry the complete Kane County substrate.
+
+The county-wide geography, web/map composition, category/object definitions, participant-publication contracts, visibility semantics, and independent-county/operator conformance model are administrative infrastructure.
+
+The online county interface may provide discovery, aggregation, search, administrative workflows, current availability, and authentication needed for restricted material. Those conveniences must not become civic identity, exclusive data custody, or a proprietary SaaS prerequisite.
 
 ## Released foundation
 
@@ -70,39 +101,88 @@ MS4 established deterministic logical partitions, independent subscription gener
 
 See `docs/MILESTONE_4_RELEASE.md`.
 
-## MS5 security direction
+## MS5 accepted physical edge checkpoint
 
-The reference ESP32-S3 edge is deliberately replaceable.
+MS5-006 physically proved the ESP32-S3 reference artifact appliance on the dedicated `fw` workstation.
 
-Kane Fabric does **not** require irreversible ESP32 security eFuse burning as part of the reference design. The project does not attempt to make one household edge physically unextractable.
+Accepted behavior includes:
 
-Instead:
+- pinned ESP-IDF/toolchain build identity;
+- first flash and cold boot;
+- 16 MB reference flash geometry;
+- Wi-Fi provisioning and deployment-network attachment;
+- read-only Fabric storage mount;
+- active-inventory verification before serving;
+- plain HTTP full GET;
+- exact closed byte-range serving;
+- invalid range and traversal rejection;
+- fail-closed behavior on deliberately corrupted active storage;
+- restoration of known-good storage and resumed serving.
 
-- public Fabric data remains independently integrity-checked;
-- individual device compromise is local/recoverable;
-- fleet-class firmware/provisioning failures are treated as systemic;
-- authoritative signing/CA/promotion keys never live on the edge;
-- firmware/update authenticity protects normal fleet operation;
-- software-held replaceable device keys are allowed where appropriate;
-- an external secure element is optional through a replaceable key-provider boundary;
-- browser TLS terminates at the Wiregate hub; the ESP32-S3 reference edge serves plain HTTP and holds no browser TLS private key;
-- Wiregate/browser TLS, management/WireGuard, hardware, secure-element, substrate, partition, and subscription identities remain separate.
+Accepted firmware source:
 
-WireGuard is a preferred management candidate under evaluation. Compile feasibility has been observed externally; runtime/resource acceptance on ESP32-S3 remains MS5 work.
+```text
+7aa3c836bae470704d051a36a6261a1140e9d3d0
+```
 
-## First-consumer feedback
+Acceptance record:
 
-The first real civic consumer exposed generic geographic capabilities that Kane Fabric did not yet have:
+```text
+docs/CPE_ESP32_MS5_006_DEVICE_RUNTIME_ACCEPTANCE.md
+```
 
-- accepted parcel/classification source data;
-- persistent delivery-point identity distinct from building identity.
+The reference edge remains deliberately replaceable. Browser HTTPS terminates at Wiregate/admin infrastructure rather than on the ESP32-S3.
 
-These are planned for Milestone 6. Kane Fabric will own the geographic primitives and authority lifecycle, not consumer participation/account/credential semantics.
+Later MS5 lifecycle work remains pending, including management-transport evaluation, firmware update/rollback/recovery, physical replacement/reprovisioning proof, constrained-resource acceptance, and final closeout. Those gates do not block the current online administrative/browser development.
+
+## Administrative / participant direction
+
+The immediate reference participant is a condominium association with unit-level data.
+
+Reference composition:
+
+```text
+accepted county geography
+        +
+administrative categories/contracts
+        +
+bounded association/unit publication
+        =
+full online county-facing browser view
+```
+
+The administrative work must distinguish at least:
+
+- county geographic identity;
+- association/participating-organization identity;
+- unit or participant-object identity;
+- category/schema identity;
+- participant publication-generation identity;
+- public/restricted/private visibility semantics;
+- physical edge identity, which is none of the identities above.
+
+This work must become explicit enough that a future independent operator can implement another Illinois county without inheriting Kane County hostnames, filesystem paths, private keys, database internals, accounts, or proprietary service state.
+
+## Infrastructure rather than SaaS
+
+Online-First changes development order, not the anti-capture architecture.
+
+Kane Fabric must preserve:
+
+- browser-first access;
+- portable/open publication contracts;
+- independent participant data custody;
+- replaceable edge implementations;
+- replaceable county operator implementations;
+- no hosted-account definition of civic identity;
+- no proprietary portal as the sole datastore;
+- source-neutral browser loaders/adapters;
+- local/offline operation as a later reduction of the same browser application.
 
 ## Forward release plan
 
 ```text
-MS5  reference physical edge architecture
+MS5  reference physical edge architecture + administrative/browser integration
 MS6  civic geography extension: parcels + delivery points
 MS7  managed edge synchronization
 MS8  multi-node distribution
@@ -111,7 +191,7 @@ Kane Fabric 1.0
 MS9  generic second-county bootstrap (post-1.0)
 ```
 
-The first release is intentionally **depth before breadth**: complete the Kane County end-to-end infrastructure before requiring a second-county proof.
+The first release remains **depth before breadth**: complete the Kane County end-to-end infrastructure and public contracts before requiring a second-county proof.
 
 ## Core architecture
 
@@ -121,27 +201,29 @@ official geographic sources
 County Fabric node
 (authority, validation, explicit promotion, compilation)
         ↓
-accepted geographic state
+accepted county geographic state
         ↓
-MS3 substrate + MS4 partitions/subscriptions
+administrative categories/contracts
         ↓
-replaceable edge nodes
-(storage, plain HTTP serving, firmware lifecycle)
-        ↓
-Wiregate hub
-(HTTPS termination / browser origin)
-        ↓
-browser
-(validation, selective fetch, decompression, composition, rendering)
+full online browser/interface
+        ↑
+        +--- bounded participant publications
+                 ↑
+          replaceable edge nodes
+          (ESP32-S3 or other source)
 ```
 
-The internal GeoPackage is a control-plane implementation. The compiled publication and explicit logical contracts are the durable external interface.
+Wiregate/admin web infrastructure provides the browser secure origin. Physical edges serve or retain bounded participant publications without becoming county geographic or category authority.
 
-Physical replacement of an edge must not change geographic, substrate, partition, or subscription identity.
+The internal GeoPackage is a control-plane implementation. Compiled publications and explicit logical contracts are the durable external interface.
+
+Physical replacement of an edge must not change county, association, unit, category, partition, subscription, or participant-publication identity.
 
 ## Development boundary
 
 GitHub `main` is software/documentation authority. Real Kane Fabric runtime/compiler acceptance occurs in CT102 (`kane-fabric`) under `/var/lib/kane-fabric`; an Assistant sandbox is not a substitute.
+
+Physical firmware build/programming and ESP32 acceptance occur on `fw`. The accepted firmware should remain unchanged during current administrative/browser development unless a concrete contract requirement or later MS5 lifecycle gate requires returning to it.
 
 Large county databases, harvests, staging artifacts, rollback copies, render packages, and release evidence stay outside Git.
 
