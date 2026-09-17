@@ -3,9 +3,19 @@
 This directory implements the active Milestone 5 contract from
 `docs/MILESTONE_5_DESIGN.md`.
 
-MS5-001 through MS5-005 define the physical-edge contracts. MS5-006 now also
-contains the first ESP-IDF reference firmware components under
-`ms5/esp32_reference/`.
+MS5-001 through MS5-005 define the physical-edge contracts. MS5-006 contains
+the ESP-IDF reference firmware components under `ms5/esp32_reference/`.
+
+The physical ESP32-S3 MS5-006 device-runtime gate was accepted on 2026-09-17 at
+implementation head `7aa3c836bae470704d051a36a6261a1140e9d3d0`. The acceptance record is:
+
+```text
+docs/CPE_ESP32_MS5_006_DEVICE_RUNTIME_ACCEPTANCE.md
+```
+
+The next normative work item is MS5-007: real browser consumption through
+Wiregate HTTPS of accepted MS3/MS4 generations served by the ESP32-S3 over
+plain HTTP.
 
 ## Current reference topology
 
@@ -94,7 +104,7 @@ Run:
 bash ms5/run-tests.sh
 ```
 
-Repository tests validate the contracts and the current MS5-006 implementation
-shape. Real pinned ESP-IDF compilation and physical-device evidence remain
-separate gates and must not begin until the current architecture correction is
-accepted.
+Repository tests validate the contracts and implementation shape. The pinned
+ESP-IDF build and physical MS5-006 storage/network/HTTP/fail-closed behavior are
+accepted separately on the dedicated ESP programming node; Wiregate/browser
+integration remains the next MS5-007 gate.
