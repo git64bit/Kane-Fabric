@@ -10,20 +10,25 @@ At the beginning of a development session:
 2. read `docs/HANDOFF.md`;
 3. read `docs/CURRENT_STATE.json`;
 4. read `docs/BROWSER_FIRST_ONLINE_FIRST_DIRECTIVE.md`;
-5. read `administration/README.md` and `docs/WEB_APPLICATION_DESIGN.md` for the active workstream;
-6. read `docs/DEVELOPMENT_PROCESS.md`;
-7. **before physical CPE, ESP, TrivialHTTP, or Firmware Authority work, read `docs/CIVICVS_PROJECT_ENVIRONMENT.md`;**
-8. read only the current milestone documents needed for the next action.
+5. read `docs/ADMINISTRATIVE_DESCRIPTOR_ARCHITECTURE.md` and `docs/ADMINISTRATIVE_DESCRIPTOR_ACCEPTANCE.md`;
+6. read `administration/README.md` and `docs/WEB_APPLICATION_DESIGN.md` for the active workstream;
+7. read `docs/DEVELOPMENT_PROCESS.md`;
+8. **before physical CPE, ESP, TrivialHTTP, or Firmware Authority work, read `docs/CIVICVS_PROJECT_ENVIRONMENT.md`;**
+9. read only the current milestone documents needed for the next action.
 
 Do not use private chat history as a substitute for these records.
 
 ## Current priority
 
-The active priority workstream is **Online County Browser + Administrative Category/Contract Development**.
+The active priority workstream is **Descriptor-Driven Illinois Condominium Civic Infrastructure**.
 
-Kane Fabric remains Browser-First, but implementation is Online-First. Build the full online county interface and stabilize its category/participant/publication contracts before producing the reduced local/offline browser.
+Kane Fabric remains Browser-First and implementation remains Online-First. The full-featured Administrative Web is now the design instrument for determining what belongs to common Civic Infrastructure versus association-instance or later participant data.
 
-Do not resume ESP32 programming merely because an administrative contract is unresolved.
+The administrative browser is descriptor-driven. The browser engine supplies generic capabilities; jurisdiction, legal authority, field semantics, controls, layout, help, and validation belong in versioned JSON descriptors.
+
+The immediate content scope is Illinois condominium infrastructure. Statewide Illinois applicability is the admission rule. County-specific, municipal, merely customary, uncertain, participant, security, offline, and edge-device concerns are deferred until their boundaries are established.
+
+Do not resume ESP32 application specialization merely because an administrative concept is unresolved. The physical runtime is accepted, but its final application shape is deliberately deferred until the Administrative Web establishes a concrete bounded edge role.
 
 ## Stable facts are not discovery tasks
 
@@ -77,7 +82,7 @@ Ran 72 tests
 OK
 ```
 
-Firmware work is currently paused. Leave the accepted runtime unchanged unless a concrete administrative/browser contract exposes a necessary edge change or a later MS5 lifecycle gate is deliberately resumed.
+Firmware work is currently paused. Leave the accepted runtime unchanged unless the Administrative Web later establishes a concrete edge requirement or a later MS5 lifecycle gate is deliberately resumed.
 
 ## CT102 administrative environment
 
@@ -92,13 +97,27 @@ pct status 102
 pct exec 102 -- ...
 ```
 
-The last explicitly accepted CT102 repository checkpoint remains historical at:
+The first descriptor-driven Administrative Web implementation was explicitly accepted in CT102 at:
 
 ```text
-2b7c74ea631f30615ca10e8c79934748a96c7941
+7b8b116d5b43660d4260a21f0dc7ea85ec6bc753
 ```
 
-Later GitHub commits include accepted physical-edge evidence and the new administrative/browser development-order documents. Do not claim CT102 has accepted those later commits until its checkout is synchronized and the relevant checks are rerun.
+Acceptance evidence:
+
+```text
+web/run-tests.sh                  35 passed / 0 failed / 0 skipped
+real Chromium descriptor render  10/10 checks passed
+worktree                          clean
+```
+
+The acceptance record is:
+
+```text
+docs/ADMINISTRATIVE_DESCRIPTOR_ACCEPTANCE.md
+```
+
+Later commits may add acceptance tooling/documentation without changing the accepted implementation. Use `docs/CURRENT_STATE.json` to distinguish the accepted implementation HEAD from current GitHub `main`.
 
 ## CT102 read-only state check
 
@@ -117,6 +136,24 @@ The literal checkout path above is the current recorded operational path. If `do
 The checker is read-only. It verifies repository identity, branch/upstream/refspec/worktree state, the relation between live and recorded HEAD, the configured database authority, and the recorded next safe action.
 
 Use `--deep` only when full database SHA-256 and validation are required.
+
+## Administrative browser gates
+
+The synthetic/browser unit gate is:
+
+```bash
+bash web/run-tests.sh
+```
+
+The repository-owned real-browser descriptor gate is:
+
+```bash
+bash web/run-admin-browser-acceptance.sh
+```
+
+The real-browser gate serves the repository locally inside CT102, executes the application in installed Chromium, validates the generated DOM, and verifies the exact canonical SHA-256 identity of the reference descriptor.
+
+Do not confuse this structural/render acceptance with final visual-design acceptance, persistent storage, authentication, offline operation, or a finished Illinois ontology.
 
 ## CPE physical work on `fw`
 
@@ -153,26 +190,26 @@ signing                     DISABLED
 activation                  gated by MS5-009
 ```
 
-Do not mutate this boundary during ordinary web/category/contract work. In particular, do not attach a signer, create a persistent signing key, add an independent WireGuard peer, or activate signing before MS5-009.
+Do not mutate this boundary during ordinary web/descriptor work. In particular, do not attach a signer, create a persistent signing key, add an independent WireGuard peer, or activate signing before MS5-009.
 
 ## Browser/admin development boundary
 
-The next implementation surface is the full online Kane County browser/interface.
+The next implementation surface remains the full online Administrative Web, using existing accepted browser work under `web/`, `substrate/browser/`, and `ms4/browser/` as the foundation.
 
-Use existing accepted browser work under `web/`, `substrate/browser/`, and `ms4/browser/` as the foundation. Do not start a second offline-only application.
+The active work now proceeds from the Infrastructure side outward:
 
-The active browser/admin work must make concrete:
+- model statewide Illinois condominium obligations and record categories;
+- represent legal/statutory authority explicitly in descriptors;
+- keep Infrastructure definitions separate from association-instance values;
+- keep semantic identity separate from presentation placement;
+- keep the descriptor engine jurisdiction-neutral;
+- use versioned/canonical/hashable descriptors;
+- expand generic renderer capabilities only when a real Infrastructure slice requires them;
+- defer participant-publication and edge-device shape until the Infrastructure boundary is concrete.
 
-- county-facing categories/object classes;
-- condominium association identity;
-- unit identity/reference semantics;
-- participant publication generations;
-- public/restricted/private visibility classifications;
-- source-neutral publication acquisition;
-- composition of bounded participant publications into accepted county geography;
-- independent operator conformance for another Illinois county.
+The first accepted descriptor slice is Illinois condominium insurance. It is a proof of the descriptor architecture, not a claim that the Illinois insurance model is complete.
 
-The reduced offline/local browser is deferred until these contracts and shared browser modules stabilize.
+The reduced offline/local browser is deferred until the online Infrastructure model and shared browser modules stabilize.
 
 ## Repository freshness
 
@@ -192,4 +229,4 @@ If a stable fact is contradicted:
 4. correct `CURRENT_STATE.json`, `HANDOFF.md`, and the relevant SSOT document at the same material checkpoint;
 5. continue from the corrected state.
 
-A successor should not need private chat history to reconstruct stable project topology, current development order, or the accepted physical-edge checkpoint.
+A successor should not need private chat history to reconstruct stable project topology, current development order, the accepted descriptor/browser checkpoint, or the accepted physical-edge checkpoint.
