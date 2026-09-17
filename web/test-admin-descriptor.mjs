@@ -21,6 +21,7 @@ const insuranceDescriptorUrl = new URL("../administration/descriptors/illinois/c
 const recordsDescriptorUrl = new URL("../administration/descriptors/illinois/condominium/records.v1.json", import.meta.url);
 const financeDescriptorUrl = new URL("../administration/descriptors/illinois/condominium/finance.v1.json", import.meta.url);
 const governanceDescriptorUrl = new URL("../administration/descriptors/illinois/condominium/governance.v1.json", import.meta.url);
+const managementDescriptorUrl = new URL("../administration/descriptors/illinois/condominium/management.v1.json", import.meta.url);
 
 async function loadDescriptor(url) {
   return JSON.parse(await readFile(url, "utf8"));
@@ -126,6 +127,36 @@ test("governance descriptor preserves current statewide meeting and election rul
   assert.deepEqual(new Set(method.options.map((option) => option.value)), new Set(["proxy", "association_ballot", "technology", "mixed_or_other", "unknown"]));
 });
 
+test("Illinois condominium management descriptor validates", async () => {
+  const descriptor = await loadDescriptor(managementDescriptorUrl);
+  assert.equal(validateAdministrativeDescriptor(descriptor), descriptor);
+  assert.deepEqual(descriptorSummary(descriptor), {
+    descriptor_id: "us.il.condominium.management",
+    descriptor_version: 1,
+    pages: 1,
+    sections: 4,
+    controls: 34,
+    collections: 1,
+  });
+});
+
+test("management descriptor preserves licensing and fund-safeguard boundaries", async () => {
+  const descriptor = await loadDescriptor(managementDescriptorUrl);
+  const framework = descriptor.pages[0].sections.find((section) => section.id === "statewide-management-framework");
+  assert.match(framework.controls.find((control) => control.id === "management-license-required").text, /requires a current valid Department license unless a statutory exemption applies/);
+  assert.match(framework.controls.find((control) => control.id === "support-staff-boundary").text, /bookkeepers/);
+  assert.ok(framework.controls.every((control) => control.data_role === "infrastructure"));
+
+  const safeguards = descriptor.pages[0].sections.find((section) => section.id === "management-fund-safeguards");
+  assert.match(safeguards.controls.find((control) => control.id === "segregated-accounts-rule").text, /may not commingle/);
+
+  const contracts = descriptor.pages[0].sections.find((section) => section.id === "active-service-contracts");
+  const collection = contracts.controls.find((control) => control.id === "service-contracts");
+  const amount = collection.item_controls.find((control) => control.id === "service-contract-value");
+  assert.equal(amount.unit, "USD");
+  assert.equal(amount.format, "currency");
+});
+
 test("records descriptor preserves statewide access rules as infrastructure notices", async () => {
   const descriptor = await loadDescriptor(recordsDescriptorUrl);
   const access = descriptor.pages[0].sections.find((section) => section.id === "member-examination-framework");
@@ -166,18 +197,19 @@ test("descriptor presentation placement remains separate from semantic binding",
 test("generic descriptor browser code contains no Illinois condominium domain vocabulary", async () => {
   const engine = await readFile(new URL("./admin-descriptor.js", import.meta.url), "utf8");
   const bootstrap = await readFile(new URL("./admin-app.js", import.meta.url), "utf8");
-  assert.doesNotMatch(engine, /Illinois|condominium|insurance|budget|assessment|reserve|governance|board|election|county|parish/i);
-  assert.doesNotMatch(bootstrap, /Illinois|condominium|insurance|budget|assessment|reserve|governance|board|election|county|parish/i);
+  assert.doesNotMatch(engine, /Illinois|condominium|insurance|budget|assessment|reserve|governance|board|election|management|manager|license|county|parish/i);
+  assert.doesNotMatch(bootstrap, /Illinois|condominium|insurance|budget|assessment|reserve|governance|board|election|management|manager|license|county|parish/i);
 });
 
 test("administrative bootstrap selects multiple descriptors without hard-coded form controls", async () => {
   const bootstrap = JSON.parse(await readFile(new URL("./admin-app.json", import.meta.url), "utf8"));
   assert.equal(bootstrap.format, "kane-fabric-administrative-bootstrap");
   assert.equal(bootstrap.version, 1);
-  assert.equal(bootstrap.descriptor_sources.length, 4);
+  assert.equal(bootstrap.descriptor_sources.length, 5);
   assert.match(bootstrap.descriptor_sources[0].url, /administration\/descriptors\/illinois\/condominium\/insurance\.v1\.json$/);
   assert.match(bootstrap.descriptor_sources[1].url, /administration\/descriptors\/illinois\/condominium\/records\.v1\.json$/);
   assert.match(bootstrap.descriptor_sources[2].url, /administration\/descriptors\/illinois\/condominium\/finance\.v1\.json$/);
   assert.match(bootstrap.descriptor_sources[3].url, /administration\/descriptors\/illinois\/condominium\/governance\.v1\.json$/);
+  assert.match(bootstrap.descriptor_sources[4].url, /administration\/descriptors\/illinois\/condominium\/management\.v1\.json$/);
   assert.ok(bootstrap.descriptor_sources.every((source) => source.enabled !== false));
 });
