@@ -1,5 +1,8 @@
 #include "esp_err.h"
+#include "esp_event.h"
 #include "esp_log.h"
+#include "esp_netif.h"
+#include "esp_wifi.h"
 #include "kane_fabric_artifact_server.h"
 #include "kane_fabric_network.h"
 #include "kane_fabric_storage.h"
@@ -43,6 +46,79 @@ static const kf_storage_verification_config_t PROBE_VERIFICATION = {
 
 static kf_artifact_server_t ARTIFACT_SERVER;
 static httpd_handle_t HTTP_SERVER;
+
+static void provisioning_diagnostic_event_handler(
+    void *arg,
+    esp_event_base_t event_base,
+    int32_t event_id,
+    void *event_data
+)
+{
+    (void)arg;
+
+    if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_AP_STACONNECTED) {
+        const wifi_event_ap_staconnected_t *event =
+            (const wifi_event_ap_staconnected_t *)event_data;
+        ESP_LOGI(
+            TAG,
+            "MS5-006 provisioning client associated; aid=%u",
+            (unsigned)event->aid
+        );
+        return;
+    }
+
+    if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_AP_STADISCONNECTED) {
+        const wifi_event_ap_stadisconnected_t *event =
+            (const wifi_event_ap_stadisconnected_t *)event_data;
+        ESP_LOGI(
+            TAG,
+            "MS5-006 provisioning client disconnected; aid=%u reason=%u",
+            (unsigned)event->aid,
+            (unsigned)event->reason
+        );
+        return;
+    }
+
+    if (event_base == IP_EVENT && event_id == IP_EVENT_AP_STAIPASSIGNED) {
+        const ip_event_assigned_ip_to_client_t *event =
+            (const ip_event_assigned_ip_to_client_t *)event_data;
+        ESP_LOGI(
+            TAG,
+            "MS5-006 provisioning client assigned IPv4=" IPSTR,
+            IP2STR(&event->ip)
+        );
+    }
+}
+
+static esp_err_t enable_provisioning_diagnostics(void)
+{
+    esp_err_t result = esp_event_handler_register(
+        WIFI_EVENT,
+        WIFI_EVENT_AP_STACONNECTED,
+        provisioning_diagnostic_event_handler,
+        NULL
+    );
+    if (result != ESP_OK) {
+        return result;
+    }
+
+    result = esp_event_handler_register(
+        WIFI_EVENT,
+        WIFI_EVENT_AP_STADISCONNECTED,
+        provisioning_diagnostic_event_handler,
+        NULL
+    );
+    if (result != ESP_OK) {
+        return result;
+    }
+
+    return esp_event_handler_register(
+        IP_EVENT,
+        IP_EVENT_AP_STAIPASSIGNED,
+        provisioning_diagnostic_event_handler,
+        NULL
+    );
+}
 
 static void unmount_storage(void)
 {
@@ -124,6 +200,17 @@ void app_main(void)
     }
 
     if (network_state == KF_NETWORK_STATE_PROVISIONING) {
+        result = enable_provisioning_diagnostics();
+        if (result != ESP_OK) {
+            ESP_LOGE(
+                TAG,
+                "MS5-006 provisioning diagnostics registration failed: %s",
+                esp_err_to_name(result)
+            );
+        } else {
+            ESP_LOGI(TAG, "MS5-006 provisioning client diagnostics enabled");
+        }
+
         unmount_storage();
         ESP_LOGI(
             TAG,
