@@ -9,14 +9,14 @@ This file records progressively accepted descriptor-driven Illinois condominium 
 Accepted repository HEAD:
 
 ```text
-9ae3cef6ff44bd310e8f0edeb4e5d1f71453e198
+dbabf44ad294c8472517bd1c6cef53e84707bb95
 ```
 
 Observed on `srv-b` / CT102 (`kane-fabric`) at `/tmp/kane-fabric-ms2`:
 
 ```text
-web/run-tests.sh                    47/47 PASS
-web/run-admin-browser-acceptance.sh 37/37 PASS
+web/run-tests.sh                    49/49 PASS
+web/run-admin-browser-acceptance.sh 42/42 PASS
 worktree                            clean
 ```
 
@@ -33,6 +33,7 @@ The real Chromium gate verified the exact canonical SHA-256 identity of every en
 | `us.il.condominium.management` | Community-association management licensing, management arrangement, fund safeguards, and service-contract inventory | `b9760a1278690b0625a9fa02b2848bb7626f4217580b304a4ac2c63b60c653c1` |
 | `us.il.condominium.resale` | Current-effective resale disclosure package, request timing, fees, and lender notices | `313cfab81d563cc31577f60b23429e138aa53fb2f5e2dd1466337c478b99936d` |
 | `us.il.condominium.property` | Recorded declaration/plat identity, unit/common-element interests, legal form, and separate real-estate tax treatment | `52ca1db95ea93fec294da92e476e776b8d72be2951479fa5c6a9819881cf7e0c` |
+| `us.il.condominium.collections` | Assessment collection, statutory liens, remedies, successor liability, and collection-fee boundaries | `3bc9ec8a2227fffdb551df606e2584f42e5c8dc238143a24996bd8868cb2e1f7` |
 
 ## Boundary
 
