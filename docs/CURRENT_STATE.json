@@ -22,9 +22,27 @@
     "web_online_first_design_head": "35a185b9f4df2914b8030d7db3be6b8a29744eb3",
     "handoff_online_first_head": "509e76f6d39d2ff0352cfd47b2b8e5e923be5439",
     "administrative_descriptor_architecture_head": "3eee5523ce5689eff6e06542ff68b08fd8c2198f",
-    "administrative_descriptor_repository_acceptance_head": "7b8b116d5b43660d4260a21f0dc7ea85ec6bc753",
-    "administrative_descriptor_browser_acceptance_head": "7b8b116d5b43660d4260a21f0dc7ea85ec6bc753",
+    "administrative_descriptor_first_acceptance_head": "7b8b116d5b43660d4260a21f0dc7ea85ec6bc753",
+    "administrative_descriptor_content_acceptance_head": "5bf7d312bebe6b4c2e0a13f7893a0c045b1bf1c4",
+    "administrative_descriptor_contract_acceptance_head": "f2c995f7610a273031926cf681facd20dce1ad22",
+    "administrative_descriptor_repository_acceptance_head": "f2c995f7610a273031926cf681facd20dce1ad22",
+    "administrative_descriptor_browser_acceptance_head": "f2c995f7610a273031926cf681facd20dce1ad22",
     "administrative_descriptor_acceptance_document": "docs/ADMINISTRATIVE_DESCRIPTOR_ACCEPTANCE.md",
+    "administrative_descriptor_count": 12,
+    "administrative_descriptor_hashes": {
+      "us.il.condominium.insurance": "2128aac622601577c88a7ee08f348cbcffdda249b59851da20a8f299e847da4c",
+      "us.il.condominium.records": "ca54d0820092635e4efe13e2d2912ae8ef34adea731f95d3276fc6fc24bf65ef",
+      "us.il.condominium.finance": "b1cab5d9d1978e9ceca388f716a6c6e92c97f97bd08fff8f13fa6cb965f07893",
+      "us.il.condominium.governance": "2c124b5253c78efec708b305e946a7788a075970e7f4595e12bb58e7392a6923",
+      "us.il.condominium.management": "b9760a1278690b0625a9fa02b2848bb7626f4217580b304a4ac2c63b60c653c1",
+      "us.il.condominium.resale": "313cfab81d563cc31577f60b23429e138aa53fb2f5e2dd1466337c478b99936d",
+      "us.il.condominium.property": "52ca1db95ea93fec294da92e476e776b8d72be2951479fa5c6a9819881cf7e0c",
+      "us.il.condominium.collections": "3bc9ec8a2227fffdb551df606e2584f42e5c8dc238143a24996bd8868cb2e1f7",
+      "us.il.condominium.enforcement": "31db69d53302a7baa203a63c37224a8a56a66a915db946389e81f34d4efcbfce",
+      "us.il.condominium.maintenance": "a89c2e8e165a696f709dcba93ee67f091b07817550d04468b1802a81e31e939c",
+      "us.il.condominium.turnover": "945facfa9b66cbdf5b2e80e1966108f8cd62ddb32381d712a0cf72c6a3fcb846",
+      "us.il.condominium.termination": "87d94c88ec36fb372731720ba2c2b58cb6180bdc990eeb9b3b67e2488858b733"
+    },
     "firmware_authority_scaffold_head": "e42ec17f0ccd6de39c2b5b6987063a424a22a649",
     "cpe_firmware_authority_repository_acceptance_head": "84ca59a06c6fd4d4b81461d99d3f6d3889a43328",
     "cpe_firmware_authority_inert_container_acceptance_head": "2b7c74ea631f30615ca10e8c79934748a96c7941",
@@ -43,9 +61,9 @@
       "branch": "main",
       "upstream": "origin/main",
       "fetch_refspec": "+refs/heads/*:refs/remotes/origin/*",
-      "last_observed_head": "7b8b116d5b43660d4260a21f0dc7ea85ec6bc753",
+      "last_observed_head": "f2c995f7610a273031926cf681facd20dce1ad22",
       "last_observed_worktree": "clean",
-      "note": "CT102 accepted the first descriptor-driven Administrative Web implementation at 7b8b116. web/run-tests.sh passed 35/35 and real Chromium rendered the descriptor path with 10/10 checks. Later commits add acceptance tooling/documentation and do not alter the accepted browser implementation."
+      "note": "CT102 accepted twelve enabled Illinois condominium descriptors plus the backward-compatible descriptor-v1 unit/format contract hardening at f2c995f. web/run-tests.sh passed 60/60; real Chromium passed 62/62; all twelve canonical descriptor SHA-256 values remained unchanged from the termination content acceptance at 5bf7d31."
     },
     "ms5_006_hardware_execution": {
       "environment": "fw / CPE Build and Hardware Workstation",
@@ -284,17 +302,20 @@
     "development_order": "docs/BROWSER_FIRST_ONLINE_FIRST_DIRECTIVE.md",
     "cpe": "docs/CIVICVS_PROJECT_ENVIRONMENT.md",
     "accepted_work": {
-      "through": "MS5-006 physical ESP32-S3 runtime accepted at 7aa3c83; first descriptor-driven Administrative Web slice accepted in CT102 at 7b8b116; firmware application shape is intentionally deferred while the Administrative Web defines the Infrastructure boundary",
-      "ct102_repository_head": "7b8b116d5b43660d4260a21f0dc7ea85ec6bc753",
-      "ct102_acceptance_scope": "first descriptor-driven administrative/browser slice accepted; environment, 35-test web suite, and real Chromium rendering gate accepted; full repository regression suite not rerun for this browser-only change",
-      "ct102_test_result": "web/run-tests.sh: 35 passed, 0 failed, 0 skipped at 7b8b116",
+      "through": "MS5-006 physical ESP32-S3 runtime accepted at 7aa3c83; twelve Illinois condominium Administrative Web descriptor domains accepted through 5bf7d31; descriptor-v1 unit/format contract hardening accepted at f2c995f; firmware application shape remains intentionally deferred while the Administrative Web defines the Infrastructure boundary",
+      "ct102_repository_head": "f2c995f7610a273031926cf681facd20dce1ad22",
+      "ct102_acceptance_scope": "twelve enabled descriptor-driven Illinois condominium Infrastructure domains plus backward-compatible descriptor-v1 unit/format validation accepted in CT102",
+      "ct102_test_result": "web/run-tests.sh: 60 passed, 0 failed, 0 skipped at f2c995f",
       "ct102_compileall": "passed at historical checkpoint; not invalidated by browser-only descriptor work",
       "ct102_database_authority_readable": true,
-      "ct102_worktree": "clean at 7b8b116",
-      "administrative_descriptor_architecture": "accepted initial descriptor-driven direction",
+      "ct102_worktree": "clean at f2c995f",
+      "administrative_descriptor_architecture": "accepted descriptor-driven direction",
       "administrative_descriptor_architecture_document": "docs/ADMINISTRATIVE_DESCRIPTOR_ARCHITECTURE.md",
-      "administrative_descriptor_browser_acceptance": "10/10 real Chromium DOM checks passed at 7b8b116",
+      "administrative_descriptor_browser_acceptance": "62/62 real Chromium DOM checks passed at f2c995f; all twelve descriptor hashes unchanged from 5bf7d31",
       "administrative_descriptor_acceptance_document": "docs/ADMINISTRATIVE_DESCRIPTOR_ACCEPTANCE.md",
+      "administrative_descriptor_content_acceptance_head": "5bf7d312bebe6b4c2e0a13f7893a0c045b1bf1c4",
+      "administrative_descriptor_contract_acceptance_head": "f2c995f7610a273031926cf681facd20dce1ad22",
+      "administrative_descriptor_count": 12,
       "ms5_006_implementation_head": "7aa3c836bae470704d051a36a6261a1140e9d3d0",
       "pinned_esp_idf_compile_on_fw": "passed",
       "cpe_program_role": "accepted",
@@ -319,7 +340,7 @@
       "firmware_authority_acceptance_document": "docs/CPE_FIRMWARE_AUTHORITY_ACCEPTANCE.md",
       "firmware_authority_scaffold_ct102_acceptance": "accepted"
     },
-    "next_work_item": "Expand the full-featured descriptor-driven Administrative Web across statewide Illinois condominium Civic Infrastructure. Use only statewide externally grounded obligations and record categories as Infrastructure; represent association-specific values as instances and defer county-specific, municipal, uncertain, participant, security, offline, and edge-device concerns until their boundaries are established."
+    "next_work_item": "Choose the next materially distinct statewide Illinois condominium Infrastructure function, or begin the next generic Administrative Web capability required by the accepted descriptor set. Do not split the Act mechanically; preserve accepted descriptor identities and keep participant, county-specific, municipal, security, offline, and edge-device concerns deferred until their boundaries are established."
   },
   "priority_workstream": {
     "name": "Descriptor-Driven Illinois Condominium Civic Infrastructure",
@@ -332,11 +353,11 @@
     "browser_first": true,
     "online_first": true,
     "offline_browser_status": "deferred until the full online Infrastructure model and shared descriptor/browser capabilities stabilize; must be a reduction of the same application, not a separate schema or product",
-    "status": "active; first JSON descriptor-driven Administrative Web slice accepted in CT102; Illinois condominium Infrastructure expansion is now the design driver",
+    "status": "active; twelve descriptor-driven Illinois condominium Infrastructure domains and the generic unit/format descriptor contract are accepted in CT102; further expansion now requires a materially distinct statewide function or a demonstrated generic browser capability gap",
     "edge_runtime_status": "accepted physical runtime, application role deliberately unresolved",
     "edge_firmware_source_head": "7aa3c836bae470704d051a36a6261a1140e9d3d0",
     "physical_acceptance_document": "docs/CPE_ESP32_MS5_006_DEVICE_RUNTIME_ACCEPTANCE.md",
-    "target_environment": "srv-b host-mediated CT102 administrative/runtime environment; first descriptor/browser implementation accepted at 7b8b116"
+    "target_environment": "srv-b host-mediated CT102 administrative/runtime environment; latest accepted repository/browser checkpoint f2c995f with 60/60 repository tests and 62/62 real Chromium checks"
   },
-  "next_safe_action": "Synchronize CT102 to current GitHub main, rerun bash web/run-tests.sh and bash web/run-admin-browser-acceptance.sh, then continue expanding the descriptor-driven Illinois condominium Civic Infrastructure from evident statewide obligations and records. Do not resume ESP32 application specialization until the Administrative Web establishes a concrete bounded edge role."
+  "next_safe_action": "Synchronize CT102 to current GitHub main after documentation-only state commits, verify the repository remains clean, then choose the next materially distinct statewide Illinois condominium Infrastructure domain or generic Administrative Web capability. Do not resume ESP32 application specialization until the Administrative Web establishes a concrete bounded edge role."
 }
