@@ -9,14 +9,14 @@ This file records progressively accepted descriptor-driven Illinois condominium 
 Accepted repository HEAD:
 
 ```text
-9e762383cdc45eeb03aa80642f68b32b10237b0c
+8ce34df74c177b0278705ed22ed0a012ede54a54
 ```
 
 Observed on `srv-b` / CT102 (`kane-fabric`) at `/tmp/kane-fabric-ms2`:
 
 ```text
-web/run-tests.sh                    43/43 PASS
-web/run-admin-browser-acceptance.sh 27/27 PASS
+web/run-tests.sh                    45/45 PASS
+web/run-admin-browser-acceptance.sh 32/32 PASS
 worktree                            clean
 ```
 
@@ -31,6 +31,7 @@ The real Chromium gate verified the exact canonical SHA-256 identity of every en
 | `us.il.condominium.finance` | Budget, assessments, reserves, and fiscal administration | `b1cab5d9d1978e9ceca388f716a6c6e92c97f97bd08fff8f13fa6cb965f07893` |
 | `us.il.condominium.governance` | Board, meetings, notices, elections, and voting | `2c124b5253c78efec708b305e946a7788a075970e7f4595e12bb58e7392a6923` |
 | `us.il.condominium.management` | Community-association management licensing, management arrangement, fund safeguards, and service-contract inventory | `b9760a1278690b0625a9fa02b2848bb7626f4217580b304a4ac2c63b60c653c1` |
+| `us.il.condominium.resale` | Current-effective resale disclosure package, request timing, fees, and lender notices | `313cfab81d563cc31577f60b23429e138aa53fb2f5e2dd1466337c478b99936d` |
 
 ## Boundary
 
