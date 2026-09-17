@@ -44,6 +44,11 @@
       "label": "Illinois Condominium Infrastructure — Assessment Collection, Liens & Remedies",
       "url": "../administration/descriptors/illinois/condominium/collections.v1.json",
       "enabled": true
+    },
+    {
+      "label": "Illinois Condominium Infrastructure — Rules, Violations & Fines",
+      "url": "../administration/descriptors/illinois/condominium/enforcement.v1.json",
+      "enabled": true
     }
   ]
 }
