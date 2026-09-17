@@ -26,6 +26,10 @@ class FirmwareV1RoleTests(unittest.TestCase):
         self.assertIn("firmware-source-tracked-in-repository", role["lifecycle_required"])
         self.assertFalse(role["fixed_boundary"]["browser_tls_on_edge"])
         self.assertFalse(role["fixed_boundary"]["wireguard_required_for_v1"])
+        self.assertEqual(
+            role["fixed_boundary"]["edge_publication_scope"],
+            "bounded-participant-publication",
+        )
 
     def test_responsibility_classes_are_disjoint(self):
         required = set(CORE_RUNTIME_REQUIRED) | set(LIFECYCLE_REQUIRED)
@@ -50,6 +54,24 @@ class FirmwareV1RoleTests(unittest.TestCase):
         self.assertFalse(FIXED_BOUNDARY["browser_tls_on_edge"])
         self.assertFalse(FIXED_BOUNDARY["esp32_hosted_ap_required"])
 
+    def test_county_administration_is_outside_v1_firmware(self):
+        self.assertIn(
+            "county-wide-substrate-replication",
+            EXPLICITLY_NOT_V1_RESPONSIBILITIES,
+        )
+        self.assertIn("county-web-map-hosting", EXPLICITLY_NOT_V1_RESPONSIBILITIES)
+        self.assertIn(
+            "category-and-publication-contract-administration",
+            EXPLICITLY_NOT_V1_RESPONSIBILITIES,
+        )
+        self.assertFalse(FIXED_BOUNDARY["county_wide_substrate_required_on_edge"])
+        self.assertFalse(FIXED_BOUNDARY["county_web_map_on_edge"])
+        self.assertFalse(FIXED_BOUNDARY["category_contract_administration_on_edge"])
+        self.assertEqual(
+            FIXED_BOUNDARY["edge_publication_scope"],
+            "bounded-participant-publication",
+        )
+
     def test_candidate_capability_cannot_be_promoted_by_mutating_profile(self):
         role = build_firmware_v1_role()
         role["core_runtime_required"] = list(role["core_runtime_required"]) + [
@@ -60,6 +82,7 @@ class FirmwareV1RoleTests(unittest.TestCase):
 
     def test_documentation_carries_same_v1_boundary(self):
         design = (REPO / "docs/MILESTONE_5_DESIGN.md").read_text()
+        boundary = (REPO / "docs/ADMINISTRATIVE_EDGE_BOUNDARY.md").read_text()
         firmware_readme = (REPO / "ms5/esp32_reference/README.md").read_text()
 
         for text in (design, firmware_readme):
@@ -70,6 +93,8 @@ class FirmwareV1RoleTests(unittest.TestCase):
             self.assertIn("WireGuard", text)
 
         self.assertIn("may conclude that WireGuard is not retained", design)
+        self.assertIn("bounded participant publication", design)
+        self.assertIn("not required to carry the complete county substrate", boundary)
         normalized_firmware_readme = " ".join(firmware_readme.split())
         self.assertIn(
             "CT102 does not build or flash firmware",
