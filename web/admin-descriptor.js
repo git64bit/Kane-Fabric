@@ -89,6 +89,8 @@ function validateControl(control, path, context) {
   if (INPUT_KINDS.has(control.kind) || control.kind === "collection") {
     requireString(control.binding, `${path}.binding`);
   }
+  if (control.unit !== undefined) requireString(control.unit, `${path}.unit`);
+  if (control.format !== undefined) requireString(control.format, `${path}.format`);
   validateLayout(control.layout, `${path}.layout`, context.columns);
   validateAuthorityRefs(control.authority_refs, `${path}.authority_refs`, context.authorityIds);
 
