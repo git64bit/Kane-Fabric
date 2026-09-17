@@ -53,10 +53,23 @@ Validation fails closed for malformed jurisdiction codes, missing declaration re
 
 The next required step is to exercise these raw anchor fields against a real recorded condominium example before canonicalization or derived logical identifiers are frozen.
 
-Public Kane County tax/assessment material establishes a Kings Row condominium record family in West Dundee associated with Lot 34 of Old World Subdivision, parcel series `03-27-129-...`, and recorded unit designations such as `208-A`, `211-A`, and `312-A`. This is sufficient to establish that the contract's association/unit distinction maps to a real county record family, but it is not sufficient to instantiate the accepted association anchor because the original condominium declaration recording reference has not yet been established from the Recorder's land-record index.
+Official Kane County tax/assessment material establishes a Kings Row condominium record family in West Dundee associated with Lot 34 of Old World Subdivision and parcel series `03-27-129-...`. The County Clerk's 2023 judgment book identifies parcel `03-27-129-016` as `KINGS ROW CONDO - UNIT 208-A`. That establishes a real association/unit record family and a public unit designation, but it does not by itself establish the Recorder's original declaration instrument or the unit's Recorder legal/plat reference.
 
-No placeholder declaration number, parcel number, street address, management identifier, or inferred document number may substitute for the required original declaration recording reference.
+The Kane County Recorder states that documents recorded from 1977 to date are available through its computer/imaging system, while older land instruments are indexed in Original Tract, Grantor/Grantee, or Mortgagor/Mortgagee books and microfilm. The identity contract therefore must not assume that every valid declaration reference has a modern computerized document-number syntax.
+
+The regression suite preserves this boundary with a synthetic tract-book/page-style declaration reference. The test establishes format compatibility only; it is not a claimed Kings Row recording reference.
+
+Public source references used for this evidence pass:
+
+```text
+https://www.kanecountyrecorder.net/about/
+https://clerk.kanecountyil.gov/TaxExtension/Documents/Tax/Judgment%20Books/2023%20Judgment%20Book.pdf
+```
+
+The original Kings Row condominium declaration recording reference remains unresolved. No placeholder declaration number, parcel number, street address, management identifier, inferred modern document number, or tax description may substitute for it.
 
 ## Acceptance consequence
 
-The contract implementation is accepted. Canonicalization and derived logical identifiers remain intentionally deferred until the Recorder evidence supplies the original declaration recording reference and at least one unit's recorded legal/plat reference in the form actually used by the public land record.
+The contract implementation at `a1629361063f4dd2806bcddade05f7cb9b1548ed` remains accepted. The post-acceptance evidence regression at `9ec26bb40a1af5912d60d49ac8be6a64c8ccc90f` must pass CT102 before it is recorded as an accepted hardening checkpoint.
+
+Canonicalization and derived logical identifiers remain intentionally deferred until Recorder evidence supplies the original declaration recording reference and at least one unit's recorded legal/plat reference in the form actually used by the public land record.
