@@ -68,8 +68,25 @@ https://clerk.kanecountyil.gov/TaxExtension/Documents/Tax/Judgment%20Books/2023%
 
 The original Kings Row condominium declaration recording reference remains unresolved. No placeholder declaration number, parcel number, street address, management identifier, inferred modern document number, or tax description may substitute for it.
 
+## Accepted evidence-format hardening checkpoint
+
+CT102 accepted the post-contract evidence-format hardening at:
+
+```text
+4b24dc0e7eb50511bfbd9b9f530f67c1ef46357d
+```
+
+Observed evidence:
+
+```text
+web/run-tests.sh  71/71 PASS
+worktree          clean
+```
+
+The executable change introduced by this evidence pass is the regression test added at `9ec26bb40a1af5912d60d49ac8be6a64c8ccc90f`, proving that an opaque pre-computerized tract-book/page-style declaration reference remains valid under the existing v1 contract. The later commit at the accepted HEAD updates this evidence document only. No schema or runtime validator change was required.
+
 ## Acceptance consequence
 
-The contract implementation at `a1629361063f4dd2806bcddade05f7cb9b1548ed` remains accepted. The post-acceptance evidence regression at `9ec26bb40a1af5912d60d49ac8be6a64c8ccc90f` must pass CT102 before it is recorded as an accepted hardening checkpoint.
+The source-neutral contract implementation at `a1629361063f4dd2806bcddade05f7cb9b1548ed` remains accepted, and the real-record-format hardening is accepted at `4b24dc0e7eb50511bfbd9b9f530f67c1ef46357d`.
 
 Canonicalization and derived logical identifiers remain intentionally deferred until Recorder evidence supplies the original declaration recording reference and at least one unit's recorded legal/plat reference in the form actually used by the public land record.
