@@ -5,65 +5,18 @@
   "title": "Administrative Infrastructure",
   "help": "This interface is rendered from versioned descriptors. The browser engine supplies generic capabilities; jurisdiction, legal authority, field semantics, controls, layout, help, validation, units, and presentation metadata are descriptor data.",
   "descriptor_sources": [
-    {
-      "label": "Illinois Condominium Infrastructure — Insurance",
-      "url": "../administration/descriptors/illinois/condominium/insurance.v1.json",
-      "enabled": true
-    },
-    {
-      "label": "Illinois Condominium Infrastructure — Association Records",
-      "url": "../administration/descriptors/illinois/condominium/records.v1.json",
-      "enabled": true
-    },
-    {
-      "label": "Illinois Condominium Infrastructure — Budget, Assessments & Reserves",
-      "url": "../administration/descriptors/illinois/condominium/finance.v1.json",
-      "enabled": true
-    },
-    {
-      "label": "Illinois Condominium Infrastructure — Governance, Meetings & Elections",
-      "url": "../administration/descriptors/illinois/condominium/governance.v1.json",
-      "enabled": true
-    },
-    {
-      "label": "Illinois Condominium Infrastructure — Management, Licensing & Service Contracts",
-      "url": "../administration/descriptors/illinois/condominium/management.v1.json",
-      "enabled": true
-    },
-    {
-      "label": "Illinois Condominium Infrastructure — Resale Disclosures",
-      "url": "../administration/descriptors/illinois/condominium/resale.v1.json",
-      "enabled": true
-    },
-    {
-      "label": "Illinois Condominium Infrastructure — Property Identity, Plat & Tax",
-      "url": "../administration/descriptors/illinois/condominium/property.v1.json",
-      "enabled": true
-    },
-    {
-      "label": "Illinois Condominium Infrastructure — Assessment Collection, Liens & Remedies",
-      "url": "../administration/descriptors/illinois/condominium/collections.v1.json",
-      "enabled": true
-    },
-    {
-      "label": "Illinois Condominium Infrastructure — Rules, Violations & Fines",
-      "url": "../administration/descriptors/illinois/condominium/enforcement.v1.json",
-      "enabled": true
-    },
-    {
-      "label": "Illinois Condominium Infrastructure — Maintenance, Repairs & Unit Access",
-      "url": "../administration/descriptors/illinois/condominium/maintenance.v1.json",
-      "enabled": true
-    },
-    {
-      "label": "Illinois Condominium Infrastructure — Developer Control & Turnover",
-      "url": "../administration/descriptors/illinois/condominium/turnover.v1.json",
-      "enabled": true
-    },
-    {
-      "label": "Illinois Condominium Infrastructure — Sale of Property & Removal from Act",
-      "url": "../administration/descriptors/illinois/condominium/termination.v1.json",
-      "enabled": true
-    }
+    {"label":"Illinois Condominium Infrastructure — Insurance","url":"../administration/descriptors/illinois/condominium/insurance.v1.json","enabled":true},
+    {"label":"Illinois Condominium Infrastructure — Association Records","url":"../administration/descriptors/illinois/condominium/records.v1.json","enabled":true},
+    {"label":"Illinois Condominium Infrastructure — Budget, Assessments & Reserves","url":"../administration/descriptors/illinois/condominium/finance.v1.json","enabled":true},
+    {"label":"Illinois Condominium Infrastructure — Governance, Meetings & Elections","url":"../administration/descriptors/illinois/condominium/governance.v1.json","enabled":true},
+    {"label":"Illinois Condominium Infrastructure — Management, Licensing & Service Contracts","url":"../administration/descriptors/illinois/condominium/management.v1.json","enabled":true},
+    {"label":"Illinois Condominium Infrastructure — Resale Disclosures","url":"../administration/descriptors/illinois/condominium/resale.v1.json","enabled":true},
+    {"label":"Illinois Condominium Infrastructure — Property Identity, Plat & Tax","url":"../administration/descriptors/illinois/condominium/property.v1.json","enabled":true},
+    {"label":"Illinois Condominium Infrastructure — Assessment Collection, Liens & Remedies","url":"../administration/descriptors/illinois/condominium/collections.v1.json","enabled":true},
+    {"label":"Illinois Condominium Infrastructure — Rules, Violations & Fines","url":"../administration/descriptors/illinois/condominium/enforcement.v1.json","enabled":true},
+    {"label":"Illinois Condominium Infrastructure — Maintenance, Repairs & Unit Access","url":"../administration/descriptors/illinois/condominium/maintenance.v1.json","enabled":true},
+    {"label":"Illinois Condominium Infrastructure — Developer Control & Turnover","url":"../administration/descriptors/illinois/condominium/turnover.v1.json","enabled":true},
+    {"label":"Illinois Condominium Infrastructure — Sale of Property & Removal from Act","url":"../administration/descriptors/illinois/condominium/termination.v1.json","enabled":true},
+    {"label":"Illinois Condominium Infrastructure — Complaint Procedure & Ombudsperson","url":"../administration/descriptors/illinois/condominium/complaints.v1.json","enabled":true}
   ]
 }
