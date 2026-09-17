@@ -19,6 +19,7 @@ if (!globalThis.crypto) {
 
 const insuranceDescriptorUrl = new URL("../administration/descriptors/illinois/condominium/insurance.v1.json", import.meta.url);
 const recordsDescriptorUrl = new URL("../administration/descriptors/illinois/condominium/records.v1.json", import.meta.url);
+const financeDescriptorUrl = new URL("../administration/descriptors/illinois/condominium/finance.v1.json", import.meta.url);
 
 async function loadDescriptor(url) {
   return JSON.parse(await readFile(url, "utf8"));
@@ -70,6 +71,34 @@ test("Illinois condominium association-records descriptor validates", async () =
   );
 });
 
+test("Illinois condominium finance descriptor validates", async () => {
+  const descriptor = await loadDescriptor(financeDescriptorUrl);
+  assert.equal(validateAdministrativeDescriptor(descriptor), descriptor);
+  assert.deepEqual(descriptorSummary(descriptor), {
+    descriptor_id: "us.il.condominium.finance",
+    descriptor_version: 1,
+    pages: 1,
+    sections: 5,
+    controls: 46,
+    collections: 2,
+  });
+});
+
+test("finance descriptor carries generic unit and format metadata", async () => {
+  const descriptor = await loadDescriptor(financeDescriptorUrl);
+  const budget = descriptor.pages[0].sections.find((section) => section.id === "annual-budget-summary");
+  const expense = budget.controls.find((control) => control.id === "anticipated-common-expenses");
+  assert.equal(expense.kind, "number");
+  assert.equal(expense.unit, "USD");
+  assert.equal(expense.format, "currency");
+
+  const assessments = descriptor.pages[0].sections.find((section) => section.id === "assessment-administration");
+  const separate = assessments.controls.find((control) => control.id === "separate-assessments");
+  const years = separate.item_controls.find((control) => control.id === "separate-assessment-years");
+  assert.equal(years.unit, "years");
+  assert.equal(years.format, "integer");
+});
+
 test("records descriptor preserves statewide access rules as infrastructure notices", async () => {
   const descriptor = await loadDescriptor(recordsDescriptorUrl);
   const access = descriptor.pages[0].sections.find((section) => section.id === "member-examination-framework");
@@ -107,17 +136,20 @@ test("descriptor presentation placement remains separate from semantic binding",
   assert.equal(insurer.layout.span, 4);
 });
 
-test("generic descriptor engine contains no Illinois condominium domain vocabulary", async () => {
-  const source = await readFile(new URL("./admin-descriptor.js", import.meta.url), "utf8");
-  assert.doesNotMatch(source, /Illinois|condominium|insurance|county|parish/i);
+test("generic descriptor browser code contains no Illinois condominium domain vocabulary", async () => {
+  const engine = await readFile(new URL("./admin-descriptor.js", import.meta.url), "utf8");
+  const bootstrap = await readFile(new URL("./admin-app.js", import.meta.url), "utf8");
+  assert.doesNotMatch(engine, /Illinois|condominium|insurance|budget|assessment|reserve|county|parish/i);
+  assert.doesNotMatch(bootstrap, /Illinois|condominium|insurance|budget|assessment|reserve|county|parish/i);
 });
 
 test("administrative bootstrap selects multiple descriptors without hard-coded form controls", async () => {
   const bootstrap = JSON.parse(await readFile(new URL("./admin-app.json", import.meta.url), "utf8"));
   assert.equal(bootstrap.format, "kane-fabric-administrative-bootstrap");
   assert.equal(bootstrap.version, 1);
-  assert.equal(bootstrap.descriptor_sources.length, 2);
+  assert.equal(bootstrap.descriptor_sources.length, 3);
   assert.match(bootstrap.descriptor_sources[0].url, /administration\/descriptors\/illinois\/condominium\/insurance\.v1\.json$/);
   assert.match(bootstrap.descriptor_sources[1].url, /administration\/descriptors\/illinois\/condominium\/records\.v1\.json$/);
+  assert.match(bootstrap.descriptor_sources[2].url, /administration\/descriptors\/illinois\/condominium\/finance\.v1\.json$/);
   assert.ok(bootstrap.descriptor_sources.every((source) => source.enabled !== false));
 });

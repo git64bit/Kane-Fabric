@@ -31,6 +31,36 @@ function validateBootstrap(config) {
   return config;
 }
 
+function descriptorControls(descriptor) {
+  const controls = [];
+  const visit = (items) => {
+    items.forEach((control) => {
+      controls.push(control);
+      if (Array.isArray(control.item_controls)) visit(control.item_controls);
+    });
+  };
+  descriptor.pages.forEach((page) => page.sections.forEach((section) => visit(section.controls)));
+  return controls;
+}
+
+function applyPresentationMetadata(host, descriptor) {
+  descriptorControls(descriptor).forEach((control) => {
+    if (!control.unit && !control.format) return;
+    host.querySelectorAll("[data-control-id]").forEach((node) => {
+      if (node.dataset.controlId !== control.id) return;
+      if (control.unit) node.dataset.unit = control.unit;
+      if (control.format) node.dataset.format = control.format;
+      if (!control.unit || node.querySelector(".admin-unit")) return;
+      const unit = document.createElement("small");
+      unit.className = "admin-unit";
+      unit.textContent = control.unit;
+      const field = node.querySelector("input, select, textarea");
+      if (field) field.insertAdjacentElement("afterend", unit);
+      else node.append(unit);
+    });
+  });
+}
+
 async function startAdministrativeApplication() {
   if (!root) return;
   root.replaceChildren(paragraph("admin-loading", "Loading Administrative Civic Infrastructure…"));
@@ -71,6 +101,7 @@ async function startAdministrativeApplication() {
       const host = document.createElement("div");
       frame.append(host);
       renderAdministrativeDescriptor(host, descriptor);
+      applyPresentationMetadata(host, descriptor);
       root.append(frame);
     }
   } catch (error) {

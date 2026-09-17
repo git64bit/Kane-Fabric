@@ -3,7 +3,7 @@
   "version": 1,
   "kicker": "Civic Infrastructure",
   "title": "Administrative Infrastructure",
-  "help": "This interface is rendered from versioned descriptors. The browser engine supplies generic capabilities; jurisdiction, legal authority, field semantics, controls, layout, help, and validation are descriptor data.",
+  "help": "This interface is rendered from versioned descriptors. The browser engine supplies generic capabilities; jurisdiction, legal authority, field semantics, controls, layout, help, validation, units, and presentation metadata are descriptor data.",
   "descriptor_sources": [
     {
       "label": "Illinois Condominium Infrastructure — Insurance",
@@ -13,6 +13,11 @@
     {
       "label": "Illinois Condominium Infrastructure — Association Records",
       "url": "../administration/descriptors/illinois/condominium/records.v1.json",
+      "enabled": true
+    },
+    {
+      "label": "Illinois Condominium Infrastructure — Budget, Assessments & Reserves",
+      "url": "../administration/descriptors/illinois/condominium/finance.v1.json",
       "enabled": true
     }
   ]
