@@ -3,7 +3,8 @@
 
 Normative prose remains in docs/MILESTONE_5_DESIGN.md. This module makes the
 first-release responsibility boundary machine-checkable so later implementation
-work cannot silently turn candidate capabilities into firmware requirements.
+work cannot silently turn candidate or administrative capabilities into firmware
+requirements.
 """
 
 from __future__ import annotations
@@ -57,6 +58,9 @@ EXPLICITLY_NOT_V1_RESPONSIBILITIES = (
     "county-database-mutation",
     "official-source-acquisition",
     "candidate-promotion",
+    "county-wide-substrate-replication",
+    "county-web-map-hosting",
+    "category-and-publication-contract-administration",
     "browser-rendering-or-gis-processing",
     "application-membership-or-person-identity",
     "fleet-orchestration",
@@ -71,6 +75,10 @@ FIXED_BOUNDARY = {
     "fabric_geographic_authority_on_edge": False,
     "fabric_release_signing_authority_on_edge": False,
     "county_database_mutation_on_edge": False,
+    "county_wide_substrate_required_on_edge": False,
+    "county_web_map_on_edge": False,
+    "category_contract_administration_on_edge": False,
+    "edge_publication_scope": "bounded-participant-publication",
 }
 
 ACCEPTANCE_LAYERS = {
@@ -89,7 +97,7 @@ ACCEPTANCE_LAYERS = {
         "invalid-generation-fails-closed",
     ),
     "ms5_integration": (
-        "wiregate-browser-path-pass",
+        "wiregate-focused-participant-publication-integration-pass",
         "management-loss-preserves-local-serving",
         "firmware-update-rollback-recovery-pass",
         "physical-replacement-identity-preservation-pass",
