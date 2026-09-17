@@ -24,6 +24,11 @@
       "label": "Illinois Condominium Infrastructure — Governance, Meetings & Elections",
       "url": "../administration/descriptors/illinois/condominium/governance.v1.json",
       "enabled": true
+    },
+    {
+      "label": "Illinois Condominium Infrastructure — Management, Licensing & Service Contracts",
+      "url": "../administration/descriptors/illinois/condominium/management.v1.json",
+      "enabled": true
     }
   ]
 }
