@@ -1,0 +1,268 @@
+{
+  "format": "kane-fabric-administrative-descriptor",
+  "format_version": 1,
+  "descriptor_id": "us.il.condominium.records",
+  "descriptor_version": 1,
+  "title": "Illinois Condominium — Association Records",
+  "help": "Statewide Illinois infrastructure for the records every condominium association must keep and maintain and the statutory framework governing member examination. Association-specific storage references and review state instantiate this infrastructure without becoming statewide civic identity.",
+  "scope": {
+    "country_code": "US",
+    "state_code": "IL",
+    "label": "Illinois statewide condominium infrastructure",
+    "applies_to": "condominium_association",
+    "admission_rule": "Statewide Illinois applicability is required. County-specific, municipal, association-customary, proposed-law, or uncertain requirements are deferred until separately modeled."
+  },
+  "categories": [
+    { "id": "records.governing_instruments", "label": "Governing instruments" },
+    { "id": "records.operations", "label": "Operational records" },
+    { "id": "records.members_elections", "label": "Member and election records" },
+    { "id": "records.financial", "label": "Financial books and records" },
+    { "id": "records.reserve", "label": "Reserve study" },
+    { "id": "records.access", "label": "Member record access" }
+  ],
+  "authorities": [
+    {
+      "id": "il-condo-act-19",
+      "kind": "state_statute",
+      "citation": "765 ILCS 605/19",
+      "url": "https://www.ilga.gov/legislation/ilcs/fulltext?DocName=076506050K19",
+      "summary": "Illinois Condominium Property Act recordkeeping and member-examination section."
+    }
+  ],
+  "pages": [
+    {
+      "id": "association-records",
+      "title": "Association Records",
+      "help": "Required record categories, association-specific record inventory, and statewide member-examination rules under Section 19.",
+      "sections": [
+        {
+          "id": "statewide-record-inventory",
+          "title": "Statewide required record inventory",
+          "help": "Section 19(a) requires the board of managers of every association to keep and maintain these records, or true and complete copies, at the association's principal office.",
+          "authority_refs": ["il-condo-act-19"],
+          "layout": { "columns": 12 },
+          "controls": [
+            {
+              "id": "records-principal-office-rule",
+              "kind": "notice",
+              "text": "Every association must keep and maintain the Section 19 records, or true and complete copies, at the association's principal office.",
+              "authority_refs": ["il-condo-act-19"],
+              "data_role": "infrastructure",
+              "layout": { "row": 1, "column": 1, "span": 12 }
+            },
+            {
+              "id": "record-declaration-bylaws-plats",
+              "kind": "notice",
+              "text": "Declaration, bylaws, plats of survey, and all amendments.",
+              "authority_refs": ["il-condo-act-19"],
+              "data_role": "infrastructure",
+              "layout": { "row": 2, "column": 1, "span": 6 }
+            },
+            {
+              "id": "record-rules-regulations",
+              "kind": "notice",
+              "text": "Rules and regulations of the association, if any.",
+              "authority_refs": ["il-condo-act-19"],
+              "data_role": "infrastructure",
+              "layout": { "row": 2, "column": 7, "span": 6 }
+            },
+            {
+              "id": "record-articles",
+              "kind": "notice",
+              "text": "If the association is incorporated, its articles of incorporation and all amendments.",
+              "authority_refs": ["il-condo-act-19"],
+              "data_role": "infrastructure",
+              "layout": { "row": 3, "column": 1, "span": 6 }
+            },
+            {
+              "id": "record-minutes",
+              "kind": "notice",
+              "text": "Minutes of all association and board meetings for the immediately preceding 7 years.",
+              "authority_refs": ["il-condo-act-19"],
+              "data_role": "infrastructure",
+              "layout": { "row": 3, "column": 7, "span": 6 }
+            },
+            {
+              "id": "record-insurance",
+              "kind": "notice",
+              "text": "All current policies of insurance of the association.",
+              "authority_refs": ["il-condo-act-19"],
+              "data_role": "infrastructure",
+              "layout": { "row": 4, "column": 1, "span": 6 }
+            },
+            {
+              "id": "record-contracts",
+              "kind": "notice",
+              "text": "All contracts, leases, and other agreements then in effect to which the association is a party or under which the association or unit owners have obligations or liabilities.",
+              "authority_refs": ["il-condo-act-19"],
+              "data_role": "infrastructure",
+              "layout": { "row": 4, "column": 7, "span": 6 }
+            },
+            {
+              "id": "record-member-list",
+              "kind": "notice",
+              "text": "A current listing of the names, addresses, email addresses, telephone numbers, and weighted vote of all members entitled to vote.",
+              "authority_refs": ["il-condo-act-19"],
+              "data_role": "infrastructure",
+              "layout": { "row": 5, "column": 1, "span": 6 }
+            },
+            {
+              "id": "record-ballots-proxies",
+              "kind": "notice",
+              "text": "Ballots and proxies related to matters voted on by members during the immediately preceding 12 months, including board elections.",
+              "authority_refs": ["il-condo-act-19"],
+              "data_role": "infrastructure",
+              "layout": { "row": 5, "column": 7, "span": 6 }
+            },
+            {
+              "id": "record-books",
+              "kind": "notice",
+              "text": "Books and records for the current and 10 immediately preceding fiscal years, including itemized and detailed records of receipts, expenditures, and accounts.",
+              "authority_refs": ["il-condo-act-19"],
+              "data_role": "infrastructure",
+              "layout": { "row": 6, "column": 1, "span": 6 }
+            },
+            {
+              "id": "record-reserve-study",
+              "kind": "notice",
+              "text": "Any reserve study.",
+              "authority_refs": ["il-condo-act-19"],
+              "data_role": "infrastructure",
+              "layout": { "row": 6, "column": 7, "span": 6 }
+            }
+          ]
+        },
+        {
+          "id": "association-record-inventory",
+          "title": "Association record inventory",
+          "help": "These are association-instance values used to locate and review the records that instantiate the statewide categories. A storage reference is not itself civic authority.",
+          "authority_refs": ["il-condo-act-19"],
+          "layout": { "columns": 12 },
+          "controls": [
+            {
+              "id": "principal-office-record-location",
+              "kind": "textarea",
+              "label": "Principal office / record location",
+              "binding": "association.records.principal_office_location",
+              "rows": 2,
+              "help": "Record the association-specific principal office or record-location description used to satisfy the statewide recordkeeping framework.",
+              "data_role": "association_instance",
+              "layout": { "row": 1, "column": 1, "span": 12 }
+            },
+            {
+              "id": "required-record-sets",
+              "kind": "collection",
+              "label": "Record sets",
+              "binding": "association.records.record_sets",
+              "help": "Track the association-specific source or locator for each statutory record category without imposing one storage technology.",
+              "data_role": "association_instance",
+              "min_items": 1,
+              "item_label": "Record set",
+              "actions": { "add_label": "Add record set", "remove_label": "Remove record set" },
+              "item_layout": { "columns": 12 },
+              "layout": { "row": 2, "column": 1, "span": 12 },
+              "item_controls": [
+                {
+                  "id": "record-set-category",
+                  "kind": "select",
+                  "label": "Statutory category",
+                  "binding": "category",
+                  "required": true,
+                  "options": [
+                    { "value": "declaration_bylaws_plats", "label": "Declaration, bylaws, plats, amendments" },
+                    { "value": "rules_regulations", "label": "Rules and regulations" },
+                    { "value": "articles_incorporation", "label": "Articles of incorporation and amendments" },
+                    { "value": "meeting_minutes", "label": "Association and board meeting minutes — preceding 7 years" },
+                    { "value": "insurance_policies", "label": "Current association insurance policies" },
+                    { "value": "contracts_leases_agreements", "label": "Current contracts, leases, and agreements" },
+                    { "value": "member_voter_listing", "label": "Current member/voter listing" },
+                    { "value": "ballots_proxies", "label": "Ballots and proxies — preceding 12 months" },
+                    { "value": "books_records", "label": "Books and records — current plus 10 preceding fiscal years" },
+                    { "value": "reserve_study", "label": "Reserve study" }
+                  ],
+                  "authority_refs": ["il-condo-act-19"],
+                  "data_role": "association_instance",
+                  "layout": { "row": 1, "column": 1, "span": 5 }
+                },
+                {
+                  "id": "record-set-status",
+                  "kind": "select",
+                  "label": "Observed status",
+                  "binding": "status",
+                  "options": [
+                    { "value": "present", "label": "Present" },
+                    { "value": "not_observed", "label": "Not observed" },
+                    { "value": "incomplete", "label": "Incomplete" },
+                    { "value": "not_applicable", "label": "Not applicable" }
+                  ],
+                  "help": "Administrative observation only; this does not alter the statutory category.",
+                  "data_role": "association_instance",
+                  "layout": { "row": 1, "column": 6, "span": 3 }
+                },
+                {
+                  "id": "record-set-reviewed-date",
+                  "kind": "date",
+                  "label": "Last reviewed",
+                  "binding": "last_reviewed",
+                  "data_role": "association_instance",
+                  "layout": { "row": 1, "column": 9, "span": 4 }
+                },
+                {
+                  "id": "record-set-reference",
+                  "kind": "textarea",
+                  "label": "Record reference / locator",
+                  "binding": "record_reference",
+                  "rows": 2,
+                  "help": "Reference, path, URL, shelf/location description, or other locator. The descriptor does not require a proprietary portal or one storage system.",
+                  "data_role": "association_instance",
+                  "layout": { "row": 2, "column": 1, "span": 12 }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "member-examination-framework",
+          "title": "Member examination framework",
+          "help": "Statewide access rules are infrastructure. A particular request, response, denial, or enforcement action is an association/member event and is not defined here.",
+          "authority_refs": ["il-condo-act-19"],
+          "layout": { "columns": 12 },
+          "controls": [
+            {
+              "id": "general-record-access",
+              "kind": "notice",
+              "text": "A member may inspect, examine, and copy record categories (1), (2), (3), (4), (5), (6), (9), and (10) at reasonable times. The member must submit a written request stating with particularity the records sought. Failure to make all properly requested records available within 10 business days is deemed a denial. A prevailing member in an enforcement action for these categories is entitled to reasonable attorney's fees and costs.",
+              "authority_refs": ["il-condo-act-19"],
+              "data_role": "infrastructure",
+              "layout": { "row": 1, "column": 1, "span": 12 }
+            },
+            {
+              "id": "member-election-record-access",
+              "kind": "notice",
+              "text": "Member-list and ballot/proxy records in categories (7) and (8) may be inspected for a purpose that relates to the association. The association may require written certification that the information will not be used for a commercial or unrelated purpose and may charge actual reproduction costs for copies.",
+              "authority_refs": ["il-condo-act-19"],
+              "data_role": "infrastructure",
+              "layout": { "row": 2, "column": 1, "span": 12 }
+            },
+            {
+              "id": "access-exclusions",
+              "kind": "notice",
+              "text": "Section 19(g) lists records the association need not make available notwithstanding the member-list/election-record access rule, including specified employee matters, pending or threatened litigation matters, another member's common-expense or charge information, and another member's unit-transfer documents, unless otherwise directed by court order.",
+              "authority_refs": ["il-condo-act-19"],
+              "data_role": "infrastructure",
+              "layout": { "row": 3, "column": 1, "span": 12 }
+            },
+            {
+              "id": "instrument-preemption",
+              "kind": "notice",
+              "text": "Section 19 applies to all condominium instruments recorded under the Act. Contrary provisions are void as against public policy and ineffective, and required provisions omitted from an instrument are incorporated by operation of law.",
+              "authority_refs": ["il-condo-act-19"],
+              "data_role": "infrastructure",
+              "layout": { "row": 4, "column": 1, "span": 12 }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

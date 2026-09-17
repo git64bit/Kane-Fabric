@@ -9,6 +9,11 @@
       "label": "Illinois Condominium Infrastructure — Insurance",
       "url": "../administration/descriptors/illinois/condominium/insurance.v1.json",
       "enabled": true
+    },
+    {
+      "label": "Illinois Condominium Infrastructure — Association Records",
+      "url": "../administration/descriptors/illinois/condominium/records.v1.json",
+      "enabled": true
     }
   ]
 }

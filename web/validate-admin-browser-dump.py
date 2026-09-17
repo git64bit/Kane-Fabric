@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 """Validate a rendered Administrative Descriptor DOM dump.
 
-This gate verifies that the real browser loaded the descriptor-driven
-Administrative Web surface, rendered generic controls, and presented the exact
-canonical SHA-256 identity of the current Illinois condominium insurance
-reference descriptor.
+The gate loads the same bootstrap used by the browser, computes the exact
+canonical SHA-256 identity of every enabled local descriptor, and verifies that
+the real browser rendered all of them without a descriptor-load failure.
 """
 
 from __future__ import annotations
@@ -16,7 +15,8 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-DESCRIPTOR = ROOT / "administration/descriptors/illinois/condominium/insurance.v1.json"
+WEB = ROOT / "web"
+BOOTSTRAP = WEB / "admin-app.json"
 
 
 def canonicalize(value: object) -> str:
@@ -30,10 +30,44 @@ def canonicalize(value: object) -> str:
     return json.dumps(value, ensure_ascii=False, separators=(",", ":"))
 
 
-def descriptor_sha256() -> str:
-    descriptor = json.loads(DESCRIPTOR.read_text(encoding="utf-8"))
+def descriptor_info(source: dict[str, object]) -> dict[str, object]:
+    raw_url = source.get("url")
+    if not isinstance(raw_url, str) or "://" in raw_url:
+        raise SystemExit(f"browser acceptance requires a repository-local descriptor source: {raw_url!r}")
+    path = (WEB / raw_url).resolve()
+    try:
+        path.relative_to(ROOT)
+    except ValueError as exc:
+        raise SystemExit(f"descriptor source escapes repository root: {raw_url!r}") from exc
+    descriptor = json.loads(path.read_text(encoding="utf-8"))
     canonical = canonicalize(descriptor).encode("utf-8")
-    return hashlib.sha256(canonical).hexdigest()
+
+    sections = 0
+    controls = 0
+
+    def count_controls(items: list[dict[str, object]]) -> None:
+        nonlocal controls
+        for control in items:
+            controls += 1
+            nested = control.get("item_controls")
+            if isinstance(nested, list):
+                count_controls(nested)
+
+    pages = descriptor.get("pages", [])
+    for page in pages:
+        for section in page.get("sections", []):
+            sections += 1
+            count_controls(section.get("controls", []))
+
+    return {
+        "path": path,
+        "id": descriptor.get("descriptor_id"),
+        "title": descriptor.get("title"),
+        "version": descriptor.get("descriptor_version"),
+        "sections": sections,
+        "controls": controls,
+        "sha256": hashlib.sha256(canonical).hexdigest(),
+    }
 
 
 def main() -> int:
@@ -41,17 +75,26 @@ def main() -> int:
         raise SystemExit(f"usage: {Path(sys.argv[0]).name} DOM_DUMP.html")
 
     html = Path(sys.argv[1]).read_text(encoding="utf-8")
-    expected_hash = descriptor_sha256()
+    bootstrap = json.loads(BOOTSTRAP.read_text(encoding="utf-8"))
+    sources = [source for source in bootstrap.get("descriptor_sources", []) if source.get("enabled", True)]
+    if not sources:
+        raise SystemExit("administrative bootstrap has no enabled descriptor sources")
+    descriptors = [descriptor_info(source) for source in sources]
 
     checks = {
         "administrative_header": "Administrative Infrastructure" in html,
-        "descriptor_title": "Illinois Condominium" in html and "Insurance" in html,
         "descriptor_loaded_without_error": "Administrative descriptor not loaded" not in html,
-        "descriptor_exact_sha256": f"SHA-256 {expected_hash}" in html,
-        "descriptor_summary": "Descriptor v1" in html and "3 sections" in html and "14 controls" in html,
-        "association_policy_collection": "Insurance policies" in html,
-        "add_policy_action": "Add policy" in html,
-        "statewide_framework": "Statewide framework" in html,
+        "all_descriptor_titles": all(str(info["title"]) in html for info in descriptors),
+        "all_descriptor_exact_sha256": all(f"SHA-256 {info['sha256']}" in html for info in descriptors),
+        "all_descriptor_summaries": all(
+            f"Descriptor v{info['version']} · {info['sections']} sections · {info['controls']} controls" in html
+            for info in descriptors
+        ),
+        "insurance_policy_collection": "Insurance policies" in html,
+        "insurance_add_policy_action": "Add policy" in html,
+        "records_inventory": "Statewide required record inventory" in html,
+        "records_add_record_set_action": "Add record set" in html,
+        "records_access_rule": "10 business days" in html,
         "form_input_rendered": re.search(r"<input(?:\s|>)", html) is not None,
         "form_select_rendered": re.search(r"<select(?:\s|>)", html) is not None,
         "form_textarea_rendered": re.search(r"<textarea(?:\s|>)", html) is not None,
@@ -63,7 +106,8 @@ def main() -> int:
     failed = [name for name, passed in checks.items() if not passed]
     print()
     print(f"admin_browser_checks={len(checks) - len(failed)}/{len(checks)}")
-    print(f"descriptor_sha256={expected_hash}")
+    for info in descriptors:
+        print(f"descriptor={info['id']} sha256={info['sha256']}")
 
     if failed:
         print("FAILED:", ", ".join(failed))
