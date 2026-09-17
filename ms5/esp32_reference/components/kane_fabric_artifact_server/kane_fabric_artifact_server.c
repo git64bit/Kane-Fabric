@@ -58,10 +58,14 @@ static esp_err_t send_empty_response(
     const char *extra_header
 )
 {
-    char header[KF_HEADER_BUFFER_BYTES];
+    char *header = malloc(KF_HEADER_BUFFER_BYTES);
+    if (header == NULL) {
+        return ESP_ERR_NO_MEM;
+    }
+
     const int count = snprintf(
         header,
-        sizeof(header),
+        KF_HEADER_BUFFER_BYTES,
         "HTTP/1.1 %s\r\n"
         "Content-Length: 0\r\n"
         "Accept-Ranges: bytes\r\n"
@@ -73,10 +77,16 @@ static esp_err_t send_empty_response(
         status,
         extra_header == NULL ? "" : extra_header
     );
-    if (count < 0 || (size_t)count >= sizeof(header)) {
-        return ESP_ERR_INVALID_SIZE;
+
+    esp_err_t result = ESP_OK;
+    if (count < 0 || (size_t)count >= KF_HEADER_BUFFER_BYTES) {
+        result = ESP_ERR_INVALID_SIZE;
+    } else {
+        result = raw_send_all(req, header, (size_t)count);
     }
-    return raw_send_all(req, header, (size_t)count);
+
+    free(header);
+    return result;
 }
 
 static esp_err_t send_file_region(
@@ -235,10 +245,15 @@ static esp_err_t artifact_get_handler(httpd_req_t *req)
         }
     }
 
-    char header[KF_HEADER_BUFFER_BYTES];
+    char *header = malloc(KF_HEADER_BUFFER_BYTES);
+    if (header == NULL) {
+        fclose(stream);
+        return ESP_ERR_NO_MEM;
+    }
+
     const int header_count = snprintf(
         header,
-        sizeof(header),
+        KF_HEADER_BUFFER_BYTES,
         "HTTP/1.1 %s\r\n"
         "Content-Type: %s\r\n"
         "Content-Length: %" PRIu64 "\r\n"
@@ -254,12 +269,15 @@ static esp_err_t artifact_get_handler(httpd_req_t *req)
         send_length,
         content_range
     );
-    if (header_count < 0 || (size_t)header_count >= sizeof(header)) {
+    if (header_count < 0 || (size_t)header_count >= KF_HEADER_BUFFER_BYTES) {
+        free(header);
         fclose(stream);
         return ESP_ERR_INVALID_SIZE;
     }
 
     esp_err_t result = raw_send_all(req, header, (size_t)header_count);
+    free(header);
+
     if (result == ESP_OK && send_length > 0U) {
         result = send_file_region(req, stream, send_offset, send_length);
     }
