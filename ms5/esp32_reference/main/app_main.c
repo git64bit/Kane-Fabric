@@ -79,7 +79,7 @@ static void provisioning_diagnostic_event_handler(
         return;
     }
 
-    if (event_base == IP_EVENT && event_id == IP_EVENT_AP_STAIPASSIGNED) {
+    if (event_base == IP_EVENT && event_id == IP_EVENT_ASSIGNED_IP_TO_CLIENT) {
         const ip_event_assigned_ip_to_client_t *event =
             (const ip_event_assigned_ip_to_client_t *)event_data;
         ESP_LOGI(
@@ -114,7 +114,7 @@ static esp_err_t enable_provisioning_diagnostics(void)
 
     return esp_event_handler_register(
         IP_EVENT,
-        IP_EVENT_AP_STAIPASSIGNED,
+        IP_EVENT_ASSIGNED_IP_TO_CLIENT,
         provisioning_diagnostic_event_handler,
         NULL
     );
