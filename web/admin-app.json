@@ -34,6 +34,11 @@
       "label": "Illinois Condominium Infrastructure — Resale Disclosures",
       "url": "../administration/descriptors/illinois/condominium/resale.v1.json",
       "enabled": true
+    },
+    {
+      "label": "Illinois Condominium Infrastructure — Property Identity, Plat & Tax",
+      "url": "../administration/descriptors/illinois/condominium/property.v1.json",
+      "enabled": true
     }
   ]
 }
