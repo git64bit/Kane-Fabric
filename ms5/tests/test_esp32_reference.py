@@ -49,7 +49,10 @@ class Esp32ReferenceTests(unittest.TestCase):
             subprocess.run([str(binary)], check=True)
 
     def test_artifact_server_uses_exact_length_raw_streaming(self):
-        source = (REFERENCE / "components/kane_fabric_artifact_server/kane_fabric_artifact_server.c").read_text()
+        source = (
+            REFERENCE
+            / "components/kane_fabric_artifact_server/kane_fabric_artifact_server.c"
+        ).read_text()
         self.assertIn("httpd_send(req", source)
         self.assertIn("Content-Length: %", source)
         self.assertIn("206 Partial Content", source)
@@ -60,7 +63,9 @@ class Esp32ReferenceTests(unittest.TestCase):
         self.assertNotIn("httpd_resp_send_chunk", source)
 
     def test_storage_mount_is_raw_read_only(self):
-        source = (REFERENCE / "components/kane_fabric_storage/kane_fabric_storage.c").read_text()
+        source = (
+            REFERENCE / "components/kane_fabric_storage/kane_fabric_storage.c"
+        ).read_text()
         self.assertIn("esp_vfs_fat_spiflash_mount_ro", source)
         self.assertIn("esp_vfs_fat_spiflash_unmount_ro", source)
         self.assertIn(".format_if_mount_failed = false", source)
@@ -80,18 +85,33 @@ class Esp32ReferenceTests(unittest.TestCase):
             self.assertNotIn(forbidden, artifact_cmake.lower())
             self.assertNotIn(forbidden, storage_cmake.lower())
 
-    def test_reference_build_probe_has_no_fixed_storage_capacity(self):
+    def test_reference_app_uses_generic_fabric_storage_not_county_mirroring(self):
         cmake = (REFERENCE / "CMakeLists.txt").read_text()
         app = (REFERENCE / "main/app_main.c").read_text()
         self.assertNotIn("partitions.csv", cmake)
         self.assertNotIn("0x", cmake)
-        self.assertIn("deployment/runtime integration work", app)
+        self.assertIn('.partition_label = "fabric"', app)
+        for county_artifact in (
+            "county-overview.json",
+            "roads-lod.kfs",
+            "water-lod.kfs",
+            "substrate-manifest.json",
+        ):
+            self.assertNotIn(county_artifact, app)
 
     def test_reference_app_keeps_browser_tls_off_the_esp32(self):
         app = (REFERENCE / "main/app_main.c").read_text()
-        self.assertIn("plain HTTP artifact-server startup", app)
-        self.assertIn("HTTPS terminates at the Wiregate hub", app)
-        self.assertNotIn("browser-trusted HTTPS server startup", app)
+        self.assertIn("HTTPD_DEFAULT_CONFIG()", app)
+        self.assertIn("httpd_start(&HTTP_SERVER", app)
+        self.assertIn("kf_artifact_server_register", app)
+        for forbidden in (
+            "httpd_ssl_start",
+            "esp_https_server",
+            "servercert",
+            "prvtkey",
+            "browser-trusted HTTPS server startup",
+        ):
+            self.assertNotIn(forbidden, app)
 
     def test_reference_contract_docs_keep_tls_at_wiregate(self):
         header = (
@@ -148,9 +168,17 @@ class Esp32ReferenceTests(unittest.TestCase):
 
             result = stage_inventory(inventory, source, destination)
             self.assertEqual(destination.resolve(), result)
-            self.assertEqual(b"substrate", (destination / "substrate/substrate-manifest.json").read_bytes())
-            self.assertEqual(b"composition", (destination / "composition/composition-manifest.json").read_bytes())
-            self.assertTrue((destination / ".kane-fabric-storage-inventory.json").is_file())
+            self.assertEqual(
+                b"substrate",
+                (destination / "substrate/substrate-manifest.json").read_bytes(),
+            )
+            self.assertEqual(
+                b"composition",
+                (destination / "composition/composition-manifest.json").read_bytes(),
+            )
+            self.assertTrue(
+                (destination / ".kane-fabric-storage-inventory.json").is_file()
+            )
 
     def test_edge_image_refuses_existing_destination(self):
         with tempfile.TemporaryDirectory() as tmp:
