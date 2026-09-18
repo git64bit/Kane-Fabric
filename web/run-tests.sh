@@ -10,4 +10,5 @@ node --test \
   "$ROOT/test-admin-identity-contract.mjs" \
   "$ROOT/test-participant-publication.mjs" \
   "$ROOT/test-participant-publication-generation.mjs" \
+  "$ROOT/test-participant-edge-placement.mjs" \
   "$ROOT/test-participant-composition.mjs"
