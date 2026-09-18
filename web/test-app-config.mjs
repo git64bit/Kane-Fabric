@@ -9,6 +9,7 @@ test("unconfigured application reports required source fields", () => {
   const config = configFromSearch("", BASE);
   assert.equal(config.configured, false);
   assert.deepEqual(config.missing, ["substrate", "composition", "partition"]);
+  assert.equal(config.participantSource, null);
 });
 
 test("relative artifact sources resolve against the application origin", () => {
@@ -33,6 +34,33 @@ test("absolute source URLs remain platform neutral", () => {
   assert.equal(config.substrateBase, "https://edge.example/s/");
   assert.equal(config.compositionBase, "https://edge.example/m/");
   assert.equal(config.sourceLabel, "Kitchen edge");
+});
+
+test("participant publication is optional and resolves as a document URL", () => {
+  const config = configFromSearch(
+    "?substrate=/s/&composition=/m/&partition=west&participant=../participant.json",
+    BASE,
+  );
+  assert.equal(config.configured, true);
+  assert.equal(config.participantSource, "https://fabric.example/participant.json");
+  assert.match(sourceSummary(config).detail, /participant publication configured/);
+});
+
+test("participant publication is not required for county composition", () => {
+  const config = configFromSearch("?substrate=/s/&composition=/m/&partition=west", BASE);
+  assert.equal(config.configured, true);
+  assert.equal(config.participantSource, null);
+});
+
+test("participant source rejects non-http protocols and embedded credentials", () => {
+  assert.throws(
+    () => configFromSearch("?substrate=/s/&composition=/m/&partition=west&participant=file:///tmp/p.json", BASE),
+    AppConfigError,
+  );
+  assert.throws(
+    () => configFromSearch("?substrate=/s/&composition=/m/&partition=west&participant=https://u:p@example.test/p.json", BASE),
+    AppConfigError,
+  );
 });
 
 test("non-http artifact protocols are rejected", () => {

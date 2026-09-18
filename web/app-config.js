@@ -7,7 +7,7 @@ export class AppConfigError extends Error {
   }
 }
 
-function normalizeDirectoryUrl(value, baseHref, label) {
+function normalizeUrl(value, baseHref, label, { directory = false } = {}) {
   if (value === null || value === undefined || String(value).trim() === "") return null;
   let url;
   try {
@@ -22,8 +22,16 @@ function normalizeDirectoryUrl(value, baseHref, label) {
     throw new AppConfigError(`${label} must not contain embedded credentials`);
   }
   url.hash = "";
-  if (!url.pathname.endsWith("/")) url.pathname += "/";
+  if (directory && !url.pathname.endsWith("/")) url.pathname += "/";
   return url.href;
+}
+
+function normalizeDirectoryUrl(value, baseHref, label) {
+  return normalizeUrl(value, baseHref, label, { directory: true });
+}
+
+function normalizeDocumentUrl(value, baseHref, label) {
+  return normalizeUrl(value, baseHref, label);
 }
 
 function normalizePartition(value) {
@@ -47,6 +55,7 @@ export function configFromSearch(search, baseHref) {
   const substrateBase = normalizeDirectoryUrl(params.get("substrate"), baseHref, "substrate source");
   const compositionBase = normalizeDirectoryUrl(params.get("composition") ?? params.get("ms4"), baseHref, "composition source");
   const partition = normalizePartition(params.get("partition"));
+  const participantSource = normalizeDocumentUrl(params.get("participant"), baseHref, "participant publication source");
   const sourceLabel = normalizeLabel(params.get("label"));
 
   const missing = [];
@@ -60,6 +69,7 @@ export function configFromSearch(search, baseHref) {
     substrateBase,
     compositionBase,
     partition,
+    participantSource,
     sourceLabel,
   };
 }
@@ -73,6 +83,6 @@ export function sourceSummary(config) {
   }
   return {
     label: config.sourceLabel || "Configured Fabric artifact source",
-    detail: `partition ${config.partition}`,
+    detail: `partition ${config.partition}${config.participantSource ? " · participant publication configured" : ""}`,
   };
 }

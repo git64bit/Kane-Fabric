@@ -1,9 +1,15 @@
+import { loadPartitionComposition } from "../ms4/browser/kane-fabric-ms4.js";
+import { configFromSearch } from "./app-config.js";
 import {
   AdministrativeDescriptorError,
   descriptorSummary,
   renderAdministrativeDescriptor,
   sha256CanonicalJson,
 } from "./admin-descriptor.js";
+import {
+  composeParticipantPublication,
+  loadParticipantPublication,
+} from "./participant-publication.js";
 
 const root = document.getElementById("admin-app");
 const BOOTSTRAP_URL = new URL("./admin-app.json", import.meta.url);
@@ -61,6 +67,120 @@ function applyPresentationMetadata(host, descriptor) {
   });
 }
 
+function waitForVerifiedGeographicComposition() {
+  const page = document.documentElement;
+  const evaluate = () => {
+    if (page.dataset.verification === "verified") return "verified";
+    if (page.dataset.state === "failed" || page.dataset.state === "unconfigured") return "blocked";
+    return "waiting";
+  };
+  const current = evaluate();
+  if (current === "verified") return Promise.resolve();
+  if (current === "blocked") return Promise.reject(new Error("geographic composition is not verified"));
+
+  return new Promise((resolve, reject) => {
+    const observer = new MutationObserver(() => {
+      const state = evaluate();
+      if (state === "waiting") return;
+      observer.disconnect();
+      if (state === "verified") resolve();
+      else reject(new Error("geographic composition did not verify"));
+    });
+    observer.observe(page, { attributes: true, attributeFilter: ["data-state", "data-verification"] });
+  });
+}
+
+function subjectLabel(subject) {
+  if (subject.kind === "association") return "Association publication";
+  return `Unit publication · ${subject.unit_anchor.recorded_unit_designation}`;
+}
+
+async function renderParticipantPublication(panel, descriptorRegistry) {
+  const page = document.documentElement;
+  page.dataset.participantPublication = "not-configured";
+  delete page.dataset.participantDescriptorCount;
+
+  let config;
+  try {
+    config = configFromSearch(location.search, location.href);
+  } catch (error) {
+    panel.replaceChildren(paragraph("admin-load-error", `Participant source configuration rejected: ${String(error?.message || error)}`));
+    page.dataset.participantPublication = "failed";
+    return;
+  }
+
+  if (!config.participantSource) {
+    panel.replaceChildren(paragraph("admin-app-help", "No participant publication is configured. Administrative descriptors remain available as the infrastructure baseline."));
+    return;
+  }
+  if (!config.configured) {
+    panel.replaceChildren(paragraph("admin-load-error", "Participant publication requires a configured and verified geographic composition."));
+    page.dataset.participantPublication = "blocked";
+    return;
+  }
+
+  page.dataset.participantPublication = "waiting";
+  panel.replaceChildren(paragraph("admin-loading", "Waiting for verified geographic composition before loading participant data…"));
+
+  try {
+    await waitForVerifiedGeographicComposition();
+    page.dataset.participantPublication = "loading";
+    panel.replaceChildren(paragraph("admin-loading", "Loading and validating participant publication…"));
+
+    const [compositionResult, publication] = await Promise.all([
+      loadPartitionComposition(config.compositionBase, config.partition),
+      loadParticipantPublication(config.participantSource),
+    ]);
+    const composed = composeParticipantPublication(publication, compositionResult, descriptorRegistry);
+
+    const header = document.createElement("header");
+    header.className = "admin-app-header";
+    header.append(paragraph("admin-kicker", "Participant publication"));
+    const heading = document.createElement("h2");
+    heading.textContent = "Verified participant data";
+    header.append(heading);
+    header.append(paragraph("admin-app-help", "Participant data is composed only after the geographic view verifies, its geographic references match that verified composition, and its descriptor identities match the accepted administrative baseline."));
+    panel.replaceChildren(header);
+
+    composed.forEach(({ descriptor, instance }, index) => {
+      const frame = document.createElement("section");
+      frame.className = "admin-descriptor-frame participant-descriptor-frame";
+      frame.dataset.participantDescriptorId = instance.descriptor_id;
+      frame.dataset.participantSubject = instance.subject.kind;
+
+      const provenance = document.createElement("div");
+      provenance.className = "admin-descriptor-provenance";
+      provenance.append(
+        paragraph("admin-descriptor-source", subjectLabel(instance.subject)),
+        paragraph("admin-descriptor-version", `${instance.descriptor_id} · descriptor v${instance.descriptor_version} · ${instance.geographic_refs.length} verified geographic reference${instance.geographic_refs.length === 1 ? "" : "s"}`),
+      );
+      frame.append(provenance);
+
+      const host = document.createElement("div");
+      frame.append(host);
+      renderAdministrativeDescriptor(host, descriptor, {
+        initialData: instance.data,
+        idPrefix: `participant-${index}-${instance.descriptor_id.replace(/[^a-zA-Z0-9_-]+/g, "-")}`,
+      });
+      applyPresentationMetadata(host, descriptor);
+      panel.append(frame);
+    });
+
+    page.dataset.participantPublication = "verified";
+    page.dataset.participantDescriptorCount = String(composed.length);
+  } catch (error) {
+    panel.replaceChildren();
+    const failure = document.createElement("section");
+    failure.className = "admin-load-error";
+    const heading = document.createElement("h2");
+    heading.textContent = "Participant publication not composed";
+    failure.append(heading, paragraph("", String(error?.message || error)));
+    panel.append(failure);
+    page.dataset.participantPublication = "failed";
+    delete page.dataset.participantDescriptorCount;
+  }
+}
+
 async function startAdministrativeApplication() {
   if (!root) return;
   root.replaceChildren(paragraph("admin-loading", "Loading Administrative Civic Infrastructure…"));
@@ -78,12 +198,20 @@ async function startAdministrativeApplication() {
     if (bootstrap.help) header.append(paragraph("admin-app-help", bootstrap.help));
     root.append(header);
 
+    const participantPanel = document.createElement("section");
+    participantPanel.className = "admin-participant-panel";
+    participantPanel.setAttribute("aria-label", "Participant publication composition");
+    participantPanel.append(paragraph("admin-loading", "Preparing participant publication composition…"));
+    root.append(participantPanel);
+
+    const descriptorRegistry = new Map();
     for (const source of bootstrap.descriptor_sources) {
       if (source.enabled === false) continue;
       const url = new URL(source.url, BOOTSTRAP_URL);
       const descriptor = await fetchJson(url, source.label ?? source.url);
       const summary = descriptorSummary(descriptor);
       const hash = await sha256CanonicalJson(descriptor);
+      descriptorRegistry.set(summary.descriptor_id, descriptor);
 
       const frame = document.createElement("section");
       frame.className = "admin-descriptor-frame";
@@ -104,6 +232,8 @@ async function startAdministrativeApplication() {
       applyPresentationMetadata(host, descriptor);
       root.append(frame);
     }
+
+    await renderParticipantPublication(participantPanel, descriptorRegistry);
   } catch (error) {
     root.replaceChildren();
     const panel = document.createElement("section");
