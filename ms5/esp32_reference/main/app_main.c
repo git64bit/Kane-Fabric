@@ -9,16 +9,16 @@
 
 #include <stddef.h>
 
-#ifndef KF_MS5_006_PROBE_INVENTORY_FILE_SHA256
-#error "MS5-006 probe inventory expectation is not defined"
+#ifndef KF_MS5_007_PARTICIPANT_INVENTORY_FILE_SHA256
+#error "MS5-007 participant inventory expectation is not defined"
 #endif
 
-#ifndef KF_MS5_006_PROBE_ARTIFACT_SHA256
-#error "MS5-006 probe artifact expectation is not defined"
+#ifndef KF_MS5_007_PARTICIPANT_ARTIFACT_SHA256
+#error "MS5-007 participant artifact expectation is not defined"
 #endif
 
-#ifndef KF_MS5_006_PROBE_ARTIFACT_SIZE
-#error "MS5-006 probe artifact size is not defined"
+#ifndef KF_MS5_007_PARTICIPANT_ARTIFACT_SIZE
+#error "MS5-007 participant artifact size is not defined"
 #endif
 
 static const char *TAG = "kane-fabric-ms5";
@@ -29,19 +29,19 @@ static const kf_storage_ro_config_t STORAGE_CONFIG = {
     .max_open_files = 4,
 };
 
-static const kf_storage_artifact_expectation_t PROBE_ARTIFACTS[] = {
+static const kf_storage_artifact_expectation_t PARTICIPANT_ARTIFACTS[] = {
     {
-        .relative_path = "probe.txt",
-        .byte_length = KF_MS5_006_PROBE_ARTIFACT_SIZE,
-        .sha256_hex = KF_MS5_006_PROBE_ARTIFACT_SHA256,
+        .relative_path = "participant.json",
+        .byte_length = KF_MS5_007_PARTICIPANT_ARTIFACT_SIZE,
+        .sha256_hex = KF_MS5_007_PARTICIPANT_ARTIFACT_SHA256,
     },
 };
 
-static const kf_storage_verification_config_t PROBE_VERIFICATION = {
+static const kf_storage_verification_config_t PARTICIPANT_VERIFICATION = {
     .inventory_relative_path = ".kane-fabric-storage-inventory.json",
-    .inventory_file_sha256_hex = KF_MS5_006_PROBE_INVENTORY_FILE_SHA256,
-    .artifacts = PROBE_ARTIFACTS,
-    .artifact_count = sizeof(PROBE_ARTIFACTS) / sizeof(PROBE_ARTIFACTS[0]),
+    .inventory_file_sha256_hex = KF_MS5_007_PARTICIPANT_INVENTORY_FILE_SHA256,
+    .artifacts = PARTICIPANT_ARTIFACTS,
+    .artifact_count = sizeof(PARTICIPANT_ARTIFACTS) / sizeof(PARTICIPANT_ARTIFACTS[0]),
 };
 
 static kf_artifact_server_t ARTIFACT_SERVER;
@@ -61,7 +61,7 @@ static void provisioning_diagnostic_event_handler(
             (const wifi_event_ap_staconnected_t *)event_data;
         ESP_LOGI(
             TAG,
-            "MS5-006 provisioning client associated; aid=%u",
+            "MS5-007 provisioning client associated; aid=%u",
             (unsigned)event->aid
         );
         return;
@@ -72,7 +72,7 @@ static void provisioning_diagnostic_event_handler(
             (const wifi_event_ap_stadisconnected_t *)event_data;
         ESP_LOGI(
             TAG,
-            "MS5-006 provisioning client disconnected; aid=%u reason=%u",
+            "MS5-007 provisioning client disconnected; aid=%u reason=%u",
             (unsigned)event->aid,
             (unsigned)event->reason
         );
@@ -84,7 +84,7 @@ static void provisioning_diagnostic_event_handler(
             (const ip_event_assigned_ip_to_client_t *)event_data;
         ESP_LOGI(
             TAG,
-            "MS5-006 provisioning client assigned IPv4=" IPSTR,
+            "MS5-007 provisioning client assigned IPv4=" IPSTR,
             IP2STR(&event->ip)
         );
     }
@@ -127,7 +127,7 @@ static void unmount_storage(void)
     if (unmount_result != ESP_OK) {
         ESP_LOGE(
             TAG,
-            "MS5-006 cleanup unmount failed: %s",
+            "MS5-007 cleanup unmount failed: %s",
             esp_err_to_name(unmount_result)
         );
     }
@@ -140,7 +140,7 @@ static void cleanup_after_http_failure(void)
         if (stop_result != ESP_OK) {
             ESP_LOGE(
                 TAG,
-                "MS5-006 HTTP cleanup stop failed: %s",
+                "MS5-007 HTTP cleanup stop failed: %s",
                 esp_err_to_name(stop_result)
             );
         }
@@ -152,28 +152,28 @@ static void cleanup_after_http_failure(void)
 
 void app_main(void)
 {
-    ESP_LOGI(TAG, "MS5-006 mounting fabric partition read-only");
+    ESP_LOGI(TAG, "MS5-007 mounting fabric partition read-only");
 
     esp_err_t result = kf_storage_mount_raw_fat_readonly(&STORAGE_CONFIG);
     if (result != ESP_OK) {
         ESP_LOGE(
             TAG,
-            "MS5-006 fabric mount failed closed: %s",
+            "MS5-007 fabric mount failed closed: %s",
             esp_err_to_name(result)
         );
         return;
     }
 
-    ESP_LOGI(TAG, "MS5-006 fabric partition mounted read-only");
+    ESP_LOGI(TAG, "MS5-007 fabric partition mounted read-only");
 
     result = kf_storage_verify_exact_image(
         STORAGE_CONFIG.base_path,
-        &PROBE_VERIFICATION
+        &PARTICIPANT_VERIFICATION
     );
     if (result != ESP_OK) {
         ESP_LOGE(
             TAG,
-            "MS5-006 fabric verification failed closed: %s",
+            "MS5-007 fabric verification failed closed: %s",
             esp_err_to_name(result)
         );
         unmount_storage();
@@ -182,9 +182,9 @@ void app_main(void)
 
     ESP_LOGI(
         TAG,
-        "MS5-006 probe image verified; inventory_file_sha256=%s artifacts=%u",
-        KF_MS5_006_PROBE_INVENTORY_FILE_SHA256,
-        (unsigned)PROBE_VERIFICATION.artifact_count
+        "MS5-007 participant image verified; inventory_file_sha256=%s artifacts=%u",
+        KF_MS5_007_PARTICIPANT_INVENTORY_FILE_SHA256,
+        (unsigned)PARTICIPANT_VERIFICATION.artifact_count
     );
 
     kf_network_state_t network_state = KF_NETWORK_STATE_NONE;
@@ -192,7 +192,7 @@ void app_main(void)
     if (result != ESP_OK) {
         ESP_LOGE(
             TAG,
-            "MS5-006 deployment network/provisioning failed closed: %s",
+            "MS5-007 deployment network/provisioning failed closed: %s",
             esp_err_to_name(result)
         );
         unmount_storage();
@@ -204,23 +204,23 @@ void app_main(void)
         if (result != ESP_OK) {
             ESP_LOGE(
                 TAG,
-                "MS5-006 provisioning diagnostics registration failed: %s",
+                "MS5-007 provisioning diagnostics registration failed: %s",
                 esp_err_to_name(result)
             );
         } else {
-            ESP_LOGI(TAG, "MS5-006 provisioning client diagnostics enabled");
+            ESP_LOGI(TAG, "MS5-007 provisioning client diagnostics enabled");
         }
 
         unmount_storage();
         ESP_LOGI(
             TAG,
-            "MS5-006 local provisioning portal active; artifact HTTP remains disabled"
+            "MS5-007 local provisioning portal active; artifact HTTP remains disabled"
         );
         return;
     }
 
     if (network_state != KF_NETWORK_STATE_READY) {
-        ESP_LOGE(TAG, "MS5-006 invalid network state; artifact HTTP remains disabled");
+        ESP_LOGE(TAG, "MS5-007 invalid network state; artifact HTTP remains disabled");
         unmount_storage();
         return;
     }
@@ -232,7 +232,7 @@ void app_main(void)
     if (result != ESP_OK) {
         ESP_LOGE(
             TAG,
-            "MS5-006 HTTP start failed closed: %s",
+            "MS5-007 HTTP start failed closed: %s",
             esp_err_to_name(result)
         );
         cleanup_after_http_failure();
@@ -251,7 +251,7 @@ void app_main(void)
     if (result != ESP_OK) {
         ESP_LOGE(
             TAG,
-            "MS5-006 artifact route registration failed closed: %s",
+            "MS5-007 artifact route registration failed closed: %s",
             esp_err_to_name(result)
         );
         cleanup_after_http_failure();
@@ -260,7 +260,7 @@ void app_main(void)
 
     ESP_LOGI(
         TAG,
-        "MS5-006 HTTP artifact server ready; root=%s port=%u",
+        "MS5-007 HTTP artifact server ready; root=%s port=%u",
         STORAGE_CONFIG.base_path,
         (unsigned)http_config.server_port
     );

@@ -100,6 +100,22 @@ class Esp32ReferenceTests(unittest.TestCase):
         ):
             self.assertNotIn(county_artifact, app)
 
+    def test_reference_app_builds_and_verifies_participant_image(self):
+        cmake = (REFERENCE / "main/CMakeLists.txt").read_text()
+        app = (REFERENCE / "main/app_main.c").read_text()
+
+        self.assertIn("../participant_image", cmake)
+        self.assertIn("participant.json", cmake)
+        self.assertIn("fatfs_create_rawflash_image(", cmake)
+        self.assertNotIn("../probe_image", cmake)
+        self.assertNotIn("probe.txt", cmake)
+
+        self.assertIn('relative_path = "participant.json"', app)
+        self.assertIn("PARTICIPANT_VERIFICATION", app)
+        self.assertIn("MS5-007 participant image verified", app)
+        self.assertNotIn('relative_path = "probe.txt"', app)
+        self.assertNotIn("PROBE_VERIFICATION", app)
+
     def test_reference_app_keeps_browser_tls_off_the_esp32(self):
         app = (REFERENCE / "main/app_main.c").read_text()
         self.assertIn("HTTPD_DEFAULT_CONFIG()", app)
