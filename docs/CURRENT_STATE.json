@@ -79,6 +79,23 @@
       "wireguard_changed": false,
       "repository_changed": false,
       "firmware_changed": false
+    },
+    "ms5_008_wg_pk_allocation_preflight_status": "accepted-read-only",
+    "ms5_008_wg_pk_allocation_preflight_date": "2026-09-20",
+    "ms5_008_wg_pk_allocation_preflight": {
+      "host": "wg-pk",
+      "interface": "wg0",
+      "hub_address": "10.110.0.1/22",
+      "hub_public_key": "1+Wb++fjXNbY0joOvj4AZvJgF6b125YOPSFsmNqVo3I=",
+      "listen_port": 51820,
+      "peer_count": 19,
+      "temporary_evaluation_address": "10.110.3.254/32",
+      "candidate_collision_check": "free",
+      "private_key_files_read": false,
+      "preshared_keys_printed": false,
+      "wireguard_changed": false,
+      "routing_changed": false,
+      "candidate_peer_created": false
     }
   },
   "deployment": {
@@ -412,17 +429,17 @@
       "ms5_007_cleanup": "permanent vhost restored byte-identical; persistent and active firewall policy restored; /edge/participant.json returned 404; no locator-specific rule persisted",
       "ms5_008_candidate_repository_acceptance": "accepted on CT102 at 5a35b607ef16b5c94bd732e7f2eb73fbffc17ad0; 12 focused tests passed; full MS5 suite 86 passed / 1 skipped; WireGuard retained=NO; decision state=defer"
     },
-    "next_work_item": "MS5-008 read-only wg-pk peer-allocation preflight: verify the controlled hub identity and inventory existing AllowedIPs so one collision-free temporary ESP32 evaluation address can be selected without modifying the hub."
+    "next_work_item": "MS5-008 generate one temporary ESP32 evaluation WireGuard keypair locally on fw, preserve the private key only on fw with mode 0600, and emit only the public key plus non-secret file metadata. Do not modify wg-pk, build, flash, or establish a tunnel."
   },
   "priority_workstream": {
     "name": "MS5-008 Management Transport Feasibility",
     "design": "docs/MILESTONE_5_DESIGN.md",
     "cpe": "docs/CIVICVS_PROJECT_ENVIRONMENT.md",
     "toolchain_plan": "docs/MS5_TOOLCHAIN_DEPENDENCY_PLAN.md",
-    "status": "MS5-008 fw transport preflight accepted; controlled-hub peer allocation inventory is next",
+    "status": "MS5-008 wg-pk allocation preflight accepted; temporary fw-local ESP32 evaluation keypair generation is next",
     "browser_path_status": "accepted independently of management transport",
     "wireguard_status": "candidate-evaluation-only-not-retained",
     "target_environment": "repository contract work in GitHub/CT102 first; pinned build and physical runtime evidence on fw only after the candidate/evaluation contract is accepted"
   },
-  "next_safe_action": "Run one read-only root preflight directly on wg-pk. Verify wg0 identity/public key/listen port, enumerate only non-secret peer metadata, and select a collision-free temporary evaluation address from the CPE /22 without changing any peer or reading private/preshared keys."
+  "next_safe_action": "On fw, generate one temporary evaluation-only WireGuard keypair in a dedicated MS5-008 evidence directory. Keep the private key local and unreadable to other users; emit only the public key, path, mode, and SHA-256 of the private-key file. No peer, firmware, or tunnel mutation yet."
 }

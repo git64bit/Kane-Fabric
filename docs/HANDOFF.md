@@ -457,20 +457,39 @@ hub ping                  PASS
 No private-key file or preshared key was read or printed. WireGuard,
 repository, and firmware state were unchanged.
 
+## MS5-008 wg-pk allocation preflight — accepted 2026-09-20
+
+The corrected read-only hub inventory accepted:
+
+```text
+host                         wg-pk
+interface                    wg0
+hub address                  10.110.0.1/22
+hub public key               1+Wb++fjXNbY0joOvj4AZvJgF6b125YOPSFsmNqVo3I=
+listen port                  51820
+existing peers               19
+temporary evaluation address 10.110.3.254/32
+collision check              FREE
+```
+
+No peer was created. No WireGuard or routing state changed. No private or
+preshared key was read or printed.
+
 ## Next safe action
 
-Run one **read-only peer-allocation preflight directly on `wg-pk` as root**.
+Generate exactly one **temporary MS5-008 ESP32 evaluation keypair locally on
+`fw`**.
 
-The gate must:
+Requirements:
 
-- verify `wg-pk` / `wg0` is the controlled hub at `10.110.0.1/22`;
-- verify UDP/51820 and hub public key
-  `1+Wb++fjXNbY0joOvj4AZvJgF6b125YOPSFsmNqVo3I=`;
-- enumerate only non-secret peer public keys, AllowedIPs, endpoints,
-  keepalive, handshake, and transfer metadata;
-- select one currently unallocated temporary evaluation address from the
-  `10.110.0.0/22` CPE range;
-- make no WireGuard or routing change and read no private/preshared key.
+- private key stays only on `fw`;
+- private-key file mode is `0600`;
+- public key may be emitted for later hub provisioning;
+- evidence may include private-key file path, mode, owner, byte length, and
+  SHA-256, but never the private-key contents;
+- do not add the public key to `wg-pk` yet;
+- do not modify the accepted ESP32 firmware;
+- do not build, flash, or establish a tunnel.
 
-After that exact inventory is accepted, the project may construct the temporary
-ESP32 peer/key + outbound-handshake gate.
+After the public key is accepted, provision exactly one temporary hub peer for
+`10.110.3.254/32` in a separate gate.
