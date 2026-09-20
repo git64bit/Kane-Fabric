@@ -150,18 +150,23 @@ bash ms5/run-ms5-008-candidate-acceptance.sh
 
 ## Active work
 
-The next normative work item is **MS5-008**: candidate outbound management
-transport and WireGuard runtime/resource feasibility across an ordinary
-independently administered participant NAT.
+The MS5-008 candidate/evaluation repository primitive is accepted in CT102 at
+`5a35b607ef16b5c94bd732e7f2eb73fbffc17ad0`.
 
-The first MS5-008 primitive is repository-only: freeze the exact evaluation
-candidate and the evidence contract before any firmware or tunnel mutation.
-This must keep WireGuard outside `third_party/manifest.json` as a retained
-dependency until runtime/resource/coexistence evidence supports a retain
-decision. A reject or defer result remains valid.
+Accepted evidence:
 
-The later physical gate will intentionally return to `fw`, but only after the
-candidate/evaluation contract is accepted.
+```text
+focused candidate tests      12/12 PASS
+complete MS5 suite           86 PASS / 1 skipped
+WireGuard retained           NO
+decision state               defer
+```
+
+The next bounded primitive is a read-only physical transport preflight on
+`fw`. It discovers the existing non-secret CPE/WireGuard hub metadata needed
+to construct the separate outbound-handshake feasibility gate. It does not
+build/flash firmware, create credentials, modify a peer, or establish the
+candidate ESP32 tunnel.
 
 ## Tests
 

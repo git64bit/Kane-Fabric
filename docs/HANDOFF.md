@@ -415,25 +415,49 @@ An independent operator must not need Kane County's:
 - service state;
 - ESP32 hardware identity.
 
-## Next safe action
+## MS5-008 candidate repository contract — accepted 2026-09-20
 
-The MS5-008 repository candidate/evaluation contract is implemented on GitHub
-`main` and now requires CT102 acceptance before physical transport work.
-
-From a clean synchronized CT102 checkout, run the repository-owned gate:
+CT102 accepted the pinned management-transport candidate/evaluation contract at:
 
 ```text
-bash ms5/run-ms5-008-candidate-acceptance.sh
+5a35b607ef16b5c94bd732e7f2eb73fbffc17ad0
 ```
 
-Do not yet:
+Evidence:
 
-- modify or flash the accepted ESP32 runtime;
-- create persistent management credentials;
-- stand up or persist a WireGuard hub/peer;
-- add WireGuard to `third_party/manifest.json`;
+```text
+focused candidate tests      12/12 PASS
+complete MS5 repository      86 PASS / 1 skipped
+dependency policy            PASS
+MS5 work-sequence authority  PASS
+WireGuard retained           NO
+decision state               defer
+CT102 worktree               clean
+```
+
+This accepts only the evaluation inputs and evidence contract. No physical
+firmware, WireGuard hub, peer credential, or tunnel was changed.
+
+## Next safe action
+
+Run one **read-only MS5-008 physical transport preflight on `fw`**.
+
+The preflight must establish only the inputs needed to construct the later
+outbound-handshake gate:
+
+- current `fw` CPE checkout/build/USB state;
+- existing host WireGuard interface and route state;
+- controlled-hub peer public key, endpoint, allowed IPs, and keepalive metadata;
+- reachability of the existing CPE hub path where observable.
+
+It must not:
+
+- build or flash firmware;
+- generate or print private/preshared keys;
+- add or alter a WireGuard peer;
+- stand up a new hub;
 - alter participant-router configuration;
-- treat management/tunnel identity as Fabric identity.
+- change the accepted ESP32 runtime.
 
-If the CT102 gate passes, the next materially distinct primitive is the first
-physical outbound-handshake feasibility gate on `fw`.
+After exact preflight evidence is returned, construct the separate physical
+outbound-handshake gate.

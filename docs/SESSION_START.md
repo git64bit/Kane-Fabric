@@ -20,17 +20,17 @@ Do not use private chat history as a substitute for these records.
 
 ## Current priority
 
-The active normative work item is **MS5-008 — candidate outbound management transport and WireGuard runtime/resource feasibility across ordinary participant NAT**.
+The active normative work item remains **MS5-008 — candidate outbound management transport and WireGuard runtime/resource feasibility**.
 
-MS5-007 physical participant integration is accepted. The browser path is independent of management transport.
+The repository candidate/evaluation contract is accepted in CT102 at
+`5a35b607ef16b5c94bd732e7f2eb73fbffc17ad0`: 12/12 focused candidate
+tests passed, the complete MS5 suite passed 86 tests with one expected skip,
+WireGuard remains unretained, and the decision state remains `defer`.
 
-The first MS5-008 repository primitive is now implemented: an exact WireGuard evaluation candidate and exact libsodium evaluation dependency are pinned in `ms5/management-transport-candidate.json`, with retain/reject/defer decision rules and required runtime evidence. WireGuard is still not retained.
-
-Before any firmware flash, hub, persistent credential, or live tunnel, CT102 must accept the repository contract using:
-
-```text
-bash ms5/run-ms5-008-candidate-acceptance.sh
-```
+The next primitive is a read-only physical transport preflight on `fw`.
+Discover only accepted CPE state plus non-secret existing WireGuard hub metadata.
+Do not build, flash, generate credentials, modify peers, or alter the participant
+router during this preflight.
 
 ## Stable facts are not discovery tasks
 
