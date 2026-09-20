@@ -13,14 +13,19 @@ implementation head `7aa3c836bae470704d051a36a6261a1140e9d3d0`. The acceptance r
 docs/CPE_ESP32_MS5_006_DEVICE_RUNTIME_ACCEPTANCE.md
 ```
 
-MS5-006 is therefore no longer the active development bottleneck. The active
-work returns to the administrative county/web/category/contract layer needed by
-MS5-007. The governing separation is:
+MS5-006 is therefore no longer the active development bottleneck.
 
-```text
-docs/ADMINISTRATIVE_EDGE_BOUNDARY.md
-administration/README.md
-```
+MS5-007 physical participant integration through permanent Wiregate CT103 was
+accepted on 2026-09-20. A normal trusted Chromium session consumed the exact
+1357-byte physical participant artifact with SHA-256
+`03f74e9e48254cc9d3fd4af22b840ce5d3857c028d8acd9cc8eca63003ab883c`
+through Wiregate HTTPS/WebCrypto. The temporary locator-specific host policy
+and proxy were removed, the accepted Wiregate vhost and persistent firewall
+hashes were restored unchanged, and `/edge/participant.json` returned 404
+after cleanup.
+
+The next normative work item is MS5-008. WireGuard remains a candidate-only
+management transport and is not retained by MS5-005 or MS5-007.
 
 ## Current reference topology
 
@@ -130,22 +135,18 @@ docs/MS5_TOOLCHAIN_DEPENDENCY_PLAN.md
 
 ## Active work
 
-The next normative work item is MS5-007, now defined as county/web/category/
-contract integration of a focused participant edge publication through
-Wiregate HTTPS and ESP32-S3 HTTP.
+The next normative work item is **MS5-008**: candidate outbound management
+transport and WireGuard runtime/resource feasibility across an ordinary
+independently administered participant NAT.
 
-The immediate development work is administrative, not firmware:
+The first MS5-008 primitive is repository-only: freeze the exact evaluation
+candidate and the evidence contract before any firmware or tunnel mutation.
+This must keep WireGuard outside `third_party/manifest.json` as a retained
+dependency until runtime/resource/coexistence evidence supports a retain
+decision. A reject or defer result remains valid.
 
-- county-facing category/object model;
-- participant-publication contract;
-- association/unit reference semantics;
-- public/restricted/private classification semantics;
-- web/map composition;
-- independent county-operator conformance boundary.
-
-Later MS5 firmware lifecycle work remains required for closeout: management
-transport evaluation, update/rollback/recovery, physical replacement, and
-constrained-resource acceptance.
+The later physical gate will intentionally return to `fw`, but only after the
+candidate/evaluation contract is accepted.
 
 ## Tests
 

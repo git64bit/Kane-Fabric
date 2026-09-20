@@ -17,6 +17,49 @@ A new Assistant should read these in order before proposing implementation work:
 
 The normative detailed MS5 sequence remains in `docs/MILESTONE_5_DESIGN.md`, but the active application-design workstream is now descriptor-driven Civic Infrastructure.
 
+## MS5-007 physical participant integration — accepted 2026-09-20
+
+MS5-007 is complete. The accepted live gate proved the full bounded path:
+
+```text
+normal trusted Chromium
+        |
+        | HTTPS / secure context / WebCrypto SHA-256
+        v
+CT103 kane-wiregate / https://kane-wiregate.dev.infra
+        |
+        | temporary verified laboratory adapter
+        | plain HTTP TCP/80
+        v
+physical ESP32-S3 bounded participant publication
+```
+
+Accepted physical participant evidence:
+
+```text
+expected MAC                    b8:f8:62:e2:d5:2c
+last observed transient locator 10.0.0.185
+participant.json bytes          1357
+participant.json SHA-256        03f74e9e48254cc9d3fd4af22b840ce5d3857c028d8acd9cc8eca63003ab883c
+CT101 edge access               BLOCKED
+browser secure context          PASS
+browser WebCrypto SHA-256       PASS
+```
+
+Accepted recovery/postconditions:
+
+```text
+Wiregate vhost SHA-256          df116928cbd02441d90751d6289a776e48874a9c81adc3695f21789c584b466c
+persistent rules.v4 SHA-256     521d6834dc2fe6b9f4c84207af3819981a3a88163e489773e412d2f971a9c4a6
+host baseline                   81 passed / 0 failed / 4 informational
+/edge/participant.json          404 after cleanup
+temporary filter rule           absent
+temporary NAT rule              absent
+WireGuard prerequisite          absent
+```
+
+The ESP LAN address is operational locator state only. It must be rediscovered and verified when needed; it is never Fabric identity and must not become a DHCP reservation, firmware static address, inbound port-forward requirement, or persistent per-device operator rule.
+
 ## Current strategic direction
 
 Kane Fabric remains **Browser-First** and implementation remains **Online-First**.
@@ -344,18 +387,17 @@ CT102 does not receive an independent CPE/WireGuard identity merely because it i
 
 ## Later MS5 work still pending
 
-MS5 is not fully closed.
+MS5 is not fully closed. MS5-007 is accepted; the next normative item is MS5-008.
 
-Later gates remain, but their detailed shape may be informed by the Administrative Web work:
+Remaining gates:
 
-- MS5-007 administrative/browser integration and eventual bounded participant composition;
-- MS5-008 management transport / WireGuard feasibility;
+- MS5-008 candidate outbound management transport / WireGuard runtime-resource feasibility across ordinary participant NAT; retain, reject, or defer;
 - MS5-009 firmware authenticity, update, rollback, and recovery;
 - MS5-010 physical replacement/reprovisioning identity preservation;
 - MS5-011 constrained-resource/concurrent-workload acceptance;
 - MS5-012 release evidence and closeout.
 
-Do not let these later edge/lifecycle gates constrain the complete online Administrative Web prematurely.
+Management transport is distinct from the already accepted browser/Wiregate/HTTP path. No result from MS5-008 may retroactively make WireGuard a browser prerequisite or Fabric logical identity.
 
 ## Independent operator criterion
 
@@ -375,15 +417,16 @@ An independent operator must not need Kane County's:
 
 ## Next safe action
 
-Do **not** continue ESP32 application development on `fw`.
+Begin **MS5-008** with one repository-only primitive: freeze the exact candidate management-transport implementation and the evaluation contract that will govern later build/runtime testing.
 
-From `srv-b`, synchronize CT102 to current GitHub `main`, then run:
+Do not yet:
 
-```bash
-bash web/run-tests.sh
-bash web/run-admin-browser-acceptance.sh
-```
+- add WireGuard to `third_party/manifest.json` as a retained dependency;
+- modify the accepted ESP32 runtime;
+- flash the board;
+- create persistent management credentials;
+- stand up or persist a WireGuard hub/peer;
+- alter participant-router configuration;
+- treat a tunnel address, public key, endpoint, MAC address, hostname, or LAN locator as Fabric logical identity.
 
-After those gates pass on current `main`, continue expanding the full-featured descriptor-driven Illinois condominium Civic Infrastructure from evident statewide obligations and required records.
-
-Use the application to discover which concepts belong to Infrastructure and which are association-instance or later participant data. Defer uncertain or non-statewide concepts rather than guessing.
+Only after the candidate/evaluation contract is accepted should the project construct the first physical outbound-handshake gate on `fw`.

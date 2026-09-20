@@ -20,15 +20,11 @@ Do not use private chat history as a substitute for these records.
 
 ## Current priority
 
-The active priority workstream is **Descriptor-Driven Illinois Condominium Civic Infrastructure**.
+The active normative work item is **MS5-008 — candidate outbound management transport and WireGuard runtime/resource feasibility across ordinary participant NAT**.
 
-Kane Fabric remains Browser-First and implementation remains Online-First. The full-featured Administrative Web is now the design instrument for determining what belongs to common Civic Infrastructure versus association-instance or later participant data.
+MS5-007 physical participant integration is accepted. The browser path is no longer waiting on management transport: normal trusted Chromium consumed the exact physical ESP32 participant publication through permanent Wiregate CT103, and all temporary locator-specific proxy/firewall state was removed afterward.
 
-The administrative browser is descriptor-driven. The browser engine supplies generic capabilities; jurisdiction, legal authority, field semantics, controls, layout, help, and validation belong in versioned JSON descriptors.
-
-The immediate content scope is Illinois condominium infrastructure. Statewide Illinois applicability is the admission rule. County-specific, municipal, merely customary, uncertain, participant, security, offline, and edge-device concerns are deferred until their boundaries are established.
-
-Do not resume ESP32 application specialization merely because an administrative concept is unresolved. The physical runtime is accepted, but its final application shape is deliberately deferred until the Administrative Web establishes a concrete bounded edge role.
+MS5-008 is a candidate-capability evaluation, not a commitment to retain WireGuard. The result may be retain, reject, or defer. Begin with a repository-only candidate/evaluation contract. Do not alter the accepted ESP32 runtime, create persistent management credentials, or stand up a live tunnel until that contract is accepted.
 
 ## Stable facts are not discovery tasks
 
@@ -45,6 +41,8 @@ CPE network                  10.110.0.0/22
 CPE build/program host       fw / 10.110.0.4
 Firmware Authority host      annales / 10.110.0.9
 Firmware Authority container firmware-authority / LXD private NAT
+Wiregate container             CT103 / kane-wiregate / 10.20.0.13
+Wiregate browser origin        https://kane-wiregate.dev.infra
 ```
 
 The physical host control planes are different:
@@ -82,7 +80,7 @@ Ran 72 tests
 OK
 ```
 
-Firmware work is currently paused. Leave the accepted runtime unchanged unless the Administrative Web later establishes a concrete edge requirement or a later MS5 lifecycle gate is deliberately resumed.
+MS5-008 deliberately resumes lifecycle feasibility work, but the accepted runtime remains unchanged until the repository candidate/evaluation contract is accepted. The first MS5-008 step is therefore repository-only, not a flash or tunnel mutation.
 
 ## CT102 administrative environment
 
@@ -168,7 +166,7 @@ CPE-USB-1 / branch 1.1.2 / PROGRAM
 CPE-USB-2 / branch 1.1.3 / TERMINAL
 ```
 
-Do not switch USB roles or reflash the accepted board during ordinary administrative/browser work.
+Do not switch USB roles. MS5-008 may later require a deliberate test firmware build/flash, but only after its candidate/evaluation contract is accepted and only through the recorded CPE workflow.
 
 ## Firmware Authority on `annales`
 
