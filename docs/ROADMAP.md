@@ -126,6 +126,10 @@ MS5 owns the reference edge contract and integration proof: storage/activation, 
 
 WireGuard remains a management/synchronization candidate. Runtime operation, recovery, resource cost, and coexistence with Fabric serving remain to be proven. WireGuard is never a Fabric logical identity and is not a prerequisite for the browser path.
 
+MS5-007 uses a bounded laboratory transport adapter rather than pretending the reference board's residential/LAN DHCP address is deployable infrastructure. The current edge locator may be rediscovered, verified against the physical device and accepted artifact, temporarily admitted through operator-host policy for the browser acceptance, and discarded afterward. MS5-007 must not require participant DHCP reservations, static LAN addresses, inbound port forwarding, or persistent per-device firewall rules.
+
+MS5-008 then asks the scalable transport question separately: can a participant edge behind an ordinary independently administered NAT establish an authenticated operator-approved outbound management path, with transport identity and current locator remaining separate from Fabric logical identity? A retain/reject/defer result remains valid.
+
 Current MS5 integration exit direction: a normal online browser composes accepted Kane County geography with a valid focused participant publication through the administrative/Wiregate path; the participant edge serves only its bounded publication; the browser validates the same logical identities regardless of physical edge replacement; loss of management/upstream connectivity does not silently redefine already activated participant content; later firmware lifecycle/replacement/resource gates pass without moving county/category/contract authority onto the ESP32.
 
 ## Milestone 6 — Civic geography extension: parcels + delivery points
@@ -157,7 +161,9 @@ Purpose: connect replaceable physical edges to county infrastructure for authent
 Work includes:
 
 - management identity lifecycle separate from Wiregate/browser TLS and logical Fabric identities;
-- WireGuard runtime evaluation and adoption if it passes MS5 feasibility;
+- adoption of the management transport retained by MS5 feasibility, whether WireGuard or another approved implementation;
+- fleet enrollment that does not require participant-router administration;
+- operator-controlled mapping from device-management identity to current transport/session locator without promoting that locator into Fabric identity;
 - provisioning/replacement of management credentials;
 - authenticated synchronization of immutable generations;
 - resumable transfer and verification;
@@ -165,7 +171,7 @@ Work includes:
 - status/health reporting that does not create geographic authority;
 - recovery when management transport is unavailable or credentials are replaced.
 
-Exit gate: a replacement edge can obtain, verify, and activate the same logical participant publication generations through the management plane without changing county, association, unit, category, partition, subscription, or participant-publication identity.
+Exit gate: an operator can enroll and manage a fleet of replaceable participant edges across independently administered participant networks, and a replacement edge can obtain, verify, and activate the same logical participant publication generations through the management plane without participant-router configuration and without changing county, association, unit, category, partition, subscription, or participant-publication identity. The operating model must be reproducible by an independent county operator without inheriting Kane County private operational state.
 
 ## Milestone 8 — Multi-node distribution
 

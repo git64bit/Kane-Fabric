@@ -283,6 +283,33 @@ An ESP32-hosted AP is not an MS5 browser requirement. Network attachment of the 
 
 The Wiregate hub origin/TLS identity is a serving role only. It must not contain or expose persistent geographic, association, unit, or delivery-point identity merely for convenience.
 
+## MS5-007 laboratory transport adapter
+
+MS5-007 proves the browser/Wiregate/physical-edge composition contract. It does **not** define how hundreds of deployed participant edges are located or managed across residential networks.
+
+The reference board used for MS5-007 may be attached to a controlled laboratory LAN and may receive an ordinary DHCP address. That address is transient operational state. It must not be stabilized or promoted into architecture merely to make the acceptance convenient.
+
+A valid MS5-007 laboratory run may therefore:
+
+1. discover the reference board's current local locator;
+2. verify that locator against expected physical-device evidence and the exact accepted participant artifact;
+3. install a temporary, narrowly scoped operator-host policy allowing the Wiregate service to reach that verified locator on the required plain-HTTP port;
+4. run the normal-browser HTTPS -> Wiregate -> physical-edge composition acceptance;
+5. remove the temporary locator-specific policy before the acceptance procedure exits.
+
+The MS5-007 laboratory adapter must **not** require or persist:
+
+- participant-router administration;
+- a DHCP reservation for the participant edge;
+- a static participant-LAN address in firmware;
+- inbound residential port forwarding;
+- a permanent per-device firewall rule keyed to the participant-LAN address;
+- a participant LAN address, MAC address, hostname, TLS name, or transport endpoint as Fabric logical identity.
+
+This bounded adapter is acceptable because MS5-007 is proving that Wiregate can consume the physical edge's plain-HTTP publication while presenting the browser with its secure HTTPS origin. It is not the fleet transport.
+
+The deployable scaling question is intentionally separate: a participant edge behind an independently administered network must be able to establish an authenticated operator-approved management transport without requiring the operator to control the participant's router. MS5-008 evaluates candidate transport feasibility. Fleet enrollment, registry/current-locator handling, immutable-generation synchronization, and operational replacement belong to the later managed-edge synchronization milestone.
+
 ## Management transport and WireGuard
 
 Management/synchronization transport is distinct from browser serving and from administrative county/web/category/contract development.
@@ -291,6 +318,7 @@ WireGuard is the preferred candidate for evaluation because the maintained exter
 
 MS5 must establish runtime facts before adoption:
 
+- an edge can establish the candidate authenticated transport outbound from an ordinary independently administered participant network without inbound port forwarding or a participant-router reservation;
 - real handshake to a controlled WireGuard hub;
 - routed management traffic;
 - NAT/persistent-keepalive behavior;
@@ -355,7 +383,7 @@ MS5-004  Wiregate-terminated browser secure-origin plus hub-to-edge HTTP contrac
 MS5-005  ESP-IDF/toolchain and retained dependency selection plan
 MS5-006  ESP32-S3 v1 artifact appliance: immutable storage, verification, diagnostics, and HTTP byte-range implementation
 MS5-007  county/web/category/contract integration of a focused participant edge publication through Wiregate HTTPS and ESP32-S3 HTTP
-MS5-008  candidate management transport and WireGuard runtime/resource feasibility proof; retain, reject, or defer
+MS5-008  candidate outbound management transport and WireGuard runtime/resource feasibility proof across ordinary participant NAT; retain, reject, or defer
 MS5-009  firmware authenticity, update, rollback, and recovery proof
 MS5-010  physical device replacement/reprovisioning identity-preservation proof
 MS5-011  constrained-resource and concurrent-workload acceptance evidence
@@ -373,7 +401,7 @@ Milestone 5 is complete when all of the following are demonstrated with the refe
 5. storage activation and firmware/update failure do not expose a mixed or silently corrupted generation and have a tested recovery path;
 6. the edge remains useful for already activated local data when upstream management connectivity is unavailable;
 7. physical replacement/reprovisioning can change every device-local identity while retaining the same participant publication and Fabric logical content/placement references;
-8. management transport feasibility is measured rather than assumed, with WireGuard retained only if the runtime/resource proof justifies it; rejection or deferral is a valid MS5-008 outcome;
+8. management transport feasibility is measured rather than assumed, including operation from an ordinary independently administered participant network without DHCP reservation or inbound port forwarding; WireGuard is retained only if the runtime/resource proof justifies it, and rejection or deferral is a valid MS5-008 outcome;
 9. no irreversible ESP32 eFuse operation is required to satisfy the Kane Fabric reference-edge contract;
 10. optional external secure-element use remains substitutable and does not alter Fabric logical identities.
 

@@ -41,10 +41,13 @@ Webmin                    TCP/10000
 Current observed containers:
 
 ```text
-CT100  mechcomp      running
-CT101  mcproxy       running
-CT102  kane-fabric   running
+CT100  mechcomp        running
+CT101  mcproxy         running
+CT102  kane-fabric     running
+CT103  kane-wiregate   running
 ```
+
+CT103 was recreated on 2026-09-20 from the established CT101 proxy-class Proxmox/LXC shape rather than carrying forward a one-off dual-homed experiment. Its accepted host-side shape is Debian 12, 2 vCPU, 1024 MB RAM, 512 MB swap, 8 GiB root filesystem, unprivileged LXC, `nesting=1`, autostart, `America/Chicago`, and exactly one `vmbr1` interface at `10.20.0.13/24` with gateway `10.20.0.1`. Service software and role-specific acceptance remain separate gates.
 
 The CPE/WireGuard identity belongs to the **physical Proxmox host**, not automatically to its CTs. CT102 remains on the private `vmbr1` service network at `10.20.0.12/24` and is administered through the host with `pct`.
 
@@ -148,7 +151,23 @@ Do not add PostgreSQL/PostGIS, Docker, Node.js, GDAL, nginx, Apache, or other pl
 
 ## 8. Network and mail boundary
 
-CT102 shares the `10.20.0.0/24` service network with CT100 and CT101 but remains a separate project resource.
+CT102 and CT103 share the `10.20.0.0/24` service network with CT100 and CT101 but remain separate project resources.
+
+The normal Proxmox service-container pattern on `srv-b` is single-homed on `vmbr1`. A service CT must not be dual-homed onto the home/LAN bridge merely to reach another device. `srv-b` already owns the routing, isolation, and NAT boundary between its private service network and other host-connected networks; exceptions belong at that host boundary and must be explicit and narrowly scoped.
+
+The current host mechanism is `iptables-persistent` / `netfilter-persistent`, with `/etc/iptables/rules.v4` as the persistent IPv4 policy file. The broad `10.20.0.0/24 -> 10.0.0.0/24` isolation rule remains the default. Role-specific exceptions must not silently replace that default with general private-to-LAN access.
+
+Participant residential networking is outside operator-controlled infrastructure. A participant edge may receive an arbitrary local DHCP address and that address may change after lease expiry, router replacement, power loss, or movement to another network. Fabric deployment therefore must not require:
+
+- a participant to reserve a DHCP address;
+- a static participant-LAN address in firmware;
+- inbound router port forwarding;
+- operator administration of the participant's router;
+- a persistent per-device operator firewall rule keyed to a participant-LAN address.
+
+A residential DHCP address, MAC address, hostname, tunnel address, or observed source endpoint is operational locator/device evidence only. None is county, association, unit, placement, publication-generation, or other Fabric logical identity.
+
+For the bounded MS5-007 laboratory acceptance, `srv-b` may temporarily permit CT103 to reach the currently discovered reference ESP32 HTTP endpoint only after the locator is re-verified against the expected physical device and exact participant artifact. That temporary laboratory exception must be removed after the acceptance run and must not be persisted as the fleet architecture. Scalable participant-edge reachability belongs to management-transport feasibility and managed-edge synchronization, not to residential router configuration.
 
 Containers on this host do not originate mail. Only `srv-b` sends its own operational alerts through the existing relay path. CT102 therefore inherits the host SMTP egress block.
 
