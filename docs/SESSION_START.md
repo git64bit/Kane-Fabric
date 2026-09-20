@@ -22,13 +22,14 @@ Do not use private chat history as a substitute for these records.
 
 The active normative work item remains **MS5-008 — candidate outbound management transport and WireGuard runtime/resource feasibility**.
 
-The temporary ESP32 evaluation keypair is accepted on `fw`. Its public key is
-`UlpYmFs2nt4XKHM+zs71Mxt/9/H2vr6SGUxLpnwJemA=`; its private key remains only
-on `fw` in a mode-0600 evidence file.
+The temporary evaluation peer is now active on `wg-pk` only in runtime state,
+with public key `UlpYmFs2nt4XKHM+zs71Mxt/9/H2vr6SGUxLpnwJemA=` and
+`AllowedIPs 10.110.3.254/32`. Persistent hub configuration and routing were
+unchanged.
 
-The next primitive is runtime-only hub provisioning on `wg-pk` for
-`10.110.3.254/32`. Persistent `wg0.conf` must remain byte-for-byte unchanged.
-Do not build or flash firmware yet.
+The next phase stays entirely on `fw`: exact pinned candidate staging, build,
+application-only flash, authenticated outbound handshake, routed traffic proof,
+and exact restoration of the pre-test application image.
 
 ## Stable facts are not discovery tasks
 

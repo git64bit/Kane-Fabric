@@ -111,6 +111,21 @@
       "hub_peer_created": false,
       "wireguard_interface_changed": false,
       "firmware_changed": false
+    },
+    "ms5_008_wg_pk_temp_peer_status": "accepted-runtime-only",
+    "ms5_008_wg_pk_temp_peer_date": "2026-09-20",
+    "ms5_008_wg_pk_temp_peer": {
+      "public_key": "UlpYmFs2nt4XKHM+zs71Mxt/9/H2vr6SGUxLpnwJemA=",
+      "allowed_ip": "10.110.3.254/32",
+      "peer_count_after": 20,
+      "endpoint": null,
+      "persistent_keepalive": "off",
+      "latest_handshake_epoch": 0,
+      "transfer_rx": 0,
+      "transfer_tx": 0,
+      "persistent_config_sha256": "dc3331149f854e0fd6a069fdd4505aa259069f768c0ec88be5a473824e9b2429",
+      "persistent_config_unchanged": true,
+      "ipv4_routes_unchanged": true
     }
   },
   "deployment": {
@@ -444,17 +459,17 @@
       "ms5_007_cleanup": "permanent vhost restored byte-identical; persistent and active firewall policy restored; /edge/participant.json returned 404; no locator-specific rule persisted",
       "ms5_008_candidate_repository_acceptance": "accepted on CT102 at 5a35b607ef16b5c94bd732e7f2eb73fbffc17ad0; 12 focused tests passed; full MS5 suite 86 passed / 1 skipped; WireGuard retained=NO; decision state=defer"
     },
-    "next_work_item": "MS5-008 provision exactly one temporary runtime-only peer on wg-pk for public key UlpYmFs2nt4XKHM+zs71Mxt/9/H2vr6SGUxLpnwJemA= with AllowedIPs 10.110.3.254/32. Prove persistent wg0 configuration hash is unchanged. Do not build or flash firmware yet."
+    "next_work_item": "MS5-008 physical ESP32 outbound-handshake gate on fw: sync clean fw checkout, stage exact pinned WireGuard/libsodium sources in an isolated evaluation workspace, build against ESP-IDF 6.0.3, flash only the application partition, prove peer-up plus routed ICMP to 10.110.0.1, then restore the exact pre-test application bytes."
   },
   "priority_workstream": {
     "name": "MS5-008 Management Transport Feasibility",
     "design": "docs/MILESTONE_5_DESIGN.md",
     "cpe": "docs/CIVICVS_PROJECT_ENVIRONMENT.md",
     "toolchain_plan": "docs/MS5_TOOLCHAIN_DEPENDENCY_PLAN.md",
-    "status": "MS5-008 temporary ESP32 evaluation keypair accepted; runtime-only wg-pk peer provisioning is next",
+    "status": "MS5-008 temporary runtime-only hub peer accepted; physical ESP32 outbound handshake and routed traffic on fw is next",
     "browser_path_status": "accepted independently of management transport",
     "wireguard_status": "candidate-evaluation-only-not-retained",
     "target_environment": "repository contract work in GitHub/CT102 first; pinned build and physical runtime evidence on fw only after the candidate/evaluation contract is accepted"
   },
-  "next_safe_action": "On wg-pk as root, assert the evaluation public key is absent and 10.110.3.254/32 remains unallocated, hash persistent wg0.conf, add exactly one runtime peer with that public key and AllowedIPs, verify runtime state, then prove wg0.conf hash unchanged. Do not set endpoint or persistent keepalive on the hub peer."
+  "next_safe_action": "Stay on fw for the next phase. Build and run one temporary evaluation firmware using exact candidate pins and the fw-local evaluation private key. Capture authenticated peer-up and routed traffic evidence, then restore the exact pre-test application image before leaving fw."
 }

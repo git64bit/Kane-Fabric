@@ -490,23 +490,42 @@ public key         UlpYmFs2nt4XKHM+zs71Mxt/9/H2vr6SGUxLpnwJemA=
 The private-key contents were not printed. No hub peer, firmware build, flash,
 or tunnel was created.
 
-## Next safe action
+## MS5-008 runtime-only hub peer — accepted 2026-09-20
 
-Provision exactly one **runtime-only** peer on `wg-pk`:
+The temporary evaluation peer is active only in `wg-pk` runtime state:
 
 ```text
-public key   UlpYmFs2nt4XKHM+zs71Mxt/9/H2vr6SGUxLpnwJemA=
-AllowedIPs   10.110.3.254/32
+public key                  UlpYmFs2nt4XKHM+zs71Mxt/9/H2vr6SGUxLpnwJemA=
+AllowedIPs                  10.110.3.254/32
+endpoint                    none
+hub-side keepalive          off
+latest handshake            0
+transfer                    0 / 0
+persistent wg0.conf SHA256  dc3331149f854e0fd6a069fdd4505aa259069f768c0ec88be5a473824e9b2429
+persistent config changed   NO
+IPv4 routes changed         NO
 ```
 
-The gate must:
+The peer is intentionally not persisted.
 
-- confirm the public key is not already configured;
-- reconfirm `10.110.3.254/32` is not covered by another peer;
-- hash the persistent `wg0.conf` before mutation;
-- add only the runtime peer to `wg0`;
-- set no hub-side endpoint and no hub-side persistent keepalive;
-- verify the exact runtime peer;
-- prove the persistent `wg0.conf` hash is unchanged.
+## Next safe action
 
-Do not build or flash firmware in this primitive.
+Stay entirely on **`fw`** for the physical outbound-handshake phase.
+
+One bounded gate should:
+
+1. synchronize the clean `fw` checkout to current `main`;
+2. stage exact candidate sources only:
+   - WireGuard `cddaa4eab4e633847bf846723ac0449a34c3d2f7`;
+   - libsodium `40c22448d6e8f42be56c45f739b52a5c8d21c8ca`;
+3. use the local evaluation private key without printing it;
+4. build against the accepted ESP-IDF v6.0.3 environment;
+5. back up the exact current ESP32 application partition;
+6. flash only the temporary evaluation application;
+7. prove authenticated WireGuard peer-up and routed ICMP traffic to
+   `10.110.0.1`;
+8. restore the exact pre-test application bytes and verify the restored flash
+   SHA-256.
+
+Do not return to `wg-pk` until this entire `fw` phase either passes or fails
+at a specific assertion.
