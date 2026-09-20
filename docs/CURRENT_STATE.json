@@ -125,7 +125,39 @@
       "transfer_tx": 0,
       "persistent_config_sha256": "dc3331149f854e0fd6a069fdd4505aa259069f768c0ec88be5a473824e9b2429",
       "persistent_config_unchanged": true,
-      "ipv4_routes_unchanged": true
+      "ipv4_routes_unchanged": true,
+      "current_presence": "unverified-nonpersistent-after-physical-runtime-attempt",
+      "current_presence_note": "The peer was accepted as runtime-only and was never persisted. Repository state must not claim it is still live without a new wg-pk observation."
+    },
+    "ms5_008_physical_runtime_attempt_status": "build-passed-runtime-panic-restored",
+    "ms5_008_physical_runtime_attempt_date": "2026-09-20",
+    "ms5_008_physical_runtime_investigation_document": "docs/MS5_008_RUNTIME_INVESTIGATION.md",
+    "ms5_008_physical_runtime_attempt": {
+      "fw_repository_head": "3aeebe0b33570859277aae11aa1b3e147267db79",
+      "esp_idf_commit": "76f5dedd9950a3012fee8fb7d5586df21fc67802",
+      "wireguard_commit": "cddaa4eab4e633847bf846723ac0449a34c3d2f7",
+      "libsodium_commit": "40c22448d6e8f42be56c45f739b52a5c8d21c8ca",
+      "libsodium_upstream_commit": "d24faf56214469b354b01c8ba36257e04737101e",
+      "libsodium_patch_series_applied": true,
+      "live_component_resolution": false,
+      "evaluation_app_bytes": 918240,
+      "evaluation_app_sha256": "691d72e834b0bd3e7f75b9d75b0ad758a2927e136a8bb2159ec10467c44fb892",
+      "exact_pinned_build": "passed",
+      "pretest_app_sha256": "6e3c2bbcfb77107898bd96210f85bd49d93621ea057739e86c2914a56f554c96",
+      "temporary_app_flash": "performed-application-partition-only",
+      "wifi_ipv4": "10.0.0.185",
+      "participant_image_verification": "passed-before-wireguard-start",
+      "http_artifact_server": "ready-before-wireguard-start",
+      "runtime_result": "LoadProhibited panic immediately after MS5-008 evaluation task started and printed transport configuration; no peer-up evidence",
+      "exception": "LoadProhibited",
+      "exception_address": "0x00000000",
+      "authenticated_wireguard_handshake": "not-established",
+      "routed_management_traffic": "not-established",
+      "restored_app_sha256": "6e3c2bbcfb77107898bd96210f85bd49d93621ea057739e86c2914a56f554c96",
+      "predecessor_application_restore": "passed",
+      "fabric_partition_rewritten": false,
+      "wireguard_retained": false,
+      "decision_state": "defer"
     }
   },
   "deployment": {
@@ -279,6 +311,11 @@
         "first_flash": "accepted",
         "flash_geometry_acceptance": "accepted",
         "device_runtime_acceptance": "accepted"
+      },
+      "ms5_008": {
+        "last_observed_repository_head": "3aeebe0b33570859277aae11aa1b3e147267db79",
+        "last_physical_attempt": "exact-pinned-build-passed-runtime-panic-restored",
+        "pretest_and_restored_app_sha256": "6e3c2bbcfb77107898bd96210f85bd49d93621ea057739e86c2914a56f554c96"
       }
     },
     "firmware_authority_host": {
@@ -459,17 +496,17 @@
       "ms5_007_cleanup": "permanent vhost restored byte-identical; persistent and active firewall policy restored; /edge/participant.json returned 404; no locator-specific rule persisted",
       "ms5_008_candidate_repository_acceptance": "accepted on CT102 at 5a35b607ef16b5c94bd732e7f2eb73fbffc17ad0; 12 focused tests passed; full MS5 suite 86 passed / 1 skipped; WireGuard retained=NO; decision state=defer"
     },
-    "next_work_item": "MS5-008 physical ESP32 outbound-handshake gate on fw: sync clean fw checkout, stage exact pinned WireGuard/libsodium sources in an isolated evaluation workspace, build against ESP-IDF 6.0.3, flash only the application partition, prove peer-up plus routed ICMP to 10.110.0.1, then restore the exact pre-test application bytes."
+    "next_work_item": "MS5-008 diagnose the ESP32 LoadProhibited panic from the first exact-pinned physical WireGuard runtime attempt. Stay on fw; symbolize the captured backtrace against the preserved evaluation ELF/map if available. Do not perform another flash or mutate wg-pk until the exact crashing function/line is identified."
   },
   "priority_workstream": {
     "name": "MS5-008 Management Transport Feasibility",
     "design": "docs/MILESTONE_5_DESIGN.md",
     "cpe": "docs/CIVICVS_PROJECT_ENVIRONMENT.md",
     "toolchain_plan": "docs/MS5_TOOLCHAIN_DEPENDENCY_PLAN.md",
-    "status": "MS5-008 temporary runtime-only hub peer accepted; physical ESP32 outbound handshake and routed traffic on fw is next",
+    "status": "MS5-008 exact pinned evaluation firmware now builds and was physically flashed once, but the device panics with LoadProhibited before peer-up. The pre-test application was restored byte-identical. Runtime feasibility remains unaccepted and decision remains defer.",
     "browser_path_status": "accepted independently of management transport",
     "wireguard_status": "candidate-evaluation-only-not-retained",
-    "target_environment": "repository contract work in GitHub/CT102 first; pinned build and physical runtime evidence on fw only after the candidate/evaluation contract is accepted"
+    "target_environment": "fw only for crash diagnosis; no CT102 or wg-pk mutation required until the crash is understood"
   },
-  "next_safe_action": "Stay on fw for the next phase. Build and run one temporary evaluation firmware using exact candidate pins and the fw-local evaluation private key. Capture authenticated peer-up and routed traffic evidence, then restore the exact pre-test application image before leaving fw."
+  "next_safe_action": "On fw, decode the captured MS5-008 panic backtrace against the preserved evaluation ELF/map from outbound-handshake-20260920T195255Z. If that build workspace is absent, reproduce the same exact pinned build only; do not flash. Identify the exact crashing symbol/line before making any candidate-code or integration change."
 }

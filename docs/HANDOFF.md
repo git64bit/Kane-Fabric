@@ -492,7 +492,7 @@ or tunnel was created.
 
 ## MS5-008 runtime-only hub peer — accepted 2026-09-20
 
-The temporary evaluation peer is active only in `wg-pk` runtime state:
+The temporary evaluation peer was accepted in `wg-pk` runtime state:
 
 ```text
 public key                  UlpYmFs2nt4XKHM+zs71Mxt/9/H2vr6SGUxLpnwJemA=
@@ -506,26 +506,59 @@ persistent config changed   NO
 IPv4 routes changed         NO
 ```
 
-The peer is intentionally not persisted.
+The peer was intentionally not persisted. This is a **last-observed accepted
+runtime state**, not a claim that the peer is still live after later work.
+
+## MS5-008 first physical runtime attempt — investigated 2026-09-20
+
+The corrected `fw` evaluation reached a materially new boundary:
+
+```text
+fw repository head              3aeebe0b33570859277aae11aa1b3e147267db79
+ESP-IDF                         6.0.3 / 76f5dedd9950...
+WireGuard                       cddaa4eab4e633847bf846723ac0449a34c3d2f7
+libsodium wrapper               40c22448d6e8f42be56c45f739b52a5c8d21c8ca
+libsodium upstream              d24faf56214469b354b01c8ba36257e04737101e
+libsodium patch series          PASS
+evaluation build                PASS
+evaluation application bytes    918240
+evaluation application SHA256   691d72e834b0bd3e7f75b9d75b0ad758a2927e136a8bb2159ec10467c44fb892
+pre-test application SHA256     6e3c2bbcfb77107898bd96210f85bd49d93621ea057739e86c2914a56f554c96
+Wi-Fi/DHCP                      PASS / 10.0.0.185
+participant image verification  PASS
+HTTP artifact server ready      PASS
+WireGuard peer-up               NOT REACHED
+runtime failure                 LoadProhibited / EXCVADDR 0x00000000
+exact application restore       PASS / SHA256 identical to pre-test
+```
+
+The outer script failed because peer-up evidence was absent. The runtime log
+shows the more precise cause: the ESP32 panicked immediately after the
+MS5-008 evaluation task printed its WireGuard configuration, before any
+successful WireGuard startup/peer-up evidence.
+
+The physical board was restored byte-identical to its pre-test application.
+The Fabric partition was not rewritten.
+
+Detailed record:
+
+```text
+docs/MS5_008_RUNTIME_INVESTIGATION.md
+```
+
+WireGuard remains candidate-only and the MS5-008 decision remains `defer`.
 
 ## Next safe action
 
-Stay entirely on **`fw`** for the physical outbound-handshake phase.
+Stay on **`fw`** and diagnose the panic before another state-changing test.
 
-One bounded gate should:
+1. use the preserved evaluation ELF/map, if present, to symbolize the captured
+   backtrace;
+2. if the temporary workspace is gone, reproduce the exact pinned build only,
+   without flashing;
+3. identify the exact crashing function and source line;
+4. only then decide the smallest integration correction or whether the
+   candidate should be rejected/deferred.
 
-1. synchronize the clean `fw` checkout to current `main`;
-2. stage exact candidate sources only:
-   - WireGuard `cddaa4eab4e633847bf846723ac0449a34c3d2f7`;
-   - libsodium `40c22448d6e8f42be56c45f739b52a5c8d21c8ca`;
-3. use the local evaluation private key without printing it;
-4. build against the accepted ESP-IDF v6.0.3 environment;
-5. back up the exact current ESP32 application partition;
-6. flash only the temporary evaluation application;
-7. prove authenticated WireGuard peer-up and routed ICMP traffic to
-   `10.110.0.1`;
-8. restore the exact pre-test application bytes and verify the restored flash
-   SHA-256.
-
-Do not return to `wg-pk` until this entire `fw` phase either passes or fails
-at a specific assertion.
+Do not modify `wg-pk`, do not create another peer, and do not flash the
+ESP32 again merely to rediscover the same panic.

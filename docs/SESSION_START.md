@@ -22,14 +22,25 @@ Do not use private chat history as a substitute for these records.
 
 The active normative work item remains **MS5-008 — candidate outbound management transport and WireGuard runtime/resource feasibility**.
 
-The temporary evaluation peer is now active on `wg-pk` only in runtime state,
-with public key `UlpYmFs2nt4XKHM+zs71Mxt/9/H2vr6SGUxLpnwJemA=` and
-`AllowedIPs 10.110.3.254/32`. Persistent hub configuration and routing were
-unchanged.
+The exact-pinned evaluation firmware now **builds successfully** on `fw` after
+applying the pinned libsodium wrapper patch series. A first application-only
+physical run was performed.
 
-The next phase stays entirely on `fw`: exact pinned candidate staging, build,
-application-only flash, authenticated outbound handshake, routed traffic proof,
-and exact restoration of the pre-test application image.
+The ESP32-S3 reached its accepted participant runtime, acquired
+`10.0.0.185`, verified the participant image, and started the HTTP artifact
+server. Immediately after the MS5-008 evaluation task printed the WireGuard
+transport configuration, the device panicked with `LoadProhibited` and
+`EXCVADDR=0x00000000`. No authenticated peer-up was established.
+
+The gate restored the exact pre-test application bytes and verified identical
+SHA-256 `6e3c2bbcfb77107898bd96210f85bd49d93621ea057739e86c2914a56f554c96`.
+
+The next action remains entirely on `fw` but is **diagnostic only**: symbolize
+the captured backtrace against the preserved evaluation ELF/map. Do not flash
+again and do not modify `wg-pk` until the exact crashing function/line is
+known.
+
+See `docs/MS5_008_RUNTIME_INVESTIGATION.md`.
 
 ## Stable facts are not discovery tasks
 

@@ -150,23 +150,35 @@ bash ms5/run-ms5-008-candidate-acceptance.sh
 
 ## Active work
 
-The MS5-008 candidate/evaluation repository primitive is accepted in CT102 at
-`5a35b607ef16b5c94bd732e7f2eb73fbffc17ad0`.
+The MS5-008 candidate/evaluation repository primitive remains accepted at
+`5a35b607ef16b5c94bd732e7f2eb73fbffc17ad0`, and WireGuard remains
+candidate-only / not retained.
 
-Accepted evidence:
+Preparation has progressed beyond the earlier read-only preflight:
+
+- the `fw` transport preflight is accepted;
+- `10.110.3.254/32` was selected collision-free for temporary evaluation;
+- an evaluation-only ESP32 WireGuard keypair was created on `fw`;
+- a runtime-only, non-persistent hub peer was accepted on `wg-pk`;
+- the exact pinned WireGuard/libsodium evaluation firmware now builds under
+  ESP-IDF 6.0.3 after applying the libsodium wrapper's pinned patch series;
+- a first application-only physical run was performed and then restored
+  byte-identical to the pre-test application.
+
+That first runtime did **not** establish WireGuard. The ESP32-S3 panicked with
+`LoadProhibited` / `EXCVADDR=0x00000000` immediately after the evaluation
+task started WireGuard configuration. No peer-up or routed-management evidence
+was produced.
+
+Current investigation record:
 
 ```text
-focused candidate tests      12/12 PASS
-complete MS5 suite           86 PASS / 1 skipped
-WireGuard retained           NO
-decision state               defer
+docs/MS5_008_RUNTIME_INVESTIGATION.md
 ```
 
-The next bounded primitive is a read-only physical transport preflight on
-`fw`. It discovers the existing non-secret CPE/WireGuard hub metadata needed
-to construct the separate outbound-handshake feasibility gate. It does not
-build/flash firmware, create credentials, modify a peer, or establish the
-candidate ESP32 tunnel.
+The next primitive is diagnostic and stays on `fw`: symbolize the captured
+backtrace against the preserved evaluation ELF/map. Do not flash again or
+modify `wg-pk` until the exact crashing function and source line are known.
 
 ## Tests
 
