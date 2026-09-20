@@ -1,14 +1,15 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import shutil
 import subprocess
 import tempfile
 import unittest
 from pathlib import Path
 
-from ms5.tools.kane_fabric_edge_image import EdgeImageError, stage_inventory
-from ms5.tools.kane_fabric_storage import build_inventory
+from ms5.tools.kane_fabric_edge_image import EdgeImageError, load_inventory, stage_inventory
+from ms5.tools.kane_fabric_storage import build_inventory, verify_inventory_files
 
 
 REPO = Path(__file__).resolve().parents[2]
@@ -135,6 +136,41 @@ class Esp32ReferenceTests(unittest.TestCase):
 
         self.assertIn("Historical Milestone 3 design baseline", ms3)
         self.assertIn("later accepted MS5 transport correction supersedes", ms3)
+
+    def test_reference_participant_image_is_verified_and_bounded(self):
+        image = REFERENCE / "participant_image"
+        inventory = load_inventory(image / ".kane-fabric-storage-inventory.json")
+        verify_inventory_files(inventory, image)
+
+        self.assertEqual(
+            "02c9230496b677f12e49af696afbc5fb06116fe10c3d9818ec85e6f2445ac7a3",
+            inventory["logical_placement_sha256"],
+        )
+        self.assertEqual(
+            ["participant-publication"],
+            [item["artifact_key"] for item in inventory["artifacts"]],
+        )
+        self.assertEqual(
+            ["participant.json"],
+            [item["path"] for item in inventory["artifacts"]],
+        )
+
+        publication = json.loads((image / "participant.json").read_text())
+        self.assertEqual(
+            "kane-fabric-participant-publication",
+            publication["format"],
+        )
+        association = publication["association_unit_identity"]["association_anchor"]
+        self.assertEqual(
+            "synthetic-public-recording-authority",
+            association["recording_authority_reference"],
+        )
+        geographic_ref = publication["descriptor_instances"][0]["geographic_refs"][0]
+        self.assertEqual("buildings", geographic_ref["dataset_key"])
+        self.assertEqual(
+            "kcb-aee53d8f13ccc7eebbf23d2a4c42d7d1d939f9b4b057584966642827bace7fb1",
+            geographic_ref["object_key"],
+        )
 
     def test_edge_image_staging_preserves_verified_artifacts(self):
         with tempfile.TemporaryDirectory() as tmp:
