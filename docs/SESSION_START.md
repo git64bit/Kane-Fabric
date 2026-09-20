@@ -22,14 +22,13 @@ Do not use private chat history as a substitute for these records.
 
 The active normative work item remains **MS5-008 — candidate outbound management transport and WireGuard runtime/resource feasibility**.
 
-The controlled hub allocation preflight is accepted. The temporary evaluation
-address is `10.110.3.254/32`, proven free against all 19 current
-`wg-pk` peer AllowedIPs.
+The temporary ESP32 evaluation keypair is accepted on `fw`. Its public key is
+`UlpYmFs2nt4XKHM+zs71Mxt/9/H2vr6SGUxLpnwJemA=`; its private key remains only
+on `fw` in a mode-0600 evidence file.
 
-The next primitive is local-only key creation on `fw`: generate one temporary
-ESP32 evaluation WireGuard keypair, retain the private key only on `fw` with
-mode 0600, and expose only the public key and non-secret file metadata. Do not
-modify the hub, firmware, or tunnel state in this primitive.
+The next primitive is runtime-only hub provisioning on `wg-pk` for
+`10.110.3.254/32`. Persistent `wg0.conf` must remain byte-for-byte unchanged.
+Do not build or flash firmware yet.
 
 ## Stable facts are not discovery tasks
 

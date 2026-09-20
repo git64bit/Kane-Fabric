@@ -96,6 +96,21 @@
       "wireguard_changed": false,
       "routing_changed": false,
       "candidate_peer_created": false
+    },
+    "ms5_008_fw_evaluation_keypair_status": "accepted",
+    "ms5_008_fw_evaluation_keypair_date": "2026-09-20",
+    "ms5_008_fw_evaluation_keypair": {
+      "host": "fw",
+      "user": "cpe-build",
+      "private_key_path": "/home/cpe-build/evidence/Kane-Fabric/ms5-008/esp32-evaluation-wireguard.private",
+      "private_key_mode": "0600",
+      "private_key_owner": "cpe-build:cpe-build",
+      "private_key_sha256": "a48666ae7f91e5eb6ab9d5dd435175601e142786a6d25fd172c2dcccdded095f",
+      "public_key": "UlpYmFs2nt4XKHM+zs71Mxt/9/H2vr6SGUxLpnwJemA=",
+      "private_key_contents_printed": false,
+      "hub_peer_created": false,
+      "wireguard_interface_changed": false,
+      "firmware_changed": false
     }
   },
   "deployment": {
@@ -429,17 +444,17 @@
       "ms5_007_cleanup": "permanent vhost restored byte-identical; persistent and active firewall policy restored; /edge/participant.json returned 404; no locator-specific rule persisted",
       "ms5_008_candidate_repository_acceptance": "accepted on CT102 at 5a35b607ef16b5c94bd732e7f2eb73fbffc17ad0; 12 focused tests passed; full MS5 suite 86 passed / 1 skipped; WireGuard retained=NO; decision state=defer"
     },
-    "next_work_item": "MS5-008 generate one temporary ESP32 evaluation WireGuard keypair locally on fw, preserve the private key only on fw with mode 0600, and emit only the public key plus non-secret file metadata. Do not modify wg-pk, build, flash, or establish a tunnel."
+    "next_work_item": "MS5-008 provision exactly one temporary runtime-only peer on wg-pk for public key UlpYmFs2nt4XKHM+zs71Mxt/9/H2vr6SGUxLpnwJemA= with AllowedIPs 10.110.3.254/32. Prove persistent wg0 configuration hash is unchanged. Do not build or flash firmware yet."
   },
   "priority_workstream": {
     "name": "MS5-008 Management Transport Feasibility",
     "design": "docs/MILESTONE_5_DESIGN.md",
     "cpe": "docs/CIVICVS_PROJECT_ENVIRONMENT.md",
     "toolchain_plan": "docs/MS5_TOOLCHAIN_DEPENDENCY_PLAN.md",
-    "status": "MS5-008 wg-pk allocation preflight accepted; temporary fw-local ESP32 evaluation keypair generation is next",
+    "status": "MS5-008 temporary ESP32 evaluation keypair accepted; runtime-only wg-pk peer provisioning is next",
     "browser_path_status": "accepted independently of management transport",
     "wireguard_status": "candidate-evaluation-only-not-retained",
     "target_environment": "repository contract work in GitHub/CT102 first; pinned build and physical runtime evidence on fw only after the candidate/evaluation contract is accepted"
   },
-  "next_safe_action": "On fw, generate one temporary evaluation-only WireGuard keypair in a dedicated MS5-008 evidence directory. Keep the private key local and unreadable to other users; emit only the public key, path, mode, and SHA-256 of the private-key file. No peer, firmware, or tunnel mutation yet."
+  "next_safe_action": "On wg-pk as root, assert the evaluation public key is absent and 10.110.3.254/32 remains unallocated, hash persistent wg0.conf, add exactly one runtime peer with that public key and AllowedIPs, verify runtime state, then prove wg0.conf hash unchanged. Do not set endpoint or persistent keepalive on the hub peer."
 }

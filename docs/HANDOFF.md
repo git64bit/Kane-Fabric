@@ -475,21 +475,38 @@ collision check              FREE
 No peer was created. No WireGuard or routing state changed. No private or
 preshared key was read or printed.
 
+## MS5-008 temporary ESP32 evaluation keypair — accepted 2026-09-20
+
+The evaluation-only WireGuard identity was generated locally on `fw`:
+
+```text
+private key path   /home/cpe-build/evidence/Kane-Fabric/ms5-008/esp32-evaluation-wireguard.private
+private key mode   0600
+private key owner  cpe-build:cpe-build
+private key SHA256 a48666ae7f91e5eb6ab9d5dd435175601e142786a6d25fd172c2dcccdded095f
+public key         UlpYmFs2nt4XKHM+zs71Mxt/9/H2vr6SGUxLpnwJemA=
+```
+
+The private-key contents were not printed. No hub peer, firmware build, flash,
+or tunnel was created.
+
 ## Next safe action
 
-Generate exactly one **temporary MS5-008 ESP32 evaluation keypair locally on
-`fw`**.
+Provision exactly one **runtime-only** peer on `wg-pk`:
 
-Requirements:
+```text
+public key   UlpYmFs2nt4XKHM+zs71Mxt/9/H2vr6SGUxLpnwJemA=
+AllowedIPs   10.110.3.254/32
+```
 
-- private key stays only on `fw`;
-- private-key file mode is `0600`;
-- public key may be emitted for later hub provisioning;
-- evidence may include private-key file path, mode, owner, byte length, and
-  SHA-256, but never the private-key contents;
-- do not add the public key to `wg-pk` yet;
-- do not modify the accepted ESP32 firmware;
-- do not build, flash, or establish a tunnel.
+The gate must:
 
-After the public key is accepted, provision exactly one temporary hub peer for
-`10.110.3.254/32` in a separate gate.
+- confirm the public key is not already configured;
+- reconfirm `10.110.3.254/32` is not covered by another peer;
+- hash the persistent `wg0.conf` before mutation;
+- add only the runtime peer to `wg0`;
+- set no hub-side endpoint and no hub-side persistent keepalive;
+- verify the exact runtime peer;
+- prove the persistent `wg0.conf` hash is unchanged.
+
+Do not build or flash firmware in this primitive.
