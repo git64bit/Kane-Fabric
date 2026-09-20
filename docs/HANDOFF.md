@@ -438,26 +438,39 @@ CT102 worktree               clean
 This accepts only the evaluation inputs and evidence contract. No physical
 firmware, WireGuard hub, peer credential, or tunnel was changed.
 
+## MS5-008 fw transport preflight — accepted 2026-09-20
+
+The read-only `fw` WireGuard preflight accepted the existing CPE transport:
+
+```text
+host                      fw
+interface                 wg0
+fw public key             k24Ry8paxtcKkwPdxTcICjeiJWS7TEhrQQ0ztEWyT2A=
+hub public key            1+Wb++fjXNbY0joOvj4AZvJgF6b125YOPSFsmNqVo3I=
+hub endpoint              198.58.111.109:51820
+allowed IPs               10.110.0.0/22
+persistent keepalive      25 seconds
+hub reference address     10.110.0.1
+hub ping                  PASS
+```
+
+No private-key file or preshared key was read or printed. WireGuard,
+repository, and firmware state were unchanged.
+
 ## Next safe action
 
-Run one **read-only MS5-008 physical transport preflight on `fw`**.
+Run one **read-only peer-allocation preflight directly on `wg-pk` as root**.
 
-The preflight must establish only the inputs needed to construct the later
-outbound-handshake gate:
+The gate must:
 
-- current `fw` CPE checkout/build/USB state;
-- existing host WireGuard interface and route state;
-- controlled-hub peer public key, endpoint, allowed IPs, and keepalive metadata;
-- reachability of the existing CPE hub path where observable.
+- verify `wg-pk` / `wg0` is the controlled hub at `10.110.0.1/22`;
+- verify UDP/51820 and hub public key
+  `1+Wb++fjXNbY0joOvj4AZvJgF6b125YOPSFsmNqVo3I=`;
+- enumerate only non-secret peer public keys, AllowedIPs, endpoints,
+  keepalive, handshake, and transfer metadata;
+- select one currently unallocated temporary evaluation address from the
+  `10.110.0.0/22` CPE range;
+- make no WireGuard or routing change and read no private/preshared key.
 
-It must not:
-
-- build or flash firmware;
-- generate or print private/preshared keys;
-- add or alter a WireGuard peer;
-- stand up a new hub;
-- alter participant-router configuration;
-- change the accepted ESP32 runtime.
-
-After exact preflight evidence is returned, construct the separate physical
-outbound-handshake gate.
+After that exact inventory is accepted, the project may construct the temporary
+ESP32 peer/key + outbound-handshake gate.

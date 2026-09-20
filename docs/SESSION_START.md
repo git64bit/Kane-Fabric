@@ -22,15 +22,16 @@ Do not use private chat history as a substitute for these records.
 
 The active normative work item remains **MS5-008 — candidate outbound management transport and WireGuard runtime/resource feasibility**.
 
-The repository candidate/evaluation contract is accepted in CT102 at
-`5a35b607ef16b5c94bd732e7f2eb73fbffc17ad0`: 12/12 focused candidate
-tests passed, the complete MS5 suite passed 86 tests with one expected skip,
-WireGuard remains unretained, and the decision state remains `defer`.
+The repository candidate/evaluation contract is accepted. The read-only
+`fw` transport preflight is also accepted: the existing CPE hub is
+`10.110.0.1`, public key
+`1+Wb++fjXNbY0joOvj4AZvJgF6b125YOPSFsmNqVo3I=`, endpoint
+`198.58.111.109:51820`, and the current CPE policy uses 25-second persistent
+keepalive.
 
-The next primitive is a read-only physical transport preflight on `fw`.
-Discover only accepted CPE state plus non-secret existing WireGuard hub metadata.
-Do not build, flash, generate credentials, modify peers, or alter the participant
-router during this preflight.
+The next primitive is read-only server-side peer-allocation discovery directly
+on `wg-pk`. Do not generate an ESP32 key, add a peer, alter routes, build, or
+flash until a collision-free temporary evaluation address is evidenced.
 
 ## Stable facts are not discovery tasks
 
