@@ -1,0 +1,86 @@
+{
+  "format": "kane-fabric-ms5-management-transport-candidate",
+  "schema_version": 1,
+  "work_item": "MS5-008",
+  "status": "candidate-evaluation-only-not-retained",
+  "transport": "wireguard",
+  "observed_date": "2026-09-20",
+  "reference_target": "esp32s3",
+  "reference_sdk": {
+    "name": "esp-idf",
+    "version": "6.0.3",
+    "tag": "v6.0.3",
+    "source_commit": "76f5dedd9950a3012fee8fb7d5586df21fc67802"
+  },
+  "candidate": {
+    "implementation": "esphome-libs/wireguard",
+    "repository": "https://github.com/esphome-libs/wireguard",
+    "component": "esphome/wireguard",
+    "version": "0.4.6",
+    "tag": "v0.4.6",
+    "source_commit": "cddaa4eab4e633847bf846723ac0449a34c3d2f7",
+    "release_published": "2026-08-17",
+    "release_immutable": true,
+    "license": "BSD-3-Clause",
+    "declared_dependency": {
+      "component": "esphome/libsodium",
+      "constraint": "^1.10021.1"
+    },
+    "evaluation_dependency_pin": {
+      "implementation": "esphome-libs/libsodium",
+      "repository": "https://github.com/esphome-libs/libsodium",
+      "component": "esphome/libsodium",
+      "version": "1.10021.11",
+      "tag": "1.10021.11",
+      "source_commit": "40c22448d6e8f42be56c45f739b52a5c8d21c8ca",
+      "release_asset": "libsodium-1.10021.11.tar.gz",
+      "source_sha256": "72696259f15278f146b700854798f639aa5ab193e0068f2f1f56d6d3cbe9692f",
+      "release_immutable": false,
+      "license": "MIT"
+    }
+  },
+  "boundaries": {
+    "browser_path_prerequisite": false,
+    "firmware_v1_requirement": false,
+    "retained_dependency": false,
+    "third_party_manifest_entry_allowed_before_retain_decision": false,
+    "live_package_resolution_allowed_during_evaluation": false,
+    "participant_router_administration_required": false,
+    "inbound_port_forwarding_required": false,
+    "dhcp_reservation_required": false,
+    "static_participant_lan_address_required": false,
+    "management_identity_is_fabric_identity": false,
+    "transport_locator_is_fabric_identity": false,
+    "wireguard_key_is_fabric_identity": false
+  },
+  "required_evidence": [
+    "exact_pinned_esp32s3_build",
+    "outbound_transport_from_ordinary_participant_nat",
+    "no_inbound_port_forwarding",
+    "no_participant_router_reservation",
+    "authenticated_wireguard_handshake_to_controlled_hub",
+    "routed_management_traffic",
+    "persistent_keepalive_nat_behavior",
+    "wifi_interruption_and_reconnect",
+    "repeated_disconnect_reconnect",
+    "flash_cost",
+    "ram_cost",
+    "task_cost",
+    "socket_cost",
+    "cpu_cost",
+    "coexistence_with_plain_http_artifact_serving",
+    "coexistence_with_storage_operations",
+    "coexistence_with_update_operations",
+    "management_loss_does_not_invalidate_activated_publication"
+  ],
+  "decision": {
+    "allowed_results": [
+      "retain",
+      "reject",
+      "defer"
+    ],
+    "state_before_runtime_evidence": "defer",
+    "retain_requires_all_required_evidence": true,
+    "retain_requires_dependency_policy_followup": true
+  }
+}

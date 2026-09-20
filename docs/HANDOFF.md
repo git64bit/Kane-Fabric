@@ -417,16 +417,23 @@ An independent operator must not need Kane County's:
 
 ## Next safe action
 
-Begin **MS5-008** with one repository-only primitive: freeze the exact candidate management-transport implementation and the evaluation contract that will govern later build/runtime testing.
+The MS5-008 repository candidate/evaluation contract is implemented on GitHub
+`main` and now requires CT102 acceptance before physical transport work.
+
+From a clean synchronized CT102 checkout, run the repository-owned gate:
+
+```text
+bash ms5/run-ms5-008-candidate-acceptance.sh
+```
 
 Do not yet:
 
-- add WireGuard to `third_party/manifest.json` as a retained dependency;
-- modify the accepted ESP32 runtime;
-- flash the board;
+- modify or flash the accepted ESP32 runtime;
 - create persistent management credentials;
 - stand up or persist a WireGuard hub/peer;
+- add WireGuard to `third_party/manifest.json`;
 - alter participant-router configuration;
-- treat a tunnel address, public key, endpoint, MAC address, hostname, or LAN locator as Fabric logical identity.
+- treat management/tunnel identity as Fabric identity.
 
-Only after the candidate/evaluation contract is accepted should the project construct the first physical outbound-handshake gate on `fw`.
+If the CT102 gate passes, the next materially distinct primitive is the first
+physical outbound-handshake feasibility gate on `fw`.

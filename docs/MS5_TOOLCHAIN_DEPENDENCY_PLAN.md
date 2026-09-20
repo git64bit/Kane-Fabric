@@ -121,12 +121,26 @@ release-ready.
 **No WireGuard implementation is retained by MS5-005.**
 
 Earlier ESP32 WireGuard compilation is feasibility evidence only. MS5-008 must
-perform the real runtime/resource/coexistence proof. Only a candidate that
-passes that proof may be selected, added to `third_party/manifest.json`,
-license-reviewed, pinned, and included in the offline reproduction set.
+perform the real runtime/resource/coexistence proof. The active MS5-008
+evaluation identity is recorded separately in:
 
-This prevents a compile-only observation or a newly published upstream package
-from becoming a Kane Fabric dependency by implication.
+```text
+ms5/management-transport-candidate.json
+docs/MS5_008_MANAGEMENT_TRANSPORT_EVALUATION.md
+```
+
+That record pins an evaluation candidate and its resolved cryptographic
+dependency so physical evidence is reproducible. It does **not** add either
+component to `third_party/manifest.json` or make WireGuard a v1 requirement.
+
+Only a candidate that passes the runtime/resource/coexistence proof and receives
+an explicit `retain` decision may be selected, added to
+`third_party/manifest.json`, license-reviewed, pinned for release, and included
+in the offline reproduction set.
+
+This prevents a compile-only observation, a moving package-manager resolution,
+or a newly published upstream package from becoming a Kane Fabric dependency by
+implication.
 
 ## Acceptance
 

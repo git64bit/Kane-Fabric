@@ -22,9 +22,15 @@ Do not use private chat history as a substitute for these records.
 
 The active normative work item is **MS5-008 — candidate outbound management transport and WireGuard runtime/resource feasibility across ordinary participant NAT**.
 
-MS5-007 physical participant integration is accepted. The browser path is no longer waiting on management transport: normal trusted Chromium consumed the exact physical ESP32 participant publication through permanent Wiregate CT103, and all temporary locator-specific proxy/firewall state was removed afterward.
+MS5-007 physical participant integration is accepted. The browser path is independent of management transport.
 
-MS5-008 is a candidate-capability evaluation, not a commitment to retain WireGuard. The result may be retain, reject, or defer. Begin with a repository-only candidate/evaluation contract. Do not alter the accepted ESP32 runtime, create persistent management credentials, or stand up a live tunnel until that contract is accepted.
+The first MS5-008 repository primitive is now implemented: an exact WireGuard evaluation candidate and exact libsodium evaluation dependency are pinned in `ms5/management-transport-candidate.json`, with retain/reject/defer decision rules and required runtime evidence. WireGuard is still not retained.
+
+Before any firmware flash, hub, persistent credential, or live tunnel, CT102 must accept the repository contract using:
+
+```text
+bash ms5/run-ms5-008-candidate-acceptance.sh
+```
 
 ## Stable facts are not discovery tasks
 

@@ -133,6 +133,21 @@ Detailed selection/reproduction plan:
 docs/MS5_TOOLCHAIN_DEPENDENCY_PLAN.md
 ```
 
+
+MS5-008 candidate/evaluation authority:
+
+```text
+ms5/management-transport-candidate.json
+docs/MS5_008_MANAGEMENT_TRANSPORT_EVALUATION.md
+ms5/tools/kane_fabric_management_transport.py
+```
+
+Repository acceptance gate:
+
+```text
+bash ms5/run-ms5-008-candidate-acceptance.sh
+```
+
 ## Active work
 
 The next normative work item is **MS5-008**: candidate outbound management

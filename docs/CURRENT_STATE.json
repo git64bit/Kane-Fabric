@@ -57,7 +57,10 @@
     "cpe_esp32_first_flash_source_head": "d26ec418751b7b2f82a8814297204e1b62bceda4",
     "cpe_esp32_first_flash_record_head": "cf744c5dc6342f0a0ab8c73f46fb7dba31c64109",
     "ms5_007_participant_image_head": "220fbee41bb5b9a240d1ffb2e0a846b8f45dfbaa",
-    "ms5_007_locator_architecture_head": "4fe0317e2d292694720b2856e59895f736eb6d89"
+    "ms5_007_locator_architecture_head": "4fe0317e2d292694720b2856e59895f736eb6d89",
+    "ms5_008_candidate_contract_status": "published-pending-ct102-acceptance",
+    "ms5_008_candidate_record": "ms5/management-transport-candidate.json",
+    "ms5_008_candidate_document": "docs/MS5_008_MANAGEMENT_TRANSPORT_EVALUATION.md"
   },
   "deployment": {
     "proxmox_host": "srv-b",
@@ -389,17 +392,17 @@
       "ms5_007_participant_sha256": "03f74e9e48254cc9d3fd4af22b840ce5d3857c028d8acd9cc8eca63003ab883c",
       "ms5_007_cleanup": "permanent vhost restored byte-identical; persistent and active firewall policy restored; /edge/participant.json returned 404; no locator-specific rule persisted"
     },
-    "next_work_item": "MS5-008 define and accept the candidate outbound management-transport evaluation contract before any firmware or tunnel mutation; WireGuard remains retain/reject/defer until runtime/resource/coexistence evidence exists."
+    "next_work_item": "MS5-008 accept the pinned candidate/evaluation contract in CT102; do not start physical build, flash, hub, credentials, or live tunnel before this repository gate passes."
   },
   "priority_workstream": {
     "name": "MS5-008 Management Transport Feasibility",
     "design": "docs/MILESTONE_5_DESIGN.md",
     "cpe": "docs/CIVICVS_PROJECT_ENVIRONMENT.md",
     "toolchain_plan": "docs/MS5_TOOLCHAIN_DEPENDENCY_PLAN.md",
-    "status": "MS5-007 accepted; management transport remains candidate-only and unretained",
+    "status": "MS5-008 candidate/evaluation contract published to GitHub main; CT102 repository acceptance pending",
     "browser_path_status": "accepted independently of management transport",
-    "wireguard_status": "candidate-not-retained",
+    "wireguard_status": "candidate-evaluation-only-not-retained",
     "target_environment": "repository contract work in GitHub/CT102 first; pinned build and physical runtime evidence on fw only after the candidate/evaluation contract is accepted"
   },
-  "next_safe_action": "Define one MS5-008 candidate management-transport evaluation contract and immutable candidate identity without adding WireGuard to third_party/manifest.json or changing the accepted ESP32 runtime. Accept that repository contract before any tunnel build, flash, hub, credential, or participant-network mutation."
+  "next_safe_action": "Synchronize clean CT102 main to current GitHub main and run ms5/run-ms5-008-candidate-acceptance.sh. If it passes, accept the repository candidate/evaluation primitive and only then construct the separate physical outbound-handshake gate on fw."
 }
