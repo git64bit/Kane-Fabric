@@ -374,7 +374,7 @@ srv-b / 10.110.0.12
 fw / 10.110.0.4
   bare-metal Ubuntu
   ESP-IDF build / USB programming / physical ESP32 acceptance
-  firmware application work paused
+  active MS5-008 crash diagnosis; no additional flash until symbolized
 
 annales / 10.110.0.9
   Ubuntu LXD

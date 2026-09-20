@@ -87,9 +87,9 @@ MS5 no longer assumes every edge stores the complete Kane County substrate. A pa
 
 The ESP32-S3 is intentionally present in the first release to establish a real firmware lifecycle before Kane Fabric matures around a software-only architecture. Its role is deliberately modest: immutable bounded artifact storage, plain-HTTP serving, local provisioning/replacement, fail-closed verification, and a base for later firmware lifecycle responsibilities.
 
-The MS5-006 physical device-runtime gate is accepted. The current priority is administrative/browser integration rather than additional firmware specialization.
+The MS5-006 physical device-runtime gate and MS5-007 physical participant/browser integration gate are accepted. The current normative priority is **MS5-008 management-transport feasibility**. The exact-pinned WireGuard candidate now builds on the reference ESP32-S3, but its first physical runtime attempt panicked before peer-up and was restored byte-identical afterward; WireGuard therefore remains candidate-only with decision state `defer`.
 
-The active development order is:
+The Browser-First / Online-First administrative development order remains:
 
 ```text
 Browser-First product architecture
@@ -106,6 +106,8 @@ shared browser modules/contracts stabilize
         ↓
 local/offline browser reduction
 ```
+
+That administrative order is not a substitute for the normative MS5 work-item sequence. With MS5-007 accepted, the active Milestone 5 work item is MS5-008 until it reaches retain, reject, or defer acceptance.
 
 The online-first order must not become SaaS-first. Participant data remains portable and independently retainable; civic identities do not depend on one hosted account system; and another county operator must be able to conform without inheriting Kane County private operational state.
 

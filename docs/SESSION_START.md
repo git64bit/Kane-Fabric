@@ -182,7 +182,7 @@ CPE-USB-1 / branch 1.1.2 / PROGRAM
 CPE-USB-2 / branch 1.1.3 / TERMINAL
 ```
 
-Do not switch USB roles. MS5-008 may later require a deliberate test firmware build/flash, but only after its candidate/evaluation contract is accepted and only through the recorded CPE workflow.
+Do not switch USB roles. The first MS5-008 application-only evaluation flash has already occurred and was restored byte-identical after the runtime panic. The current MS5-008 action is diagnostic only: symbolize the captured panic on `fw`; do not flash again until the exact crashing function/line is known.
 
 ## Firmware Authority on `annales`
 
