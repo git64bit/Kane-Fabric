@@ -195,6 +195,8 @@ Association/unit recognition does not establish who is authorized to speak for t
 
 Those are separate authority/authentication questions.
 
+`docs/CIVIC_ISSUANCE_AUTHORITY.md` now defines the architectural place for one such authority: a Civic Issuance Authority may attest a participant's current standing and granted affordances under published rules. Such an attestation does not redefine association identity, unit identity, or physical-device identity, and it must not be treated as the recorded property identity itself.
+
 This separation is required so that:
 
 - the Fabric can recognize that a recorded condominium and unit exist without Board cooperation;

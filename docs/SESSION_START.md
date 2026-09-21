@@ -20,19 +20,22 @@ Do not use private chat history as a substitute for these records.
 
 ## Current priority
 
-The active normative work item remains **MS5-009**, but the current phase is **authority interrogation, not implementation**.
+The current work is authority/credibility architecture before any further signing implementation.
 
-Repository reconciliation found that authenticity code advanced past the signer-selection step in the original Firmware Authority plan. OTA mechanics remain physically accepted, but the P-256 authorization implementation is provisional pending design review.
+Two logical signing roles are now explicitly separate:
+
+- Firmware Release Authority: authorizes common software releases.
+- Civic Issuance Authority: signs one participant issuance and the civic standings/affordances granted under published rules.
 
 Read first:
 
+- `docs/CIVIC_ISSUANCE_AUTHORITY.md`
 - `docs/MS5_009_AUTHORITY_INTERROGATION.md`
-- `docs/MS5_FIRMWARE_AUTHORITY_NODE.md`
-- `docs/MS5_009_FIRMWARE_LIFECYCLE.md`
+- `docs/CIVIC_INFRASTRUCTURE_ANTI_CAPTURE.md`
 
-No signer/provider is selected. Do not assume YubiKey, PIV, PKCS#11, HSM, TPM, USB/network placement, slot, PIN/touch policy, or that the current P-256 envelope survives interrogation.
+The public affordance vocabulary is not yet imported into Kane-Fabric. Known published terms currently include `Same and Equal`, `Current Resident`, `Affected Status`, `HOA Homeowner`, and `Property Taxpayer`. Do not invent the rest of the taxonomy.
 
-No further authenticity code is authorized until threat/operating model, custody/recovery, provider/placement, release ceremony, device trust-anchor/key-transition, authority transfer path, and provider/algorithm compatibility are resolved in that order.
+The next repository work is to import/version the published affordance definitions and define the canonical Civic Issuance Record, including revalidation/supersession. Do not write issuance code or resume firmware-signing implementation before that contract is accepted.
 
 ## Stable facts are not discovery tasks
 

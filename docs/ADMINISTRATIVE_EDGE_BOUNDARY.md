@@ -79,6 +79,8 @@ composed county-facing view
 
 Some participant fields may be public, such as an intentionally published `for-sale` state. Other fields may be restricted or private. The contract must express the visibility/classification semantics, but the ESP32-S3 v1 firmware does not become a human account or person-identity service. Authentication/authorization and browser presentation belong above the physical edge boundary.
 
+A later Civic Issuance Record may carry authoritative standing/affordance assertions for the participant appliance. That record remains data issued under published civic contracts; it does not make the firmware the semantic authority for `Current Resident`, `Affected Status`, `HOA Homeowner`, `Property Taxpayer`, or another civic affordance. See `docs/CIVIC_ISSUANCE_AUTHORITY.md`.
+
 ## Infrastructure, not SaaS
 
 The administrative service is infrastructure only if an independently controlled participant remains able to retain and move its own publication without dependence on one operator's private database, account system, or subscription service.

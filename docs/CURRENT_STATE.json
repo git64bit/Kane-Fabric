@@ -290,6 +290,25 @@
       "authorization_payload": "kane-fabric-fw-auth-v1-fixed-binary",
       "status": "provisional-implementation-not-design-accepted",
       "provider_selected": false
+    },
+    "civic_issuance_authority_document": "docs/CIVIC_ISSUANCE_AUTHORITY.md",
+    "civic_issuance_authority_status": "architecture-interrogation-active-no-code",
+    "civic_affordance_taxonomy_status": "external-published-not-yet-imported",
+    "civic_affordance_known_terms": [
+      "Same and Equal",
+      "Current Resident",
+      "Affected Status",
+      "HOA Homeowner",
+      "Property Taxpayer"
+    ],
+    "civic_authority_model": {
+      "firmware_release_authority": "distinct-logical-role",
+      "civic_issuance_authority": "distinct-logical-role",
+      "physical_colocation": "undecided",
+      "esp32_is_person_identity": false,
+      "esp32_is_affordance_semantic_authority": false,
+      "issuer_continuous_availability_required": false,
+      "forgery_model": "diagnostic-divergence-not-infrastructure-redefinition"
     }
   },
   "deployment": {
@@ -629,7 +648,7 @@
       "ms5_008_candidate_repository_acceptance": "accepted on CT102 at 5a35b607ef16b5c94bd732e7f2eb73fbffc17ad0; 12 focused tests passed; full MS5 suite 86 passed / 1 skipped; WireGuard retained=NO; decision state=defer",
       "ms5_008_decision": "defer accepted 2026-09-21; WireGuard remains unretained; physical panic retained as diagnostic backlog"
     },
-    "next_work_item": "MS5-009 authority interrogation: resolve threat/operating model, custody/recovery, provider placement, release ceremony, device trust-anchor/key transition, and authority artifact-transfer path before further authenticity implementation."
+    "next_work_item": "Authority-model documentation: import/normalize the published civic affordance taxonomy and define the Civic Issuance Record before any individual-issuance or signing implementation. MS5-009 firmware authenticity implementation remains on hold in parallel."
   },
   "priority_workstream": {
     "name": "MS5-009 Firmware Authenticity / Update / Rollback / Recovery",
@@ -637,10 +656,10 @@
     "implementation_contract": "ms5/firmware-lifecycle-contract.json",
     "firmware_lifecycle_document": "docs/MS5_009_FIRMWARE_LIFECYCLE.md",
     "firmware_authority_document": "docs/MS5_FIRMWARE_AUTHORITY_NODE.md",
-    "status": "MS5-009 OTA mechanics physically accepted; authenticity implementation frozen as provisional pending authority interrogation",
+    "status": "authority/credibility architecture active: distinguish firmware release signing from individual civic issuance; no implementation yet",
     "signing_status": "inert-not-activated",
     "management_transport_dependency": false,
-    "target_environment": "repository/design only; no signer tooling, signer attachment, key creation, or new authenticity code"
+    "target_environment": "repository/design and published affordance source; no signer or firmware mutation"
   },
-  "next_safe_action": "Resolve docs/MS5_009_AUTHORITY_INTERROGATION.md in design/state first. Only after an accepted signer/provider architecture exists should authenticity code be reconciled or extended."
+  "next_safe_action": "Import the published civic-standing/affordance definitions into explicit versioned repository authority data, then define the canonical Civic Issuance Record and supersession/revalidation semantics. Do not write issuance code or resume firmware-signing implementation first."
 }

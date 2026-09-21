@@ -86,6 +86,8 @@ independent local operation
 
 The issuance node is not a SaaS account authority and does not become the owner of the appliance's application data.
 
+Individual civic issuance is further defined in `docs/CIVIC_ISSUANCE_AUTHORITY.md`. The issuance/provisioning node may apply published civic-standing rules and place a signed Civic Issuance Record on an appliance, but the physical device does not become the person's identity and the issuer does not acquire ownership of the person's local data.
+
 ## Provisioning clients
 
 Provisioning is a local protocol boundary, not a permanent portal product.

@@ -83,3 +83,19 @@ The current P-256 implementation may survive unchanged, be adapted, or be replac
 ## Implementation hold
 
 No further firmware-authenticity code should be written until this interrogation produces an accepted repository design checkpoint. Existing authenticity code remains as a candidate so prior work is not destroyed. After design acceptance, reconcile implementation to the design, then resume tests/build/physical signing acceptance.
+
+
+## Civic issuance authority discovered during interrogation
+
+The authority discussion exposed a second signing domain already anticipated by the anti-capture contract's `Issuance, not fleet tenancy` section.
+
+Firmware Release Authority and Civic Issuance Authority are not the same logical authority:
+
+- Firmware Release Authority authorizes a software release.
+- Civic Issuance Authority signs an individual participant issuance and its published civic standings/affordances.
+
+This distinction is now recorded in `docs/CIVIC_ISSUANCE_AUTHORITY.md`.
+
+The public Civic Infrastructure material currently identifies at least `Same and Equal`, `Current Resident`, `Affected Status`, `HOA Homeowner`, and `Property Taxpayer` as foundational standing/affordance concepts. The full taxonomy is not yet imported into Kane-Fabric and must not be invented in firmware.
+
+This discovery reinforces the implementation hold: first define authority and issuance semantics, then select cryptographic/provider mechanics separately for each logical signing role.

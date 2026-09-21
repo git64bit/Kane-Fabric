@@ -754,3 +754,24 @@ Accepted OTA/update/rollback evidence remains valid. The current ECDSA P-256 aut
 ## Next safe action
 
 Do not write further firmware-authenticity code. Interrogate and decide the operational authority model first, update repository design/state, then reconcile implementation to the accepted design.
+
+
+## Civic Issuance Authority architecture — 2026-09-21
+
+Repository and published-source interrogation established a second logical signing role distinct from Firmware Release Authority.
+
+`docs/CIVIC_ISSUANCE_AUTHORITY.md` now records the model:
+
+- Civic Infrastructure remains open; affordances are selectively issued from published standing rules;
+- the signature establishes authoritative provenance/credibility rather than a claim of unforgeability;
+- forged/counterfeit/inconsistent claims are diagnostic divergence from authoritative issuance history;
+- one participant appliance may carry a signed Civic Issuance Record containing the standing/affordance set actually issued;
+- physical ESP32 identity, person identity, standing, affordance set, association/unit identity, firmware release, and publication identity remain separate;
+- continued availability of the original issuer is not required for ordinary accepted local operation;
+- firmware does not define civic-standing semantics.
+
+Published terms currently identified include `Same and Equal`, `Current Resident`, `Affected Status`, `HOA Homeowner`, and `Property Taxpayer`. The full taxonomy is still external and must be imported explicitly before schema/code work.
+
+## Next safe action
+
+Import and normalize the published affordance definitions, then design the canonical Civic Issuance Record and temporal revalidation/supersession behavior. No individual-issuance implementation yet.
