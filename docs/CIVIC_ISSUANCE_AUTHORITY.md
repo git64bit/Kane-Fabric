@@ -223,3 +223,12 @@ But the firmware does not decide what Current Resident, HOA Homeowner, Property 
 ## Implementation hold
 
 No civic-affordance or individual-issuance code should be written until the published taxonomy and Civic Issuance Record are accepted as repository contracts.
+
+
+## Imported source baseline
+
+The external Civic Affordances Diagnostics model has now been interrogated at exact commit `3745d7a07b5f69c580020d5b5a4f70c5b9f44457` and recorded in `docs/CIVIC_AFFORDANCE_SOURCE_BASELINE.md`.
+
+Important refinement: an affordance is not merely a Boolean capability. The source model attaches qualification/evidence, access modes, surface scope, qualification authority, publication authority, persistence, and replication semantics. The eventual Civic Issuance Record must preserve policy identity rather than flattening these dimensions into firmware flags.
+
+Three source discrepancies are deliberately unresolved: `CURRENT_RESIDENT` vs `CURRENT_RESIDENCE`; public `HOA Homeowner` vs formal `HOA_MEMBER`/`CONDO_UNIT_OWNER`; and `Same and Equal`, which is published publicly but lacks a formal identifier in the source documents interrogated.

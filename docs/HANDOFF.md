@@ -775,3 +775,16 @@ Published terms currently identified include `Same and Equal`, `Current Resident
 ## Next safe action
 
 Import and normalize the published affordance definitions, then design the canonical Civic Issuance Record and temporal revalidation/supersession behavior. No individual-issuance implementation yet.
+
+
+## Civic Affordance external-source baseline — 2026-09-21
+
+The dedicated source repository was interrogated directly:
+
+`Civic-Affordances-Diagnostics/civic-affordance-model` at `3745d7a07b5f69c580020d5b5a4f70c5b9f44457`.
+
+Kane-Fabric now records the exact families, initial identifiers, priority affordances, qualification dimensions, Current Resident example, HOA Member example, stacking model, county-root plurality, and diagnostic posture in `docs/CIVIC_AFFORDANCE_SOURCE_BASELINE.md`.
+
+Three discrepancies remain deliberately unresolved: `CURRENT_RESIDENT` vs `CURRENT_RESIDENCE`; public `HOA Homeowner` vs formal `HOA_MEMBER`/`CONDO_UNIT_OWNER`; and `Same and Equal`, which lacks a formal identifier in the interrogated source documents.
+
+No code should resolve these by assumption.

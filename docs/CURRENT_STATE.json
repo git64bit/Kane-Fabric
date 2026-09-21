@@ -293,7 +293,7 @@
     },
     "civic_issuance_authority_document": "docs/CIVIC_ISSUANCE_AUTHORITY.md",
     "civic_issuance_authority_status": "architecture-interrogation-active-no-code",
-    "civic_affordance_taxonomy_status": "external-published-not-yet-imported",
+    "civic_affordance_taxonomy_status": "external-source-interrogated-naming-discrepancies-open",
     "civic_affordance_known_terms": [
       "Same and Equal",
       "Current Resident",
@@ -309,6 +309,37 @@
       "esp32_is_affordance_semantic_authority": false,
       "issuer_continuous_availability_required": false,
       "forgery_model": "diagnostic-divergence-not-infrastructure-redefinition"
+    },
+    "civic_affordance_source": {
+      "repository": "Civic-Affordances-Diagnostics/civic-affordance-model",
+      "observed_main_commit": "3745d7a07b5f69c580020d5b5a4f70c5b9f44457",
+      "baseline_document": "docs/CIVIC_AFFORDANCE_SOURCE_BASELINE.md",
+      "status": "interrogated-documentation-imported-no-code",
+      "diagnostic_families": [
+        "Residency",
+        "Parcel / Dwelling",
+        "Private Governance",
+        "Public Governance",
+        "Procedural / Evidentiary",
+        "Expert"
+      ],
+      "priority_affordances": [
+        "CURRENT_RESIDENT",
+        "HOA_MEMBER",
+        "PROPERTY_TAXPAYER",
+        "PARCEL_LINKED_OCCUPANT",
+        "PUBLIC_RECORDS_REQUESTER",
+        "PARENT_OF_STUDENT",
+        "SCHOOL_DISTRICT_RESIDENT",
+        "SPECIAL_DISTRICT_RATEPAYER",
+        "COURT_LINKED_PARTY",
+        "SUBJECT_MATTER_EXPERT"
+      ],
+      "unresolved_naming": [
+        "CURRENT_RESIDENT vs CURRENT_RESIDENCE",
+        "HOA Homeowner vs HOA_MEMBER / CONDO_UNIT_OWNER",
+        "Same and Equal has no formal identifier found in interrogated source documents"
+      ]
     }
   },
   "deployment": {
@@ -648,7 +679,7 @@
       "ms5_008_candidate_repository_acceptance": "accepted on CT102 at 5a35b607ef16b5c94bd732e7f2eb73fbffc17ad0; 12 focused tests passed; full MS5 suite 86 passed / 1 skipped; WireGuard retained=NO; decision state=defer",
       "ms5_008_decision": "defer accepted 2026-09-21; WireGuard remains unretained; physical panic retained as diagnostic backlog"
     },
-    "next_work_item": "Authority-model documentation: import/normalize the published civic affordance taxonomy and define the Civic Issuance Record before any individual-issuance or signing implementation. MS5-009 firmware authenticity implementation remains on hold in parallel."
+    "next_work_item": "Resolve the documented civic-affordance naming/semantic discrepancies, then define the canonical Civic Issuance Record from the exact external source baseline. No issuance code or firmware-signing implementation before that design checkpoint."
   },
   "priority_workstream": {
     "name": "MS5-009 Firmware Authenticity / Update / Rollback / Recovery",
@@ -661,5 +692,5 @@
     "management_transport_dependency": false,
     "target_environment": "repository/design and published affordance source; no signer or firmware mutation"
   },
-  "next_safe_action": "Import the published civic-standing/affordance definitions into explicit versioned repository authority data, then define the canonical Civic Issuance Record and supersession/revalidation semantics. Do not write issuance code or resume firmware-signing implementation first."
+  "next_safe_action": "Use docs/CIVIC_AFFORDANCE_SOURCE_BASELINE.md and docs/CIVIC_ISSUANCE_AUTHORITY.md to resolve CURRENT_RESIDENT/CURRENT_RESIDENCE, HOA Homeowner vs HOA_MEMBER/CONDO_UNIT_OWNER, and Same and Equal formalization. Then freeze the Civic Issuance Record as documentation/schema authority before code."
 }

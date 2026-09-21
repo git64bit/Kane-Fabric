@@ -20,22 +20,19 @@ Do not use private chat history as a substitute for these records.
 
 ## Current priority
 
-The current work is authority/credibility architecture before any further signing implementation.
-
-Two logical signing roles are now explicitly separate:
-
-- Firmware Release Authority: authorizes common software releases.
-- Civic Issuance Authority: signs one participant issuance and the civic standings/affordances granted under published rules.
+The authority/credibility interrogation now has an exact external affordance source baseline.
 
 Read first:
 
+- `docs/CIVIC_AFFORDANCE_SOURCE_BASELINE.md`
 - `docs/CIVIC_ISSUANCE_AUTHORITY.md`
 - `docs/MS5_009_AUTHORITY_INTERROGATION.md`
-- `docs/CIVIC_INFRASTRUCTURE_ANTI_CAPTURE.md`
 
-The public affordance vocabulary is not yet imported into Kane-Fabric. Known published terms currently include `Same and Equal`, `Current Resident`, `Affected Status`, `HOA Homeowner`, and `Property Taxpayer`. Do not invent the rest of the taxonomy.
+External source: `Civic-Affordances-Diagnostics/civic-affordance-model` at commit `3745d7a07b5f69c580020d5b5a4f70c5b9f44457`.
 
-The next repository work is to import/version the published affordance definitions and define the canonical Civic Issuance Record, including revalidation/supersession. Do not write issuance code or resume firmware-signing implementation before that contract is accepted.
+Do not write issuance code yet. Resolve the recorded terminology discrepancies first: `CURRENT_RESIDENT` vs `CURRENT_RESIDENCE`; public `HOA Homeowner` vs formal `HOA_MEMBER` / `CONDO_UNIT_OWNER`; and the lack of a formal source identifier for `Same and Equal`.
+
+After those meanings are explicit, freeze the canonical Civic Issuance Record and only then reconcile signing/provider design and implementation.
 
 ## Stable facts are not discovery tasks
 
