@@ -42,6 +42,7 @@ I = (
   record_identity,
   record_kind,
   issuer,
+  operator_provenance,
   authority_contract,
   subject_reference,
   appliance_issuance_reference,
@@ -93,7 +94,15 @@ It does not mean the issuer is a government body, monopoly county authority, leg
 
 Multiple roots may issue their own records under their own published contracts.
 
-## 4. authority_contract
+## 4. operator_provenance
+
+`operator_provenance` identifies the actual active participant/operator who performed the bounded issuance/validation action.
+
+It is distinct from the root/profile `issuer` identity. This separation allows operators to rotate or coexist without changing the Civic Infrastructure root identity and permits peer scrutiny of individual operator conduct.
+
+The exact operator identifier/credential is not yet frozen.
+
+## 5. authority_contract
 
 `authority_contract` identifies the exact Affordance Authority Contract used to interpret every relationship tuple in this record.
 
@@ -103,7 +112,7 @@ This deliberate constraint avoids silently mixing tuple semantics from multiple 
 
 When policy meaning changes, a new issuance under the new contract is created.
 
-## 5. subject_reference
+## 6. subject_reference
 
 `subject_reference` is an opaque issuer-scoped participant lineage reference.
 
@@ -120,7 +129,7 @@ The reference exists so successive issuance records can belong to the same issue
 
 Cross-root correlation must not be assumed merely because two roots happen to describe the same human being.
 
-## 6. appliance_issuance_reference
+## 7. appliance_issuance_reference
 
 `appliance_issuance_reference` identifies the current physical appliance issuance carrying this record.
 
@@ -136,7 +145,7 @@ If the ESP32-S3 fails, is lost, or is replaced, the issuer can create an `APPLIA
 
 The old record remains historically valid as what was issued then; it is no longer the latest current issuance.
 
-## 7. sequence
+## 8. sequence
 
 `sequence` orders issuance records within one issuer + subject lineage.
 
@@ -146,7 +155,7 @@ Sequence provides simple local ordering when a verifier has more than one record
 
 It does not imply a global sequence across all participants or all roots.
 
-## 8. issued_at
+## 9. issued_at
 
 `issued_at` records when the issuer created the record.
 
@@ -154,13 +163,13 @@ This time belongs to the issuance event.
 
 It is distinct from the validity/effective times of individual relationship tuples.
 
-## 9. effective_time
+## 10. effective_time
 
 `effective_time` describes when this complete issuance snapshot becomes the issuer's current assertion.
 
 It may normally equal `issued_at`, but the distinction is preserved for controlled policy migration, scheduled changes, or other future cases.
 
-## 10. participation_window
+## 11. participation_window
 
 `participation_window` records the bounded six-month active-participation interval created by the accepted SASE.
 
@@ -168,7 +177,7 @@ A new SASE is required every six months. Without it, active participation ends. 
 
 Participation expiry does not erase historical records.
 
-## 11. relationship_tuples[]
+## 12. relationship_tuples[]
 
 The record contains one or more complete Civic Relationship Tuples as defined by `docs/CIVIC_RELATIONSHIP_TUPLE.md`.
 
@@ -187,7 +196,7 @@ subject P
 
 Each relationship tuple retains its own target, domain, role, state, qualification, initiation, validity, and policy context.
 
-## 12. claim_provenance
+## 13. claim_provenance
 
 `claim_provenance` distinguishes operator-attested participation from participant-maintained civic claims.
 
@@ -199,7 +208,7 @@ At minimum, the record must be capable of showing that:
 
 Evidence references may support a participant claim, but evidence provenance and claim responsibility remain separate.
 
-## 13. lineage
+## 14. lineage
 
 `lineage` links this record to earlier issuance records without mutating them.
 
@@ -213,7 +222,7 @@ It should be capable of expressing:
 
 Lineage is historical provenance, not deletion.
 
-## 14. revalidation
+## 15. revalidation
 
 `revalidation` records issuance-level renewal/review posture without implying operator verification of all claims.
 
@@ -221,7 +230,7 @@ For Kane participation, a new SASE every six months is mandatory. That renewal r
 
 It may also record which participant-maintained claims were carried forward, changed, removed, or supplemented at renewal. Unless a specific published affordance policy says otherwise, carrying a claim forward is the participant's renewed assertion, not an operator re-certification of its truth.
 
-## 15. disclosure_policy
+## 16. disclosure_policy
 
 A Civic Issuance Record is not automatically a public profile.
 
@@ -241,7 +250,7 @@ This preserves the source model's distinction between:
 
 Possession of the record does not mean every tuple must be exposed to every requester.
 
-## 16. authority_proof
+## 17. authority_proof
 
 `authority_proof` is the logical provenance proof by which a verifier can determine that this exact issuance record was produced by the stated Civic Issuance Authority.
 
@@ -425,3 +434,12 @@ The participant builds credibility by keeping those claims accurate over time, u
 The operator's role is not to become a permanent examiner of every participant relationship.
 
 See `docs/CIVIC_PARTICIPATION_RENEWAL.md`.
+
+
+## Peer-scrubbable operator provenance
+
+A verifier should be able to distinguish the root/profile that issued the record from the active participant who actually performed the bounded SASE validation/issuance action.
+
+That operator provenance supports later peer scrubbing: other participants may confirm the operator's action or publish contradictory observations without rewriting the original record.
+
+The record does not itself adjudicate those later observations. Future confirmation/challenge records remain a separate design surface.

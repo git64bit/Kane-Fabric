@@ -20,22 +20,19 @@ Do not use private chat history as a substitute for these records.
 
 ## Current priority
 
-The civic authority model now has a strict administrative boundary:
-
-- a fresh SASE is mandatory every six months;
-- no SASE renewal means participation ends;
-- SASE renewal is the only recurring operator-administered requirement;
-- the operator attests the active participation interval it actually controls;
-- all other civic affordances are participant-maintained claims unless a specific published policy names another attesting authority;
-- participants build credibility by keeping those claims accurate and current.
+The operator model is now participant-operated and anti-capture by construction.
 
 Read first:
 
+- `docs/CIVIC_OPERATOR_PEER_SCRUTINY.md`
 - `docs/CIVIC_PARTICIPATION_RENEWAL.md`
 - `docs/CIVIC_ISSUANCE_RECORD.md`
-- `docs/CIVIC_RELATIONSHIP_TUPLE.md`
 
-The next design step is the minimal SASE renewal/issuance workflow plus explicit claim-provenance fields. Do not let an operator signature silently imply institutional verification of every affordance. No implementation code yet.
+Any eligible active participant may become a SASE validator/operator under the applicable profile. Operator is a bounded procedural role, not a permanent administrator. Issuance root/profile identity and actual operator provenance are separate.
+
+Operator actions are peer-scrubbable: other participants may confirm, corroborate, challenge, or expose contradictions/capture. The institution being diagnosed does not gain exclusive control of its diagnostic infrastructure merely because it governs the underlying institution.
+
+Next design step: minimal participant-operated SASE workflow plus operator handoff and peer confirmation/challenge record boundaries. No implementation code yet.
 
 ## Stable facts are not discovery tasks
 

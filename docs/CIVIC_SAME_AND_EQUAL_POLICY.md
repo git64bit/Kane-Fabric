@@ -351,3 +351,10 @@ Witness Attestation remains future scope; no attestation behavior is frozen here
 The next architecture object is the canonical Civic Issuance Record that wraps one or more relationship tuples with issuer, policy, appliance, sequence, supersession, and signature provenance.
 
 No implementation code should precede that record design.
+
+
+## Operator role and Same and Equal
+
+Temporary SASE-validator/operator role does not automatically change a participant's Same-and-Equal class for unrelated civic standings.
+
+For example, two current homeowners in the same HOA may remain Same and Equal as homeowners even if one is currently acting as a Kane Fabric operator. Operator role becomes material only under a published equivalence policy whose purpose specifically compares operator/validator conduct or standing.

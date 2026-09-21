@@ -371,3 +371,14 @@ Other civic affordances are maintained by the participant. The operator may issu
 Participant credibility is earned by keeping claims accurate, current, and appropriately evidenced over time. False or stale claims are diagnostic signals about the participant's credibility, not proof that the infrastructure failed.
 
 See `docs/CIVIC_PARTICIPATION_RENEWAL.md`.
+
+
+## Participant-operated issuance authority
+
+The Civic Issuance Authority is a logical role, not a permanently privileged human or institution.
+
+Under the Kane model, any eligible active participant may act as SASE validator/operator according to the published profile. Each issuance must identify the actual operator/validator provenance separately from the broader root/profile identity.
+
+Operator action is peer-scrubbable by other participants. Institutional control of an HOA, school, or other underlying body does not confer exclusive control of its Civic Infrastructure diagnostic surface.
+
+See `docs/CIVIC_OPERATOR_PEER_SCRUTINY.md`.

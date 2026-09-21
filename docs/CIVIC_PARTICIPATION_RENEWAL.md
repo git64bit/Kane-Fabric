@@ -58,7 +58,7 @@ There is no administrative grace period implied by this architecture document.
 
 ## Operator burden
 
-The recurring administrative burden on the Kane Fabric operator is deliberately narrow:
+The recurring administrative burden on whichever active participant is presently acting as Kane Fabric operator/SASE validator is deliberately narrow:
 
 - receive the participant's SASE;
 - recognize the voluntary renewal act;
@@ -66,7 +66,7 @@ The recurring administrative burden on the Kane Fabric operator is deliberately 
 - return the participant's self-addressed stamped envelope as defined by the participation workflow;
 - preserve issuance history.
 
-The operator is **not** expected to continuously investigate, monitor, or maintain every participant's claimed civic affordances.
+The operator is **not** expected to continuously investigate, monitor, or maintain every participant's claimed civic affordances. The operator is not a permanent office: any eligible active participant may assume the published SASE-validator role.
 
 ## Participant burden
 
@@ -221,3 +221,14 @@ The Civic Issuance Record must be revised so that:
 - claim provenance is explicit;
 - expiration of participation does not erase history;
 - renewal does not falsely imply operator re-verification of every affordance.
+
+
+## Participant-operated validation and peer scrubbing
+
+The SASE validator/operator is itself an active participant, not a permanent administrator above the participant body.
+
+Any eligible active participant may perform the validator/operator role under the applicable profile. Each issuance must eventually preserve operator provenance so other participants can inspect who performed the validation.
+
+Other participants may scrub operator actions: confirm them, compare them with independent facts, or expose contradictions, procedural departures, unequal treatment, or capture. The operator therefore builds credibility through consistent visible behavior rather than institutional status.
+
+See `docs/CIVIC_OPERATOR_PEER_SCRUTINY.md`.

@@ -866,3 +866,20 @@ A major authority boundary is now explicit:
 The new authority document is `docs/CIVIC_PARTICIPATION_RENEWAL.md`.
 
 No code changed.
+
+
+## Participant-operated SASE validation / peer scrutiny — 2026-09-21
+
+The operator model is now explicitly decentralized:
+
+- any eligible active participant may become the SASE validator/Kane Fabric operator;
+- operator is a bounded procedural role, not a permanent administrator or superior civic identity;
+- each issuance must preserve actual operator provenance separately from root/profile issuer identity;
+- other participants may scrub operator actions by confirming, corroborating, challenging, or exposing contradictions/capture;
+- HOA Board/property management do not acquire exclusive control of HOA Diagnostics merely because they govern/manage the association;
+- school administration likewise does not automatically control school-related Civic Infrastructure;
+- exact multi-operator coordination and confirmation/challenge record formats remain future design work.
+
+New authority document: `docs/CIVIC_OPERATOR_PEER_SCRUTINY.md`.
+
+No code changed.

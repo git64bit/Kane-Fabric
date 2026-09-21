@@ -136,3 +136,12 @@ A design is consistent with this contract when the following questions can be an
 6. Can an external authoritative source remain authoritative without being absorbed into Kane Fabric ownership?
 
 If a proposed capability makes the answer to one of these questions dependent on a central operator, that dependency must be justified as an optional service above the infrastructure boundary rather than silently incorporated into the infrastructure itself.
+
+
+## Participant-operated validation
+
+The anti-capture model now explicitly includes participant-operated SASE validation. Any active participant may become an operator/validator under the applicable published profile; operator is a bounded procedural role, not a permanent administrative identity.
+
+The institution being diagnosed must not automatically control its diagnostic infrastructure. In particular, HOA Board/property-management control of the association does not imply exclusive control of HOA Diagnostics, and school administration does not imply exclusive control of school-related Civic Infrastructure.
+
+Operator actions remain subject to participant peer scrutiny ("scrubbing"), which may confirm facts or expose contradictions/capture. See `docs/CIVIC_OPERATOR_PEER_SCRUTINY.md`.
