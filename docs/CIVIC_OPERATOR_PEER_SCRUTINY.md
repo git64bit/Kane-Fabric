@@ -239,3 +239,12 @@ SASE validation, rotating Civic operators, and peer scrubbing are Civic Infrastr
 Operator selection should not use an arbitrary Civic election rule. The applicable HOA profile must identify the governing statutory/bylaw analog and inherit the relevant electorate, vote weighting, notice/quorum, and approval threshold. The eligible electorate is further bounded by the published Same-and-Equal relationship policy.
 
 See `docs/HOA_GOVERNING_SOURCE_INHERITANCE.md`.
+
+
+## Local node ownership
+
+Each participating HOA requires its own owner-operated Civic Signing Node. The operator role is therefore not merely a software permission on a shared central signer; it includes custody/operation of the HOA-local authority appliance.
+
+The node must pre-exist Civic-governed operator election/selection, voting, and peer scrubbing. The initial bootstrap operator is not permanently privileged: later operator transition must preserve the HOA-local root while changing operator custody under the source-derived governance rules.
+
+See `docs/CIVIC_OWNER_OPERATED_SIGNING_NODE.md`.

@@ -304,7 +304,7 @@
     "civic_authority_model": {
       "firmware_release_authority": "distinct-logical-role",
       "civic_issuance_authority": "distinct-logical-role",
-      "physical_colocation": "undecided",
+      "physical_colocation": "firmware-release-authority and HOA-local civic-signing-node remain separate node classes; any future colocation must not merge logical authority",
       "esp32_is_person_identity": false,
       "esp32_is_affordance_semantic_authority": false,
       "issuer_continuous_availability_required": false,
@@ -543,6 +543,26 @@
       "example_renewal_cadence_source": "765 ILCS 605/18 board shall meet at least 4 times annually",
       "operator_election_rule": "inherit applicable statute/bylaw analog; exact rule profile-specific",
       "electorate": "Same-and-Equal class for relevant HOA standing"
+    },
+    "civic_owner_operated_signing_node_document": "docs/CIVIC_OWNER_OPERATED_SIGNING_NODE.md",
+    "civic_signing_topology": {
+      "model": "one-local-civic-signing-node-per-participating-HOA",
+      "node_owner": "current local Civic operator",
+      "operator_assumes_operating_expenses": true,
+      "required_before": [
+        "Civic operator selection/election",
+        "Civic voting",
+        "participant issuance",
+        "peer scrubbing",
+        "local governance provenance"
+      ],
+      "common_county_wide_civic_signer": false,
+      "firmware_release_authority_shared_role": "distinct-logical-role",
+      "local_root_separation_required": true,
+      "cross_HOA_failure_isolation_required": true,
+      "operator_identity_equals_HOA_root_identity": false,
+      "operator_transition_mechanics": "unfrozen",
+      "bootstrap_transition_mechanics": "unfrozen"
     }
   },
   "deployment": {
@@ -882,7 +902,7 @@
       "ms5_008_candidate_repository_acceptance": "accepted on CT102 at 5a35b607ef16b5c94bd732e7f2eb73fbffc17ad0; 12 focused tests passed; full MS5 suite 86 passed / 1 skipped; WireGuard retained=NO; decision state=defer",
       "ms5_008_decision": "defer accepted 2026-09-21; WireGuard remains unretained; physical panic retained as diagnostic backlog"
     },
-    "next_work_item": "Define the HOA participant-operated SASE profile as source-derived governance instrumentation: map cadence, electorate, vote weighting/threshold, notice/quorum, operator term/handoff, and witness records to exact statute + association-instrument sources before implementation."
+    "next_work_item": "Interrogate the owner-operated HOA-local Civic Signing Node: define minimum reproducible node boundary, HOA-local root identity/continuity, bootstrap-to-elected-operator transition, key transition/recovery, local evidence storage, and per-HOA failure isolation before signer/provider implementation."
   },
   "priority_workstream": {
     "name": "MS5-009 Firmware Authenticity / Update / Rollback / Recovery",
@@ -890,10 +910,10 @@
     "implementation_contract": "ms5/firmware-lifecycle-contract.json",
     "firmware_lifecycle_document": "docs/MS5_009_FIRMWARE_LIFECYCLE.md",
     "firmware_authority_document": "docs/MS5_FIRMWARE_AUTHORITY_NODE.md",
-    "status": "participant-operated civic infrastructure model active: any eligible active participant may validate; operator actions peer-scrubbable; institutional capture prohibited",
+    "status": "owner-operated local authority architecture active: one Civic Signing Node per participating HOA; common firmware authority remains separate",
     "signing_status": "inert-not-activated",
     "management_transport_dependency": false,
     "target_environment": "repository/design and published affordance source; no signer or firmware mutation"
   },
-  "next_safe_action": "Create the source-derived HOA SASE/operator profile. For every parameter, identify statute/bylaw source or mark it as pure mechanism with a source-derived parameter. Do not invent a substantive governance rule."
+  "next_safe_action": "Design the minimum owner-operated HOA-local signing-node architecture and continuity model. Preserve per-HOA authority separation, local cost ownership, and operator replaceability. Do not resume signer/provider or firmware implementation first."
 }

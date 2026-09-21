@@ -382,3 +382,14 @@ Under the Kane model, any eligible active participant may act as SASE validator/
 Operator action is peer-scrubbable by other participants. Institutional control of an HOA, school, or other underlying body does not confer exclusive control of its Civic Infrastructure diagnostic surface.
 
 See `docs/CIVIC_OPERATOR_PEER_SCRUTINY.md`.
+
+
+## HOA-local owner-operated signing nodes
+
+For HOA Diagnostics, the Civic Issuance Authority is physically instantiated per participating HOA as an owner-operated Civic Signing Node. Each HOA has its own local authority root; a shared county-wide civic signer must not collapse those roots.
+
+The local node must exist before Civic-governed operator selection/election, voting, participant issuance, peer scrubbing, or other local authoritative acts can rely on it. The node signs, but also preserves local source binding, governance provenance, issuance history, Same-and-Equal context, and attestation/witness lineage.
+
+The operator owns/operates the node and assumes its expenses. Operator identity and HOA-root identity remain separate so the operator can be replaced without silently replacing the HOA's Civic identity.
+
+See `docs/CIVIC_OWNER_OPERATED_SIGNING_NODE.md`.

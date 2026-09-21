@@ -99,3 +99,14 @@ This distinction is now recorded in `docs/CIVIC_ISSUANCE_AUTHORITY.md`.
 The public Civic Infrastructure material currently identifies at least `Same and Equal`, `Current Resident`, `Affected Status`, `HOA Homeowner`, and `Property Taxpayer` as foundational standing/affordance concepts. The full taxonomy is not yet imported into Kane-Fabric and must not be invented in firmware.
 
 This discovery reinforces the implementation hold: first define authority and issuance semantics, then select cryptographic/provider mechanics separately for each logical signing role.
+
+
+## Local Civic signing-node boundary
+
+The authority interrogation now distinguishes the common Firmware Release Authority from a separate class of HOA-local owner-operated Civic Signing Nodes.
+
+This materially changes signer/provider evaluation. The project is no longer selecting only one central signing provider. It must eventually support a reproducible local signing-node architecture suitable for independent HOA owner-operators, while preserving each HOA's authority/root identity and isolating failures between associations.
+
+Provider selection therefore must consider reproducibility, operator transfer, local recovery, cost, and per-HOA key/root separation in addition to cryptographic compatibility.
+
+See `docs/CIVIC_OWNER_OPERATED_SIGNING_NODE.md`.

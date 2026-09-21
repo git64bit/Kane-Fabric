@@ -911,3 +911,18 @@ Operator election likewise must identify its governing analog and use the releva
 See `docs/HOA_GOVERNING_SOURCE_INHERITANCE.md`.
 
 No code changed.
+
+
+## Owner-operated HOA-local Civic Signing Node — 2026-09-21
+
+Each participating HOA now has a required local authority boundary: its own operator-owned Civic Signing Node.
+
+The node must exist before Civic-governed operator selection/election, voting, participant issuance, peer scrubbing, or other HOA-local authoritative acts. It is not merely a signature appliance; it preserves source binding, local issuance/governance provenance, Same-and-Equal context, and later ESP32 witness/attestation lineage.
+
+The operator owns/operates the node and assumes its expenses. Each HOA remains a separate authority/failure/recovery domain. A common Firmware Release Authority may authorize shared software, but it must not become a shared HOA civic authority.
+
+Operator identity and HOA-local root identity remain separate; bootstrap-to-replacement transition/key continuity are deliberately unresolved next-design questions.
+
+See `docs/CIVIC_OWNER_OPERATED_SIGNING_NODE.md`.
+
+No code changed.

@@ -20,21 +20,23 @@ Do not use private chat history as a substitute for these records.
 
 ## Current priority
 
-HOA Diagnostics now follows governing-source inheritance:
+The Civic authority topology is now local and owner-operated:
 
-`Illinois statute -> condominium instruments/bylaws -> HOA Diagnostics -> Kane Fabric instrumentation`.
+- every participating HOA requires its own Civic Signing Node;
+- the current local operator owns/operates that node and assumes its expenses;
+- the node must exist before Civic operator election/selection, voting, issuance, and peer scrubbing;
+- each HOA is a separate civic-authority/failure/recovery domain;
+- common Firmware Release Authority remains a different logical/node role;
+- operator identity must remain separate from HOA-local root identity so operators can be replaced.
 
 Read first:
 
+- `docs/CIVIC_OWNER_OPERATED_SIGNING_NODE.md`
 - `docs/HOA_GOVERNING_SOURCE_INHERITANCE.md`
-- `docs/ILLINOIS_STATUTORY_PROCEDURE_BASELINE.md`
 - `docs/CIVIC_OPERATOR_PEER_SCRUTINY.md`
+- `docs/MS5_009_AUTHORITY_INTERROGATION.md`
 
-Do not invent substantive HOA governance rules. Civic mechanisms such as SASE, ESP32 attestation, operator provenance, and peer scrubbing may be project-defined, but cadence, electorate, thresholds, notice/quorum, roles, and similar parameters should be inherited from exact statute/bylaw sources wherever applicable.
-
-Next: define the source-derived HOA SASE/operator profile, including the four-per-year participation cadence candidate and operator election by the relevant Same-and-Equal class using the applicable statutory/bylaw voting analog.
-
-No implementation code yet.
+Next: define the minimum reproducible HOA-local signing-node boundary, local-root continuity, bootstrap-to-elected-operator transition, key transition/recovery, evidence storage, and failure isolation. No signer/provider or firmware code yet.
 
 ## Stable facts are not discovery tasks
 

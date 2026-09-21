@@ -145,3 +145,14 @@ The anti-capture model now explicitly includes participant-operated SASE validat
 The institution being diagnosed must not automatically control its diagnostic infrastructure. In particular, HOA Board/property-management control of the association does not imply exclusive control of HOA Diagnostics, and school administration does not imply exclusive control of school-related Civic Infrastructure.
 
 Operator actions remain subject to participant peer scrutiny ("scrubbing"), which may confirm facts or expose contradictions/capture. See `docs/CIVIC_OPERATOR_PEER_SCRUTINY.md`.
+
+
+## HOA-local signing-node autonomy
+
+Mandatory shared civic-signing tenancy across HOAs is prohibited by the anti-capture model.
+
+Each participating HOA must be capable of owning/operating its own Civic Signing Node and bearing its own operating costs. One HOA's node, operator, outage, dispute, compromise, or recovery must not become another HOA's authority boundary.
+
+Common software and common statutory references are compatible with independent local signing roots.
+
+See `docs/CIVIC_OWNER_OPERATED_SIGNING_NODE.md`.
