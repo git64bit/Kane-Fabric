@@ -85,3 +85,30 @@ This repository still contains no ordinary private-key file generation and no
 operational release-signing authority. The next MS5-009 step is read-only
 hardware/tooling discovery on `annales`, followed by an explicit provider
 selection gate.
+
+
+## Reference hardware-signer profile
+
+MS5-009 now records a reference **capability profile**, not a claim that a
+physical provider is present:
+
+```text
+ms5/firmware-signer-reference-profile.json
+```
+
+Reference class:
+
+```text
+PIV hardware token
+ECDSA P-256
+slot 9C / Digital Signature
+key generation on-device
+PIN policy ALWAYS
+touch policy ALWAYS
+attestation required
+private key non-exportable
+```
+
+The 2026-09-21 `annales` preflight found zero compatible hardware-signer
+candidates and no PIV/PKCS#11 tooling. Therefore the physical provider remains
+unselected and signing remains disabled.

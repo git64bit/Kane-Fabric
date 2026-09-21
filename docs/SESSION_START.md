@@ -23,28 +23,26 @@ Do not use private chat history as a substitute for these records.
 The active normative work item remains **MS5-009 — firmware authenticity,
 update, rollback, and recovery**.
 
-The repository gate, pinned ESP-IDF build gate, and physical OTA lifecycle are
-now accepted. The ESP32-S3 successfully completed a healthy `ota_0` trial and
-confirmation, a deliberate failing `ota_1` trial, and automatic rollback to
-the previous confirmed image. Fabric and PHY data remained byte-identical and
-existing Wi-Fi provisioning remained functional.
+OTA/update/rollback mechanics are physically accepted. The read-only signer
+preflight on `annales` is also accepted and showed that the authority container
+remains inert, but **no hardware signer is physically present** and no PIV /
+PKCS#11 tooling is installed.
 
-The physical device now ends in:
+The repository now defines a reference signer capability profile without
+claiming physical selection:
 
 ```text
-factory   production image
-ota_0     production image / confirmed VALID
-ota_1     erased
-otadata   ota_0 valid
-runtime   ota_0 confirmed-valid
+ms5/firmware-signer-reference-profile.json
 ```
 
-Release signing remains disabled. The remaining MS5-009 work is authenticity:
-hardware-backed signer selection/activation, positive authorization, negative
-authorization/digest/sequence tests, and authority recovery.
+Required class: PIV-compatible hardware token, P-256, slot 9C, key generated
+on-device, PIN ALWAYS, touch ALWAYS, attestation available, private key
+non-exportable.
 
-The next action is a read-only signer/tooling inventory on `annales`. No USB
-passthrough or key creation is permitted during that preflight.
+The next physical step cannot occur until a compatible token is connected to
+`annales`. When one is available, the first gate is read-only identity and
+capability discovery; key generation and signing remain prohibited until that
+gate passes.
 
 ## Stable facts are not discovery tasks
 

@@ -697,3 +697,53 @@ Continue MS5-009 on `annales` with a **read-only signer preflight**. Determine
 what hardware-backed signing devices and PIV/PKCS#11 tooling are actually
 available before choosing a provider. Do not attach a USB device to the
 container, create/import a release key, or enable signing yet.
+
+
+## MS5-009 annales signer preflight — accepted 2026-09-21
+
+Read-only preflight on `annales` proved the Firmware Authority boundary remains
+inert:
+
+```text
+firmware-authority          RUNNING
+container USB passthrough   NO
+container GPU passthrough   NO
+container proxy device      NO
+private signing key         NOT CREATED
+signing                     DISABLED
+WireGuard interfaces        0
+authority state files       0
+private-key-like files      0
+```
+
+Host inventory:
+
+```text
+USB devices                 8
+hardware signer candidates  0
+OpenSSL                     present
+ykman                       absent
+pkcs11-tool                 absent
+p11tool / p11-kit           absent
+OpenSC PKCS#11 module       absent
+pcsc_scan                   absent
+pcscd                       inactive
+```
+
+No host or container mutation occurred.
+
+A reference signer capability profile is now tracked at:
+
+```text
+ms5/firmware-signer-reference-profile.json
+```
+
+It defines the desired class without claiming a physical token exists:
+PIV-compatible hardware, ECDSA P-256, slot 9C, on-device key generation,
+PIN policy ALWAYS, touch policy ALWAYS, and hardware attestation.
+
+## Next safe action
+
+A compatible hardware token must become physically available on `annales`.
+Once connected, perform a read-only identity/capability check before installing
+tooling or provisioning any release key.

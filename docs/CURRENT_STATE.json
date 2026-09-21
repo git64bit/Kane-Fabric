@@ -247,7 +247,40 @@
       "pretest_full_flash_backup": "/home/cpe-build/evidence/Kane-Fabric/ms5-009/physical-ota-lifecycle-20260921T183328Z/pretest-full-flash.bin",
       "final_runtime": "ota_0_confirmed-valid",
       "worktree_clean": true
-    }
+    },
+    "ms5_009_annales_signer_preflight_status": "accepted-read-only",
+    "ms5_009_annales_signer_preflight_date": "2026-09-21",
+    "ms5_009_annales_signer_preflight": {
+      "host": "annales",
+      "kernel": "6.8.0-139-generic",
+      "lxd": "5.21.7 LTS",
+      "authority_container_status": "RUNNING",
+      "container_usb_passthrough": false,
+      "container_gpu_passthrough": false,
+      "container_proxy_device": false,
+      "private_signing_key_created": false,
+      "signing_enabled": false,
+      "wireguard_interface_count": 0,
+      "authority_state_file_count": 0,
+      "private_key_like_file_count": 0,
+      "usb_device_count": 8,
+      "hardware_signer_candidate_count": 0,
+      "tools": {
+        "openssl": "present",
+        "ykman": "absent",
+        "pkcs11_tool": "absent",
+        "p11tool": "absent",
+        "p11_kit": "absent",
+        "gpg2": "absent",
+        "gpg": "present",
+        "python3": "present",
+        "opensc_pkcs11_module": "absent",
+        "pcsc_scan": "absent",
+        "pcscd_active": false
+      },
+      "mutated": false
+    },
+    "ms5_009_reference_signer_profile": "ms5/firmware-signer-reference-profile.json"
   },
   "deployment": {
     "proxmox_host": "srv-b",
@@ -586,7 +619,7 @@
       "ms5_008_candidate_repository_acceptance": "accepted on CT102 at 5a35b607ef16b5c94bd732e7f2eb73fbffc17ad0; 12 focused tests passed; full MS5 suite 86 passed / 1 skipped; WireGuard retained=NO; decision state=defer",
       "ms5_008_decision": "defer accepted 2026-09-21; WireGuard remains unretained; physical panic retained as diagnostic backlog"
     },
-    "next_work_item": "MS5-009 signer activation preparation on annales: perform read-only host/container inventory for available hardware-backed signer devices and signing tooling. Do not attach USB, generate/import a release key, or enable signing until provider selection is accepted."
+    "next_work_item": "MS5-009 physical signer availability: obtain or attach a compatible PIV hardware token meeting the repository reference profile. Until such a token is physically present, do not install signer tooling, create/import keys, or enable signing."
   },
   "priority_workstream": {
     "name": "MS5-009 Firmware Authenticity / Update / Rollback / Recovery",
@@ -594,10 +627,10 @@
     "implementation_contract": "ms5/firmware-lifecycle-contract.json",
     "firmware_lifecycle_document": "docs/MS5_009_FIRMWARE_LIFECYCLE.md",
     "firmware_authority_document": "docs/MS5_FIRMWARE_AUTHORITY_NODE.md",
-    "status": "MS5-009 OTA/update/rollback/recovery mechanics physically accepted; release authenticity activation remains",
+    "status": "MS5-009 OTA mechanics physically accepted; signer preflight accepted; no compatible signer physically present",
     "signing_status": "inert-not-activated",
     "management_transport_dependency": false,
-    "target_environment": "annales / firmware-authority signer-preflight; read-only host/container inventory first"
+    "target_environment": "annales after compatible hardware signer becomes physically available"
   },
-  "next_safe_action": "On annales, run the repository-owned read-only signer preflight to enumerate hardware signer candidates and installed PIV/PKCS#11 tooling while verifying the firmware-authority container remains inert. No USB passthrough, key generation, key import, or signing activation."
+  "next_safe_action": "When a compatible PIV hardware token is physically connected to annales, run a read-only device identity/capability check first. Do not generate/import a key or alter the firmware-authority container before that check passes."
 }
