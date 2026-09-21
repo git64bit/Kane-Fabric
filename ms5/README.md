@@ -173,8 +173,7 @@ automatic failed-trial rollback were proved on the reference ESP32-S3, with
 Fabric/PHY preservation and functional provisioning retention. The current
 device ends in confirmed-valid `ota_0`; `ota_1` is erased.
 
-The remaining MS5-009 work is firmware release authenticity and authority
-recovery.
+The remaining MS5-009 work begins with firmware-authority **design interrogation**, not additional authenticity code. The existing P-256 authorization implementation is provisional pending signer/provider, custody/recovery, operator-ceremony, trust-anchor/key-transition, and authority-transfer decisions. See `docs/MS5_009_AUTHORITY_INTERROGATION.md`.
 
 ## Tests
 

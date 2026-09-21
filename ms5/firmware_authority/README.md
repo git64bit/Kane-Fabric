@@ -102,3 +102,12 @@ without cloning the private release key.
 YubiKey, PIV, PKCS#11, USB-token placement, slot numbers, and PIN/touch policy
 are not project requirements unless separately evaluated and explicitly
 accepted later.
+
+
+## Current design-interrogation hold
+
+The original scaffold required signer/provider selection and cryptographic authorization-format freeze to occur as one staged MS5-009 decision. A later implementation introduced a P-256 candidate before that selection was complete. It is now explicitly provisional.
+
+See `docs/MS5_009_AUTHORITY_INTERROGATION.md`.
+
+Do not install signer tooling, attach signer hardware, create/import a release key, or extend provider-specific code until that interrogation is accepted.

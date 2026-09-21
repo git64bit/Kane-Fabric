@@ -87,7 +87,7 @@ MS5 no longer assumes every edge stores the complete Kane County substrate. A pa
 
 The ESP32-S3 is intentionally present in the first release to establish a real firmware lifecycle before Kane Fabric matures around a software-only architecture. Its role is deliberately modest: immutable bounded artifact storage, plain-HTTP serving, local provisioning/replacement, fail-closed verification, and a base for later firmware lifecycle responsibilities.
 
-The MS5-006 physical device-runtime gate and MS5-007 physical participant/browser integration gate are accepted. The current normative priority is **MS5-008 management-transport feasibility**. The exact-pinned WireGuard candidate now builds on the reference ESP32-S3, but its first physical runtime attempt panicked before peer-up and was restored byte-identical afterward; WireGuard therefore remains candidate-only with decision state `defer`.
+The MS5-006 physical device-runtime and MS5-007 participant/browser integration gates are accepted. MS5-008 closed with the permitted outcome `defer`; WireGuard remains candidate-only and unretained. The active normative work item is **MS5-009 firmware authenticity, update, rollback, and recovery**. OTA/update/rollback mechanics are physically accepted; the current sub-phase is authority/signing design interrogation before further authenticity implementation.
 
 The Browser-First / Online-First administrative development order remains:
 
@@ -107,7 +107,7 @@ shared browser modules/contracts stabilize
 local/offline browser reduction
 ```
 
-That administrative order is not a substitute for the normative MS5 work-item sequence. With MS5-007 accepted, the active Milestone 5 work item is MS5-008 until it reaches retain, reject, or defer acceptance.
+That administrative order is not a substitute for the normative MS5 work-item sequence. MS5-008 has reached the accepted outcome `defer`; MS5-009 is now active.
 
 The online-first order must not become SaaS-first. Participant data remains portable and independently retainable; civic identities do not depend on one hosted account system; and another county operator must be able to conform without inheriting Kane County private operational state.
 
@@ -132,7 +132,7 @@ MS5-007 uses a bounded laboratory transport adapter rather than pretending the r
 
 MS5-008 asked the scalable transport question separately. Its 2026-09-21 outcome is **defer** after an exact-pinned physical candidate build reached a device runtime panic before peer-up. WireGuard remains unretained; the diagnostic defect is backlog rather than a blocker for later MS5 lifecycle gates.
 
-The active normative work item is now **MS5-009 — firmware authenticity, update, rollback, and recovery**. Its initial lifecycle contract preserves the accepted factory/Fabric layout and adds OTA slots only in previously unused reference flash while release signing remains inert.
+The active normative work item is now **MS5-009 — firmware authenticity, update, rollback, and recovery**. OTA layout, trial confirmation, and failed-trial rollback mechanics are physically accepted. Release signing remains inert. Before further authenticity code, the Firmware Authority provider/custody/recovery/trust-anchor/transfer design must be interrogated and accepted; the current P-256 authorization implementation is provisional rather than a provider-selection decision.
 
 Current MS5 integration exit direction: a normal online browser composes accepted Kane County geography with a valid focused participant publication through the administrative/Wiregate path; the participant edge serves only its bounded publication; the browser validates the same logical identities regardless of physical edge replacement; loss of management/upstream connectivity does not silently redefine already activated participant content; later firmware lifecycle/replacement/resource gates pass without moving county/category/contract authority onto the ESP32.
 

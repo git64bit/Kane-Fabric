@@ -741,3 +741,16 @@ Evaluate signer/provider classes against the existing generic MS5-009
 requirements before any physical activation. Do not assume YubiKey, PIV,
 PKCS#11, a USB token, slot 9C, or any PIN/touch policy unless a later explicit
 provider-selection decision establishes those facts.
+
+
+## MS5-009 authority interrogation — corrective checkpoint 2026-09-21
+
+A full repository read found that authenticity implementation advanced beyond the signer-selection stage in the original Firmware Authority plan.
+
+Durable record: `docs/MS5_009_AUTHORITY_INTERROGATION.md`.
+
+Accepted OTA/update/rollback evidence remains valid. The current ECDSA P-256 authorization implementation is provisional, not design-accepted. No signer/provider, placement, key-generation method, recovery strategy, trust-anchor location, key-transition procedure, release ceremony, or authority artifact-transfer path is frozen.
+
+## Next safe action
+
+Do not write further firmware-authenticity code. Interrogate and decide the operational authority model first, update repository design/state, then reconcile implementation to the accepted design.

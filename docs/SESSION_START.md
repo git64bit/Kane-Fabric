@@ -20,22 +20,19 @@ Do not use private chat history as a substitute for these records.
 
 ## Current priority
 
-The active normative work item remains **MS5-009 — firmware authenticity,
-update, rollback, and recovery**.
+The active normative work item remains **MS5-009**, but the current phase is **authority interrogation, not implementation**.
 
-OTA/update/rollback mechanics are physically accepted. The read-only signer
-preflight on `annales` is also accepted and showed that the authority
-container remains inert, no hardware signer was present, and no PIV/PKCS#11
-tooling was installed.
+Repository reconciliation found that authenticity code advanced past the signer-selection step in the original Firmware Authority plan. OTA mechanics remain physically accepted, but the P-256 authorization implementation is provisional pending design review.
 
-No physical signer/provider has been selected. The repository requirement
-remains generic: hardware-backed non-exportable private-key custody, deliberate
-operator presence for release signing, compatibility with the frozen project
-authorization format, and recoverability without cloning the private key.
+Read first:
 
-The next step is provider evaluation/selection at the architecture level. Do
-not assume a YubiKey, PIV token, PKCS#11 device, USB token, slot, or PIN/touch
-policy before that decision.
+- `docs/MS5_009_AUTHORITY_INTERROGATION.md`
+- `docs/MS5_FIRMWARE_AUTHORITY_NODE.md`
+- `docs/MS5_009_FIRMWARE_LIFECYCLE.md`
+
+No signer/provider is selected. Do not assume YubiKey, PIV, PKCS#11, HSM, TPM, USB/network placement, slot, PIN/touch policy, or that the current P-256 envelope survives interrogation.
+
+No further authenticity code is authorized until threat/operating model, custody/recovery, provider/placement, release ceremony, device trust-anchor/key-transition, authority transfer path, and provider/algorithm compatibility are resolved in that order.
 
 ## Stable facts are not discovery tasks
 

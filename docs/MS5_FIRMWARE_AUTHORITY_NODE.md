@@ -162,3 +162,20 @@ Steps 1–3 are non-secret and reversible. Step 5 is the first point at which re
 - MS5-009 as the activation/acceptance gate.
 
 A repository change must not silently flip those placeholder booleans. Real activation requires explicit MS5-009 evidence and an accepted design change.
+
+
+## MS5-009 interrogation status — 2026-09-21
+
+Repository reconciliation found that implementation advanced beyond staged step 4 without completing the signer-selection decision.
+
+Corrective authority: `docs/MS5_009_AUTHORITY_INTERROGATION.md`.
+
+Current staged-plan status:
+
+- step 1 repository role/manifest contract — accepted;
+- step 2 inert container scaffold — accepted;
+- step 3 unsigned verification workflow — substantially established;
+- step 4 signer/provider + algorithm/envelope — **NOT ACCEPTED**;
+- step 5 operational signing activation — **NOT STARTED**.
+
+Current P-256 authorization code is a candidate only. No further authenticity implementation should proceed until step 4 is resolved as a design checkpoint.

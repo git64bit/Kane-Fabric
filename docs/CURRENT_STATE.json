@@ -169,10 +169,10 @@
       "runtime_defect_backlog": "LoadProhibited-before-peer-up",
       "blocks_ms5_009": false
     },
-    "ms5_009_status": "physical-ota-lifecycle-accepted-authenticity-pending",
+    "ms5_009_status": "authority-interrogation-active-authenticity-code-provisional",
     "ms5_009_contract": "ms5/firmware-lifecycle-contract.json",
     "ms5_009_document": "docs/MS5_009_FIRMWARE_LIFECYCLE.md",
-    "ms5_009_contract_sha256": "8c0a2987aa94ddc53d1d98c379d20f7e46c70ac07c8380885b0658ecd9f993bf",
+    "ms5_009_contract_sha256": "8b1b9e6988ce89e9c16d6d7484b6297d1e0e5c16ff7100ef8b726d6c1ee507e7",
     "ms5_009_repository_acceptance_head": "b2809487112a3fc413e0e8fac6cdc207387e0a83",
     "ms5_009_repository_acceptance_date": "2026-09-21",
     "ms5_009_repository_acceptance": {
@@ -279,6 +279,17 @@
         "pcscd_active": false
       },
       "mutated": false
+    },
+    "ms5_009_authority_interrogation_document": "docs/MS5_009_AUTHORITY_INTERROGATION.md",
+    "ms5_009_authenticity_design_status": "not-accepted-provider-selection-pending",
+    "ms5_009_authenticity_implementation_status": "provisional-candidate-do-not-extend",
+    "ms5_009_authorization_candidate": {
+      "algorithm": "ecdsa-p256-sha256",
+      "signature_encoding": "p1363-r-s-64",
+      "public_key_encoding": "sec1-uncompressed-p256-65",
+      "authorization_payload": "kane-fabric-fw-auth-v1-fixed-binary",
+      "status": "provisional-implementation-not-design-accepted",
+      "provider_selected": false
     }
   },
   "deployment": {
@@ -618,7 +629,7 @@
       "ms5_008_candidate_repository_acceptance": "accepted on CT102 at 5a35b607ef16b5c94bd732e7f2eb73fbffc17ad0; 12 focused tests passed; full MS5 suite 86 passed / 1 skipped; WireGuard retained=NO; decision state=defer",
       "ms5_008_decision": "defer accepted 2026-09-21; WireGuard remains unretained; physical panic retained as diagnostic backlog"
     },
-    "next_work_item": "MS5-009 signer-provider selection: evaluate candidate hardware-backed non-exportable signer/provider classes against the existing generic authority requirements. No provider, token family, slot, PIN/touch policy, or tooling is selected by the current repository."
+    "next_work_item": "MS5-009 authority interrogation: resolve threat/operating model, custody/recovery, provider placement, release ceremony, device trust-anchor/key transition, and authority artifact-transfer path before further authenticity implementation."
   },
   "priority_workstream": {
     "name": "MS5-009 Firmware Authenticity / Update / Rollback / Recovery",
@@ -626,10 +637,10 @@
     "implementation_contract": "ms5/firmware-lifecycle-contract.json",
     "firmware_lifecycle_document": "docs/MS5_009_FIRMWARE_LIFECYCLE.md",
     "firmware_authority_document": "docs/MS5_FIRMWARE_AUTHORITY_NODE.md",
-    "status": "MS5-009 OTA mechanics physically accepted; signer preflight accepted; signer/provider selection remains open",
+    "status": "MS5-009 OTA mechanics physically accepted; authenticity implementation frozen as provisional pending authority interrogation",
     "signing_status": "inert-not-activated",
     "management_transport_dependency": false,
-    "target_environment": "repository/design evaluation first; annales remains inert until a provider is explicitly selected"
+    "target_environment": "repository/design only; no signer tooling, signer attachment, key creation, or new authenticity code"
   },
-  "next_safe_action": "Evaluate signer/provider options against the frozen generic requirements: hardware-backed non-exportable private key custody, operator presence for release signing, project authorization format compatibility, recoverability, and rebuild of the authority container without cloning the private key. Do not assume a YubiKey, PIV token, PKCS#11 device, or any other specific provider."
+  "next_safe_action": "Resolve docs/MS5_009_AUTHORITY_INTERROGATION.md in design/state first. Only after an accepted signer/provider architecture exists should authenticity code be reconciled or extended."
 }

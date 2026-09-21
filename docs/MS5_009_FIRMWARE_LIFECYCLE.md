@@ -63,7 +63,7 @@ transport, and require no irreversible eFuse operation.
 
 The Firmware Authority remains inert while lifecycle machinery is implemented.
 
-The authorization envelope is frozen independently of the physical signer.
+The repository currently contains a **provisional authorization implementation** that had previously been described as frozen. Repository interrogation showed that this advanced beyond the original staged plan: signer/provider selection was supposed to be completed together with algorithm, public-key, key-id, and authorization-envelope freeze. The representation below is therefore a candidate implementation, not an accepted authority design, until `docs/MS5_009_AUTHORITY_INTERROGATION.md` is resolved.
 The signature covers the SHA-256 of a fixed 152-byte binary authorization
 payload containing the canonical manifest identity plus every update field the
 ESP32 consumes:
@@ -112,3 +112,8 @@ not erase NVS and the existing provisioning state remained usable.
 
 The remaining MS5-009 acceptance surface is release authenticity and authority
 recovery, not OTA mechanics.
+
+
+## Authenticity implementation hold
+
+OTA/update/rollback mechanics are accepted. Release authenticity is not design-complete. No further authenticity code is authorized until signer threat/operating model, key custody/recovery, provider placement/interface, operator ceremony, device trust anchor/key transition, authority transfer path, and provider/algorithm/envelope compatibility are resolved. Existing P-256 tests prove implementation consistency, not signer/provider architecture acceptance.
