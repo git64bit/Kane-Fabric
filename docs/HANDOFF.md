@@ -618,3 +618,34 @@ ESP-IDF compilation belongs on `fw`.
 Move to `fw` for a build-only MS5-009 gate using the pinned ESP-IDF 6.0.3
 environment. Verify the additive OTA partition table, rollback-enabled
 configuration, binary sizes, and generated partition table. Do not flash yet.
+
+
+## MS5-009 pinned ESP-IDF build — accepted 2026-09-21
+
+The build-only gate on `fw` reached:
+
+```text
+repository head              69f9aba0afa9911940ab1e54afd9a03cd4b26c5f
+ESP-IDF                      6.0.3 / 76f5dedd9950...
+application bytes            864192
+application SHA256           e5c2b1588ff47bfb1ec6815307356f48e2bc8fb881df718b013d31cb82f48225
+partition-table SHA256       4106d8c85dd4f57d06bdc42d75c7d83be4cc2de012a9f544b43f6fa883d59514
+rollback enabled             PASS
+irreversible anti-rollback   NO
+factory partition preserved  PASS
+Fabric partition preserved   PASS
+OTA partition plan           PASS
+device flashed               NO
+worktree clean               PASS
+```
+
+The ESP-IDF Kconfig messages shown during the build were notes, not build
+failures. The application image fits the 1 MiB slot with approximately 18%
+free.
+
+## Next safe action
+
+Proceed to one consolidated physical OTA lifecycle gate on `fw`. Preserve the
+current accepted application and Fabric/NVS state, prove healthy trial
+confirmation and failed-trial rollback/recovery, and record exact before/after
+hashes. Release signing remains inert for this physical lifecycle proof.

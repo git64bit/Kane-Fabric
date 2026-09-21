@@ -196,6 +196,25 @@
       "firmware_authority_private_key_created": false,
       "firmware_authority_signing_enabled": false,
       "worktree_clean": true
+    },
+    "ms5_009_fw_build_status": "accepted",
+    "ms5_009_fw_build_date": "2026-09-21",
+    "ms5_009_fw_build": {
+      "host": "fw",
+      "user": "cpe-build",
+      "repository_head": "69f9aba0afa9911940ab1e54afd9a03cd4b26c5f",
+      "esp_idf_commit": "76f5dedd9950a3012fee8fb7d5586df21fc67802",
+      "application_bytes": 864192,
+      "application_sha256": "e5c2b1588ff47bfb1ec6815307356f48e2bc8fb881df718b013d31cb82f48225",
+      "partition_table_sha256": "4106d8c85dd4f57d06bdc42d75c7d83be4cc2de012a9f544b43f6fa883d59514",
+      "rollback_enabled": true,
+      "irreversible_anti_rollback": false,
+      "factory_partition_preserved": true,
+      "fabric_partition_preserved": true,
+      "ota_partition_plan": "accepted",
+      "device_flashed": false,
+      "worktree_clean": true,
+      "evidence_dir": "/home/cpe-build/evidence/Kane-Fabric/ms5-009"
     }
   },
   "deployment": {
@@ -535,7 +554,7 @@
       "ms5_008_candidate_repository_acceptance": "accepted on CT102 at 5a35b607ef16b5c94bd732e7f2eb73fbffc17ad0; 12 focused tests passed; full MS5 suite 86 passed / 1 skipped; WireGuard retained=NO; decision state=defer",
       "ms5_008_decision": "defer accepted 2026-09-21; WireGuard remains unretained; physical panic retained as diagnostic backlog"
     },
-    "next_work_item": "MS5-009 pinned ESP-IDF build gate on fw: synchronize clean fw checkout to current main, build the reference firmware with ESP-IDF 6.0.3, verify the additive OTA partition table and rollback-enabled configuration, record application/partition binaries and size evidence, and do not flash yet."
+    "next_work_item": "MS5-009 physical OTA lifecycle gate on fw: stage and flash a controlled trial update using the accepted partition layout and rollback-enabled firmware, verify healthy trial confirmation and failed-trial rollback/recovery, while preserving Fabric and provisioning state."
   },
   "priority_workstream": {
     "name": "MS5-009 Firmware Authenticity / Update / Rollback / Recovery",
@@ -543,10 +562,10 @@
     "implementation_contract": "ms5/firmware-lifecycle-contract.json",
     "firmware_lifecycle_document": "docs/MS5_009_FIRMWARE_LIFECYCLE.md",
     "firmware_authority_document": "docs/MS5_FIRMWARE_AUTHORITY_NODE.md",
-    "status": "MS5-009 repository implementation accepted on CT102; pinned ESP-IDF build on fw is next",
+    "status": "MS5-009 repository gate accepted on CT102 and pinned ESP-IDF build gate accepted on fw; physical OTA lifecycle evidence is next",
     "signing_status": "inert-not-activated",
     "management_transport_dependency": false,
-    "target_environment": "fw / CPE Build and Hardware Workstation; build-only first, no flash"
+    "target_environment": "fw / physical ESP32-S3; controlled application/OTA lifecycle test with explicit backup/restore and no signer activation yet"
   },
-  "next_safe_action": "On fw as cpe-build, fast-forward the clean Kane Fabric checkout to current main and run the repository-owned MS5-009 pinned ESP-IDF build gate. Do not flash the ESP32 until the exact build and partition-table evidence is accepted."
+  "next_safe_action": "Prepare one consolidated fw physical OTA lifecycle gate that preserves the current accepted application and Fabric/NVS state, exercises trial boot confirmation and deliberate failed-trial rollback, and records exact before/after hashes. Do not activate release signing yet."
 }

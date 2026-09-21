@@ -20,28 +20,26 @@ Do not use private chat history as a substitute for these records.
 
 ## Current priority
 
-The active normative work item is **MS5-009 — firmware authenticity, update,
-rollback, and recovery**.
+The active normative work item remains **MS5-009 — firmware authenticity,
+update, rollback, and recovery**.
 
-The consolidated MS5-009 repository implementation is accepted on CT102 at:
-
-```text
-b2809487112a3fc413e0e8fac6cdc207387e0a83
-```
-
-Acceptance evidence:
+Repository acceptance on CT102 is complete. The pinned ESP-IDF 6.0.3 build-only
+gate on `fw` is also accepted:
 
 ```text
-focused MS5-009 tests  52 run / 1 expected skip
-complete MS5 suite     116 run / 1 expected skip
-dependency policy      PASS
-work-sequence guard    PASS
-worktree               clean
+application bytes      864192
+application SHA256     e5c2b1588ff47bfb1ec6815307356f48e2bc8fb881df718b013d31cb82f48225
+partition SHA256       4106d8c85dd4f57d06bdc42d75c7d83be4cc2de012a9f544b43f6fa883d59514
+rollback enabled       PASS
+factory preserved      PASS
+Fabric preserved       PASS
+device flashed         NO
 ```
 
-The expected skip is the CT102 host-C-compiler test. The next step therefore
-moves to `fw` for the authoritative pinned ESP-IDF 6.0.3 build only. Do not
-flash the ESP32 until that build/partition evidence is accepted.
+The next step is physical OTA lifecycle evidence on `fw`: controlled trial
+boot confirmation plus deliberate failed-trial rollback/recovery, with exact
+pre/post state hashes. Release signing remains disabled for this lifecycle
+proof.
 
 ## Stable facts are not discovery tasks
 
