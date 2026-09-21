@@ -183,6 +183,32 @@ class Esp32ReferenceTests(unittest.TestCase):
         reconcile = source.rindex("kf_firmware_policy_reconcile_healthy_running_partition")
         self.assertLess(valid, reconcile)
 
+    def test_ms5_009_install_path_verifies_authorization_before_ota_begin(self):
+        source = (
+            REFERENCE
+            / "components/kane_fabric_firmware_install/kane_fabric_firmware_install.c"
+        ).read_text()
+        verify = source.index("kf_firmware_authorization_verify(")
+        begin = source.index("kf_firmware_update_begin_authorized(")
+        self.assertLess(verify, begin)
+        self.assertIn("request->payload.firmware_sha256", source)
+        self.assertIn("request->payload.release_sequence", source)
+        self.assertIn("request->payload.rollback_floor_sequence", source)
+
+    def test_ms5_009_install_path_has_no_transport_or_private_key_role(self):
+        source = (
+            REFERENCE
+            / "components/kane_fabric_firmware_install/kane_fabric_firmware_install.c"
+        ).read_text().lower()
+        for forbidden in (
+            "http",
+            "wireguard",
+            "private_key",
+            "psa_generate_key",
+            "esp_restart",
+        ):
+            self.assertNotIn(forbidden, source)
+
     def test_host_range_core_compiles_and_passes(self):
         compiler = shutil.which("cc")
         if compiler is None:
