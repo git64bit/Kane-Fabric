@@ -4,6 +4,7 @@
 #include "esp_netif.h"
 #include "esp_wifi.h"
 #include "kane_fabric_artifact_server.h"
+#include "kane_fabric_firmware_lifecycle.h"
 #include "kane_fabric_network.h"
 #include "kane_fabric_storage.h"
 
@@ -216,6 +217,15 @@ void app_main(void)
             TAG,
             "MS5-007 local provisioning portal active; artifact HTTP remains disabled"
         );
+
+        result = kf_firmware_lifecycle_confirm_healthy_boot();
+        if (result != ESP_OK) {
+            ESP_LOGE(
+                TAG,
+                "MS5-009 provisioning-path firmware confirmation failed: %s",
+                esp_err_to_name(result)
+            );
+        }
         return;
     }
 
@@ -264,4 +274,13 @@ void app_main(void)
         STORAGE_CONFIG.base_path,
         (unsigned)http_config.server_port
     );
+
+    result = kf_firmware_lifecycle_confirm_healthy_boot();
+    if (result != ESP_OK) {
+        ESP_LOGE(
+            TAG,
+            "MS5-009 artifact-serving firmware confirmation failed: %s",
+            esp_err_to_name(result)
+        );
+    }
 }

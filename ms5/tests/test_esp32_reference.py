@@ -22,6 +22,42 @@ class Esp32ReferenceTests(unittest.TestCase):
         self.assertIn('CONFIG_IDF_TARGET="esp32s3"', defaults)
         self.assertIn("CONFIG_ESPTOOLPY_FLASHSIZE_16MB=y", defaults)
 
+    def test_ms5_009_reference_layout_adds_ota_without_moving_accepted_partitions(self):
+        partitions = (REFERENCE / "partitions.fabric-4m.csv").read_text()
+        self.assertIn("factory,    app,  factory, 0x10000,  1M,", partitions)
+        self.assertIn("fabric,     data, fat,     0x110000, 4M,", partitions)
+        self.assertIn("otadata,    data, ota,     0x510000, 8K,", partitions)
+        self.assertIn("ota_0,      app,  ota_0,   0x520000, 1M,", partitions)
+        self.assertIn("ota_1,      app,  ota_1,   0x620000, 1M,", partitions)
+
+        defaults = (REFERENCE / "sdkconfig.defaults").read_text().splitlines()
+        self.assertIn("CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE=y", defaults)
+        self.assertNotIn("CONFIG_BOOTLOADER_APP_ANTI_ROLLBACK=y", defaults)
+
+    def test_ms5_009_lifecycle_uses_application_controlled_trial_confirmation(self):
+        source = (
+            REFERENCE
+            / "components/kane_fabric_firmware_lifecycle/kane_fabric_firmware_lifecycle.c"
+        ).read_text()
+        self.assertIn("ESP_OTA_IMG_PENDING_VERIFY", source)
+        self.assertIn("esp_ota_mark_app_valid_cancel_rollback", source)
+        self.assertIn("esp_ota_mark_app_invalid_rollback_and_reboot", source)
+        self.assertNotIn("esp_http_client", source)
+        self.assertNotIn("wireguard", source.lower())
+
+    def test_ms5_009_app_confirms_only_after_usable_runtime_path(self):
+        app = (REFERENCE / "main/app_main.c").read_text()
+        confirm = "kf_firmware_lifecycle_confirm_healthy_boot()"
+        self.assertEqual(2, app.count(confirm))
+        self.assertLess(
+            app.index("MS5-007 local provisioning portal active"),
+            app.index(confirm),
+        )
+        ready = app.index("MS5-007 HTTP artifact server ready")
+        final_confirm = app.rindex(confirm)
+        self.assertLess(ready, final_confirm)
+        self.assertGreater(final_confirm, app.index("kf_artifact_server_register"))
+
     def test_host_range_core_compiles_and_passes(self):
         compiler = shutil.which("cc")
         if compiler is None:

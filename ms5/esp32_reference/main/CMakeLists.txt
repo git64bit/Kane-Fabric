@@ -1,6 +1,6 @@
 idf_component_register(
     SRCS "app_main.c"
-    REQUIRES esp_event esp_netif esp_wifi log kane_fabric_artifact_server kane_fabric_network kane_fabric_storage
+    REQUIRES esp_event esp_netif esp_wifi log kane_fabric_artifact_server kane_fabric_firmware_lifecycle kane_fabric_network kane_fabric_storage
 )
 
 # MS5-007 focused participant publication image. The reference ESP32-S3 keeps

@@ -1,7 +1,12 @@
 # Kane Fabric ESP32-S3 reference capacity profile: 16 MiB flash / 4 MiB Fabric data
 # Capacity is a physical deployment property, not utility, jurisdiction, or Fabric identity.
+# MS5-009 adds OTA metadata/application slots only in previously unused flash.
+# Existing NVS, factory, and Fabric partition offsets remain unchanged.
 # Name,     Type, SubType, Offset,   Size, Flags
 nvs,        data, nvs,     0x9000,   24K,
 phy_init,   data, phy,     0xf000,   4K,
 factory,    app,  factory, 0x10000,  1M,
 fabric,     data, fat,     0x110000, 4M,
+otadata,    data, ota,     0x510000, 8K,
+ota_0,      app,  ota_0,   0x520000, 1M,
+ota_1,      app,  ota_1,   0x620000, 1M,
