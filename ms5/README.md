@@ -167,6 +167,12 @@ unchanged; `otadata`, `ota_0`, and `ota_1` use previously unused flash.
 
 The Firmware Authority remains inert and release signing is not activated.
 
+The consolidated MS5-009 repository gate was accepted on CT102 at
+`b2809487112a3fc413e0e8fac6cdc207387e0a83`: focused MS5-009 tests ran 52 with one expected CT102 compiler skip,
+and the complete MS5 suite ran 116 with the same expected skip. The next gate
+is the pinned ESP-IDF 6.0.3 build on `fw`; no physical flash is implied by
+repository acceptance.
+
 ## Tests
 
 Run:

@@ -23,19 +23,25 @@ Do not use private chat history as a substitute for these records.
 The active normative work item is **MS5-009 — firmware authenticity, update,
 rollback, and recovery**.
 
-MS5-008 closed with the permitted result `defer`. WireGuard remains
-candidate-only and unretained; its runtime panic is diagnostic backlog.
-
-MS5-009 starts from the accepted inert Firmware Authority and:
+The consolidated MS5-009 repository implementation is accepted on CT102 at:
 
 ```text
-ms5/firmware-lifecycle-contract.json
-docs/MS5_009_FIRMWARE_LIFECYCLE.md
+b2809487112a3fc413e0e8fac6cdc207387e0a83
 ```
 
-The first implementation target is repository-only: add OTA metadata and two
-1 MiB OTA application slots in unused reference flash while preserving accepted
-NVS, factory-app, and Fabric addresses. Signing remains disabled.
+Acceptance evidence:
+
+```text
+focused MS5-009 tests  52 run / 1 expected skip
+complete MS5 suite     116 run / 1 expected skip
+dependency policy      PASS
+work-sequence guard    PASS
+worktree               clean
+```
+
+The expected skip is the CT102 host-C-compiler test. The next step therefore
+moves to `fw` for the authoritative pinned ESP-IDF 6.0.3 build only. Do not
+flash the ESP32 until that build/partition evidence is accepted.
 
 ## Stable facts are not discovery tasks
 

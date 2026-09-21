@@ -585,3 +585,36 @@ configuration in the repository. Then add device-side lifecycle scaffolding.
 
 Do not move the Fabric partition, erase provisioning NVS, activate release
 signing, or make management transport an update prerequisite.
+
+
+## MS5-009 repository acceptance — accepted 2026-09-21
+
+CT102 accepted the consolidated repository implementation at:
+
+```text
+b2809487112a3fc413e0e8fac6cdc207387e0a83
+```
+
+Evidence:
+
+```text
+work-sequence authority     PASS
+dependency policy           PASS
+Python compileall           PASS
+focused MS5-009 tests       52 run / 1 expected skip
+complete MS5 suite          116 run / 1 expected skip
+MS5-008 outcome             defer
+WireGuard retained          NO
+Firmware Authority key      NOT CREATED
+Firmware Authority signing  DISABLED
+worktree                    clean
+```
+
+The single expected skip is the CT102 host-C-compiler test; authoritative
+ESP-IDF compilation belongs on `fw`.
+
+## Next safe action
+
+Move to `fw` for a build-only MS5-009 gate using the pinned ESP-IDF 6.0.3
+environment. Verify the additive OTA partition table, rollback-enabled
+configuration, binary sizes, and generated partition table. Do not flash yet.

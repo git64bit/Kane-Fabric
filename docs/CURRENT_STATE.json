@@ -169,10 +169,34 @@
       "runtime_defect_backlog": "LoadProhibited-before-peer-up",
       "blocks_ms5_009": false
     },
-    "ms5_009_status": "repository-contract-started",
+    "ms5_009_status": "repository-accepted-ct102",
     "ms5_009_contract": "ms5/firmware-lifecycle-contract.json",
     "ms5_009_document": "docs/MS5_009_FIRMWARE_LIFECYCLE.md",
-    "ms5_009_contract_sha256": "8c0a2987aa94ddc53d1d98c379d20f7e46c70ac07c8380885b0658ecd9f993bf"
+    "ms5_009_contract_sha256": "8c0a2987aa94ddc53d1d98c379d20f7e46c70ac07c8380885b0658ecd9f993bf",
+    "ms5_009_repository_acceptance_head": "b2809487112a3fc413e0e8fac6cdc207387e0a83",
+    "ms5_009_repository_acceptance_date": "2026-09-21",
+    "ms5_009_repository_acceptance": {
+      "host": "CT102 kane-fabric",
+      "checkout": "/tmp/kane-fabric-ms2",
+      "focused_tests": {
+        "ran": 52,
+        "passed": 51,
+        "skipped": 1
+      },
+      "complete_ms5_suite": {
+        "ran": 116,
+        "passed": 115,
+        "skipped": 1
+      },
+      "work_sequence_authority": "passed",
+      "dependency_policy": "passed",
+      "python_compileall": "passed",
+      "ms5_008_outcome": "defer",
+      "wireguard_retained": false,
+      "firmware_authority_private_key_created": false,
+      "firmware_authority_signing_enabled": false,
+      "worktree_clean": true
+    }
   },
   "deployment": {
     "proxmox_host": "srv-b",
@@ -186,9 +210,9 @@
       "branch": "main",
       "upstream": "origin/main",
       "fetch_refspec": "+refs/heads/*:refs/remotes/origin/*",
-      "last_observed_head": "5a35b607ef16b5c94bd732e7f2eb73fbffc17ad0",
+      "last_observed_head": "b2809487112a3fc413e0e8fac6cdc207387e0a83",
       "last_observed_worktree": "clean",
-      "note": "CT102 fast-forwarded cleanly to 5a35b607 and accepted the MS5-008 candidate/evaluation contract: work-sequence and dependency-policy guards valid; focused candidate tests 12/12 passed; complete MS5 suite 86 passed / 1 skipped; WireGuard remained unretained; decision state defer."
+      "note": "CT102 fast-forwarded cleanly to b2809487 and accepted the consolidated MS5-009 repository gate: work-sequence/dependency guards valid; focused MS5-009 suite 52 tests with 1 expected skip; complete MS5 suite 116 tests with 1 expected skip; WireGuard remains unretained; Firmware Authority signing remains inert."
     },
     "ms5_006_hardware_execution": {
       "environment": "fw / CPE Build and Hardware Workstation",
@@ -511,7 +535,7 @@
       "ms5_008_candidate_repository_acceptance": "accepted on CT102 at 5a35b607ef16b5c94bd732e7f2eb73fbffc17ad0; 12 focused tests passed; full MS5 suite 86 passed / 1 skipped; WireGuard retained=NO; decision state=defer",
       "ms5_008_decision": "defer accepted 2026-09-21; WireGuard remains unretained; physical panic retained as diagnostic backlog"
     },
-    "next_work_item": "MS5-009 repository implementation: adopt the additive OTA partition plan, enable ESP-IDF rollback support, and implement transport-independent firmware verification/update state without activating release signing yet."
+    "next_work_item": "MS5-009 pinned ESP-IDF build gate on fw: synchronize clean fw checkout to current main, build the reference firmware with ESP-IDF 6.0.3, verify the additive OTA partition table and rollback-enabled configuration, record application/partition binaries and size evidence, and do not flash yet."
   },
   "priority_workstream": {
     "name": "MS5-009 Firmware Authenticity / Update / Rollback / Recovery",
@@ -519,10 +543,10 @@
     "implementation_contract": "ms5/firmware-lifecycle-contract.json",
     "firmware_lifecycle_document": "docs/MS5_009_FIRMWARE_LIFECYCLE.md",
     "firmware_authority_document": "docs/MS5_FIRMWARE_AUTHORITY_NODE.md",
-    "status": "MS5-008 deferred by contract; MS5-009 repository lifecycle contract started",
+    "status": "MS5-009 repository implementation accepted on CT102; pinned ESP-IDF build on fw is next",
     "signing_status": "inert-not-activated",
     "management_transport_dependency": false,
-    "target_environment": "repository implementation first; physical fw and annales activation only after repository contract gates"
+    "target_environment": "fw / CPE Build and Hardware Workstation; build-only first, no flash"
   },
-  "next_safe_action": "Implement the MS5-009 additive OTA partition migration in the repository without moving nvs, factory, or fabric; enable rollback-capable ESP-IDF configuration; add device-side lifecycle scaffolding that remains transport-independent and uses no release-signing private key."
+  "next_safe_action": "On fw as cpe-build, fast-forward the clean Kane Fabric checkout to current main and run the repository-owned MS5-009 pinned ESP-IDF build gate. Do not flash the ESP32 until the exact build and partition-table evidence is accepted."
 }
