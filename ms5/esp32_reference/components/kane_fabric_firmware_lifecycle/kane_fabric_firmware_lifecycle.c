@@ -1,5 +1,7 @@
 #include "kane_fabric_firmware_lifecycle.h"
 
+#include "kane_fabric_firmware_policy.h"
+
 #include "esp_log.h"
 #include "esp_ota_ops.h"
 #include "esp_partition.h"
@@ -56,12 +58,12 @@ esp_err_t kf_firmware_lifecycle_confirm_healthy_boot(void)
 
     if (state == KF_FIRMWARE_BOOT_FACTORY) {
         ESP_LOGI(TAG, "MS5-009 factory image healthy; OTA confirmation not required");
-        return ESP_OK;
+        return kf_firmware_policy_reconcile_healthy_running_partition();
     }
 
     if (state == KF_FIRMWARE_BOOT_OTA_VALID) {
         ESP_LOGI(TAG, "MS5-009 OTA image already confirmed valid");
-        return ESP_OK;
+        return kf_firmware_policy_reconcile_healthy_running_partition();
     }
 
     if (state != KF_FIRMWARE_BOOT_OTA_PENDING_VERIFY) {
@@ -70,12 +72,22 @@ esp_err_t kf_firmware_lifecycle_confirm_healthy_boot(void)
     }
 
     result = esp_ota_mark_app_valid_cancel_rollback();
+    if (result != ESP_OK) {
+        ESP_LOGE(
+            TAG,
+            "MS5-009 OTA confirmation failed: %s",
+            esp_err_to_name(result)
+        );
+        return result;
+    }
+
+    result = kf_firmware_policy_reconcile_healthy_running_partition();
     if (result == ESP_OK) {
         ESP_LOGI(TAG, "MS5-009 OTA trial image confirmed healthy");
     } else {
         ESP_LOGE(
             TAG,
-            "MS5-009 OTA confirmation failed: %s",
+            "MS5-009 release-state promotion failed: %s",
             esp_err_to_name(result)
         );
     }

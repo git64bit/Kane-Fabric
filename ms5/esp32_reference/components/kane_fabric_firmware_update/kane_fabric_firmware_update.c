@@ -1,5 +1,7 @@
 #include "kane_fabric_firmware_update.h"
 
+#include "kane_fabric_firmware_policy.h"
+
 #include "esp_log.h"
 #include "esp_ota_ops.h"
 #include "esp_partition.h"
@@ -19,6 +21,8 @@ typedef struct {
     size_t expected_length;
     size_t written;
     uint8_t expected_sha256[KF_FIRMWARE_SHA256_BYTES];
+    uint64_t release_sequence;
+    uint64_t rollback_floor_sequence;
     psa_hash_operation_t hash_operation;
 } kf_firmware_update_context_t;
 
@@ -54,6 +58,14 @@ esp_err_t kf_firmware_update_begin_authorized(
     }
     if (UPDATE.active) {
         return ESP_ERR_INVALID_STATE;
+    }
+
+    esp_err_t policy_result = kf_firmware_policy_check_candidate(
+        image->release_sequence,
+        image->rollback_floor_sequence
+    );
+    if (policy_result != ESP_OK) {
+        return policy_result;
     }
 
     const esp_partition_t *partition =
@@ -103,6 +115,8 @@ esp_err_t kf_firmware_update_begin_authorized(
         image->firmware_sha256,
         sizeof(UPDATE.expected_sha256)
     );
+    UPDATE.release_sequence = image->release_sequence;
+    UPDATE.rollback_floor_sequence = image->rollback_floor_sequence;
 
     ESP_LOGI(
         TAG,
@@ -204,9 +218,20 @@ esp_err_t kf_firmware_update_finish(void)
         return end_result;
     }
 
+    const esp_err_t policy_result = kf_firmware_policy_stage_candidate(
+        UPDATE.release_sequence,
+        UPDATE.rollback_floor_sequence,
+        partition->address
+    );
+    if (policy_result != ESP_OK) {
+        reset_context();
+        return policy_result;
+    }
+
     const esp_err_t boot_result =
         esp_ota_set_boot_partition(partition);
     if (boot_result != ESP_OK) {
+        (void)kf_firmware_policy_cancel_pending(partition->address);
         reset_context();
         return boot_result;
     }

@@ -22,6 +22,8 @@ extern "C" {
 typedef struct {
     size_t firmware_byte_length;
     uint8_t firmware_sha256[KF_FIRMWARE_SHA256_BYTES];
+    uint64_t release_sequence;
+    uint64_t rollback_floor_sequence;
 } kf_firmware_authorized_image_t;
 
 /*

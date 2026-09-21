@@ -146,6 +146,40 @@ class Esp32ReferenceTests(unittest.TestCase):
             source.index("psa_import_key"),
         )
 
+    def test_ms5_009_normal_update_policy_is_nvs_backed_and_monotonic(self):
+        source = (
+            REFERENCE
+            / "components/kane_fabric_firmware_policy/kane_fabric_firmware_policy.c"
+        ).read_text()
+        self.assertIn('KF_FW_NAMESPACE "kane_fw"', source)
+        self.assertIn("release_sequence <= state.accepted_sequence", source)
+        self.assertIn("rollback_floor_sequence < state.rollback_floor_sequence", source)
+        self.assertIn("KF_FW_PENDING_ADDR_KEY", source)
+        self.assertIn("nvs_commit", source)
+        self.assertNotIn("efuse", source.lower())
+
+    def test_ms5_009_update_stages_policy_before_selecting_trial_boot(self):
+        source = (
+            REFERENCE
+            / "components/kane_fabric_firmware_update/kane_fabric_firmware_update.c"
+        ).read_text()
+        stage = source.index("kf_firmware_policy_stage_candidate(")
+        boot = source.index("esp_ota_set_boot_partition(partition)")
+        self.assertLess(stage, boot)
+        self.assertIn("kf_firmware_policy_cancel_pending", source)
+        self.assertIn("release_sequence", source)
+        self.assertIn("rollback_floor_sequence", source)
+
+    def test_ms5_009_health_confirmation_reconciles_pending_release_state(self):
+        source = (
+            REFERENCE
+            / "components/kane_fabric_firmware_lifecycle/kane_fabric_firmware_lifecycle.c"
+        ).read_text()
+        self.assertIn("kf_firmware_policy_reconcile_healthy_running_partition", source)
+        valid = source.index("esp_ota_mark_app_valid_cancel_rollback")
+        reconcile = source.rindex("kf_firmware_policy_reconcile_healthy_running_partition")
+        self.assertLess(valid, reconcile)
+
     def test_host_range_core_compiles_and_passes(self):
         compiler = shutil.which("cc")
         if compiler is None:
