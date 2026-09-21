@@ -223,3 +223,12 @@ The minimal SASE issuance workflow must now include:
 - no requirement for institutional administrators to control the validation role.
 
 No implementation code should precede that workflow design.
+
+
+## Statutory procedure inheritance
+
+The participant-operated validator workflow must not recreate procedures Illinois law already defines for the underlying institution.
+
+For HOA Diagnostics, `docs/ILLINOIS_STATUTORY_PROCEDURE_BASELINE.md` records the first statutory anchors in the Illinois Condominium Property Act. Statutory member/board roles, notices, records, inspection rights, meeting openness, recording rights, delivery methods, and fiduciary duties remain sourced to Illinois law where applicable.
+
+SASE validation, rotating Civic operators, and peer scrubbing are Civic Infrastructure additions layered above those source-defined relationships; they are not represented as statutory condominium procedures.

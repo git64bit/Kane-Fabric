@@ -20,19 +20,18 @@ Do not use private chat history as a substitute for these records.
 
 ## Current priority
 
-The operator model is now participant-operated and anti-capture by construction.
+The first HOA Diagnostics workflow must now be derived from Illinois statutory procedure before Civic-specific workflow design.
 
 Read first:
 
+- `docs/ILLINOIS_STATUTORY_PROCEDURE_BASELINE.md`
 - `docs/CIVIC_OPERATOR_PEER_SCRUTINY.md`
 - `docs/CIVIC_PARTICIPATION_RENEWAL.md`
 - `docs/CIVIC_ISSUANCE_RECORD.md`
 
-Any eligible active participant may become a SASE validator/operator under the applicable profile. Operator is a bounded procedural role, not a permanent administrator. Issuance root/profile identity and actual operator provenance are separate.
+Initial statutory anchors are `765 ILCS 605/18`, `/18.4`, `/18.8`, and `/19`. Reuse statutory roles, notice/delivery mechanisms, record duties, inspection rights, meeting openness/recording rights, deadlines, and fiduciary duties where applicable. Do not present Civic additions as statutory mandates.
 
-Operator actions are peer-scrubbable: other participants may confirm, corroborate, challenge, or expose contradictions/capture. The institution being diagnosed does not gain exclusive control of its diagnostic infrastructure merely because it governs the underlying institution.
-
-Next design step: minimal participant-operated SASE workflow plus operator handoff and peer confirmation/challenge record boundaries. No implementation code yet.
+Next: derive the minimal participant-operated SASE workflow by marking each step either `STATUTORY_SOURCE` or `CIVIC_ADDITION`. No implementation code yet.
 
 ## Stable facts are not discovery tasks
 

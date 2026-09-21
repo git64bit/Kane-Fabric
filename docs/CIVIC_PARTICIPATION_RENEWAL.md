@@ -232,3 +232,10 @@ Any eligible active participant may perform the validator/operator role under th
 Other participants may scrub operator actions: confirm them, compare them with independent facts, or expose contradictions, procedural departures, unequal treatment, or capture. The operator therefore builds credibility through consistent visible behavior rather than institutional status.
 
 See `docs/CIVIC_OPERATOR_PEER_SCRUTINY.md`.
+
+
+## Statutory procedure boundary
+
+The six-month SASE rule is a Civic Infrastructure participation rule, not a claim about condominium-law renewal requirements.
+
+For an HOA participant, underlying facts such as unit-owner status, board role, association records, notices, meetings, and statutory inspection rights should be interpreted from the applicable Illinois authority. See `docs/ILLINOIS_STATUTORY_PROCEDURE_BASELINE.md`.

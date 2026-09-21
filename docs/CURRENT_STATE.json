@@ -506,6 +506,28 @@
     "civic_school_profile_boundary": {
       "administration_exclusive_control": false,
       "eligible_affected_operator_roles": "future-profile-definition-required"
+    },
+    "illinois_statutory_procedure_baseline_document": "docs/ILLINOIS_STATUTORY_PROCEDURE_BASELINE.md",
+    "illinois_statutory_procedure_baseline": {
+      "status": "initial-condominium-baseline-documented",
+      "reviewed_date": "2026-09-21",
+      "primary_act": "765 ILCS 605",
+      "initial_sections": [
+        "18",
+        "18.4",
+        "18.8",
+        "19"
+      ],
+      "design_rule": "reuse-and-cite-applicable-statutory-procedures-before-inventing-civic-procedure",
+      "civic_additions_not_claimed_statutory": [
+        "six-month SASE participation renewal",
+        "participant-operated SASE validator",
+        "Civic Issuance Record",
+        "Same-and-Equal machinery",
+        "peer scrubbing",
+        "ESP32-S3 issuance",
+        "Witness Attestation"
+      ]
     }
   },
   "deployment": {
@@ -845,7 +867,7 @@
       "ms5_008_candidate_repository_acceptance": "accepted on CT102 at 5a35b607ef16b5c94bd732e7f2eb73fbffc17ad0; 12 focused tests passed; full MS5 suite 86 passed / 1 skipped; WireGuard retained=NO; decision state=defer",
       "ms5_008_decision": "defer accepted 2026-09-21; WireGuard remains unretained; physical panic retained as diagnostic backlog"
     },
-    "next_work_item": "Design the minimal participant-operated SASE issuance workflow: validator eligibility, operator provenance, SASE receipt/return, six-month participation issuance, operator handoff/replacement, and peer confirmation/challenge hooks. No implementation code yet."
+    "next_work_item": "Build the minimal participant-operated SASE workflow by first mapping each HOA step to applicable Illinois statutory procedure/vocabulary, then specify only the Civic additions that remain. Do not encode statutory procedures from memory or by analogy."
   },
   "priority_workstream": {
     "name": "MS5-009 Firmware Authenticity / Update / Rollback / Recovery",
@@ -858,5 +880,5 @@
     "management_transport_dependency": false,
     "target_environment": "repository/design and published affordance source; no signer or firmware mutation"
   },
-  "next_safe_action": "Define the minimal participant-operated SASE issuance workflow and peer-scrutiny record boundaries. Preserve root identity separately from rotating operator provenance. No runtime/signing implementation yet."
+  "next_safe_action": "Use docs/ILLINOIS_STATUTORY_PROCEDURE_BASELINE.md as the source map for the first HOA Diagnostics issuance workflow. Expand statutory citations only when a specific workflow step requires them; keep SASE/peer-scrubbing additions clearly labeled as Civic mechanisms."
 }

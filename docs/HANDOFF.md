@@ -883,3 +883,14 @@ The operator model is now explicitly decentralized:
 New authority document: `docs/CIVIC_OPERATOR_PEER_SCRUTINY.md`.
 
 No code changed.
+
+
+## Illinois statutory procedure baseline — 2026-09-21
+
+The first HOA workflow source map is now documented at `docs/ILLINOIS_STATUTORY_PROCEDURE_BASELINE.md`.
+
+The design rule is: do not invent a Civic procedure when Illinois law already defines the underlying institutional role/procedure. Initial Condominium Property Act anchors are Sections 18, 18.4, 18.8, and 19 for meetings/elections/notices/recording, board duties, acceptable technological means/evidence retention, and association-record inspection.
+
+The document explicitly separates those statutory primitives from Civic additions such as six-month SASE renewal, rotating participant validators, Civic Issuance Records, Same-and-Equal, peer scrubbing, ESP32 issuance, and future Witness Attestation.
+
+No code changed.
