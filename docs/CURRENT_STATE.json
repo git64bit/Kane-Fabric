@@ -444,7 +444,7 @@
     "civic_issuance_record_document": "docs/CIVIC_ISSUANCE_RECORD.md",
     "civic_issuance_record_status": "semantic-architecture-defined-serialization-unfrozen",
     "civic_issuance_record_model": {
-      "snapshot_model": "complete-not-delta",
+      "snapshot_model": "complete-participation-and-claims-snapshot",
       "one_authority_contract_per_record": true,
       "subject_reference_scope": "issuer-scoped-opaque-lineage",
       "appliance_is_subject_identity": false,
@@ -452,7 +452,31 @@
       "supersession": "append-new-record-never-rewrite-history",
       "correction": "new-complete-record-with-lineage",
       "same_and_equal_peer_list_stored": false,
-      "cryptographic_representation": "unfrozen"
+      "cryptographic_representation": "unfrozen",
+      "participation_window_months": 6,
+      "claim_provenance_required": true,
+      "operator_signature_certifies_all_claim_truth": false
+    },
+    "civic_participation_renewal_document": "docs/CIVIC_PARTICIPATION_RENEWAL.md",
+    "civic_participation_model": {
+      "renewal_method": "SASE",
+      "renewal_period_months": 6,
+      "automatic_renewal": false,
+      "participation_ends_without_renewal": true,
+      "operator_recurring_burden": [
+        "receive SASE",
+        "recognize voluntary renewal",
+        "issue next bounded participation interval",
+        "return SASE workflow response",
+        "preserve issuance history"
+      ],
+      "participant_recurring_burden": [
+        "send new SASE every six months",
+        "keep claimed affordances accurate and current"
+      ],
+      "operator_continuous_affordance_verification": false,
+      "participant_claim_maintenance": true,
+      "historical_records_preserved_after_expiry": true
     }
   },
   "deployment": {
@@ -792,7 +816,7 @@
       "ms5_008_candidate_repository_acceptance": "accepted on CT102 at 5a35b607ef16b5c94bd732e7f2eb73fbffc17ad0; 12 focused tests passed; full MS5 suite 86 passed / 1 skipped; WireGuard retained=NO; decision state=defer",
       "ms5_008_decision": "defer accepted 2026-09-21; WireGuard remains unretained; physical panic retained as diagnostic backlog"
     },
-    "next_work_item": "Review/reconcile the Civic Issuance Record boundary before implementation: decide canonical/hashable fields vs references, ESP32-resident data vs external evidence/history, local selective disclosure, and the minimal CURRENT_RESIDENCE issuance workflow. Signing-provider/algorithm work remains on hold."
+    "next_work_item": "Reconcile the Civic Issuance Record around the six-month SASE participation window and participant-maintained claim model: define canonical claim-provenance fields, active/inactive participation semantics, and the minimal renewal workflow before serialization or code."
   },
   "priority_workstream": {
     "name": "MS5-009 Firmware Authenticity / Update / Rollback / Recovery",
@@ -800,10 +824,10 @@
     "implementation_contract": "ms5/firmware-lifecycle-contract.json",
     "firmware_lifecycle_document": "docs/MS5_009_FIRMWARE_LIFECYCLE.md",
     "firmware_authority_document": "docs/MS5_FIRMWARE_AUTHORITY_NODE.md",
-    "status": "civic authority semantic model complete through Civic Issuance Record; reconciliation of storage/disclosure/issuance boundaries is next",
+    "status": "civic authority model corrected: operator administers six-month SASE participation only; participant maintains affordance accuracy/credibility",
     "signing_status": "inert-not-activated",
     "management_transport_dependency": false,
     "target_environment": "repository/design and published affordance source; no signer or firmware mutation"
   },
-  "next_safe_action": "Interrogate the semantic Civic Issuance Record against ESP32 storage, privacy/disclosure, device replacement, offline verification, SASE CURRENT_RESIDENCE issuance, and future Witness Attestation needs. Update design first; do not write issuance or signing code yet."
+  "next_safe_action": "Design the minimal six-month SASE renewal workflow and claim-provenance semantics for the Civic Issuance Record. Keep operator attestation of active participation separate from participant-maintained affordance claims. No implementation code yet."
 }

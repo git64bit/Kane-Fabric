@@ -159,7 +159,7 @@ State is not punishment. It records what the authority currently asserts about t
 
 ## 7. qualification
 
-`qualification` binds the relationship to the evidence discipline under which it was accepted.
+`qualification` binds the relationship to the evidence discipline or claim basis under which it is presented. For participant-maintained affordances, this does not by itself imply that the Kane operator independently verified the claim.
 
 It should be capable of referring to:
 
@@ -383,3 +383,17 @@ The versioned Affordance Authority Contract and Same-and-Equal policy are now de
 The next architecture object is the canonical Civic Issuance Record that wraps one or more tuples with issuer/appliance/provenance/signature metadata.
 
 No implementation code should precede that design checkpoint.
+
+
+## Claim responsibility
+
+The tuple describes the civic relationship being claimed/asserted; the enclosing Civic Issuance Record must also preserve **claim provenance**.
+
+For Kane:
+
+- active SASE participation is operator-attested;
+- most other civic affordances are participant-maintained claims;
+- evidence may support those claims without transferring claim responsibility to the operator;
+- operator issuance/signature must not be interpreted as blanket certification of every tuple.
+
+The participant is responsible for keeping claimed affordances accurate and current throughout each participation interval and across renewals.

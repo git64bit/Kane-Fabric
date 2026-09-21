@@ -90,9 +90,9 @@ It operates on firmware artifacts and release manifests. It does not decide whet
 
 Statement:
 
-> This participant issuance was granted these civic standings and affordances under these published rules.
+> This participant voluntarily initiated or renewed a bounded participation interval through the required SASE process, and this issuance carries the participant's then-current civic claims under these published rules.
 
-It evaluates standing/issuance evidence and produces a signed Civic Issuance Record for one participant appliance issuance.
+It administers the bounded SASE participation issuance and records the participant's claimed affordance set with explicit provenance. It must not imply continuous operator verification of participant-maintained claims.
 
 These two authorities may eventually be co-located on one physical machine or separated. Physical placement is not decided here. Their logical authority, records, and signing roles must remain distinct even if a later implementation shares hardware.
 
@@ -358,3 +358,16 @@ The logical Civic Issuance Record is now defined in `docs/CIVIC_ISSUANCE_RECORD.
 The record is a complete issuance snapshot, not a delta. It wraps one or more Civic Relationship Tuples with issuer/root identity, one exact Affordance Authority Contract identity, issuer-scoped subject lineage, current appliance issuance reference, monotonic sequence, issuance/effective time, explicit supersession/correction/replacement lineage, revalidation posture, disclosure policy, and logical authority proof.
 
 Cryptographic representation remains unfrozen.
+
+
+## Six-month participation boundary
+
+Kane participation is renewed only by a fresh SASE every six months. Without a new SASE, participation ends.
+
+This is the only recurring administrative burden on the Kane operator and participant.
+
+Other civic affordances are maintained by the participant. The operator may issue/sign the record that carries those claims, but the record must distinguish operator-attested participation from participant-claimed relationships so the operator signature is not misread as institutional certification of every claim.
+
+Participant credibility is earned by keeping claims accurate, current, and appropriately evidenced over time. False or stale claims are diagnostic signals about the participant's credibility, not proof that the infrastructure failed.
+
+See `docs/CIVIC_PARTICIPATION_RENEWAL.md`.

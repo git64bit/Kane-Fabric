@@ -20,20 +20,22 @@ Do not use private chat history as a substitute for these records.
 
 ## Current priority
 
-The civic authority semantic model is now defined through four architecture documents:
+The civic authority model now has a strict administrative boundary:
 
-- `docs/CIVIC_RELATIONSHIP_TUPLE.md`
-- `docs/CIVIC_AFFORDANCE_AUTHORITY_CONTRACT.md`
-- `docs/CIVIC_SAME_AND_EQUAL_POLICY.md`
+- a fresh SASE is mandatory every six months;
+- no SASE renewal means participation ends;
+- SASE renewal is the only recurring operator-administered requirement;
+- the operator attests the active participation interval it actually controls;
+- all other civic affordances are participant-maintained claims unless a specific published policy names another attesting authority;
+- participants build credibility by keeping those claims accurate and current.
+
+Read first:
+
+- `docs/CIVIC_PARTICIPATION_RENEWAL.md`
 - `docs/CIVIC_ISSUANCE_RECORD.md`
+- `docs/CIVIC_RELATIONSHIP_TUPLE.md`
 
-The Civic Issuance Record is a complete snapshot, not a delta. It binds one exact authority contract, an opaque issuer-scoped subject lineage, the current appliance issuance, complete relationship tuples, monotonic lineage sequence, supersession/revalidation/correction history, disclosure policy, and logical authority proof.
-
-Cryptographic/provider representation remains unfrozen.
-
-Next work is reconciliation before implementation: decide canonical/hashable fields versus external references, which record material actually resides on the ESP32, selective local disclosure, offline verification material, and the minimal `CURRENT_RESIDENCE` + SASE issuance workflow. Future Witness Attestation must remain supportable without being implemented now.
-
-No issuance, firmware-signing, or signer-provider code until that boundary is accepted.
+The next design step is the minimal SASE renewal/issuance workflow plus explicit claim-provenance fields. Do not let an operator signature silently imply institutional verification of every affordance. No implementation code yet.
 
 ## Stable facts are not discovery tasks
 

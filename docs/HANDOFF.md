@@ -848,3 +848,21 @@ Key decisions:
 - authority proof is logical only; cryptographic/provider representation remains unfrozen.
 
 Next: reconcile what is canonical/on-device/disclosable before any code.
+
+
+## Six-month participation / participant credibility — 2026-09-21
+
+A major authority boundary is now explicit:
+
+- every participant MUST send a new SASE every six months;
+- without it, participation ends;
+- this is the only recurring administrative burden on both participant and Kane operator;
+- the operator attests the bounded SASE participation interval it actually administers;
+- other civic affordances are participant-maintained claims;
+- the participant builds credibility by keeping those claims accurate and current;
+- operator issuance/signature must not be interpreted as blanket verification of every claim;
+- historical issuance survives participation expiry.
+
+The new authority document is `docs/CIVIC_PARTICIPATION_RENEWAL.md`.
+
+No code changed.

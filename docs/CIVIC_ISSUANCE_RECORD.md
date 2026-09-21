@@ -12,13 +12,13 @@ It is not yet a canonical byte encoding, JSON schema, database schema, cryptogra
 
 The Civic Issuance Record is the durable authoritative statement:
 
-> This issuer, operating under this exact published affordance-authority contract, asserted this complete set of civic relationships for this participant issuance at this time and bound that issuance to this current appliance bearer.
+> This issuer recorded a bounded participation issuance under this exact published affordance-authority contract, including the operator-attested SASE participation state and the participant's then-current claimed civic relationships, and bound that issuance to this current appliance bearer.
 
 The record is designed for authority, credibility, inspectability, offline usefulness, supersession, device replacement, and later diagnostics.
 
 ## Complete snapshot, not delta
 
-Each Civic Issuance Record is a complete snapshot of the relationships the issuer currently asserts for the participant issuance under the named authority contract.
+Each Civic Issuance Record is a complete snapshot of the participation state and civic claims carried by that participant issuance under the named authority contract. The record must distinguish what the operator actually attests from what the participant claims and maintains.
 
 It is not a patch such as:
 
@@ -48,7 +48,9 @@ I = (
   sequence,
   issued_at,
   effective_time,
+  participation_window,
   relationship_tuples[],
+  claim_provenance,
   lineage,
   revalidation,
   disclosure_policy,
@@ -158,7 +160,15 @@ It is distinct from the validity/effective times of individual relationship tupl
 
 It may normally equal `issued_at`, but the distinction is preserved for controlled policy migration, scheduled changes, or other future cases.
 
-## 10. relationship_tuples[]
+## 10. participation_window
+
+`participation_window` records the bounded six-month active-participation interval created by the accepted SASE.
+
+A new SASE is required every six months. Without it, active participation ends. No passive signal, old record, device possession, unchanged address, or prior participation renews this interval.
+
+Participation expiry does not erase historical records.
+
+## 11. relationship_tuples[]
 
 The record contains one or more complete Civic Relationship Tuples as defined by `docs/CIVIC_RELATIONSHIP_TUPLE.md`.
 
@@ -177,7 +187,19 @@ subject P
 
 Each relationship tuple retains its own target, domain, role, state, qualification, initiation, validity, and policy context.
 
-## 11. lineage
+## 12. claim_provenance
+
+`claim_provenance` distinguishes operator-attested participation from participant-maintained civic claims.
+
+At minimum, the record must be capable of showing that:
+
+- the six-month SASE participation state is operator-attested;
+- other affordances are participant-maintained claims unless a specific published policy names another attesting authority;
+- an operator signature over the record does not silently certify the truth of every participant claim.
+
+Evidence references may support a participant claim, but evidence provenance and claim responsibility remain separate.
+
+## 13. lineage
 
 `lineage` links this record to earlier issuance records without mutating them.
 
@@ -191,21 +213,15 @@ It should be capable of expressing:
 
 Lineage is historical provenance, not deletion.
 
-## 12. revalidation
+## 14. revalidation
 
-`revalidation` records the issuance-level revalidation posture.
+`revalidation` records issuance-level renewal/review posture without implying operator verification of all claims.
 
-It may identify:
+For Kane participation, a new SASE every six months is mandatory. That renewal re-establishes active participation only.
 
-- whether this was an initial or repeated qualification;
-- when the next review is expected if policy defines one;
-- which relationship tuples were revalidated;
-- whether unchanged tuples were carried forward under an allowed policy;
-- whether new evidence was required.
+It may also record which participant-maintained claims were carried forward, changed, removed, or supplemented at renewal. Unless a specific published affordance policy says otherwise, carrying a claim forward is the participant's renewed assertion, not an operator re-certification of its truth.
 
-Revalidation does not silently renew a relation. The new complete issuance record is the durable assertion.
-
-## 13. disclosure_policy
+## 15. disclosure_policy
 
 A Civic Issuance Record is not automatically a public profile.
 
@@ -225,7 +241,7 @@ This preserves the source model's distinction between:
 
 Possession of the record does not mean every tuple must be exposed to every requester.
 
-## 14. authority_proof
+## 16. authority_proof
 
 `authority_proof` is the logical provenance proof by which a verifier can determine that this exact issuance record was produced by the stated Civic Issuance Authority.
 
@@ -240,7 +256,9 @@ The cryptographic algorithm, signer hardware/provider, key representation, and c
 
 ## Current-record rule
 
-For one issuer + subject lineage, the current issuance is the highest accepted sequence whose effective-time and validity conditions apply and that has not been superseded by a later accepted issuance in that lineage.
+For one issuer + subject lineage, the current issuance is the highest accepted sequence whose effective-time and six-month participation window apply and that has not been superseded by a later accepted issuance in that lineage.
+
+When the participation window expires without a new SASE-backed issuance, there is no active current participation record for that lineage, even if the last record remains historically verifiable.
 
 This rule is local to the issuer's history.
 
@@ -298,11 +316,15 @@ Relationships may remain unchanged, may be revalidated, or may change according 
 
 The old appliance may physically retain record 17. That is not a design failure; it is a diagnostic fact. Record 18 is the issuer's newer authoritative statement for that lineage.
 
-## Voluntary participation
+## Voluntary participation and six-month renewal
 
-If the record contains `CURRENT_RESIDENCE`, its relationship tuple must preserve the accepted voluntary-initiation path, currently SASE for the Kane process.
+`CURRENT_RESIDENCE` participation is established and renewed only through SASE for the Kane process.
 
-The existence of other public evidence about the participant does not permit an issuer to manufacture voluntary participation retroactively.
+A new SASE is mandatory every six months. Without it, participation ends.
+
+The existence of public records, an unchanged address, continued device possession, online activity, or prior participation does not permit the issuer to manufacture continued voluntary participation.
+
+This six-month SASE renewal is the only recurring administrative requirement imposed by the Kane operator. Other civic affordances remain the participant's responsibility to keep accurate and current.
 
 ## Same and Equal
 
@@ -392,3 +414,14 @@ Specifically, the project must next reconcile:
 - what minimal issuance workflow is required for the first `CURRENT_RESIDENCE` appliance.
 
 No implementation code is authorized merely by this document.
+
+
+## Participant-maintained credibility
+
+Except for the operator-controlled SASE participation fact and any future policy-specific attestation explicitly assigned to another authority, civic affordances in the record are participant-maintained claims.
+
+The participant builds credibility by keeping those claims accurate over time, updating them when circumstances change, and preserving evidence/provenance appropriate to the claim.
+
+The operator's role is not to become a permanent examiner of every participant relationship.
+
+See `docs/CIVIC_PARTICIPATION_RENEWAL.md`.
