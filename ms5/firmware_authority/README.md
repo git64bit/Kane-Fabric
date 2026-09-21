@@ -69,4 +69,19 @@ A release manifest identifies at minimum:
 
 The manifest contract is device-family generic. ESP32-S3 is the first enabled family; Zigbee-capable and future families are added as explicit families rather than creating a separate signing authority per platform.
 
-The cryptographic authorization envelope is not frozen yet because the hardware-backed signing provider has not been selected. Until MS5-009 freezes the signer/provider/algorithm and real verification evidence, this repository contains no private-key generation or operational signing command.
+The cryptographic authorization envelope is now frozen independently of the
+physical signing provider:
+
+```text
+algorithm            ECDSA P-256 / SHA-256
+signature encoding   64-byte P1363 r || s
+public key encoding  65-byte uncompressed SEC1 P-256
+key identifier       SHA-256 of exact public-key bytes
+signed object        SHA-256 of the fixed 152-byte firmware authorization payload
+```
+
+The physical hardware-backed provider is still not selected or activated.
+This repository still contains no ordinary private-key file generation and no
+operational release-signing authority. The next MS5-009 step is read-only
+hardware/tooling discovery on `annales`, followed by an explicit provider
+selection gate.

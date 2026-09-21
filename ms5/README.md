@@ -167,11 +167,14 @@ unchanged; `otadata`, `ota_0`, and `ota_1` use previously unused flash.
 
 The Firmware Authority remains inert and release signing is not activated.
 
-The consolidated MS5-009 repository gate was accepted on CT102 at
-`b2809487112a3fc413e0e8fac6cdc207387e0a83`: focused MS5-009 tests ran 52 with one expected CT102 compiler skip,
-and the complete MS5 suite ran 116 with the same expected skip. The next gate
-is the pinned ESP-IDF 6.0.3 build on `fw`; no physical flash is implied by
-repository acceptance.
+The consolidated MS5-009 repository gate and pinned ESP-IDF build are accepted.
+The physical OTA lifecycle is also accepted: healthy trial confirmation and
+automatic failed-trial rollback were proved on the reference ESP32-S3, with
+Fabric/PHY preservation and functional provisioning retention. The current
+device ends in confirmed-valid `ota_0`; `ota_1` is erased.
+
+The remaining MS5-009 work is firmware release authenticity and authority
+recovery.
 
 ## Tests
 

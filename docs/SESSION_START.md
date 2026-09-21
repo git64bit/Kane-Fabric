@@ -23,23 +23,28 @@ Do not use private chat history as a substitute for these records.
 The active normative work item remains **MS5-009 — firmware authenticity,
 update, rollback, and recovery**.
 
-Repository acceptance on CT102 is complete. The pinned ESP-IDF 6.0.3 build-only
-gate on `fw` is also accepted:
+The repository gate, pinned ESP-IDF build gate, and physical OTA lifecycle are
+now accepted. The ESP32-S3 successfully completed a healthy `ota_0` trial and
+confirmation, a deliberate failing `ota_1` trial, and automatic rollback to
+the previous confirmed image. Fabric and PHY data remained byte-identical and
+existing Wi-Fi provisioning remained functional.
+
+The physical device now ends in:
 
 ```text
-application bytes      864192
-application SHA256     e5c2b1588ff47bfb1ec6815307356f48e2bc8fb881df718b013d31cb82f48225
-partition SHA256       4106d8c85dd4f57d06bdc42d75c7d83be4cc2de012a9f544b43f6fa883d59514
-rollback enabled       PASS
-factory preserved      PASS
-Fabric preserved       PASS
-device flashed         NO
+factory   production image
+ota_0     production image / confirmed VALID
+ota_1     erased
+otadata   ota_0 valid
+runtime   ota_0 confirmed-valid
 ```
 
-The next step is physical OTA lifecycle evidence on `fw`: controlled trial
-boot confirmation plus deliberate failed-trial rollback/recovery, with exact
-pre/post state hashes. Release signing remains disabled for this lifecycle
-proof.
+Release signing remains disabled. The remaining MS5-009 work is authenticity:
+hardware-backed signer selection/activation, positive authorization, negative
+authorization/digest/sequence tests, and authority recovery.
+
+The next action is a read-only signer/tooling inventory on `annales`. No USB
+passthrough or key creation is permitted during that preflight.
 
 ## Stable facts are not discovery tasks
 

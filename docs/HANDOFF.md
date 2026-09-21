@@ -649,3 +649,51 @@ Proceed to one consolidated physical OTA lifecycle gate on `fw`. Preserve the
 current accepted application and Fabric/NVS state, prove healthy trial
 confirmation and failed-trial rollback/recovery, and record exact before/after
 hashes. Release signing remains inert for this physical lifecycle proof.
+
+
+## MS5-009 physical OTA lifecycle — accepted 2026-09-21
+
+The physical ESP32-S3 OTA lifecycle gate on `fw` completed successfully.
+
+```text
+production app SHA256       5f440f782b5768cf6befb74b48e4a7d891e752615bf26835dec864ca51df964a
+production app bytes        864192
+rollback bootloader SHA256  e0bb4a5a4c616a48e44344c7589564ad6f7ce55ee4e0c66a0b43bdf3e80e5f76
+partition table SHA256      4106d8c85dd4f57d06bdc42d75c7d83be4cc2de012a9f544b43f6fa883d59514
+healthy ota_0 trial         PASS
+failed ota_1 trial          PASS
+automatic rollback          PASS
+final ota_0 valid           PASS
+final ota_1 erased          PASS
+Fabric byte-identical       PASS
+phy_init byte-identical     PASS
+provisioning functional     PASS
+release signing activated   NO
+WireGuard required          NO
+final runtime               ota_0 confirmed-valid
+```
+
+NVS was not byte-identical:
+
+```text
+before  3d1b612cf1ea851a909f174e6710761290c0a2b1566568b93769f212f9806bba
+after   bda677bdf14d1c0c8965d11765509c55c0a0141981c93e3235e29f2e99c31004
+```
+
+This is accepted because MS5-009 intentionally adds lifecycle metadata to the
+existing NVS partition and the gate separately proved that existing Wi-Fi
+provisioning remained functional through the migrated/OTA runtime. The NVS
+partition was preserved, not erased.
+
+The pre-test full-flash image is retained at:
+
+```text
+/home/cpe-build/evidence/Kane-Fabric/ms5-009/physical-ota-lifecycle-20260921T183328Z/pretest-full-flash.bin
+```
+
+## Next safe action
+
+Continue MS5-009 on `annales` with a **read-only signer preflight**. Determine
+what hardware-backed signing devices and PIV/PKCS#11 tooling are actually
+available before choosing a provider. Do not attach a USB device to the
+container, create/import a release key, or enable signing yet.

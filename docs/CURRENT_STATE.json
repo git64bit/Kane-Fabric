@@ -169,7 +169,7 @@
       "runtime_defect_backlog": "LoadProhibited-before-peer-up",
       "blocks_ms5_009": false
     },
-    "ms5_009_status": "repository-accepted-ct102",
+    "ms5_009_status": "physical-ota-lifecycle-accepted-authenticity-pending",
     "ms5_009_contract": "ms5/firmware-lifecycle-contract.json",
     "ms5_009_document": "docs/MS5_009_FIRMWARE_LIFECYCLE.md",
     "ms5_009_contract_sha256": "8c0a2987aa94ddc53d1d98c379d20f7e46c70ac07c8380885b0658ecd9f993bf",
@@ -215,6 +215,38 @@
       "device_flashed": false,
       "worktree_clean": true,
       "evidence_dir": "/home/cpe-build/evidence/Kane-Fabric/ms5-009"
+    },
+    "ms5_009_physical_ota_lifecycle_status": "accepted",
+    "ms5_009_physical_ota_lifecycle_date": "2026-09-21",
+    "ms5_009_physical_ota_lifecycle": {
+      "host": "fw",
+      "user": "cpe-build",
+      "repository_head": "87da917608661a8488762021114f3b1bbbec08db",
+      "esp_idf_commit": "76f5dedd9950a3012fee8fb7d5586df21fc67802",
+      "production_application_bytes": 864192,
+      "production_application_sha256": "5f440f782b5768cf6befb74b48e4a7d891e752615bf26835dec864ca51df964a",
+      "rollback_bootloader_sha256": "e0bb4a5a4c616a48e44344c7589564ad6f7ce55ee4e0c66a0b43bdf3e80e5f76",
+      "partition_table_sha256": "4106d8c85dd4f57d06bdc42d75c7d83be4cc2de012a9f544b43f6fa883d59514",
+      "failed_trial_application_sha256": "6b2d8116076eb74efd4b963ec74d07dc6b388679c42874df5628fc2de80fdd79",
+      "healthy_trial_confirmed": true,
+      "failed_trial_executed": true,
+      "automatic_rollback_to_previous_valid_ota": true,
+      "final_factory_application": "production-image",
+      "final_ota0_application": "production-image-confirmed-valid",
+      "final_ota1": "erased",
+      "final_otadata": "ota0-valid-only",
+      "fabric_byte_identical": true,
+      "phy_init_byte_identical": true,
+      "provisioning_state_functionally_preserved": true,
+      "nvs_sha256_before": "3d1b612cf1ea851a909f174e6710761290c0a2b1566568b93769f212f9806bba",
+      "nvs_sha256_after": "bda677bdf14d1c0c8965d11765509c55c0a0141981c93e3235e29f2e99c31004",
+      "nvs_byte_identical": false,
+      "nvs_change_interpretation": "expected lifecycle metadata addition; provisioning path remained functional",
+      "release_signing_activated": false,
+      "wireguard_required": false,
+      "pretest_full_flash_backup": "/home/cpe-build/evidence/Kane-Fabric/ms5-009/physical-ota-lifecycle-20260921T183328Z/pretest-full-flash.bin",
+      "final_runtime": "ota_0_confirmed-valid",
+      "worktree_clean": true
     }
   },
   "deployment": {
@@ -554,7 +586,7 @@
       "ms5_008_candidate_repository_acceptance": "accepted on CT102 at 5a35b607ef16b5c94bd732e7f2eb73fbffc17ad0; 12 focused tests passed; full MS5 suite 86 passed / 1 skipped; WireGuard retained=NO; decision state=defer",
       "ms5_008_decision": "defer accepted 2026-09-21; WireGuard remains unretained; physical panic retained as diagnostic backlog"
     },
-    "next_work_item": "MS5-009 physical OTA lifecycle gate on fw: stage and flash a controlled trial update using the accepted partition layout and rollback-enabled firmware, verify healthy trial confirmation and failed-trial rollback/recovery, while preserving Fabric and provisioning state."
+    "next_work_item": "MS5-009 signer activation preparation on annales: perform read-only host/container inventory for available hardware-backed signer devices and signing tooling. Do not attach USB, generate/import a release key, or enable signing until provider selection is accepted."
   },
   "priority_workstream": {
     "name": "MS5-009 Firmware Authenticity / Update / Rollback / Recovery",
@@ -562,10 +594,10 @@
     "implementation_contract": "ms5/firmware-lifecycle-contract.json",
     "firmware_lifecycle_document": "docs/MS5_009_FIRMWARE_LIFECYCLE.md",
     "firmware_authority_document": "docs/MS5_FIRMWARE_AUTHORITY_NODE.md",
-    "status": "MS5-009 repository gate accepted on CT102 and pinned ESP-IDF build gate accepted on fw; physical OTA lifecycle evidence is next",
+    "status": "MS5-009 OTA/update/rollback/recovery mechanics physically accepted; release authenticity activation remains",
     "signing_status": "inert-not-activated",
     "management_transport_dependency": false,
-    "target_environment": "fw / physical ESP32-S3; controlled application/OTA lifecycle test with explicit backup/restore and no signer activation yet"
+    "target_environment": "annales / firmware-authority signer-preflight; read-only host/container inventory first"
   },
-  "next_safe_action": "Prepare one consolidated fw physical OTA lifecycle gate that preserves the current accepted application and Fabric/NVS state, exercises trial boot confirmation and deliberate failed-trial rollback, and records exact before/after hashes. Do not activate release signing yet."
+  "next_safe_action": "On annales, run the repository-owned read-only signer preflight to enumerate hardware signer candidates and installed PIV/PKCS#11 tooling while verifying the firmware-authority container remains inert. No USB passthrough, key generation, key import, or signing activation."
 }

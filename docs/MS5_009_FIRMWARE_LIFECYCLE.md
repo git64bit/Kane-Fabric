@@ -89,3 +89,26 @@ material only. The physical
 hardware-backed signer provider, concrete key identity, and key-transition /
 recovery procedure remain a separate activation gate. The authority container
 may never gain an ordinary persistent private release-signing key file.
+
+
+## Physical OTA lifecycle acceptance
+
+Accepted on 2026-09-21 on the reference ESP32-S3.
+
+The rollback-capable bootloader and additive OTA partition table were migrated
+under a complete pre-test 16 MiB flash backup. A healthy `ota_0` trial reached
+the established artifact-serving health boundary and was confirmed valid. A
+deliberately failing `ota_1` image then reset before confirmation; the
+bootloader automatically marked it aborted and returned to the previously valid
+`ota_0`.
+
+The test finished with `ota_1` erased, `ota_0` confirmed valid, the production
+image present in factory and `ota_0`, Fabric and PHY data byte-identical, and
+the pre-existing Wi-Fi provisioning path functional.
+
+NVS changed because the firmware lifecycle introduced its own persistent
+metadata. This does not violate the preservation boundary: normal update did
+not erase NVS and the existing provisioning state remained usable.
+
+The remaining MS5-009 acceptance surface is release authenticity and authority
+recovery, not OTA mechanics.
