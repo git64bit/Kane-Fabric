@@ -43,16 +43,17 @@ printf 'esp_idf_head=%s\n' "$(git -C "$IDF_PATH" rev-parse HEAD)"
 printf 'project=%s\n' "$PROJECT"
 printf 'build_dir=%s\n' "$BUILD"
 
-idf.py -C "$PROJECT" -B "$BUILD" build
+# Keep generated sdkconfig outside the Git worktree.
+idf.py -C "$PROJECT" -B "$BUILD" -DSDKCONFIG="$BUILD/sdkconfig" build
 
 APP_BIN="$BUILD/kane_fabric_ms5_edge_reference.bin"
 PARTITION_BIN="$BUILD/partition_table/partition-table.bin"
-SDKCONFIG="$BUILD/config/sdkconfig.h"
+SDKCONFIG_HEADER="$BUILD/config/sdkconfig.h"
 SDKCONFIG_TEXT="$BUILD/sdkconfig"
 
 [[ -f "$APP_BIN" ]] || fail "application binary missing"
 [[ -f "$PARTITION_BIN" ]] || fail "generated partition table missing"
-[[ -f "$SDKCONFIG" ]] || fail "generated sdkconfig header missing"
+[[ -f "$SDKCONFIG_HEADER" ]] || fail "generated sdkconfig header missing"
 [[ -f "$SDKCONFIG_TEXT" ]] || fail "generated sdkconfig missing"
 
 APP_BYTES=$(wc -c < "$APP_BIN" | tr -d ' ')
@@ -75,16 +76,16 @@ grep -Eq '^ota_1,[[:space:]]+app,[[:space:]]+ota_1,[[:space:]]+0x620000,[[:space
 
 python3 "$IDF_PATH/components/partition_table/gen_esp32part.py"     "$PARTITION_BIN"     "$EVIDENCE/generated-partition-table.csv"
 
-grep -Eq '^factory,[[:space:]]+0x00,[[:space:]]+0x00,[[:space:]]+0x00010000,[[:space:]]+0x00100000'     "$EVIDENCE/generated-partition-table.csv" || fail "generated factory partition mismatch"
-grep -Eq '^fabric,[[:space:]]+0x01,[[:space:]]+0x81,[[:space:]]+0x00110000,[[:space:]]+0x00400000'     "$EVIDENCE/generated-partition-table.csv" || fail "generated Fabric partition mismatch"
-grep -Eq '^otadata,[[:space:]]+0x01,[[:space:]]+0x00,[[:space:]]+0x00510000,[[:space:]]+0x00002000'     "$EVIDENCE/generated-partition-table.csv" || fail "generated otadata partition mismatch"
-grep -Eq '^ota_0,[[:space:]]+0x00,[[:space:]]+0x10,[[:space:]]+0x00520000,[[:space:]]+0x00100000'     "$EVIDENCE/generated-partition-table.csv" || fail "generated ota_0 partition mismatch"
-grep -Eq '^ota_1,[[:space:]]+0x00,[[:space:]]+0x11,[[:space:]]+0x00620000,[[:space:]]+0x00100000'     "$EVIDENCE/generated-partition-table.csv" || fail "generated ota_1 partition mismatch"
+grep -Fxq 'factory,app,factory,0x10000,1M,' "$EVIDENCE/generated-partition-table.csv" ||     fail "generated factory partition mismatch"
+grep -Fxq 'fabric,data,fat,0x110000,4M,' "$EVIDENCE/generated-partition-table.csv" ||     fail "generated Fabric partition mismatch"
+grep -Fxq 'otadata,data,ota,0x510000,8K,' "$EVIDENCE/generated-partition-table.csv" ||     fail "generated otadata partition mismatch"
+grep -Fxq 'ota_0,app,ota_0,0x520000,1M,' "$EVIDENCE/generated-partition-table.csv" ||     fail "generated ota_0 partition mismatch"
+grep -Fxq 'ota_1,app,ota_1,0x620000,1M,' "$EVIDENCE/generated-partition-table.csv" ||     fail "generated ota_1 partition mismatch"
 
-idf.py -C "$PROJECT" -B "$BUILD" size > "$EVIDENCE/idf-size.txt"
+idf.py -C "$PROJECT" -B "$BUILD" -DSDKCONFIG="$BUILD/sdkconfig" size     > "$EVIDENCE/idf-size.txt"
 
 cp "$SDKCONFIG_TEXT" "$EVIDENCE/sdkconfig.effective"
-sha256sum "$APP_BIN" "$PARTITION_BIN" "$SDKCONFIG_TEXT" > "$EVIDENCE/build-artifact-sha256.txt"
+sha256sum "$APP_BIN" "$PARTITION_BIN" "$SDKCONFIG_TEXT"     > "$EVIDENCE/build-artifact-sha256.txt"
 
 [[ "$(git -C "$ROOT" status --porcelain)" == "" ]] || fail "repository worktree changed during build"
 
