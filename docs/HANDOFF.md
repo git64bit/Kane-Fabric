@@ -828,3 +828,23 @@ The authority contract pins source lineage, published vocabulary, qualification,
 Same and Equal is now evaluated as a policy-scoped equivalence class over Civic Relationship Tuples. Diagnostic outcomes are `SAME_AND_EQUAL`, `NOT_SAME_AND_EQUAL`, `NOT_COMPARABLE`, and `INDETERMINATE`; missing context is never silently converted into inequality.
 
 No code changed. The canonical Civic Issuance Record is the next design object.
+
+
+## Civic Issuance Record semantics — 2026-09-21
+
+`docs/CIVIC_ISSUANCE_RECORD.md` now defines the signed-record semantics, documentation only.
+
+Key decisions:
+
+- every issuance is a complete snapshot, not a delta;
+- one exact Affordance Authority Contract interprets the record;
+- participant lineage is opaque and issuer-scoped;
+- appliance issuance is replaceable and distinct from participant identity;
+- sequence is monotonic only within issuer + participant lineage;
+- correction, revalidation, relationship change, policy migration, and device replacement create new records with explicit lineage;
+- prior records are never silently rewritten;
+- Same-and-Equal peer relationships are derived from tuples/policy rather than stored as stale peer lists;
+- record possession does not imply public disclosure of every relationship;
+- authority proof is logical only; cryptographic/provider representation remains unfrozen.
+
+Next: reconcile what is canonical/on-device/disclosable before any code.

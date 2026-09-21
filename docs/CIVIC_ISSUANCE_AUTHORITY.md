@@ -349,3 +349,12 @@ The relationship tuple now has two architecture-level policy authorities:
 - `docs/CIVIC_SAME_AND_EQUAL_POLICY.md` defines Same-and-Equal as a named equivalence-class evaluation over relationship tuples, with four diagnostic outcomes: `SAME_AND_EQUAL`, `NOT_SAME_AND_EQUAL`, `NOT_COMPARABLE`, and `INDETERMINATE`.
 
 These documents deliberately keep relation semantics and equality semantics outside firmware and outside the individual issuance event.
+
+
+## Canonical issuance-record semantics
+
+The logical Civic Issuance Record is now defined in `docs/CIVIC_ISSUANCE_RECORD.md`.
+
+The record is a complete issuance snapshot, not a delta. It wraps one or more Civic Relationship Tuples with issuer/root identity, one exact Affordance Authority Contract identity, issuer-scoped subject lineage, current appliance issuance reference, monotonic sequence, issuance/effective time, explicit supersession/correction/replacement lineage, revalidation posture, disclosure policy, and logical authority proof.
+
+Cryptographic representation remains unfrozen.

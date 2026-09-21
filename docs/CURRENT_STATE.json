@@ -440,6 +440,19 @@
       "policy_versioning": "immutable-meaning-new-version-for-change",
       "current_residence_alias_of_current_resident": false,
       "hoa_member_equivalent_to_condo_unit_owner": false
+    },
+    "civic_issuance_record_document": "docs/CIVIC_ISSUANCE_RECORD.md",
+    "civic_issuance_record_status": "semantic-architecture-defined-serialization-unfrozen",
+    "civic_issuance_record_model": {
+      "snapshot_model": "complete-not-delta",
+      "one_authority_contract_per_record": true,
+      "subject_reference_scope": "issuer-scoped-opaque-lineage",
+      "appliance_is_subject_identity": false,
+      "sequence_scope": "issuer-plus-subject-lineage",
+      "supersession": "append-new-record-never-rewrite-history",
+      "correction": "new-complete-record-with-lineage",
+      "same_and_equal_peer_list_stored": false,
+      "cryptographic_representation": "unfrozen"
     }
   },
   "deployment": {
@@ -779,7 +792,7 @@
       "ms5_008_candidate_repository_acceptance": "accepted on CT102 at 5a35b607ef16b5c94bd732e7f2eb73fbffc17ad0; 12 focused tests passed; full MS5 suite 86 passed / 1 skipped; WireGuard retained=NO; decision state=defer",
       "ms5_008_decision": "defer accepted 2026-09-21; WireGuard remains unretained; physical panic retained as diagnostic backlog"
     },
-    "next_work_item": "Define the canonical Civic Issuance Record that wraps one or more Civic Relationship Tuples under an exact Affordance Authority Contract, including issuer/root identity, appliance issuance reference, sequence, supersession/revalidation lineage, and signature provenance. No implementation code yet."
+    "next_work_item": "Review/reconcile the Civic Issuance Record boundary before implementation: decide canonical/hashable fields vs references, ESP32-resident data vs external evidence/history, local selective disclosure, and the minimal CURRENT_RESIDENCE issuance workflow. Signing-provider/algorithm work remains on hold."
   },
   "priority_workstream": {
     "name": "MS5-009 Firmware Authenticity / Update / Rollback / Recovery",
@@ -787,10 +800,10 @@
     "implementation_contract": "ms5/firmware-lifecycle-contract.json",
     "firmware_lifecycle_document": "docs/MS5_009_FIRMWARE_LIFECYCLE.md",
     "firmware_authority_document": "docs/MS5_FIRMWARE_AUTHORITY_NODE.md",
-    "status": "civic authority model: relationship tuple, affordance authority contract, and Same-and-Equal policy architecture defined; Civic Issuance Record is next",
+    "status": "civic authority semantic model complete through Civic Issuance Record; reconciliation of storage/disclosure/issuance boundaries is next",
     "signing_status": "inert-not-activated",
     "management_transport_dependency": false,
     "target_environment": "repository/design and published affordance source; no signer or firmware mutation"
   },
-  "next_safe_action": "Design docs for the canonical Civic Issuance Record using the accepted tuple/authority/equivalence primitives. Keep cryptographic serialization, signer provider, firmware integration, and runtime implementation unfrozen until the record semantics are accepted."
+  "next_safe_action": "Interrogate the semantic Civic Issuance Record against ESP32 storage, privacy/disclosure, device replacement, offline verification, SASE CURRENT_RESIDENCE issuance, and future Witness Attestation needs. Update design first; do not write issuance or signing code yet."
 }

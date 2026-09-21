@@ -20,19 +20,20 @@ Do not use private chat history as a substitute for these records.
 
 ## Current priority
 
-The civic authority model now has three documentation-level primitives:
+The civic authority semantic model is now defined through four architecture documents:
 
 - `docs/CIVIC_RELATIONSHIP_TUPLE.md`
 - `docs/CIVIC_AFFORDANCE_AUTHORITY_CONTRACT.md`
 - `docs/CIVIC_SAME_AND_EQUAL_POLICY.md`
+- `docs/CIVIC_ISSUANCE_RECORD.md`
 
-The Affordance Authority Contract is the versioned source-of-meaning for relations, roles, states, evidence/qualification, voluntary initiation, validity, explicit derivations, surface bindings, and equality policies. Derivation is deny-by-default.
+The Civic Issuance Record is a complete snapshot, not a delta. It binds one exact authority contract, an opaque issuer-scoped subject lineage, the current appliance issuance, complete relationship tuples, monotonic lineage sequence, supersession/revalidation/correction history, disclosure policy, and logical authority proof.
 
-Same and Equal is a policy-scoped equivalence-class evaluation, not a universal person attribute. Its diagnostic results are `SAME_AND_EQUAL`, `NOT_SAME_AND_EQUAL`, `NOT_COMPARABLE`, and `INDETERMINATE`.
+Cryptographic/provider representation remains unfrozen.
 
-The next design step is the canonical Civic Issuance Record that wraps one or more relationship tuples with issuer/root identity, appliance issuance reference, record sequence, revalidation/supersession lineage, exact policy identity, and signature provenance.
+Next work is reconciliation before implementation: decide canonical/hashable fields versus external references, which record material actually resides on the ESP32, selective local disclosure, offline verification material, and the minimal `CURRENT_RESIDENCE` + SASE issuance workflow. Future Witness Attestation must remain supportable without being implemented now.
 
-No runtime, firmware, signing-provider, or issuance code before that record design is accepted.
+No issuance, firmware-signing, or signer-provider code until that boundary is accepted.
 
 ## Stable facts are not discovery tasks
 
