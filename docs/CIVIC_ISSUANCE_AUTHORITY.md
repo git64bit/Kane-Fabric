@@ -328,3 +328,14 @@ The eventual Civic Issuance Record must therefore distinguish:
 - issuance/revalidation/supersession history.
 
 This is intentionally more precise than a flat list of permission flags.
+
+
+## Civic relationship primitive
+
+The relationship carried by an issuance is now factored into a separate architecture primitive:
+
+`docs/CIVIC_RELATIONSHIP_TUPLE.md`
+
+The tuple separates subject, relation, target, domain, role, temporal state, qualification, voluntary initiation, validity, and policy identity. Issuer/signature/appliance/sequence metadata remains outside the tuple in the future Civic Issuance Record.
+
+This separation is necessary for Same-and-Equal comparison, device replacement, temporal standing, affordance stacking, and later Witness Attestation.

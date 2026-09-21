@@ -20,21 +20,19 @@ Do not use private chat history as a substitute for these records.
 
 ## Current priority
 
-Authority/credibility architecture remains active; no issuance code yet.
+The common civic-state primitive is now the Civic Relationship Tuple:
 
-New accepted semantic clarifications:
+`docs/CIVIC_RELATIONSHIP_TUPLE.md`
 
-- `CURRENT_RESIDENCE` is intentional voluntary participation initiation through SASE and is not an alias silently normalized to `CURRENT_RESIDENT`.
-- `HOA_MEMBER` is broader than `CONDO_UNIT_OWNER`; relationship subtype and current/former temporal state matter.
-- `Same and Equal` is a scoped relational equivalence rule, not a universal participant attribute.
+Logical fields:
 
-Read first:
+`subject, relation, target, domain, role, state, qualification, initiation, validity, policy`.
 
-- `docs/CIVIC_AFFORDANCE_SOURCE_BASELINE.md`
-- `docs/CIVIC_ISSUANCE_AUTHORITY.md`
-- `docs/MS5_009_AUTHORITY_INTERROGATION.md`
+The tuple is the relationship fact; the future Civic Issuance Record is the signed issuance/provenance wrapper. Same and Equal is a policy-scoped comparison over tuples, not a universal Boolean attribute.
 
-Next design step: normalize these semantics into explicit versioned affordance-authority data and define the Same-and-Equal comparison rule, then freeze the canonical Civic Issuance Record. Do not implement issuance/signing logic before that checkpoint.
+Future Witness Attestation remains out of scope, but the tuple deliberately preserves enough civic context for an ESP32-S3 later to assemble a witness record from its own accepted standing rather than relying on an institution or another human to construct that record.
+
+Next design step: define the versioned affordance-authority vocabulary/derivation contract and formal Same-and-Equal equivalence policy, then define the canonical Civic Issuance Record. No implementation code before those checkpoints.
 
 ## Stable facts are not discovery tasks
 

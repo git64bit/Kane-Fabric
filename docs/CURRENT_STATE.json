@@ -385,7 +385,39 @@
       "policy identity/version",
       "appliance issuance reference",
       "issuance/revalidation/supersession history"
-    ]
+    ],
+    "civic_relationship_tuple_document": "docs/CIVIC_RELATIONSHIP_TUPLE.md",
+    "civic_relationship_tuple_status": "architecture-defined-documentation-only",
+    "civic_relationship_tuple_fields": [
+      "subject",
+      "relation",
+      "target",
+      "domain",
+      "role",
+      "state",
+      "qualification",
+      "initiation",
+      "validity",
+      "policy"
+    ],
+    "same_and_equal_model": {
+      "status": "relational-equivalence-policy",
+      "universal_boolean": false,
+      "compares": [
+        "relation",
+        "domain",
+        "role",
+        "state",
+        "policy-defined dimensions"
+      ],
+      "subject_may_differ": true,
+      "target_may_differ": true
+    },
+    "witness_attestation_future_boundary": {
+      "status": "future-not-implemented",
+      "principle": "participant appliance assembles witness record rather than institution/human",
+      "tuple_requirement": "retain civic context from which device was acting"
+    }
   },
   "deployment": {
     "proxmox_host": "srv-b",
@@ -724,7 +756,7 @@
       "ms5_008_candidate_repository_acceptance": "accepted on CT102 at 5a35b607ef16b5c94bd732e7f2eb73fbffc17ad0; 12 focused tests passed; full MS5 suite 86 passed / 1 skipped; WireGuard retained=NO; decision state=defer",
       "ms5_008_decision": "defer accepted 2026-09-21; WireGuard remains unretained; physical panic retained as diagnostic backlog"
     },
-    "next_work_item": "Normalize the external civic-affordance source into an explicit versioned authority contract that preserves voluntary initiation, broader relationship roles, temporal state, and scoped Same-and-Equal comparison rules. Then define the canonical Civic Issuance Record. No issuance code yet."
+    "next_work_item": "Define the versioned affordance-authority contract and formal Same-and-Equal equivalence-rule representation using the accepted civic relationship tuple, then define the canonical Civic Issuance Record. No issuance/signing code yet."
   },
   "priority_workstream": {
     "name": "MS5-009 Firmware Authenticity / Update / Rollback / Recovery",
@@ -737,5 +769,5 @@
     "management_transport_dependency": false,
     "target_environment": "repository/design and published affordance source; no signer or firmware mutation"
   },
-  "next_safe_action": "Design the versioned affordance authority contract and Same-and-Equal comparison rule from the documented semantics; then freeze the Civic Issuance Record. Keep firmware/signing implementation on hold."
+  "next_safe_action": "Review docs/CIVIC_RELATIONSHIP_TUPLE.md as the common civic-state primitive. If accepted, next document the affordance-authority vocabulary/derivation rules and Same-and-Equal comparison policy before defining the signed Civic Issuance Record."
 }

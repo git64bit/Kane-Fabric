@@ -799,3 +799,18 @@ Three previously ambiguous points are now resolved at the architecture level:
 - `Same and Equal` is a scoped relational rule. Equivalence depends on the same institutional/geographic domain, standing, role/subtype, temporal state, and policy version; it is not a universal badge.
 
 The Civic Issuance Record must therefore carry structured relationship context rather than a flat set of affordance booleans.
+
+
+## Civic Relationship Tuple — 2026-09-21
+
+The common civic-state primitive is now documented at `docs/CIVIC_RELATIONSHIP_TUPLE.md`.
+
+Logical tuple:
+
+`(subject, relation, target, domain, role, state, qualification, initiation, validity, policy)`
+
+Issuer, signature, appliance, record sequence, and supersession belong to the enclosing Civic Issuance Record rather than to the relationship itself.
+
+This structure supports voluntary SASE initiation, broader HOA relationships, current/former state, affordance stacking, scoped Same-and-Equal comparison, device replacement, and a later Witness Attestation design in which the participant appliance assembles its own record from accepted civic context.
+
+No code changed.
