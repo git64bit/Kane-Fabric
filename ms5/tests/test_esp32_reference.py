@@ -58,6 +58,61 @@ class Esp32ReferenceTests(unittest.TestCase):
         self.assertLess(ready, final_confirm)
         self.assertGreater(final_confirm, app.index("kf_artifact_server_register"))
 
+    def test_ms5_009_update_writer_requires_pre_authorized_exact_image(self):
+        header = (
+            REFERENCE
+            / "components/kane_fabric_firmware_update/include/kane_fabric_firmware_update.h"
+        ).read_text()
+        source = (
+            REFERENCE
+            / "components/kane_fabric_firmware_update/kane_fabric_firmware_update.c"
+        ).read_text()
+
+        self.assertIn("higher layer has authenticated and accepted", header)
+        self.assertIn("firmware_byte_length", header)
+        self.assertIn("firmware_sha256", header)
+        self.assertIn("esp_ota_get_next_update_partition", source)
+        self.assertIn("esp_ota_begin", source)
+        self.assertIn("esp_ota_write", source)
+        self.assertIn("PSA_ALG_SHA_256", source)
+        self.assertIn("psa_hash_update", source)
+        self.assertIn("psa_hash_finish", source)
+        self.assertIn("ESP_ERR_INVALID_CRC", source)
+        self.assertIn("esp_ota_end", source)
+        self.assertIn("esp_ota_set_boot_partition", source)
+
+    def test_ms5_009_update_writer_is_transport_and_signer_independent(self):
+        source = (
+            REFERENCE
+            / "components/kane_fabric_firmware_update/kane_fabric_firmware_update.c"
+        ).read_text().lower()
+        cmake = (
+            REFERENCE
+            / "components/kane_fabric_firmware_update/CMakeLists.txt"
+        ).read_text().lower()
+
+        for forbidden in (
+            "esp_http_client",
+            "esp_https_ota",
+            "wireguard",
+            "private_key",
+            "signing_key",
+            "esp_restart",
+        ):
+            self.assertNotIn(forbidden, source)
+            self.assertNotIn(forbidden, cmake)
+
+    def test_ms5_009_update_writer_selects_trial_only_after_digest_check(self):
+        source = (
+            REFERENCE
+            / "components/kane_fabric_firmware_update/kane_fabric_firmware_update.c"
+        ).read_text()
+        digest_check = source.index("memcmp(")
+        ota_end = source.index("esp_ota_end(handle)")
+        boot_select = source.index("esp_ota_set_boot_partition(partition)")
+        self.assertLess(digest_check, ota_end)
+        self.assertLess(ota_end, boot_select)
+
     def test_host_range_core_compiles_and_passes(self):
         compiler = shutil.which("cc")
         if compiler is None:
