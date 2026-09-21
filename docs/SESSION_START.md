@@ -20,19 +20,26 @@ Do not use private chat history as a substitute for these records.
 
 ## Current priority
 
-The HOA Civic Identity continuity model is now authority-epoch based.
+The HOA Civic authority-continuity architecture is now accepted.
 
 Read first:
 
+- `docs/CIVIC_AUTHORITY_CONTINUITY_DECISION.md`
 - `docs/CIVIC_AUTHORITY_EPOCH_CEREMONY.md`
 - `docs/CIVIC_OWNER_OPERATED_SIGNING_NODE.md`
-- `docs/CIVIC_SAME_AND_EQUAL_POLICY.md`
 
-A key-signing ceremony creates the current authority epoch and `N` Same-and-Equal participant-device credentials. Any one current device may recover/reconstruct the HOA Civic Identity state, but governance changes still require the prescribed Same-and-Equal electorate/vote.
+Accepted invariants:
 
-When one device owner becomes untrusted or otherwise leaves the current class, a new ceremony creates a new epoch and new current keys. Historical epochs remain verifiable but do not confer current authority.
+- HOA Civic Identity is replicated authority state, not one permanent secret;
+- current Same-and-Equal ESP32-S3 devices use independent epoch-specific keys;
+- any one current device may supply continuity/recovery state;
+- recovery is not unilateral governance;
+- governance transitions remain source-derived and Same-and-Equal;
+- trust-set change creates a new epoch/new current keys;
+- operator-owned signing node is replaceable;
+- no permanent HOA master/recovery key is required.
 
-Next: compare two cryptographic realizations only—independent keys + replicated state versus independent keys + 1-of-N wrapped recovery material. No implementation code.
+The difficult civic-design phase is closed sufficiently. Next work is implementation interrogation: select algorithms, key storage, Epoch Manifest representation, signing-node hardware/provider, and recovery mechanics that preserve these invariants. Do not reopen the authority model merely to choose code or hardware.
 
 ## Stable facts are not discovery tasks
 

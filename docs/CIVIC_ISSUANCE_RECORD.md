@@ -443,3 +443,14 @@ A verifier should be able to distinguish the root/profile that issued the record
 That operator provenance supports later peer scrubbing: other participants may confirm the operator's action or publish contradictory observations without rewriting the original record.
 
 The record does not itself adjudicate those later observations. Future confirmation/challenge records remain a separate design surface.
+
+
+## Authority-epoch context
+
+For HOA-local issuance, every current issuance must eventually be interpretable within the HOA authority epoch under which it was produced.
+
+The HOA Civic Identity is not one permanent signing key. Current participant devices hold independent epoch-specific keys plus replicated authenticated authority state. A later epoch supersedes current authority without erasing historical issuance.
+
+The exact epoch reference field and serialization remain implementation work.
+
+See `docs/CIVIC_AUTHORITY_CONTINUITY_DECISION.md`.

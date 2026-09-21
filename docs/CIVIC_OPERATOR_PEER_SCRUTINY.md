@@ -257,3 +257,12 @@ The operator is recognized within an HOA authority epoch. The operator-owned sig
 If operator trust/custody changes, current Same-and-Equal participant devices can reconstruct the HOA Civic Identity state; the applicable source-derived electorate then authorizes the next operator/node and, where required, a new key-signing ceremony/authority epoch.
 
 See `docs/CIVIC_AUTHORITY_EPOCH_CEREMONY.md`.
+
+
+## Accepted continuity model
+
+Operator succession no longer depends on transferring one permanent HOA private key.
+
+The HOA Civic Identity is reconstructed from the current Same-and-Equal participant devices' replicated epoch state. The applicable electorate authorizes a new operator/node; a new ceremony/epoch supplies new independent participant-device keys when the current trusted set changes.
+
+See `docs/CIVIC_AUTHORITY_CONTINUITY_DECISION.md`.

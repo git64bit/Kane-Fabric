@@ -941,3 +941,27 @@ The exact cryptographic realization is deliberately unfrozen. Next comparison: r
 See `docs/CIVIC_AUTHORITY_EPOCH_CEREMONY.md`.
 
 No code changed.
+
+
+## HOA Civic authority continuity — accepted architecture 2026-09-21
+
+The difficult continuity design is now closed at the architecture level.
+
+Accepted model:
+
+- HOA Civic Identity is reconstructed from replicated authenticated authority state on current Same-and-Equal participant ESP32-S3 devices;
+- each current device has an independent epoch-specific key;
+- any one current device may provide the state needed for continuity/recovery;
+- recovery does not grant unilateral governance authority;
+- operator/node/trust-set changes remain governed by the source-derived Same-and-Equal procedure;
+- trust-set change creates a new authority epoch and new current keys;
+- old epochs remain historical evidence only;
+- no permanent HOA master/recovery private key is required;
+- the operator-owned signing node is a replaceable current authority appliance, not the HOA Civic Identity;
+- the shared/wrapped common recovery-secret design was considered and rejected as the baseline.
+
+The remaining algorithm, encoding, storage, provider, and hardware choices are implementation matters.
+
+See `docs/CIVIC_AUTHORITY_CONTINUITY_DECISION.md`.
+
+No code changed.

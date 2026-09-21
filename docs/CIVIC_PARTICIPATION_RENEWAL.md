@@ -239,3 +239,14 @@ See `docs/CIVIC_OPERATOR_PEER_SCRUTINY.md`.
 The six-month SASE rule is a Civic Infrastructure participation rule, not a claim about condominium-law renewal requirements.
 
 For an HOA participant, underlying facts such as unit-owner status, board role, association records, notices, meetings, and statutory inspection rights should be interpreted from the applicable Illinois authority. See `docs/ILLINOIS_STATUTORY_PROCEDURE_BASELINE.md`.
+
+
+## Relationship to authority epochs
+
+Participation renewal and authority epochs are distinct.
+
+SASE proves/renews voluntary participation according to the active profile. Authority epochs define the current trusted Same-and-Equal device set and HOA Civic continuity.
+
+A participation/trust change may trigger a new authority epoch where the profile requires it, but the cryptographic continuity model does not itself dictate SASE cadence.
+
+See `docs/CIVIC_AUTHORITY_CONTINUITY_DECISION.md`.

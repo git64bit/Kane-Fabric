@@ -143,7 +143,7 @@ The HOA root must not be derived merely from:
 - one human operator's name;
 - a central Kane account.
 
-The local-root continuity model is now authority-epoch based. The HOA Civic Identity is reconstructed from current Same-and-Equal participant-device state rather than anchored to one permanent operator key. Exact cryptographic realization remains unfrozen.
+The local-root continuity model is authority-epoch based. The HOA Civic Identity is reconstructed from authenticated replicated authority state held by current Same-and-Equal participant devices. Each device uses independent epoch-specific key material; no permanent HOA master/recovery private key is required.
 
 The important invariant is that one HOA root cannot silently become another HOA root.
 
@@ -153,17 +153,11 @@ The current operator owns/operates the node, but operator office and HOA-local r
 
 Otherwise replacing an operator would accidentally replace the HOA's Civic identity.
 
-Operator transition is now constrained by the authority-epoch model: when the recognized authority/device set changes, a source-governed key-signing ceremony may create a new epoch and current device keys. Exact cryptographic realization and custody mechanics remain open.
+Operator transition is constrained by the authority-epoch model: when the recognized authority/device set changes, a source-governed key-signing ceremony creates the new current epoch and independent current-device keys. Exact cryptographic algorithm, storage, and custody mechanics remain implementation work.
 
-A future design must decide, under the applicable source-derived governance rules, whether operator change:
+An operator change must preserve the HOA authority lineage and be authorized by the applicable source-derived Same-and-Equal governance procedure.
 
-- transfers custody of the existing node;
-- transfers authority to a replacement node;
-- rotates local signing keys;
-- uses a continuity record signed/approved by the Same-and-Equal electorate;
-- or combines these mechanisms.
-
-No transition method is selected here.
+The current operator-owned node may be replaced rather than treated as the HOA identity. The accepted participant-device epoch state provides continuity; the transition record and next epoch identify the newly authorized operator/node. Exact device-custody and hardware-replacement mechanics remain implementation work.
 
 ## Bootstrap requirement
 
@@ -223,22 +217,23 @@ Participant ESP32-S3 appliances later carry their issued context and may assembl
 
 Those witness records can then be anchored/accepted within the HOA-local authority domain without making the operator the author of the witnessed event.
 
-## Next design questions
+## Remaining implementation interrogation
 
-Before implementation, the local signing-node architecture must resolve:
+The civic continuity design is closed sufficiently for implementation planning.
 
-1. minimum hardware/software boundary for one HOA-local node;
-2. local-root identity and continuity independent of one operator;
-3. bootstrap operator -> elected/replacement operator transition;
-4. key custody and key-transition policy;
-5. local record/evidence storage and backup;
-6. operator-election/vote record format;
-7. peer confirmation/challenge anchoring;
-8. relation to participant ESP32-S3 appliances;
-9. recovery after node loss without merging authority with another HOA;
-10. cost/reproducibility requirements appropriate for owner-operators.
+Implementation work must still determine:
 
-No implementation code should precede those design decisions.
+1. minimum reproducible hardware/software boundary for one HOA-local node;
+2. cryptographic algorithm and key representation;
+3. operator-node key custody and rotation mechanics;
+4. local record/evidence storage and backup;
+5. operator-election/vote record encoding;
+6. peer confirmation/challenge record encoding;
+7. exact participant ESP32-S3 storage and verification behavior;
+8. recovery procedure after signing-node loss;
+9. cost/reproducibility requirements appropriate for owner-operators.
+
+These choices must preserve the accepted architecture in `docs/CIVIC_AUTHORITY_CONTINUITY_DECISION.md`.
 
 
 ## Authority epochs

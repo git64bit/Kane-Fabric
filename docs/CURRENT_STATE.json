@@ -563,21 +563,28 @@
       "operator_identity_equals_HOA_root_identity": false,
       "operator_transition_mechanics": "unfrozen",
       "bootstrap_transition_mechanics": "unfrozen",
-      "local_root_continuity": "distributed current-device authority epoch"
+      "local_root_continuity": "replicated authority-epoch state independent of operator node",
+      "operator_transition": "source-derived Same-and-Equal governance authorizes successor; node/key continuity does not require outgoing operator private-key transfer"
     },
     "civic_authority_epoch_document": "docs/CIVIC_AUTHORITY_EPOCH_CEREMONY.md",
     "civic_authority_epoch_model": {
-      "continuity_anchor": "ordered authority epochs plus source-governed transitions",
+      "continuity_anchor": "replicated authenticated authority state across current Same-and-Equal participant devices",
       "permanent_operator_private_key": false,
       "ceremony_creates_current_N_devices": true,
-      "recovery_model": "1-of-N current device can reconstruct HOA Civic Identity state",
+      "recovery_model": "1-of-N current device can provide replicated HOA Civic Identity state",
       "recovery_equals_governance": false,
       "governance_changes_require": "source-derived Same-and-Equal electorate/vote",
       "untrusted_device_response": "new ceremony + new epoch + new current keys",
       "historical_epochs_preserved": true,
       "old_epoch_credentials_current_authority": false,
-      "exact_crypto_realization": "unfrozen"
-    }
+      "exact_crypto_realization": "implementation-choice-within-accepted-independent-key-replicated-state-model",
+      "device_key_model": "independent epoch-specific keys per current participant device",
+      "permanent_master_private_key_required": false,
+      "shared_recovery_secret_baseline": false,
+      "shared_recovery_secret_disposition": "rejected-as-baseline"
+    },
+    "civic_authority_continuity_decision_document": "docs/CIVIC_AUTHORITY_CONTINUITY_DECISION.md",
+    "civic_authority_continuity_status": "accepted-architecture-implementation-details-unfrozen"
   },
   "deployment": {
     "proxmox_host": "srv-b",
@@ -916,7 +923,7 @@
       "ms5_008_candidate_repository_acceptance": "accepted on CT102 at 5a35b607ef16b5c94bd732e7f2eb73fbffc17ad0; 12 focused tests passed; full MS5 suite 86 passed / 1 skipped; WireGuard retained=NO; decision state=defer",
       "ms5_008_decision": "defer accepted 2026-09-21; WireGuard remains unretained; physical panic retained as diagnostic backlog"
     },
-    "next_work_item": "Compare concrete cryptographic realizations of the accepted HOA authority-epoch model: (A) independent participant-device keys with replicated authority-state recovery; (B) independent participant-device keys with 1-of-N wrapped recovery material. Keep governance authorization separate from recovery."
+    "next_work_item": "Authority-continuity design is closed. Next implementation interrogation may select concrete cryptographic algorithm, key storage, Epoch Manifest encoding, signing-node provider/hardware, and recovery mechanics while preserving independent epoch-specific participant keys plus replicated authority state."
   },
   "priority_workstream": {
     "name": "MS5-009 Firmware Authenticity / Update / Rollback / Recovery",
@@ -924,10 +931,10 @@
     "implementation_contract": "ms5/firmware-lifecycle-contract.json",
     "firmware_lifecycle_document": "docs/MS5_009_FIRMWARE_LIFECYCLE.md",
     "firmware_authority_document": "docs/MS5_FIRMWARE_AUTHORITY_NODE.md",
-    "status": "owner-operated local authority architecture active: one Civic Signing Node per participating HOA; common firmware authority remains separate",
+    "status": "HOA Civic authority-continuity architecture accepted; remaining cryptography/storage/provider choices are implementation",
     "signing_status": "inert-not-activated",
     "management_transport_dependency": false,
     "target_environment": "repository/design and published affordance source; no signer or firmware mutation"
   },
-  "next_safe_action": "Document and compare two concrete cryptographic realizations for the authority-epoch ceremony without implementing either. Evaluate ESP32-S3 fit, ceremony simplicity, compromised-device consequences, operator replacement, offline recovery, and cost."
+  "next_safe_action": "Begin implementation interrogation only: map the accepted authority-continuity invariants to ESP32-S3 and HOA-local signing-node capabilities, compare concrete algorithms/providers, and do not alter the civic authority model without a new architecture decision."
 }

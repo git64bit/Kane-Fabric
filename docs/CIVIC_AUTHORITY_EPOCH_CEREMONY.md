@@ -148,20 +148,22 @@ It includes at least:
 - current Civic Signing Node identity;
 - verification material needed to interpret the epoch.
 
-The exact representation is not yet frozen.
+The exact serialized representation is not yet frozen. The continuity representation is now accepted as replicated authority state on the current Same-and-Equal participant devices.
 
 ## Key material
 
 The architecture requires new epoch-specific key material at each ceremony.
 
-It deliberately does **not** yet decide whether the cryptographic mechanism is:
+The accepted baseline is:
 
-- independent device signing keys plus replicated authority state;
-- one shared recovery secret independently wrapped to each device;
-- another 1-of-N construction;
-- a hybrid.
+- each current participant device has its own independent epoch-specific key material;
+- each current participant device retains authenticated replicated HOA authority state for the epoch;
+- no permanent HOA master/recovery private key is required;
+- credentials from an old epoch cannot establish current authority in a later epoch.
 
-The mechanism must satisfy the epoch rule: credentials from an old epoch cannot establish current authority in a later epoch.
+A common recovery secret independently wrapped to each participant device was considered and rejected as the baseline because it introduces a powerful shared secret without improving the Civic continuity semantics already provided by replicated state plus independent keys.
+
+See `docs/CIVIC_AUTHORITY_CONTINUITY_DECISION.md`.
 
 ## Why not permanent individual revocation
 
@@ -249,13 +251,12 @@ not as:
 one permanent operator private key
 ~~~
 
-## Next design boundary
+## Architecture closure
 
-Before implementation, the project should compare at least two concrete cryptographic realizations of this accepted epoch model:
+The continuity architecture is now accepted as independent epoch-specific participant-device keys plus replicated authority state.
 
-1. independent device keys + replicated authority-state recovery;
-2. independent device keys + 1-of-N wrapped recovery material;
+The remaining choices are implementation choices: algorithm, serialization, key storage, signing-provider hardware, exact Epoch Manifest format, and ceremony tooling.
 
-and evaluate both against ESP32-S3 capabilities, ceremony simplicity, operator replacement, compromised-device behavior, and cost.
+See `docs/CIVIC_AUTHORITY_CONTINUITY_DECISION.md`.
 
 No implementation code is authorized by this document.
