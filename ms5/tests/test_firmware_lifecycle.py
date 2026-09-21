@@ -52,6 +52,14 @@ class FirmwareLifecycleTests(unittest.TestCase):
     def test_signature_envelope_is_frozen_while_signer_remains_inert(self):
         authority = self.contract["authority_boundary"]
         self.assertEqual("selection-pending", authority["signer_provider_status"])
+        self.assertEqual(
+            "firmware_authorization_payload_sha256",
+            authority["authorization_target"],
+        )
+        self.assertEqual(
+            "kane-fabric-fw-auth-v1-fixed-binary",
+            authority["authorization_payload_encoding"],
+        )
         self.assertEqual("frozen", authority["signature_envelope_status"])
         self.assertEqual("ecdsa-p256-sha256", authority["signature_algorithm"])
         self.assertEqual("p1363-r-s-64", authority["signature_encoding"])

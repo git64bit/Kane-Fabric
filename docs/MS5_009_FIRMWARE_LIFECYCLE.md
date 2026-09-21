@@ -63,17 +63,29 @@ transport, and require no irreversible eFuse operation.
 
 The Firmware Authority remains inert while lifecycle machinery is implemented.
 
-The authorization envelope is now frozen independently of the physical signer:
+The authorization envelope is frozen independently of the physical signer.
+The signature covers the SHA-256 of a fixed 152-byte binary authorization
+payload containing the canonical manifest identity plus every update field the
+ESP32 consumes:
 
 ```text
-signed object        canonical release manifest SHA-256
-algorithm            ECDSA P-256 / SHA-256
-signature encoding   fixed 64-byte P1363 r || s
-public key encoding  65-byte uncompressed SEC1 P-256
-key identifier       SHA-256 of exact public-key bytes
+domain separator
+device family / target
+manifest SHA-256
+firmware SHA-256
+firmware byte length
+release sequence
+rollback-floor sequence
 ```
 
-The ESP32 verifier accepts public verification material only. The physical
+The signature algorithm is ECDSA P-256 / SHA-256 with fixed 64-byte P1363
+`r || s`; the public key is a 65-byte uncompressed SEC1 P-256 point and its
+key identifier is the SHA-256 of those exact public-key bytes.
+
+This avoids adding an external JSON parser to the reference firmware while
+still requiring the device itself to reconstruct and authenticate every field
+that drives installation policy. The ESP32 verifier accepts public verification
+material only. The physical
 hardware-backed signer provider, concrete key identity, and key-transition /
 recovery procedure remain a separate activation gate. The authority container
 may never gain an ordinary persistent private release-signing key file.

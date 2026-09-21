@@ -13,7 +13,7 @@
   },
   "authority_boundary": {
     "release_manifest_format": "kane-fabric-firmware-release-manifest",
-    "authorization_target": "manifest_sha256",
+    "authorization_target": "firmware_authorization_payload_sha256",
     "signer_provider_status": "selection-pending",
     "signature_envelope_status": "frozen",
     "hardware_backed_non_exportable_signer_required": true,
@@ -26,7 +26,8 @@
     "signature_algorithm": "ecdsa-p256-sha256",
     "signature_encoding": "p1363-r-s-64",
     "public_key_encoding": "sec1-uncompressed-p256-65",
-    "key_id_derivation": "sha256-public-key-bytes"
+    "key_id_derivation": "sha256-public-key-bytes",
+    "authorization_payload_encoding": "kane-fabric-fw-auth-v1-fixed-binary"
   },
   "update_boundary": {
     "transport_agnostic": true,
@@ -110,5 +111,5 @@
     "last_valid_participant_publication_survives_update_failure",
     "authority_container_rebuild_without_private_key_clone"
   ],
-  "contract_sha256": "b27b96aacfb167f3f44440c16317c5ac0dd90fd3d90b09b92e79f003b9474e52"
+  "contract_sha256": "8b1b9e6988ce89e9c16d6d7484b6297d1e0e5c16ff7100ef8b726d6c1ee507e7"
 }

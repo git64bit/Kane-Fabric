@@ -24,7 +24,8 @@ REFERENCE_PLATFORM = {
 
 AUTHORITY_BOUNDARY = {
     "release_manifest_format": "kane-fabric-firmware-release-manifest",
-    "authorization_target": "manifest_sha256",
+    "authorization_target": "firmware_authorization_payload_sha256",
+    "authorization_payload_encoding": "kane-fabric-fw-auth-v1-fixed-binary",
     "signer_provider_status": "selection-pending",
     "signature_envelope_status": "frozen",
     "signature_algorithm": "ecdsa-p256-sha256",

@@ -5,6 +5,7 @@ import unittest
 
 from ms5.tools.kane_fabric_firmware_authority import build_release_manifest
 from ms5.tools.kane_fabric_firmware_authorization import (
+    authorization_payload_sha256,
     build_authorization_envelope,
     derive_key_id_sha256,
 )
@@ -41,8 +42,20 @@ class FirmwareUpdateDescriptorTests(unittest.TestCase):
         )
 
     def _authorization(self, manifest):
-        return build_authorization_envelope(
+        release = manifest["release"]
+        firmware = manifest["firmware"]
+        recovery = manifest["recovery"]
+        payload_sha = authorization_payload_sha256(
+            device_family=release["device_family"],
+            target=release["target"],
             manifest_sha256=manifest["manifest_sha256"],
+            firmware_sha256=firmware["sha256"],
+            firmware_byte_length=firmware["byte_length"],
+            release_sequence=release["sequence"],
+            rollback_floor_sequence=recovery["rollback_floor_sequence"],
+        )
+        return build_authorization_envelope(
+            authorization_payload_sha256=payload_sha,
             key_id_sha256=derive_key_id_sha256(PUBLIC_KEY),
             signature=SIGNATURE,
         )
@@ -60,15 +73,25 @@ class FirmwareUpdateDescriptorTests(unittest.TestCase):
         self.assertEqual(2, descriptor["release_sequence"])
         self.assertEqual(1, descriptor["rollback_floor_sequence"])
 
-    def test_authorization_for_another_manifest_is_rejected(self):
+    def test_authorization_for_changed_firmware_fields_is_rejected(self):
         manifest = self._manifest()
-        other = copy.deepcopy(manifest)
-        other["manifest_sha256"] = "d" * 64
+        authorization = self._authorization(manifest)
+        changed = copy.deepcopy(manifest)
+        changed["firmware"] = dict(changed["firmware"])
+        changed["firmware"]["sha256"] = "d" * 64
+        changed["manifest_sha256"] = manifest["manifest_sha256"]
+        with self.assertRaises(Exception):
+            build_update_descriptor(changed, authorization)
+
+    def test_descriptor_field_tampering_breaks_payload_identity(self):
+        manifest = self._manifest()
+        descriptor = build_update_descriptor(
+            manifest,
+            self._authorization(manifest),
+        )
+        descriptor["firmware_byte_length"] += 1
         with self.assertRaises(FirmwareUpdateDescriptorError):
-            build_update_descriptor(
-                manifest,
-                self._authorization(other),
-            )
+            validate_update_descriptor(descriptor)
 
     def test_non_esp32_reference_target_is_rejected(self):
         manifest = build_release_manifest(
@@ -92,16 +115,6 @@ class FirmwareUpdateDescriptorTests(unittest.TestCase):
                 manifest,
                 self._authorization(manifest),
             )
-
-    def test_descriptor_rejects_sequence_floor_drift(self):
-        manifest = self._manifest()
-        descriptor = build_update_descriptor(
-            manifest,
-            self._authorization(manifest),
-        )
-        descriptor["rollback_floor_sequence"] = 3
-        with self.assertRaises(FirmwareUpdateDescriptorError):
-            validate_update_descriptor(descriptor)
 
 
 if __name__ == "__main__":

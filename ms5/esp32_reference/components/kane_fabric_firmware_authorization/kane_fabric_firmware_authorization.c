@@ -7,6 +7,88 @@
 #include <stdint.h>
 #include <string.h>
 
+static const uint8_t AUTH_DOMAIN[32] = {
+    'k','a','n','e','-','f','a','b','r','i','c','-','f','i','r','m',
+    'w','a','r','e','-','a','u','t','h','-','v','1',0,0,0,0
+};
+static const uint8_t DEVICE_FAMILY[16] = {
+    'e','s','p','3','2','-','s','3',0,0,0,0,0,0,0,0
+};
+static const uint8_t TARGET[16] = {
+    'e','s','p','3','2','s','3',0,0,0,0,0,0,0,0,0
+};
+
+static void write_u64_be(uint8_t out[8], uint64_t value)
+{
+    for (unsigned i = 0U; i < 8U; i++) {
+        out[7U - i] = (uint8_t)(value & 0xFFU);
+        value >>= 8U;
+    }
+}
+
+static esp_err_t build_payload_sha256(
+    const kf_firmware_authorization_payload_t *payload,
+    uint8_t digest[KF_FIRMWARE_AUTH_SHA256_BYTES]
+)
+{
+    if (
+        payload->firmware_byte_length == 0U ||
+        payload->release_sequence == 0U ||
+        payload->rollback_floor_sequence > payload->release_sequence
+    ) {
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    uint8_t encoded[KF_FIRMWARE_AUTH_PAYLOAD_BYTES] = {0};
+    size_t offset = 0U;
+
+    memcpy(encoded + offset, AUTH_DOMAIN, sizeof(AUTH_DOMAIN));
+    offset += sizeof(AUTH_DOMAIN);
+    memcpy(encoded + offset, DEVICE_FAMILY, sizeof(DEVICE_FAMILY));
+    offset += sizeof(DEVICE_FAMILY);
+    memcpy(encoded + offset, TARGET, sizeof(TARGET));
+    offset += sizeof(TARGET);
+    memcpy(
+        encoded + offset,
+        payload->manifest_sha256,
+        KF_FIRMWARE_AUTH_SHA256_BYTES
+    );
+    offset += KF_FIRMWARE_AUTH_SHA256_BYTES;
+    memcpy(
+        encoded + offset,
+        payload->firmware_sha256,
+        KF_FIRMWARE_AUTH_SHA256_BYTES
+    );
+    offset += KF_FIRMWARE_AUTH_SHA256_BYTES;
+    write_u64_be(encoded + offset, payload->firmware_byte_length);
+    offset += 8U;
+    write_u64_be(encoded + offset, payload->release_sequence);
+    offset += 8U;
+    write_u64_be(encoded + offset, payload->rollback_floor_sequence);
+    offset += 8U;
+
+    if (offset != sizeof(encoded)) {
+        return ESP_ERR_INVALID_SIZE;
+    }
+
+    size_t digest_length = 0U;
+    const psa_status_t status = psa_hash_compute(
+        PSA_ALG_SHA_256,
+        encoded,
+        sizeof(encoded),
+        digest,
+        KF_FIRMWARE_AUTH_SHA256_BYTES,
+        &digest_length
+    );
+    if (
+        status != PSA_SUCCESS ||
+        digest_length != KF_FIRMWARE_AUTH_SHA256_BYTES
+    ) {
+        return ESP_FAIL;
+    }
+    return ESP_OK;
+}
+
 static esp_err_t derive_key_id(
     const uint8_t public_key[KF_FIRMWARE_AUTH_P256_PUBLIC_KEY_BYTES],
     uint8_t key_id[KF_FIRMWARE_AUTH_KEY_ID_BYTES]
@@ -32,10 +114,15 @@ static esp_err_t derive_key_id(
 
 esp_err_t kf_firmware_authorization_verify(
     const uint8_t public_key[KF_FIRMWARE_AUTH_P256_PUBLIC_KEY_BYTES],
+    const kf_firmware_authorization_payload_t *payload,
     const kf_firmware_authorization_t *authorization
 )
 {
-    if (public_key == NULL || authorization == NULL) {
+    if (
+        public_key == NULL ||
+        payload == NULL ||
+        authorization == NULL
+    ) {
         return ESP_ERR_INVALID_ARG;
     }
     if (public_key[0] != 0x04U) {
@@ -56,6 +143,21 @@ esp_err_t kf_firmware_authorization_verify(
             derived_key_id,
             authorization->key_id_sha256,
             KF_FIRMWARE_AUTH_KEY_ID_BYTES
+        ) != 0
+    ) {
+        return ESP_ERR_INVALID_CRC;
+    }
+
+    uint8_t payload_sha256[KF_FIRMWARE_AUTH_SHA256_BYTES] = {0};
+    result = build_payload_sha256(payload, payload_sha256);
+    if (result != ESP_OK) {
+        return result;
+    }
+    if (
+        memcmp(
+            payload_sha256,
+            authorization->authorization_payload_sha256,
+            KF_FIRMWARE_AUTH_SHA256_BYTES
         ) != 0
     ) {
         return ESP_ERR_INVALID_CRC;
@@ -89,8 +191,8 @@ esp_err_t kf_firmware_authorization_verify(
     const psa_status_t verify_status = psa_verify_hash(
         key_id,
         PSA_ALG_ECDSA(PSA_ALG_SHA_256),
-        authorization->manifest_sha256,
-        KF_FIRMWARE_AUTH_MANIFEST_SHA256_BYTES,
+        payload_sha256,
+        KF_FIRMWARE_AUTH_SHA256_BYTES,
         authorization->signature,
         KF_FIRMWARE_AUTH_P256_SIGNATURE_BYTES
     );

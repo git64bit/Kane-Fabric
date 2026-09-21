@@ -10,6 +10,7 @@ from ms5.tools.kane_fabric_firmware_authority import validate_release_manifest
 from ms5.tools.kane_fabric_firmware_authorization import (
     ALGORITHM,
     SIGNATURE_ENCODING,
+    authorization_payload_sha256,
     validate_authorization_envelope,
 )
 
@@ -28,11 +29,6 @@ def build_update_descriptor(
     validate_release_manifest(manifest)
     validate_authorization_envelope(authorization)
 
-    if authorization["manifest_sha256"] != manifest["manifest_sha256"]:
-        raise FirmwareUpdateDescriptorError(
-            "authorization does not bind this release manifest"
-        )
-
     release = manifest["release"]
     firmware = manifest["firmware"]
     recovery = manifest["recovery"]
@@ -42,20 +38,35 @@ def build_update_descriptor(
             "release manifest is not for the ESP32-S3 reference family"
         )
 
+    payload_sha = authorization_payload_sha256(
+        device_family=release["device_family"],
+        target=release["target"],
+        manifest_sha256=manifest["manifest_sha256"],
+        firmware_sha256=firmware["sha256"],
+        firmware_byte_length=firmware["byte_length"],
+        release_sequence=release["sequence"],
+        rollback_floor_sequence=recovery["rollback_floor_sequence"],
+    )
+    if authorization["authorization_payload_sha256"] != payload_sha:
+        raise FirmwareUpdateDescriptorError(
+            "authorization does not bind this release payload"
+        )
+
     descriptor = {
         "format": FORMAT,
         "version": VERSION,
         "device_family": "esp32-s3",
         "target": "esp32s3",
         "manifest_sha256": manifest["manifest_sha256"],
+        "firmware_sha256": firmware["sha256"],
+        "firmware_byte_length": firmware["byte_length"],
+        "release_sequence": release["sequence"],
+        "rollback_floor_sequence": recovery["rollback_floor_sequence"],
         "key_id_sha256": authorization["key_id_sha256"],
+        "authorization_payload_sha256": payload_sha,
         "authorization_algorithm": ALGORITHM,
         "signature_encoding": SIGNATURE_ENCODING,
         "signature_base64": authorization["signature_base64"],
-        "release_sequence": release["sequence"],
-        "rollback_floor_sequence": recovery["rollback_floor_sequence"],
-        "firmware_byte_length": firmware["byte_length"],
-        "firmware_sha256": firmware["sha256"],
     }
     validate_update_descriptor(descriptor)
     return descriptor
@@ -68,14 +79,15 @@ def validate_update_descriptor(value: Mapping[str, object]) -> None:
         "device_family",
         "target",
         "manifest_sha256",
+        "firmware_sha256",
+        "firmware_byte_length",
+        "release_sequence",
+        "rollback_floor_sequence",
         "key_id_sha256",
+        "authorization_payload_sha256",
         "authorization_algorithm",
         "signature_encoding",
         "signature_base64",
-        "release_sequence",
-        "rollback_floor_sequence",
-        "firmware_byte_length",
-        "firmware_sha256",
     }
     if set(value) != expected_fields:
         raise FirmwareUpdateDescriptorError(
@@ -98,9 +110,13 @@ def validate_update_descriptor(value: Mapping[str, object]) -> None:
             "update descriptor signature encoding drifted"
         )
 
-    sha256_text(value["manifest_sha256"], "manifest_sha256")
-    sha256_text(value["key_id_sha256"], "key_id_sha256")
-    sha256_text(value["firmware_sha256"], "firmware_sha256")
+    for name in (
+        "manifest_sha256",
+        "firmware_sha256",
+        "key_id_sha256",
+        "authorization_payload_sha256",
+    ):
+        sha256_text(value[name], name)
 
     for name in (
         "release_sequence",
@@ -124,6 +140,20 @@ def validate_update_descriptor(value: Mapping[str, object]) -> None:
     if value["rollback_floor_sequence"] > value["release_sequence"]:
         raise FirmwareUpdateDescriptorError(
             "rollback floor cannot exceed release sequence"
+        )
+
+    expected_payload_sha = authorization_payload_sha256(
+        device_family=value["device_family"],
+        target=value["target"],
+        manifest_sha256=value["manifest_sha256"],
+        firmware_sha256=value["firmware_sha256"],
+        firmware_byte_length=value["firmware_byte_length"],
+        release_sequence=value["release_sequence"],
+        rollback_floor_sequence=value["rollback_floor_sequence"],
+    )
+    if value["authorization_payload_sha256"] != expected_payload_sha:
+        raise FirmwareUpdateDescriptorError(
+            "update descriptor authorization payload identity is invalid"
         )
 
     signature = value["signature_base64"]

@@ -130,6 +130,9 @@ class Esp32ReferenceTests(unittest.TestCase):
         self.assertIn("PSA_ALG_ECDSA(PSA_ALG_SHA_256)", source)
         self.assertIn("psa_verify_hash", source)
         self.assertIn("psa_destroy_key", source)
+        self.assertIn("AUTH_DOMAIN", source)
+        self.assertIn("write_u64_be", source)
+        self.assertIn("authorization->authorization_payload_sha256", source)
         self.assertNotIn("PSA_KEY_TYPE_ECC_KEY_PAIR", source)
         self.assertNotIn("psa_generate_key", source)
 
