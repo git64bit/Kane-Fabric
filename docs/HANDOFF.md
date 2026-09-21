@@ -548,17 +548,40 @@ docs/MS5_008_RUNTIME_INVESTIGATION.md
 
 WireGuard remains candidate-only and the MS5-008 decision remains `defer`.
 
+## MS5-008 decision — DEFER accepted 2026-09-21
+
+MS5-008 is no longer a blocker.
+
+```text
+outcome                defer
+WireGuard retained     NO
+firmware v1 required   NO
+browser path affected  NO
+runtime backlog        LoadProhibited before peer-up
+```
+
+The runtime defect remains recorded in `docs/MS5_008_RUNTIME_INVESTIGATION.md`
+and may be resumed when management transport becomes necessary.
+
+## MS5-009 — active
+
+MS5-009 now owns firmware authenticity, update, rollback, and recovery.
+
+Repository contract:
+
+```text
+ms5/firmware-lifecycle-contract.json
+docs/MS5_009_FIRMWARE_LIFECYCLE.md
+```
+
+The first lifecycle plan preserves accepted NVS, factory, and Fabric locations
+and uses previously unused flash for `otadata`, `ota_0`, and `ota_1`.
+Signing remains disabled.
+
 ## Next safe action
 
-Stay on **`fw`** and diagnose the panic before another state-changing test.
+Implement the additive OTA partition migration and rollback-capable ESP-IDF
+configuration in the repository. Then add device-side lifecycle scaffolding.
 
-1. use the preserved evaluation ELF/map, if present, to symbolize the captured
-   backtrace;
-2. if the temporary workspace is gone, reproduce the exact pinned build only,
-   without flashing;
-3. identify the exact crashing function and source line;
-4. only then decide the smallest integration correction or whether the
-   candidate should be rejected/deferred.
-
-Do not modify `wg-pk`, do not create another peer, and do not flash the
-ESP32 again merely to rediscover the same panic.
+Do not move the Fabric partition, erase provisioning NVS, activate release
+signing, or make management transport an update prerequisite.

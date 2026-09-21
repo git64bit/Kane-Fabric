@@ -20,27 +20,22 @@ Do not use private chat history as a substitute for these records.
 
 ## Current priority
 
-The active normative work item remains **MS5-008 — candidate outbound management transport and WireGuard runtime/resource feasibility**.
+The active normative work item is **MS5-009 — firmware authenticity, update,
+rollback, and recovery**.
 
-The exact-pinned evaluation firmware now **builds successfully** on `fw` after
-applying the pinned libsodium wrapper patch series. A first application-only
-physical run was performed.
+MS5-008 closed with the permitted result `defer`. WireGuard remains
+candidate-only and unretained; its runtime panic is diagnostic backlog.
 
-The ESP32-S3 reached its accepted participant runtime, acquired
-`10.0.0.185`, verified the participant image, and started the HTTP artifact
-server. Immediately after the MS5-008 evaluation task printed the WireGuard
-transport configuration, the device panicked with `LoadProhibited` and
-`EXCVADDR=0x00000000`. No authenticated peer-up was established.
+MS5-009 starts from the accepted inert Firmware Authority and:
 
-The gate restored the exact pre-test application bytes and verified identical
-SHA-256 `6e3c2bbcfb77107898bd96210f85bd49d93621ea057739e86c2914a56f554c96`.
+```text
+ms5/firmware-lifecycle-contract.json
+docs/MS5_009_FIRMWARE_LIFECYCLE.md
+```
 
-The next action remains entirely on `fw` but is **diagnostic only**: symbolize
-the captured backtrace against the preserved evaluation ELF/map. Do not flash
-again and do not modify `wg-pk` until the exact crashing function/line is
-known.
-
-See `docs/MS5_008_RUNTIME_INVESTIGATION.md`.
+The first implementation target is repository-only: add OTA metadata and two
+1 MiB OTA application slots in unused reference flash while preserving accepted
+NVS, factory-app, and Fabric addresses. Signing remains disabled.
 
 ## Stable facts are not discovery tasks
 

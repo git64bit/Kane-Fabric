@@ -130,7 +130,9 @@ WireGuard remains a management/synchronization candidate. Runtime operation, rec
 
 MS5-007 uses a bounded laboratory transport adapter rather than pretending the reference board's residential/LAN DHCP address is deployable infrastructure. The current edge locator may be rediscovered, verified against the physical device and accepted artifact, temporarily admitted through operator-host policy for the browser acceptance, and discarded afterward. MS5-007 must not require participant DHCP reservations, static LAN addresses, inbound port forwarding, or persistent per-device firewall rules.
 
-MS5-008 then asks the scalable transport question separately: can a participant edge behind an ordinary independently administered NAT establish an authenticated operator-approved outbound management path, with transport identity and current locator remaining separate from Fabric logical identity? A retain/reject/defer result remains valid.
+MS5-008 asked the scalable transport question separately. Its 2026-09-21 outcome is **defer** after an exact-pinned physical candidate build reached a device runtime panic before peer-up. WireGuard remains unretained; the diagnostic defect is backlog rather than a blocker for later MS5 lifecycle gates.
+
+The active normative work item is now **MS5-009 — firmware authenticity, update, rollback, and recovery**. Its initial lifecycle contract preserves the accepted factory/Fabric layout and adds OTA slots only in previously unused reference flash while release signing remains inert.
 
 Current MS5 integration exit direction: a normal online browser composes accepted Kane County geography with a valid focused participant publication through the administrative/Wiregate path; the participant edge serves only its bounded publication; the browser validates the same logical identities regardless of physical edge replacement; loss of management/upstream connectivity does not silently redefine already activated participant content; later firmware lifecycle/replacement/resource gates pass without moving county/category/contract authority onto the ESP32.
 

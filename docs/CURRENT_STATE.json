@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "observed_date": "2026-09-20",
+  "observed_date": "2026-09-21",
   "project": {
     "repository": "git64bit/Kane-Fabric",
     "branch": "main",
@@ -158,7 +158,21 @@
       "fabric_partition_rewritten": false,
       "wireguard_retained": false,
       "decision_state": "defer"
-    }
+    },
+    "ms5_008_decision_status": "accepted-defer",
+    "ms5_008_decision_date": "2026-09-21",
+    "ms5_008_decision_record": "ms5/management-transport-decision.json",
+    "ms5_008_decision_document": "docs/MS5_008_DECISION.md",
+    "ms5_008_decision": {
+      "outcome": "defer",
+      "wireguard_retained": false,
+      "runtime_defect_backlog": "LoadProhibited-before-peer-up",
+      "blocks_ms5_009": false
+    },
+    "ms5_009_status": "repository-contract-started",
+    "ms5_009_contract": "ms5/firmware-lifecycle-contract.json",
+    "ms5_009_document": "docs/MS5_009_FIRMWARE_LIFECYCLE.md",
+    "ms5_009_contract_sha256": "8c0a2987aa94ddc53d1d98c379d20f7e46c70ac07c8380885b0658ecd9f993bf"
   },
   "deployment": {
     "proxmox_host": "srv-b",
@@ -440,7 +454,7 @@
   "milestone": {
     "current": 5,
     "name": "Reference Physical Edge Architecture",
-    "phase": "ms5-008-management-transport-feasibility",
+    "phase": "ms5-009-firmware-authenticity-update-rollback-recovery",
     "design": "docs/MILESTONE_5_DESIGN.md",
     "reference": "docs/ADMINISTRATIVE_EDGE_BOUNDARY.md",
     "development_order": "docs/BROWSER_FIRST_ONLINE_FIRST_DIRECTIVE.md",
@@ -494,19 +508,21 @@
       "ms5_007_wiregate_origin": "https://kane-wiregate.dev.infra",
       "ms5_007_participant_sha256": "03f74e9e48254cc9d3fd4af22b840ce5d3857c028d8acd9cc8eca63003ab883c",
       "ms5_007_cleanup": "permanent vhost restored byte-identical; persistent and active firewall policy restored; /edge/participant.json returned 404; no locator-specific rule persisted",
-      "ms5_008_candidate_repository_acceptance": "accepted on CT102 at 5a35b607ef16b5c94bd732e7f2eb73fbffc17ad0; 12 focused tests passed; full MS5 suite 86 passed / 1 skipped; WireGuard retained=NO; decision state=defer"
+      "ms5_008_candidate_repository_acceptance": "accepted on CT102 at 5a35b607ef16b5c94bd732e7f2eb73fbffc17ad0; 12 focused tests passed; full MS5 suite 86 passed / 1 skipped; WireGuard retained=NO; decision state=defer",
+      "ms5_008_decision": "defer accepted 2026-09-21; WireGuard remains unretained; physical panic retained as diagnostic backlog"
     },
-    "next_work_item": "MS5-008 diagnose the ESP32 LoadProhibited panic from the first exact-pinned physical WireGuard runtime attempt. Stay on fw; symbolize the captured backtrace against the preserved evaluation ELF/map if available. Do not perform another flash or mutate wg-pk until the exact crashing function/line is identified."
+    "next_work_item": "MS5-009 repository implementation: adopt the additive OTA partition plan, enable ESP-IDF rollback support, and implement transport-independent firmware verification/update state without activating release signing yet."
   },
   "priority_workstream": {
-    "name": "MS5-008 Management Transport Feasibility",
+    "name": "MS5-009 Firmware Authenticity / Update / Rollback / Recovery",
     "design": "docs/MILESTONE_5_DESIGN.md",
-    "cpe": "docs/CIVICVS_PROJECT_ENVIRONMENT.md",
-    "toolchain_plan": "docs/MS5_TOOLCHAIN_DEPENDENCY_PLAN.md",
-    "status": "MS5-008 exact pinned evaluation firmware now builds and was physically flashed once, but the device panics with LoadProhibited before peer-up. The pre-test application was restored byte-identical. Runtime feasibility remains unaccepted and decision remains defer.",
-    "browser_path_status": "accepted independently of management transport",
-    "wireguard_status": "candidate-evaluation-only-not-retained",
-    "target_environment": "fw only for crash diagnosis; no CT102 or wg-pk mutation required until the crash is understood"
+    "implementation_contract": "ms5/firmware-lifecycle-contract.json",
+    "firmware_lifecycle_document": "docs/MS5_009_FIRMWARE_LIFECYCLE.md",
+    "firmware_authority_document": "docs/MS5_FIRMWARE_AUTHORITY_NODE.md",
+    "status": "MS5-008 deferred by contract; MS5-009 repository lifecycle contract started",
+    "signing_status": "inert-not-activated",
+    "management_transport_dependency": false,
+    "target_environment": "repository implementation first; physical fw and annales activation only after repository contract gates"
   },
-  "next_safe_action": "On fw, decode the captured MS5-008 panic backtrace against the preserved evaluation ELF/map from outbound-handshake-20260920T195255Z. If that build workspace is absent, reproduce the same exact pinned build only; do not flash. Identify the exact crashing symbol/line before making any candidate-code or integration change."
+  "next_safe_action": "Implement the MS5-009 additive OTA partition migration in the repository without moving nvs, factory, or fabric; enable rollback-capable ESP-IDF configuration; add device-side lifecycle scaffolding that remains transport-independent and uses no release-signing private key."
 }

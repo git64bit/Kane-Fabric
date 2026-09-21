@@ -24,8 +24,9 @@ and proxy were removed, the accepted Wiregate vhost and persistent firewall
 hashes were restored unchanged, and `/edge/participant.json` returned 404
 after cleanup.
 
-The next normative work item is MS5-008. WireGuard remains a candidate-only
-management transport and is not retained by MS5-005 or MS5-007.
+MS5-008 closed with the permitted outcome `defer` on 2026-09-21. WireGuard
+remains candidate-only and unretained. The active normative work item is now
+MS5-009: firmware authenticity, update, rollback, and recovery.
 
 ## Current reference topology
 
@@ -150,35 +151,21 @@ bash ms5/run-ms5-008-candidate-acceptance.sh
 
 ## Active work
 
-The MS5-008 candidate/evaluation repository primitive remains accepted at
-`5a35b607ef16b5c94bd732e7f2eb73fbffc17ad0`, and WireGuard remains
-candidate-only / not retained.
+MS5-008 is closed with `defer`; its runtime panic is diagnostic backlog.
 
-Preparation has progressed beyond the earlier read-only preflight:
-
-- the `fw` transport preflight is accepted;
-- `10.110.3.254/32` was selected collision-free for temporary evaluation;
-- an evaluation-only ESP32 WireGuard keypair was created on `fw`;
-- a runtime-only, non-persistent hub peer was accepted on `wg-pk`;
-- the exact pinned WireGuard/libsodium evaluation firmware now builds under
-  ESP-IDF 6.0.3 after applying the libsodium wrapper's pinned patch series;
-- a first application-only physical run was performed and then restored
-  byte-identical to the pre-test application.
-
-That first runtime did **not** establish WireGuard. The ESP32-S3 panicked with
-`LoadProhibited` / `EXCVADDR=0x00000000` immediately after the evaluation
-task started WireGuard configuration. No peer-up or routed-management evidence
-was produced.
-
-Current investigation record:
+MS5-009 is active. Repository authority:
 
 ```text
-docs/MS5_008_RUNTIME_INVESTIGATION.md
+ms5/firmware-lifecycle-contract.json
+ms5/tools/kane_fabric_firmware_lifecycle.py
+docs/MS5_009_FIRMWARE_LIFECYCLE.md
 ```
 
-The next primitive is diagnostic and stays on `fw`: symbolize the captured
-backtrace against the preserved evaluation ELF/map. Do not flash again or
-modify `wg-pk` until the exact crashing function and source line are known.
+The first lifecycle contract freezes a transport-independent update boundary
+and an additive OTA layout. Existing factory and Fabric locations remain
+unchanged; `otadata`, `ota_0`, and `ota_1` use previously unused flash.
+
+The Firmware Authority remains inert and release signing is not activated.
 
 ## Tests
 

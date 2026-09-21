@@ -1,0 +1,110 @@
+{
+  "format": "kane-fabric-ms5-firmware-lifecycle",
+  "version": 1,
+  "work_item": "MS5-009",
+  "status": "contract-active-signing-inert",
+  "reference_platform": {
+    "device_family": "esp32-s3",
+    "target": "esp32s3",
+    "flash_size_bytes": 16777216,
+    "current_partition_table": "ms5/esp32_reference/partitions.fabric-4m.csv",
+    "current_app_model": "factory-only",
+    "partition_migration_required": true
+  },
+  "authority_boundary": {
+    "release_manifest_format": "kane-fabric-firmware-release-manifest",
+    "authorization_target": "manifest_sha256",
+    "signer_provider_status": "selection-pending",
+    "signature_envelope_status": "not-frozen",
+    "hardware_backed_non_exportable_signer_required": true,
+    "operator_presence_required_for_release_signing": true,
+    "authority_container_private_key_file_allowed": false,
+    "edge_private_release_signing_key_allowed": false,
+    "build_authority_is_signing_authority": false,
+    "distribution_is_signing_authority": false,
+    "signing_activation_status": "not-activated"
+  },
+  "update_boundary": {
+    "transport_agnostic": true,
+    "management_transport_required": false,
+    "authorization_required_before_install": true,
+    "firmware_digest_match_required": true,
+    "release_sequence_monotonic": true,
+    "rollback_floor_enforced_by_normal_update_path": true,
+    "trial_boot_required": true,
+    "confirm_only_after_health_check": true,
+    "previous_valid_image_retained_until_confirmation": true,
+    "failed_trial_must_rollback": true,
+    "fabric_partition_rewritten_by_firmware_update": false,
+    "nvs_erased_by_normal_firmware_update": false,
+    "management_loss_invalidates_activated_publication": false,
+    "irreversible_efuse_required": false
+  },
+  "partition_plan": {
+    "preserve": [
+      {
+        "name": "nvs",
+        "offset": 36864,
+        "size": 24576
+      },
+      {
+        "name": "phy_init",
+        "offset": 61440,
+        "size": 4096
+      },
+      {
+        "name": "factory",
+        "offset": 65536,
+        "size": 1048576
+      },
+      {
+        "name": "fabric",
+        "offset": 1114112,
+        "size": 4194304
+      }
+    ],
+    "add": [
+      {
+        "name": "otadata",
+        "type": "data",
+        "subtype": "ota",
+        "offset": 5308416,
+        "size": 8192
+      },
+      {
+        "name": "ota_0",
+        "type": "app",
+        "subtype": "ota_0",
+        "offset": 5373952,
+        "size": 1048576
+      },
+      {
+        "name": "ota_1",
+        "type": "app",
+        "subtype": "ota_1",
+        "offset": 6422528,
+        "size": 1048576
+      }
+    ],
+    "first_unused_offset": 7471104
+  },
+  "required_evidence": [
+    "canonical_release_manifest_for_exact_firmware",
+    "hardware_backed_release_authorization",
+    "device_public_verification_material_only",
+    "authorized_update_acceptance",
+    "firmware_digest_mismatch_rejection",
+    "unauthorized_manifest_rejection",
+    "lower_sequence_normal_update_rejection",
+    "trial_boot_before_confirmation",
+    "health_confirmation_of_new_image",
+    "automatic_rollback_after_failed_trial",
+    "recovery_from_interrupted_update",
+    "recovery_when_management_transport_unavailable",
+    "fabric_partition_preserved_across_firmware_update",
+    "nvs_provisioning_preserved_across_normal_update",
+    "last_valid_participant_publication_survives_update_failure",
+    "authority_container_rebuild_without_private_key_clone"
+  ],
+  "contract_sha256": "8c0a2987aa94ddc53d1d98c379d20f7e46c70ac07c8380885b0658ecd9f993bf"
+}

@@ -1,0 +1,25 @@
+{
+  "format": "kane-fabric-ms5-management-transport-decision",
+  "version": 1,
+  "work_item": "MS5-008",
+  "transport": "wireguard",
+  "outcome": "defer",
+  "decision_date": "2026-09-21",
+  "retained": false,
+  "candidate_contract_head": "5a35b607ef16b5c94bd732e7f2eb73fbffc17ad0",
+  "evidence": {
+    "exact_pinned_esp32s3_build": true,
+    "physical_runtime_started": true,
+    "authenticated_wireguard_handshake": false,
+    "routed_management_traffic": false,
+    "predecessor_application_restored": true,
+    "runtime_failure": "LoadProhibited-before-peer-up"
+  },
+  "boundaries": {
+    "browser_path_affected": false,
+    "firmware_v1_requirement": false,
+    "third_party_manifest_entry": false,
+    "management_identity_is_fabric_identity": false
+  },
+  "follow_up": "revisit-during-managed-edge-synchronization-or-earlier-if-management-transport-is-required"
+}
