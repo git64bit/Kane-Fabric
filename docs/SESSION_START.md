@@ -20,7 +20,13 @@ Do not use private chat history as a substitute for these records.
 
 ## Current priority
 
-The authority/credibility interrogation now has an exact external affordance source baseline.
+Authority/credibility architecture remains active; no issuance code yet.
+
+New accepted semantic clarifications:
+
+- `CURRENT_RESIDENCE` is intentional voluntary participation initiation through SASE and is not an alias silently normalized to `CURRENT_RESIDENT`.
+- `HOA_MEMBER` is broader than `CONDO_UNIT_OWNER`; relationship subtype and current/former temporal state matter.
+- `Same and Equal` is a scoped relational equivalence rule, not a universal participant attribute.
 
 Read first:
 
@@ -28,11 +34,7 @@ Read first:
 - `docs/CIVIC_ISSUANCE_AUTHORITY.md`
 - `docs/MS5_009_AUTHORITY_INTERROGATION.md`
 
-External source: `Civic-Affordances-Diagnostics/civic-affordance-model` at commit `3745d7a07b5f69c580020d5b5a4f70c5b9f44457`.
-
-Do not write issuance code yet. Resolve the recorded terminology discrepancies first: `CURRENT_RESIDENT` vs `CURRENT_RESIDENCE`; public `HOA Homeowner` vs formal `HOA_MEMBER` / `CONDO_UNIT_OWNER`; and the lack of a formal source identifier for `Same and Equal`.
-
-After those meanings are explicit, freeze the canonical Civic Issuance Record and only then reconcile signing/provider design and implementation.
+Next design step: normalize these semantics into explicit versioned affordance-authority data and define the Same-and-Equal comparison rule, then freeze the canonical Civic Issuance Record. Do not implement issuance/signing logic before that checkpoint.
 
 ## Stable facts are not discovery tasks
 

@@ -232,3 +232,99 @@ The external Civic Affordances Diagnostics model has now been interrogated at ex
 Important refinement: an affordance is not merely a Boolean capability. The source model attaches qualification/evidence, access modes, surface scope, qualification authority, publication authority, persistence, and replication semantics. The eventual Civic Issuance Record must preserve policy identity rather than flattening these dimensions into firmware flags.
 
 Three source discrepancies are deliberately unresolved: `CURRENT_RESIDENT` vs `CURRENT_RESIDENCE`; public `HOA Homeowner` vs formal `HOA_MEMBER`/`CONDO_UNIT_OWNER`; and `Same and Equal`, which is published publicly but lacks a formal identifier in the source documents interrogated.
+
+
+## Authority-model clarifications
+
+These clarifications resolve three previously open semantic questions.
+
+### CURRENT_RESIDENCE is intentional and begins with voluntary participation
+
+`CURRENT_RESIDENCE` is not to be normalized away as a typo for `CURRENT_RESIDENT`.
+
+For the participant workflow, `CURRENT_RESIDENCE` is gained through the SASE process: the prospective participant initiates the relationship by sending a self-addressed stamped envelope to the issuer's residential address.
+
+The significance is not merely postal reachability. The initiating act demonstrates that participation was voluntarily requested by the participant rather than silently assigned by the infrastructure.
+
+Architectural consequence:
+
+- `CURRENT_RESIDENCE` is an intentional-entry / participation-initiation affordance or workflow outcome;
+- the issuance record must preserve the fact and method of voluntary initiation;
+- no person should acquire participant standing merely because an operator discovered their address or other public record;
+- SASE is therefore both a reachability/evidence mechanism and a consent/initiative boundary.
+
+The formal taxonomy's `CURRENT_RESIDENT` remains a separate identifier used for residency affectedness. Kane Fabric must preserve both names until the source model explicitly defines their relationship; it must not silently alias one to the other.
+
+### HOA_MEMBER is broader than current ownership
+
+`HOA_MEMBER` must not be reduced to `CONDO_UNIT_OWNER`.
+
+A participant can have an HOA-related affected-status relationship without being a current unit owner. Examples include a former unit owner whose rights or responsibilities continue to matter, or a service provider whose direct HOA relationship qualifies them for a specific diagnostic surface.
+
+`CONDO_UNIT_OWNER` remains a distinct Parcel / Dwelling relationship. `HOA_MEMBER` is a broader Private Governance relationship class.
+
+Architectural consequence:
+
+- ownership is one possible evidence/relationship dimension, not the definition of HOA membership;
+- current/former status must be representable;
+- role/subtype must be representable;
+- the same person may hold multiple HOA-related affordances simultaneously;
+- an issuance record must not infer one affordance merely from another unless a published policy explicitly says so.
+
+### Same and Equal is relational, scoped, and temporal
+
+`Same and Equal` is not global equivalence between people.
+
+It expresses equivalence within a defined civic comparison context.
+
+Examples:
+
+- two current unit owners in the same HOA may be Same and Equal for the relevant unit-owner standing;
+- unit owners in different HOAs are not Same and Equal merely because both are unit owners;
+- a current HOA member and a former HOA member are not Same and Equal merely because both have an HOA relationship.
+
+Therefore Same and Equal depends on at least:
+
+- the institutional/geographic comparison domain;
+- the exact standing/affordance being compared;
+- role/subtype;
+- temporal state such as current/former where relevant;
+- the policy version under which equivalence is evaluated.
+
+Architectural consequence:
+
+`Same and Equal` should be evaluated from authoritative issued context rather than treated as an unqualified Boolean badge. The issuance system must carry enough structured context for two records to be compared under a published equivalence rule.
+
+Conceptually:
+
+~~~text
+participant A issued standing
+        +
+participant B issued standing
+        +
+same comparison domain
+        +
+same relevant role/state/policy
+        ↓
+Same and Equal for that bounded context
+~~~
+
+This relation may be true for one civic purpose and false for another.
+
+## Resulting issuance-record requirements
+
+The eventual Civic Issuance Record must therefore distinguish:
+
+- participation initiation / consent evidence;
+- person or opaque participant reference;
+- jurisdiction and institutional domain;
+- affordance identifier;
+- affected-status family;
+- role/subtype;
+- current/former/other temporal state where applicable;
+- evidence class and qualification path;
+- policy identity/version;
+- appliance issuance reference;
+- issuance/revalidation/supersession history.
+
+This is intentionally more precise than a flat list of permission flags.

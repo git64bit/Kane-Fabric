@@ -336,11 +336,56 @@
         "SUBJECT_MATTER_EXPERT"
       ],
       "unresolved_naming": [
-        "CURRENT_RESIDENT vs CURRENT_RESIDENCE",
-        "HOA Homeowner vs HOA_MEMBER / CONDO_UNIT_OWNER",
-        "Same and Equal has no formal identifier found in interrogated source documents"
-      ]
-    }
+        "CURRENT_RESIDENT and CURRENT_RESIDENCE are distinct until source relationship is explicitly formalized",
+        "HOA Homeowner public phrase still needs explicit mapping to formal HOA_MEMBER / CONDO_UNIT_OWNER vocabulary",
+        "Same and Equal requires formal relational-equivalence rule/schema"
+      ],
+      "semantic_clarifications": {
+        "CURRENT_RESIDENCE": {
+          "status": "intentional-participant-initiation-affordance",
+          "initiation_method": "SASE to issuer residential address",
+          "purpose": [
+            "voluntary participation initiation",
+            "postal/reachability evidence"
+          ],
+          "alias_of_CURRENT_RESIDENT": false
+        },
+        "HOA_MEMBER": {
+          "status": "broader-than-current-unit-ownership",
+          "may_include": [
+            "former unit owner",
+            "service-provider relationship",
+            "other policy-qualified HOA affected statuses"
+          ],
+          "equivalent_to_CONDO_UNIT_OWNER": false,
+          "requires_role_and_temporal_context": true
+        },
+        "SAME_AND_EQUAL": {
+          "status": "relational-scoped-temporal",
+          "universal_person_attribute": false,
+          "comparison_dimensions": [
+            "institution/geographic domain",
+            "standing/affordance",
+            "role/subtype",
+            "temporal state",
+            "policy version"
+          ]
+        }
+      }
+    },
+    "civic_issuance_record_requirements": [
+      "voluntary participation initiation evidence",
+      "opaque participant reference",
+      "jurisdiction/institutional domain",
+      "affordance identifier",
+      "affected-status family",
+      "role/subtype",
+      "temporal state where applicable",
+      "evidence class/qualification path",
+      "policy identity/version",
+      "appliance issuance reference",
+      "issuance/revalidation/supersession history"
+    ]
   },
   "deployment": {
     "proxmox_host": "srv-b",
@@ -679,7 +724,7 @@
       "ms5_008_candidate_repository_acceptance": "accepted on CT102 at 5a35b607ef16b5c94bd732e7f2eb73fbffc17ad0; 12 focused tests passed; full MS5 suite 86 passed / 1 skipped; WireGuard retained=NO; decision state=defer",
       "ms5_008_decision": "defer accepted 2026-09-21; WireGuard remains unretained; physical panic retained as diagnostic backlog"
     },
-    "next_work_item": "Resolve the documented civic-affordance naming/semantic discrepancies, then define the canonical Civic Issuance Record from the exact external source baseline. No issuance code or firmware-signing implementation before that design checkpoint."
+    "next_work_item": "Normalize the external civic-affordance source into an explicit versioned authority contract that preserves voluntary initiation, broader relationship roles, temporal state, and scoped Same-and-Equal comparison rules. Then define the canonical Civic Issuance Record. No issuance code yet."
   },
   "priority_workstream": {
     "name": "MS5-009 Firmware Authenticity / Update / Rollback / Recovery",
@@ -692,5 +737,5 @@
     "management_transport_dependency": false,
     "target_environment": "repository/design and published affordance source; no signer or firmware mutation"
   },
-  "next_safe_action": "Use docs/CIVIC_AFFORDANCE_SOURCE_BASELINE.md and docs/CIVIC_ISSUANCE_AUTHORITY.md to resolve CURRENT_RESIDENT/CURRENT_RESIDENCE, HOA Homeowner vs HOA_MEMBER/CONDO_UNIT_OWNER, and Same and Equal formalization. Then freeze the Civic Issuance Record as documentation/schema authority before code."
+  "next_safe_action": "Design the versioned affordance authority contract and Same-and-Equal comparison rule from the documented semantics; then freeze the Civic Issuance Record. Keep firmware/signing implementation on hold."
 }

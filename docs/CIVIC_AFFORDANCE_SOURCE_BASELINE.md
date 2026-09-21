@@ -209,27 +209,27 @@ The source repeatedly treats obstruction, disagreement, capture, false local sta
 
 This matches the Kane Fabric authority model: authenticity supports provenance and comparison; it does not promise the impossibility of counterfeit or divergent implementations.
 
-## Naming discrepancies that must remain unresolved until explicitly decided
+## Semantic clarifications and remaining source normalization
 
-### CURRENT_RESIDENT vs CURRENT_RESIDENCE
+### CURRENT_RESIDENT and CURRENT_RESIDENCE are not aliases
 
-`docs/diagnostic-families.md` and the qualification taxonomy use `CURRENT_RESIDENT`.
+`CURRENT_RESIDENCE` is intentionally gained through the SASE participant-initiation process. Sending the SASE is a voluntary act that initiates participation; it is not merely an address lookup or passive assignment.
 
-`hubzilla/civic-workspace/docs/participant-baseline.md` states that the `CURRENT_RESIDENCE` affordance is gained through SASE.
+The formal diagnostic taxonomy separately uses `CURRENT_RESIDENT` for residency affectedness. Kane Fabric must preserve both identifiers and must not silently normalize one to the other until the source model explicitly defines their relationship.
 
-Kane Fabric must not silently choose one or treat them as aliases until the source project clarifies whether this is a naming drift, intentional distinction, or draft inconsistency.
+### HOA_MEMBER is not equivalent to CONDO_UNIT_OWNER
 
-### HOA Homeowner vs formal identifiers
+`CONDO_UNIT_OWNER` is an ownership relationship. `HOA_MEMBER` is broader and can include affected HOA relationships that are not current ownership, including former unit owners and service-provider relationships where the applicable published policy recognizes them for a diagnostic surface.
 
-Public Hubzilla material uses the phrase `HOA Homeowner` as a civic specification. The formal source taxonomy currently defines `HOA_MEMBER` under Private Governance and `CONDO_UNIT_OWNER` under Parcel / Dwelling.
-
-Kane Fabric must not silently map `HOA Homeowner` to either identifier. The relationship must be explicitly defined by the source model or by a documented Kane-profile decision.
+Kane Fabric must therefore carry relationship subtype and temporal state rather than treating ownership as the definition of HOA membership.
 
 ### Same and Equal
 
-Public Hubzilla material names `Same and Equal` as a foundational specification. No formal identifier/definition for it was found in the source documents interrogated for this baseline.
+`Same and Equal` is a foundational relational rule, not global equivalence between people. It is evaluated inside a bounded comparison domain.
 
-It therefore remains a published concept without an imported formal Kane-Fabric affordance definition.
+Two current unit owners in the same HOA may be Same and Equal for the relevant unit-owner standing. Unit owners in different HOAs are not Same and Equal merely because both own units. A current HOA member and former HOA member are not Same and Equal merely because both have an HOA relationship.
+
+The eventual source normalization therefore needs an explicit equivalence rule keyed by institutional/geographic domain, exact standing, role/subtype, temporal state, and policy version. Kane Fabric must carry enough context to evaluate the relation; it must not reduce Same and Equal to an unconditional Boolean label.
 
 ## Implications for Civic Issuance Authority
 
@@ -247,4 +247,4 @@ The next Civic Issuance Record design should bind:
 
 ## Implementation hold
 
-No Kane-Fabric affordance schema or issuance code should be written until the three naming/semantic discrepancies above are resolved or explicitly represented as unresolved in the v1 contract.
+No Kane-Fabric affordance or issuance code should be written until the remaining source normalization is expressed as explicit versioned authority data. The three previously ambiguous points now have architectural meaning: `CURRENT_RESIDENCE` is intentional voluntary initiation via SASE; `HOA_MEMBER` is broader than current ownership; and `Same and Equal` is a scoped relational equivalence rule.

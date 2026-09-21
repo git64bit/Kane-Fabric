@@ -788,3 +788,14 @@ Kane-Fabric now records the exact families, initial identifiers, priority afford
 Three discrepancies remain deliberately unresolved: `CURRENT_RESIDENT` vs `CURRENT_RESIDENCE`; public `HOA Homeowner` vs formal `HOA_MEMBER`/`CONDO_UNIT_OWNER`; and `Same and Equal`, which lacks a formal identifier in the interrogated source documents.
 
 No code should resolve these by assumption.
+
+
+## Civic affordance semantic clarification — 2026-09-21
+
+Three previously ambiguous points are now resolved at the architecture level:
+
+- `CURRENT_RESIDENCE` is intentionally gained through SASE. The participant initiates participation voluntarily by sending the SASE; this is not passive enrollment.
+- `HOA_MEMBER` is broader than `CONDO_UNIT_OWNER`. It can represent former-owner, service-provider, and other policy-qualified HOA relationships; role and temporal state must be explicit.
+- `Same and Equal` is a scoped relational rule. Equivalence depends on the same institutional/geographic domain, standing, role/subtype, temporal state, and policy version; it is not a universal badge.
+
+The Civic Issuance Record must therefore carry structured relationship context rather than a flat set of affordance booleans.
