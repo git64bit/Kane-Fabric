@@ -562,7 +562,21 @@
       "cross_HOA_failure_isolation_required": true,
       "operator_identity_equals_HOA_root_identity": false,
       "operator_transition_mechanics": "unfrozen",
-      "bootstrap_transition_mechanics": "unfrozen"
+      "bootstrap_transition_mechanics": "unfrozen",
+      "local_root_continuity": "distributed current-device authority epoch"
+    },
+    "civic_authority_epoch_document": "docs/CIVIC_AUTHORITY_EPOCH_CEREMONY.md",
+    "civic_authority_epoch_model": {
+      "continuity_anchor": "ordered authority epochs plus source-governed transitions",
+      "permanent_operator_private_key": false,
+      "ceremony_creates_current_N_devices": true,
+      "recovery_model": "1-of-N current device can reconstruct HOA Civic Identity state",
+      "recovery_equals_governance": false,
+      "governance_changes_require": "source-derived Same-and-Equal electorate/vote",
+      "untrusted_device_response": "new ceremony + new epoch + new current keys",
+      "historical_epochs_preserved": true,
+      "old_epoch_credentials_current_authority": false,
+      "exact_crypto_realization": "unfrozen"
     }
   },
   "deployment": {
@@ -902,7 +916,7 @@
       "ms5_008_candidate_repository_acceptance": "accepted on CT102 at 5a35b607ef16b5c94bd732e7f2eb73fbffc17ad0; 12 focused tests passed; full MS5 suite 86 passed / 1 skipped; WireGuard retained=NO; decision state=defer",
       "ms5_008_decision": "defer accepted 2026-09-21; WireGuard remains unretained; physical panic retained as diagnostic backlog"
     },
-    "next_work_item": "Interrogate the owner-operated HOA-local Civic Signing Node: define minimum reproducible node boundary, HOA-local root identity/continuity, bootstrap-to-elected-operator transition, key transition/recovery, local evidence storage, and per-HOA failure isolation before signer/provider implementation."
+    "next_work_item": "Compare concrete cryptographic realizations of the accepted HOA authority-epoch model: (A) independent participant-device keys with replicated authority-state recovery; (B) independent participant-device keys with 1-of-N wrapped recovery material. Keep governance authorization separate from recovery."
   },
   "priority_workstream": {
     "name": "MS5-009 Firmware Authenticity / Update / Rollback / Recovery",
@@ -915,5 +929,5 @@
     "management_transport_dependency": false,
     "target_environment": "repository/design and published affordance source; no signer or firmware mutation"
   },
-  "next_safe_action": "Design the minimum owner-operated HOA-local signing-node architecture and continuity model. Preserve per-HOA authority separation, local cost ownership, and operator replaceability. Do not resume signer/provider or firmware implementation first."
+  "next_safe_action": "Document and compare two concrete cryptographic realizations for the authority-epoch ceremony without implementing either. Evaluate ESP32-S3 fit, ceremony simplicity, compromised-device consequences, operator replacement, offline recovery, and cost."
 }

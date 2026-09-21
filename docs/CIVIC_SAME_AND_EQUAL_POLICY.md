@@ -358,3 +358,10 @@ No implementation code should precede that record design.
 Temporary SASE-validator/operator role does not automatically change a participant's Same-and-Equal class for unrelated civic standings.
 
 For example, two current homeowners in the same HOA may remain Same and Equal as homeowners even if one is currently acting as a Kane Fabric operator. Operator role becomes material only under a published equivalence policy whose purpose specifically compares operator/validator conduct or standing.
+
+
+## Same-and-Equal set as authority-epoch membership
+
+For an HOA authority profile, the current Same-and-Equal set may also define the participant-device set created/recognized by a key-signing ceremony for one authority epoch.
+
+This does not make equality permanent. A new epoch can contain a different current set when standing/trust changes. Historical Same-and-Equal evaluations remain tied to their original evaluation time and policy.

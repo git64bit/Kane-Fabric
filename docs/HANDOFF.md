@@ -926,3 +926,18 @@ Operator identity and HOA-local root identity remain separate; bootstrap-to-repl
 See `docs/CIVIC_OWNER_OPERATED_SIGNING_NODE.md`.
 
 No code changed.
+
+
+## HOA authority epochs / key-signing ceremony — 2026-09-21
+
+The HOA Civic Identity continuity model is now epoch-based and distributed across the current Same-and-Equal ESP32-S3 devices.
+
+A key-signing ceremony creates a new authority epoch and the `N` current participant-device credentials. Any one current device may be sufficient to reconstruct/recover the HOA Civic Identity state, but recovery does not grant unilateral governance authority. Operator/node selection still requires the applicable source-derived Same-and-Equal electorate and vote.
+
+When one current device owner becomes untrusted or otherwise leaves the applicable current class, the preferred response is a new ceremony, new epoch, and new keys for the new current set. Old epochs remain historical evidence and their credentials cannot establish current authority.
+
+The exact cryptographic realization is deliberately unfrozen. Next comparison: replicated state + independent device keys versus 1-of-N wrapped recovery material.
+
+See `docs/CIVIC_AUTHORITY_EPOCH_CEREMONY.md`.
+
+No code changed.

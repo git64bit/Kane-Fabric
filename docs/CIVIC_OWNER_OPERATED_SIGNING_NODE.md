@@ -143,7 +143,7 @@ The HOA root must not be derived merely from:
 - one human operator's name;
 - a central Kane account.
 
-The exact local-root identity and its continuity mechanism are not yet frozen.
+The local-root continuity model is now authority-epoch based. The HOA Civic Identity is reconstructed from current Same-and-Equal participant-device state rather than anchored to one permanent operator key. Exact cryptographic realization remains unfrozen.
 
 The important invariant is that one HOA root cannot silently become another HOA root.
 
@@ -153,7 +153,7 @@ The current operator owns/operates the node, but operator office and HOA-local r
 
 Otherwise replacing an operator would accidentally replace the HOA's Civic identity.
 
-The exact transition mechanics are intentionally open.
+Operator transition is now constrained by the authority-epoch model: when the recognized authority/device set changes, a source-governed key-signing ceremony may create a new epoch and current device keys. Exact cryptographic realization and custody mechanics remain open.
 
 A future design must decide, under the applicable source-derived governance rules, whether operator change:
 
@@ -239,3 +239,12 @@ Before implementation, the local signing-node architecture must resolve:
 10. cost/reproducibility requirements appropriate for owner-operators.
 
 No implementation code should precede those design decisions.
+
+
+## Authority epochs
+
+HOA continuity is further defined in `docs/CIVIC_AUTHORITY_EPOCH_CEREMONY.md`.
+
+A key-signing ceremony creates the current epoch and `N` Same-and-Equal participant-device credentials. Any one current device may be sufficient to reconstruct/recover the HOA Civic Identity state, while governance changes still require the prescribed Same-and-Equal voting/selection procedure.
+
+When a current device owner becomes untrusted or leaves the applicable class, a new ceremony creates a new epoch and new current keys. Old epochs remain historical evidence; old credentials do not establish current authority.

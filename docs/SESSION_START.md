@@ -20,23 +20,19 @@ Do not use private chat history as a substitute for these records.
 
 ## Current priority
 
-The Civic authority topology is now local and owner-operated:
-
-- every participating HOA requires its own Civic Signing Node;
-- the current local operator owns/operates that node and assumes its expenses;
-- the node must exist before Civic operator election/selection, voting, issuance, and peer scrubbing;
-- each HOA is a separate civic-authority/failure/recovery domain;
-- common Firmware Release Authority remains a different logical/node role;
-- operator identity must remain separate from HOA-local root identity so operators can be replaced.
+The HOA Civic Identity continuity model is now authority-epoch based.
 
 Read first:
 
+- `docs/CIVIC_AUTHORITY_EPOCH_CEREMONY.md`
 - `docs/CIVIC_OWNER_OPERATED_SIGNING_NODE.md`
-- `docs/HOA_GOVERNING_SOURCE_INHERITANCE.md`
-- `docs/CIVIC_OPERATOR_PEER_SCRUTINY.md`
-- `docs/MS5_009_AUTHORITY_INTERROGATION.md`
+- `docs/CIVIC_SAME_AND_EQUAL_POLICY.md`
 
-Next: define the minimum reproducible HOA-local signing-node boundary, local-root continuity, bootstrap-to-elected-operator transition, key transition/recovery, evidence storage, and failure isolation. No signer/provider or firmware code yet.
+A key-signing ceremony creates the current authority epoch and `N` Same-and-Equal participant-device credentials. Any one current device may recover/reconstruct the HOA Civic Identity state, but governance changes still require the prescribed Same-and-Equal electorate/vote.
+
+When one device owner becomes untrusted or otherwise leaves the current class, a new ceremony creates a new epoch and new current keys. Historical epochs remain verifiable but do not confer current authority.
+
+Next: compare two cryptographic realizations only—independent keys + replicated state versus independent keys + 1-of-N wrapped recovery material. No implementation code.
 
 ## Stable facts are not discovery tasks
 

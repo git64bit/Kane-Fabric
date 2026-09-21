@@ -248,3 +248,12 @@ Each participating HOA requires its own owner-operated Civic Signing Node. The o
 The node must pre-exist Civic-governed operator election/selection, voting, and peer scrubbing. The initial bootstrap operator is not permanently privileged: later operator transition must preserve the HOA-local root while changing operator custody under the source-derived governance rules.
 
 See `docs/CIVIC_OWNER_OPERATED_SIGNING_NODE.md`.
+
+
+## Epoch-based operator continuity
+
+The operator is recognized within an HOA authority epoch. The operator-owned signing node is not the permanent carrier of HOA Civic Identity.
+
+If operator trust/custody changes, current Same-and-Equal participant devices can reconstruct the HOA Civic Identity state; the applicable source-derived electorate then authorizes the next operator/node and, where required, a new key-signing ceremony/authority epoch.
+
+See `docs/CIVIC_AUTHORITY_EPOCH_CEREMONY.md`.
