@@ -87,28 +87,18 @@ hardware/tooling discovery on `annales`, followed by an explicit provider
 selection gate.
 
 
-## Reference hardware-signer profile
+## Signer-provider status
 
-MS5-009 now records a reference **capability profile**, not a claim that a
-physical provider is present:
+The 2026-09-21 `annales` preflight found zero hardware-signer candidates and
+no PIV/PKCS#11 tooling. This does not select or imply any provider class.
 
-```text
-ms5/firmware-signer-reference-profile.json
-```
+The provider remains deliberately **selection-pending**. Any future selection
+must satisfy the generic MS5-009 requirements already frozen by the authority
+contract: hardware-backed non-exportable private-key custody, deliberate
+operator presence for release signing, compatibility with the project
+authorization format, and recovery of authority software/container state
+without cloning the private release key.
 
-Reference class:
-
-```text
-PIV hardware token
-ECDSA P-256
-slot 9C / Digital Signature
-key generation on-device
-PIN policy ALWAYS
-touch policy ALWAYS
-attestation required
-private key non-exportable
-```
-
-The 2026-09-21 `annales` preflight found zero compatible hardware-signer
-candidates and no PIV/PKCS#11 tooling. Therefore the physical provider remains
-unselected and signing remains disabled.
+YubiKey, PIV, PKCS#11, USB-token placement, slot numbers, and PIN/touch policy
+are not project requirements unless separately evaluated and explicitly
+accepted later.

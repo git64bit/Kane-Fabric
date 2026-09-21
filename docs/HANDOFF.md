@@ -732,18 +732,12 @@ pcscd                       inactive
 
 No host or container mutation occurred.
 
-A reference signer capability profile is now tracked at:
-
-```text
-ms5/firmware-signer-reference-profile.json
-```
-
-It defines the desired class without claiming a physical token exists:
-PIV-compatible hardware, ECDSA P-256, slot 9C, on-device key generation,
-PIN policy ALWAYS, touch policy ALWAYS, and hardware attestation.
+The preflight did **not** select a signer/provider. It only established that no
+hardware signer was present and no signer tooling was installed.
 
 ## Next safe action
 
-A compatible hardware token must become physically available on `annales`.
-Once connected, perform a read-only identity/capability check before installing
-tooling or provisioning any release key.
+Evaluate signer/provider classes against the existing generic MS5-009
+requirements before any physical activation. Do not assume YubiKey, PIV,
+PKCS#11, a USB token, slot 9C, or any PIN/touch policy unless a later explicit
+provider-selection decision establishes those facts.

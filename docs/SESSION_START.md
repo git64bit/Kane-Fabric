@@ -24,25 +24,18 @@ The active normative work item remains **MS5-009 — firmware authenticity,
 update, rollback, and recovery**.
 
 OTA/update/rollback mechanics are physically accepted. The read-only signer
-preflight on `annales` is also accepted and showed that the authority container
-remains inert, but **no hardware signer is physically present** and no PIV /
-PKCS#11 tooling is installed.
+preflight on `annales` is also accepted and showed that the authority
+container remains inert, no hardware signer was present, and no PIV/PKCS#11
+tooling was installed.
 
-The repository now defines a reference signer capability profile without
-claiming physical selection:
+No physical signer/provider has been selected. The repository requirement
+remains generic: hardware-backed non-exportable private-key custody, deliberate
+operator presence for release signing, compatibility with the frozen project
+authorization format, and recoverability without cloning the private key.
 
-```text
-ms5/firmware-signer-reference-profile.json
-```
-
-Required class: PIV-compatible hardware token, P-256, slot 9C, key generated
-on-device, PIN ALWAYS, touch ALWAYS, attestation available, private key
-non-exportable.
-
-The next physical step cannot occur until a compatible token is connected to
-`annales`. When one is available, the first gate is read-only identity and
-capability discovery; key generation and signing remain prohibited until that
-gate passes.
+The next step is provider evaluation/selection at the architecture level. Do
+not assume a YubiKey, PIV token, PKCS#11 device, USB token, slot, or PIN/touch
+policy before that decision.
 
 ## Stable facts are not discovery tasks
 

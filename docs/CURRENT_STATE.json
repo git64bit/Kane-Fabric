@@ -279,8 +279,7 @@
         "pcscd_active": false
       },
       "mutated": false
-    },
-    "ms5_009_reference_signer_profile": "ms5/firmware-signer-reference-profile.json"
+    }
   },
   "deployment": {
     "proxmox_host": "srv-b",
@@ -619,7 +618,7 @@
       "ms5_008_candidate_repository_acceptance": "accepted on CT102 at 5a35b607ef16b5c94bd732e7f2eb73fbffc17ad0; 12 focused tests passed; full MS5 suite 86 passed / 1 skipped; WireGuard retained=NO; decision state=defer",
       "ms5_008_decision": "defer accepted 2026-09-21; WireGuard remains unretained; physical panic retained as diagnostic backlog"
     },
-    "next_work_item": "MS5-009 physical signer availability: obtain or attach a compatible PIV hardware token meeting the repository reference profile. Until such a token is physically present, do not install signer tooling, create/import keys, or enable signing."
+    "next_work_item": "MS5-009 signer-provider selection: evaluate candidate hardware-backed non-exportable signer/provider classes against the existing generic authority requirements. No provider, token family, slot, PIN/touch policy, or tooling is selected by the current repository."
   },
   "priority_workstream": {
     "name": "MS5-009 Firmware Authenticity / Update / Rollback / Recovery",
@@ -627,10 +626,10 @@
     "implementation_contract": "ms5/firmware-lifecycle-contract.json",
     "firmware_lifecycle_document": "docs/MS5_009_FIRMWARE_LIFECYCLE.md",
     "firmware_authority_document": "docs/MS5_FIRMWARE_AUTHORITY_NODE.md",
-    "status": "MS5-009 OTA mechanics physically accepted; signer preflight accepted; no compatible signer physically present",
+    "status": "MS5-009 OTA mechanics physically accepted; signer preflight accepted; signer/provider selection remains open",
     "signing_status": "inert-not-activated",
     "management_transport_dependency": false,
-    "target_environment": "annales after compatible hardware signer becomes physically available"
+    "target_environment": "repository/design evaluation first; annales remains inert until a provider is explicitly selected"
   },
-  "next_safe_action": "When a compatible PIV hardware token is physically connected to annales, run a read-only device identity/capability check first. Do not generate/import a key or alter the firmware-authority container before that check passes."
+  "next_safe_action": "Evaluate signer/provider options against the frozen generic requirements: hardware-backed non-exportable private key custody, operator presence for release signing, project authorization format compatibility, recoverability, and rebuild of the authority container without cloning the private key. Do not assume a YubiKey, PIV token, PKCS#11 device, or any other specific provider."
 }
