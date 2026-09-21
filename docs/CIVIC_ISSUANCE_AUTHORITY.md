@@ -339,3 +339,13 @@ The relationship carried by an issuance is now factored into a separate architec
 The tuple separates subject, relation, target, domain, role, temporal state, qualification, voluntary initiation, validity, and policy identity. Issuer/signature/appliance/sequence metadata remains outside the tuple in the future Civic Issuance Record.
 
 This separation is necessary for Same-and-Equal comparison, device replacement, temporal standing, affordance stacking, and later Witness Attestation.
+
+
+## Affordance authority and equivalence contracts
+
+The relationship tuple now has two architecture-level policy authorities:
+
+- `docs/CIVIC_AFFORDANCE_AUTHORITY_CONTRACT.md` defines the versioned vocabulary, qualification, initiation, validity, derivation, surface-binding, and equivalence-policy source of meaning;
+- `docs/CIVIC_SAME_AND_EQUAL_POLICY.md` defines Same-and-Equal as a named equivalence-class evaluation over relationship tuples, with four diagnostic outcomes: `SAME_AND_EQUAL`, `NOT_SAME_AND_EQUAL`, `NOT_COMPARABLE`, and `INDETERMINATE`.
+
+These documents deliberately keep relation semantics and equality semantics outside firmware and outside the individual issuance event.

@@ -814,3 +814,17 @@ Issuer, signature, appliance, record sequence, and supersession belong to the en
 This structure supports voluntary SASE initiation, broader HOA relationships, current/former state, affordance stacking, scoped Same-and-Equal comparison, device replacement, and a later Witness Attestation design in which the participant appliance assembles its own record from accepted civic context.
 
 No code changed.
+
+
+## Affordance Authority Contract and Same-and-Equal Policy — 2026-09-21
+
+Two architecture primitives are now defined, documentation only:
+
+- `docs/CIVIC_AFFORDANCE_AUTHORITY_CONTRACT.md`
+- `docs/CIVIC_SAME_AND_EQUAL_POLICY.md`
+
+The authority contract pins source lineage, published vocabulary, qualification, voluntary initiation, validity, explicit derivation, surface bindings, and equivalence policy references. Derivation is deny-by-default.
+
+Same and Equal is now evaluated as a policy-scoped equivalence class over Civic Relationship Tuples. Diagnostic outcomes are `SAME_AND_EQUAL`, `NOT_SAME_AND_EQUAL`, `NOT_COMPARABLE`, and `INDETERMINATE`; missing context is never silently converted into inequality.
+
+No code changed. The canonical Civic Issuance Record is the next design object.

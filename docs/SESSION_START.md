@@ -20,19 +20,19 @@ Do not use private chat history as a substitute for these records.
 
 ## Current priority
 
-The common civic-state primitive is now the Civic Relationship Tuple:
+The civic authority model now has three documentation-level primitives:
 
-`docs/CIVIC_RELATIONSHIP_TUPLE.md`
+- `docs/CIVIC_RELATIONSHIP_TUPLE.md`
+- `docs/CIVIC_AFFORDANCE_AUTHORITY_CONTRACT.md`
+- `docs/CIVIC_SAME_AND_EQUAL_POLICY.md`
 
-Logical fields:
+The Affordance Authority Contract is the versioned source-of-meaning for relations, roles, states, evidence/qualification, voluntary initiation, validity, explicit derivations, surface bindings, and equality policies. Derivation is deny-by-default.
 
-`subject, relation, target, domain, role, state, qualification, initiation, validity, policy`.
+Same and Equal is a policy-scoped equivalence-class evaluation, not a universal person attribute. Its diagnostic results are `SAME_AND_EQUAL`, `NOT_SAME_AND_EQUAL`, `NOT_COMPARABLE`, and `INDETERMINATE`.
 
-The tuple is the relationship fact; the future Civic Issuance Record is the signed issuance/provenance wrapper. Same and Equal is a policy-scoped comparison over tuples, not a universal Boolean attribute.
+The next design step is the canonical Civic Issuance Record that wraps one or more relationship tuples with issuer/root identity, appliance issuance reference, record sequence, revalidation/supersession lineage, exact policy identity, and signature provenance.
 
-Future Witness Attestation remains out of scope, but the tuple deliberately preserves enough civic context for an ESP32-S3 later to assemble a witness record from its own accepted standing rather than relying on an institution or another human to construct that record.
-
-Next design step: define the versioned affordance-authority vocabulary/derivation contract and formal Same-and-Equal equivalence policy, then define the canonical Civic Issuance Record. No implementation code before those checkpoints.
+No runtime, firmware, signing-provider, or issuance code before that record design is accepted.
 
 ## Stable facts are not discovery tasks
 

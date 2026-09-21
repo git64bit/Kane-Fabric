@@ -375,10 +375,11 @@ It provides a precise, inspectable vocabulary for what the Civic Infrastructure 
 
 ## Next design step
 
-After this tuple is accepted, define:
+The versioned Affordance Authority Contract and Same-and-Equal policy are now defined at the architecture level in:
 
-1. the versioned affordance-authority contract that supplies valid relation/domain/role/state/qualification vocabulary;
-2. the formal Same-and-Equal equivalence-rule representation;
-3. the canonical Civic Issuance Record that wraps one or more tuples with issuer/appliance/provenance/signature metadata.
+- `docs/CIVIC_AFFORDANCE_AUTHORITY_CONTRACT.md`;
+- `docs/CIVIC_SAME_AND_EQUAL_POLICY.md`.
 
-No implementation code should precede those design checkpoints.
+The next architecture object is the canonical Civic Issuance Record that wraps one or more tuples with issuer/appliance/provenance/signature metadata.
+
+No implementation code should precede that design checkpoint.

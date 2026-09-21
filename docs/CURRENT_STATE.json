@@ -401,22 +401,45 @@
       "policy"
     ],
     "same_and_equal_model": {
-      "status": "relational-equivalence-policy",
+      "status": "policy-scoped-equivalence-class",
       "universal_boolean": false,
-      "compares": [
+      "evaluation_results": [
+        "SAME_AND_EQUAL",
+        "NOT_SAME_AND_EQUAL",
+        "NOT_COMPARABLE",
+        "INDETERMINATE"
+      ],
+      "key_dimensions_policy_selected": [
         "relation",
         "domain",
         "role",
         "state",
-        "policy-defined dimensions"
+        "target",
+        "qualification",
+        "validity",
+        "contract compatibility"
       ],
-      "subject_may_differ": true,
-      "target_may_differ": true
+      "intended_properties": [
+        "reflexive",
+        "symmetric",
+        "transitive within one policy/evaluation context"
+      ]
     },
     "witness_attestation_future_boundary": {
       "status": "future-not-implemented",
       "principle": "participant appliance assembles witness record rather than institution/human",
       "tuple_requirement": "retain civic context from which device was acting"
+    },
+    "civic_affordance_authority_contract_document": "docs/CIVIC_AFFORDANCE_AUTHORITY_CONTRACT.md",
+    "civic_affordance_authority_contract_status": "architecture-defined-documentation-only",
+    "civic_same_and_equal_policy_document": "docs/CIVIC_SAME_AND_EQUAL_POLICY.md",
+    "civic_same_and_equal_policy_status": "architecture-defined-documentation-only",
+    "civic_affordance_authority_contract": {
+      "source_lineage": "Civic-Affordances-Diagnostics/civic-affordance-model@3745d7a07b5f69c580020d5b5a4f70c5b9f44457",
+      "derivation_default": "deny",
+      "policy_versioning": "immutable-meaning-new-version-for-change",
+      "current_residence_alias_of_current_resident": false,
+      "hoa_member_equivalent_to_condo_unit_owner": false
     }
   },
   "deployment": {
@@ -756,7 +779,7 @@
       "ms5_008_candidate_repository_acceptance": "accepted on CT102 at 5a35b607ef16b5c94bd732e7f2eb73fbffc17ad0; 12 focused tests passed; full MS5 suite 86 passed / 1 skipped; WireGuard retained=NO; decision state=defer",
       "ms5_008_decision": "defer accepted 2026-09-21; WireGuard remains unretained; physical panic retained as diagnostic backlog"
     },
-    "next_work_item": "Define the versioned affordance-authority contract and formal Same-and-Equal equivalence-rule representation using the accepted civic relationship tuple, then define the canonical Civic Issuance Record. No issuance/signing code yet."
+    "next_work_item": "Define the canonical Civic Issuance Record that wraps one or more Civic Relationship Tuples under an exact Affordance Authority Contract, including issuer/root identity, appliance issuance reference, sequence, supersession/revalidation lineage, and signature provenance. No implementation code yet."
   },
   "priority_workstream": {
     "name": "MS5-009 Firmware Authenticity / Update / Rollback / Recovery",
@@ -764,10 +787,10 @@
     "implementation_contract": "ms5/firmware-lifecycle-contract.json",
     "firmware_lifecycle_document": "docs/MS5_009_FIRMWARE_LIFECYCLE.md",
     "firmware_authority_document": "docs/MS5_FIRMWARE_AUTHORITY_NODE.md",
-    "status": "authority/credibility architecture active: distinguish firmware release signing from individual civic issuance; no implementation yet",
+    "status": "civic authority model: relationship tuple, affordance authority contract, and Same-and-Equal policy architecture defined; Civic Issuance Record is next",
     "signing_status": "inert-not-activated",
     "management_transport_dependency": false,
     "target_environment": "repository/design and published affordance source; no signer or firmware mutation"
   },
-  "next_safe_action": "Review docs/CIVIC_RELATIONSHIP_TUPLE.md as the common civic-state primitive. If accepted, next document the affordance-authority vocabulary/derivation rules and Same-and-Equal comparison policy before defining the signed Civic Issuance Record."
+  "next_safe_action": "Design docs for the canonical Civic Issuance Record using the accepted tuple/authority/equivalence primitives. Keep cryptographic serialization, signer provider, firmware integration, and runtime implementation unfrozen until the record semantics are accepted."
 }
