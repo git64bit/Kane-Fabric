@@ -20,18 +20,21 @@ Do not use private chat history as a substitute for these records.
 
 ## Current priority
 
-The first HOA Diagnostics workflow must now be derived from Illinois statutory procedure before Civic-specific workflow design.
+HOA Diagnostics now follows governing-source inheritance:
+
+`Illinois statute -> condominium instruments/bylaws -> HOA Diagnostics -> Kane Fabric instrumentation`.
 
 Read first:
 
+- `docs/HOA_GOVERNING_SOURCE_INHERITANCE.md`
 - `docs/ILLINOIS_STATUTORY_PROCEDURE_BASELINE.md`
 - `docs/CIVIC_OPERATOR_PEER_SCRUTINY.md`
-- `docs/CIVIC_PARTICIPATION_RENEWAL.md`
-- `docs/CIVIC_ISSUANCE_RECORD.md`
 
-Initial statutory anchors are `765 ILCS 605/18`, `/18.4`, `/18.8`, and `/19`. Reuse statutory roles, notice/delivery mechanisms, record duties, inspection rights, meeting openness/recording rights, deadlines, and fiduciary duties where applicable. Do not present Civic additions as statutory mandates.
+Do not invent substantive HOA governance rules. Civic mechanisms such as SASE, ESP32 attestation, operator provenance, and peer scrubbing may be project-defined, but cadence, electorate, thresholds, notice/quorum, roles, and similar parameters should be inherited from exact statute/bylaw sources wherever applicable.
 
-Next: derive the minimal participant-operated SASE workflow by marking each step either `STATUTORY_SOURCE` or `CIVIC_ADDITION`. No implementation code yet.
+Next: define the source-derived HOA SASE/operator profile, including the four-per-year participation cadence candidate and operator election by the relevant Same-and-Equal class using the applicable statutory/bylaw voting analog.
+
+No implementation code yet.
 
 ## Stable facts are not discovery tasks
 

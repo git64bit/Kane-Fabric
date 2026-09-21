@@ -528,6 +528,21 @@
         "ESP32-S3 issuance",
         "Witness Attestation"
       ]
+    },
+    "hoa_governing_source_inheritance_document": "docs/HOA_GOVERNING_SOURCE_INHERITANCE.md",
+    "hoa_governing_source_model": {
+      "order": [
+        "Illinois statute",
+        "condominium instruments",
+        "HOA Diagnostics instrumentation"
+      ],
+      "substantive_civic_rules_without_source": false,
+      "education_first_class": true,
+      "profile_parameters_may_be_source_derived": true,
+      "example_participation_renewals_per_year": 4,
+      "example_renewal_cadence_source": "765 ILCS 605/18 board shall meet at least 4 times annually",
+      "operator_election_rule": "inherit applicable statute/bylaw analog; exact rule profile-specific",
+      "electorate": "Same-and-Equal class for relevant HOA standing"
     }
   },
   "deployment": {
@@ -867,7 +882,7 @@
       "ms5_008_candidate_repository_acceptance": "accepted on CT102 at 5a35b607ef16b5c94bd732e7f2eb73fbffc17ad0; 12 focused tests passed; full MS5 suite 86 passed / 1 skipped; WireGuard retained=NO; decision state=defer",
       "ms5_008_decision": "defer accepted 2026-09-21; WireGuard remains unretained; physical panic retained as diagnostic backlog"
     },
-    "next_work_item": "Build the minimal participant-operated SASE workflow by first mapping each HOA step to applicable Illinois statutory procedure/vocabulary, then specify only the Civic additions that remain. Do not encode statutory procedures from memory or by analogy."
+    "next_work_item": "Define the HOA participant-operated SASE profile as source-derived governance instrumentation: map cadence, electorate, vote weighting/threshold, notice/quorum, operator term/handoff, and witness records to exact statute + association-instrument sources before implementation."
   },
   "priority_workstream": {
     "name": "MS5-009 Firmware Authenticity / Update / Rollback / Recovery",
@@ -880,5 +895,5 @@
     "management_transport_dependency": false,
     "target_environment": "repository/design and published affordance source; no signer or firmware mutation"
   },
-  "next_safe_action": "Use docs/ILLINOIS_STATUTORY_PROCEDURE_BASELINE.md as the source map for the first HOA Diagnostics issuance workflow. Expand statutory citations only when a specific workflow step requires them; keep SASE/peer-scrubbing additions clearly labeled as Civic mechanisms."
+  "next_safe_action": "Create the source-derived HOA SASE/operator profile. For every parameter, identify statute/bylaw source or mark it as pure mechanism with a source-derived parameter. Do not invent a substantive governance rule."
 }

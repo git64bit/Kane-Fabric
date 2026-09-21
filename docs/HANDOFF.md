@@ -894,3 +894,20 @@ The design rule is: do not invent a Civic procedure when Illinois law already de
 The document explicitly separates those statutory primitives from Civic additions such as six-month SASE renewal, rotating participant validators, Civic Issuance Records, Same-and-Equal, peer scrubbing, ESP32 issuance, and future Witness Attestation.
 
 No code changed.
+
+
+## HOA governing-source inheritance — 2026-09-21
+
+HOA Diagnostics now uses a governing-source chain rather than a statute-vs-Civic split:
+
+`Illinois statute -> condominium instruments/bylaws -> HOA Diagnostics education/observation -> Kane Fabric instrumentation`.
+
+Substantive governance rules should not be invented by Civic Infrastructure. SASE/ESP32/attestation/scrubbing are mechanisms; cadence, electorate, thresholds, notices, roles, and similar parameters should be inherited from statute/bylaws where an applicable source exists.
+
+Example: four SASE renewals per year may be chosen to track the statutory minimum of four board meetings annually. The SASE mechanism is Civic; the cadence is source-derived.
+
+Operator election likewise must identify its governing analog and use the relevant Same-and-Equal electorate and applicable statutory/bylaw voting rule.
+
+See `docs/HOA_GOVERNING_SOURCE_INHERITANCE.md`.
+
+No code changed.

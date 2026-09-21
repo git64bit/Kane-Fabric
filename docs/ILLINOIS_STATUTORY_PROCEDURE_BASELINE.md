@@ -159,3 +159,12 @@ For the first HOA Diagnostics consumer, the immediate statutory anchors are:
 - `765 ILCS 605/19` — association records and member inspection rights.
 
 Future profile work should expand the source map only as needed by the specific affordance or diagnostic surface being defined.
+
+
+## Governing-source inheritance refinement
+
+HOA Diagnostics must not stop at statute. For a specific association it must evaluate the applicable statute together with the association's valid condominium instruments, especially declaration and bylaws, and then instrument those source-defined rules.
+
+Civic mechanisms may derive substantive parameters from those sources. Example: a profile may require four SASE renewals per year so participation cadence tracks the statutory minimum of four board meetings annually. In that case the SASE mechanism is Civic, but the cadence is source-derived rather than arbitrary.
+
+See `docs/HOA_GOVERNING_SOURCE_INHERITANCE.md`.

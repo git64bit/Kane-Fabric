@@ -232,3 +232,10 @@ The participant-operated validator workflow must not recreate procedures Illinoi
 For HOA Diagnostics, `docs/ILLINOIS_STATUTORY_PROCEDURE_BASELINE.md` records the first statutory anchors in the Illinois Condominium Property Act. Statutory member/board roles, notices, records, inspection rights, meeting openness, recording rights, delivery methods, and fiduciary duties remain sourced to Illinois law where applicable.
 
 SASE validation, rotating Civic operators, and peer scrubbing are Civic Infrastructure additions layered above those source-defined relationships; they are not represented as statutory condominium procedures.
+
+
+## Source-derived operator selection
+
+Operator selection should not use an arbitrary Civic election rule. The applicable HOA profile must identify the governing statutory/bylaw analog and inherit the relevant electorate, vote weighting, notice/quorum, and approval threshold. The eligible electorate is further bounded by the published Same-and-Equal relationship policy.
+
+See `docs/HOA_GOVERNING_SOURCE_INHERITANCE.md`.
