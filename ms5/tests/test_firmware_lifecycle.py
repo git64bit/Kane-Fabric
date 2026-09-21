@@ -49,10 +49,20 @@ class FirmwareLifecycleTests(unittest.TestCase):
         self.assertEqual(0, added["ota_0"]["offset"] % 0x10000)
         self.assertEqual(0, added["ota_1"]["offset"] % 0x10000)
 
-    def test_signing_remains_inert_until_provider_and_envelope_are_frozen(self):
+    def test_signature_envelope_is_frozen_while_signer_remains_inert(self):
         authority = self.contract["authority_boundary"]
         self.assertEqual("selection-pending", authority["signer_provider_status"])
-        self.assertEqual("not-frozen", authority["signature_envelope_status"])
+        self.assertEqual("frozen", authority["signature_envelope_status"])
+        self.assertEqual("ecdsa-p256-sha256", authority["signature_algorithm"])
+        self.assertEqual("p1363-r-s-64", authority["signature_encoding"])
+        self.assertEqual(
+            "sec1-uncompressed-p256-65",
+            authority["public_key_encoding"],
+        )
+        self.assertEqual(
+            "sha256-public-key-bytes",
+            authority["key_id_derivation"],
+        )
         self.assertEqual("not-activated", authority["signing_activation_status"])
         self.assertTrue(authority["hardware_backed_non_exportable_signer_required"])
         self.assertFalse(authority["authority_container_private_key_file_allowed"])

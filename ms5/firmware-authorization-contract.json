@@ -1,0 +1,17 @@
+{
+  "format": "kane-fabric-ms5-firmware-authorization-contract",
+  "version": 1,
+  "work_item": "MS5-009",
+  "envelope_format": "kane-fabric-firmware-authorization",
+  "envelope_version": 1,
+  "signed_object": "manifest_sha256",
+  "signature_algorithm": "ecdsa-p256-sha256",
+  "signature_encoding": "p1363-r-s-64",
+  "signature_bytes": 64,
+  "public_key_encoding": "sec1-uncompressed-p256-65",
+  "public_key_bytes": 65,
+  "key_id_derivation": "sha256-public-key-bytes",
+  "manifest_digest_bytes": 32,
+  "device_private_release_key": false,
+  "signer_provider_status": "selection-pending"
+}

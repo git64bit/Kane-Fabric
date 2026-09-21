@@ -63,8 +63,17 @@ transport, and require no irreversible eFuse operation.
 
 The Firmware Authority remains inert while lifecycle machinery is implemented.
 
-Before signing activation, MS5-009 must separately freeze a hardware-backed
-non-exportable provider, public verification material, signature algorithm,
-key identifier, canonical authorization envelope, and key-transition/recovery
-procedure. The authority container may never gain an ordinary persistent
-private release-signing key file.
+The authorization envelope is now frozen independently of the physical signer:
+
+```text
+signed object        canonical release manifest SHA-256
+algorithm            ECDSA P-256 / SHA-256
+signature encoding   fixed 64-byte P1363 r || s
+public key encoding  65-byte uncompressed SEC1 P-256
+key identifier       SHA-256 of exact public-key bytes
+```
+
+The ESP32 verifier accepts public verification material only. The physical
+hardware-backed signer provider, concrete key identity, and key-transition /
+recovery procedure remain a separate activation gate. The authority container
+may never gain an ordinary persistent private release-signing key file.

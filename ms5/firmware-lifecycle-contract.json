@@ -15,14 +15,18 @@
     "release_manifest_format": "kane-fabric-firmware-release-manifest",
     "authorization_target": "manifest_sha256",
     "signer_provider_status": "selection-pending",
-    "signature_envelope_status": "not-frozen",
+    "signature_envelope_status": "frozen",
     "hardware_backed_non_exportable_signer_required": true,
     "operator_presence_required_for_release_signing": true,
     "authority_container_private_key_file_allowed": false,
     "edge_private_release_signing_key_allowed": false,
     "build_authority_is_signing_authority": false,
     "distribution_is_signing_authority": false,
-    "signing_activation_status": "not-activated"
+    "signing_activation_status": "not-activated",
+    "signature_algorithm": "ecdsa-p256-sha256",
+    "signature_encoding": "p1363-r-s-64",
+    "public_key_encoding": "sec1-uncompressed-p256-65",
+    "key_id_derivation": "sha256-public-key-bytes"
   },
   "update_boundary": {
     "transport_agnostic": true,
@@ -106,5 +110,5 @@
     "last_valid_participant_publication_survives_update_failure",
     "authority_container_rebuild_without_private_key_clone"
   ],
-  "contract_sha256": "8c0a2987aa94ddc53d1d98c379d20f7e46c70ac07c8380885b0658ecd9f993bf"
+  "contract_sha256": "b27b96aacfb167f3f44440c16317c5ac0dd90fd3d90b09b92e79f003b9474e52"
 }

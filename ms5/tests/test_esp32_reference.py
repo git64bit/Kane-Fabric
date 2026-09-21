@@ -113,6 +113,39 @@ class Esp32ReferenceTests(unittest.TestCase):
         self.assertLess(digest_check, ota_end)
         self.assertLess(ota_end, boot_select)
 
+    def test_ms5_009_device_authorization_is_public_key_only(self):
+        header = (
+            REFERENCE
+            / "components/kane_fabric_firmware_authorization/include/kane_fabric_firmware_authorization.h"
+        ).read_text()
+        source = (
+            REFERENCE
+            / "components/kane_fabric_firmware_authorization/kane_fabric_firmware_authorization.c"
+        ).read_text()
+
+        self.assertIn("P256_PUBLIC_KEY_BYTES 65U", header)
+        self.assertIn("P256_SIGNATURE_BYTES 64U", header)
+        self.assertIn("No private release-signing key", header)
+        self.assertIn("PSA_KEY_TYPE_ECC_PUBLIC_KEY(PSA_ECC_FAMILY_SECP_R1)", source)
+        self.assertIn("PSA_ALG_ECDSA(PSA_ALG_SHA_256)", source)
+        self.assertIn("psa_verify_hash", source)
+        self.assertIn("psa_destroy_key", source)
+        self.assertNotIn("PSA_KEY_TYPE_ECC_KEY_PAIR", source)
+        self.assertNotIn("psa_generate_key", source)
+
+    def test_ms5_009_device_authorization_binds_key_id_to_public_key(self):
+        source = (
+            REFERENCE
+            / "components/kane_fabric_firmware_authorization/kane_fabric_firmware_authorization.c"
+        ).read_text()
+        self.assertIn("psa_hash_compute", source)
+        self.assertIn("derived_key_id", source)
+        self.assertIn("authorization->key_id_sha256", source)
+        self.assertLess(
+            source.index("authorization->key_id_sha256"),
+            source.index("psa_import_key"),
+        )
+
     def test_host_range_core_compiles_and_passes(self):
         compiler = shutil.which("cc")
         if compiler is None:
