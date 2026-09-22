@@ -340,3 +340,12 @@ Those implementation choices must preserve the accepted invariants above.
 The HOA Civic authority-continuity problem is sufficiently specified to leave conceptual architecture and proceed later to implementation interrogation.
 
 No implementation is authorized merely by this documentation checkpoint.
+
+
+## Future service independence
+
+The accepted HOA Civic continuity model does not depend on future CA/TLS, email, or IPFS services.
+
+Those services may later authenticate endpoints, transport messages, or preserve content-addressed artifacts, but the HOA Civic Identity remains reconstructable from the current authority epoch and replicated participant-device state.
+
+See `docs/CIVIC_SIGNING_NODE_FUTURE_SERVICE_BOUNDARIES.md`.

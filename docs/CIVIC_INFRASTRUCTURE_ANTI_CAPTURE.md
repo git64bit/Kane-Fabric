@@ -156,3 +156,12 @@ Each participating HOA must be capable of owning/operating its own Civic Signing
 Common software and common statutory references are compatible with independent local signing roots.
 
 See `docs/CIVIC_OWNER_OPERATED_SIGNING_NODE.md`.
+
+
+## Optional shared-service boundary
+
+Future shared Kane Fabric services such as a Kane County CA, Kane-local mail infrastructure, or IPFS may support multiple HOA-local roots without merging them.
+
+Shared transport, endpoint authentication, communication, or storage must remain replaceable and must not become the Civic authority source for any participating HOA.
+
+See `docs/CIVIC_SIGNING_NODE_FUTURE_SERVICE_BOUNDARIES.md`.

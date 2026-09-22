@@ -965,3 +965,20 @@ The remaining algorithm, encoding, storage, provider, and hardware choices are i
 See `docs/CIVIC_AUTHORITY_CONTINUITY_DECISION.md`.
 
 No code changed.
+
+
+## Future signing-node service attachment boundaries — 2026-09-22
+
+Three planned future service classes are now documented without expanding the baseline implementation:
+
+- Kane County CA node: TLS/SSL endpoint certificates; not Civic authority;
+- Kane-local restricted email service: communication/evidence transport to approved `kane-il.us` addresses; not civic identity or standing;
+- IPFS node: content-addressed artifact storage/distribution; CID proves content identity, not truth/authority/currentness.
+
+These services may eventually be shared across multiple HOA-local roots, but shared transport/storage must not merge HOA authority. Failure of any attachment must not prevent reconstruction of the HOA Civic Identity.
+
+The baseline Civic Signing Node proceeds without requiring any of them.
+
+See `docs/CIVIC_SIGNING_NODE_FUTURE_SERVICE_BOUNDARIES.md`.
+
+No code changed.

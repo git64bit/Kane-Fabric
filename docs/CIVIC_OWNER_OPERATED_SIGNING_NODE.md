@@ -243,3 +243,16 @@ HOA continuity is further defined in `docs/CIVIC_AUTHORITY_EPOCH_CEREMONY.md`.
 A key-signing ceremony creates the current epoch and `N` Same-and-Equal participant-device credentials. Any one current device may be sufficient to reconstruct/recover the HOA Civic Identity state, while governance changes still require the prescribed Same-and-Equal voting/selection procedure.
 
 When a current device owner becomes untrusted or leaves the applicable class, a new ceremony creates a new epoch and new current keys. Old epochs remain historical evidence; old credentials do not establish current authority.
+
+
+## Future service attachments
+
+The baseline Civic Signing Node intentionally excludes several planned services that can attach later:
+
+- Kane County CA / TLS certificate service;
+- Kane-local restricted email service;
+- IPFS content-addressed storage/distribution.
+
+These services may strengthen transport, communication, endpoint authentication, and evidence durability, but none becomes the source of HOA Civic authority.
+
+See `docs/CIVIC_SIGNING_NODE_FUTURE_SERVICE_BOUNDARIES.md`.

@@ -20,26 +20,24 @@ Do not use private chat history as a substitute for these records.
 
 ## Current priority
 
-The HOA Civic authority-continuity architecture is now accepted.
+The baseline HOA-local Civic Signing Node architecture is accepted and future service boundaries are now documented.
 
 Read first:
 
 - `docs/CIVIC_AUTHORITY_CONTINUITY_DECISION.md`
-- `docs/CIVIC_AUTHORITY_EPOCH_CEREMONY.md`
 - `docs/CIVIC_OWNER_OPERATED_SIGNING_NODE.md`
+- `docs/CIVIC_SIGNING_NODE_FUTURE_SERVICE_BOUNDARIES.md`
 
-Accepted invariants:
+The initial implementation must not depend on the planned Kane County CA, Kane-local email service, or IPFS node.
 
-- HOA Civic Identity is replicated authority state, not one permanent secret;
-- current Same-and-Equal ESP32-S3 devices use independent epoch-specific keys;
-- any one current device may supply continuity/recovery state;
-- recovery is not unilateral governance;
-- governance transitions remain source-derived and Same-and-Equal;
-- trust-set change creates a new epoch/new current keys;
-- operator-owned signing node is replaceable;
-- no permanent HOA master/recovery key is required.
+Future boundaries:
 
-The difficult civic-design phase is closed sufficiently. Next work is implementation interrogation: select algorithms, key storage, Epoch Manifest representation, signing-node hardware/provider, and recovery mechanics that preserve these invariants. Do not reopen the authority model merely to choose code or hardware.
+- CA/TLS authenticates endpoints, not Civic authority;
+- email transports communication/evidence, not civic identity or standing;
+- IPFS provides content-addressed storage, not truth/currentness/authority;
+- shared Kane services must not merge HOA-local authority roots.
+
+The architecture/design phase is sufficiently closed. Next work is baseline implementation interrogation: concrete algorithm/provider, operator-node key custody, Epoch Manifest representation, ESP32 key/state storage, and recovery mechanics.
 
 ## Stable facts are not discovery tasks
 

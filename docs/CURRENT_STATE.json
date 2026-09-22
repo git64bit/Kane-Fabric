@@ -584,7 +584,31 @@
       "shared_recovery_secret_disposition": "rejected-as-baseline"
     },
     "civic_authority_continuity_decision_document": "docs/CIVIC_AUTHORITY_CONTINUITY_DECISION.md",
-    "civic_authority_continuity_status": "accepted-architecture-implementation-details-unfrozen"
+    "civic_authority_continuity_status": "accepted-architecture-implementation-details-unfrozen",
+    "civic_signing_node_future_service_boundary_document": "docs/CIVIC_SIGNING_NODE_FUTURE_SERVICE_BOUNDARIES.md",
+    "civic_signing_node_future_services": {
+      "baseline_dependency": false,
+      "services": {
+        "kane_county_ca": {
+          "role": "TLS/SSL endpoint certificate service",
+          "civic_authority": false,
+          "planned": true
+        },
+        "kane_local_email": {
+          "role": "restricted Civic communication/evidence transport",
+          "outbound_scope": "approved kane-il.us addresses",
+          "civic_authority": false,
+          "planned": true
+        },
+        "ipfs": {
+          "role": "content-addressed Civic artifact storage/distribution",
+          "civic_authority": false,
+          "planned": true
+        }
+      },
+      "shared_services_must_preserve_per_HOA_root_separation": true,
+      "service_failure_must_not_destroy_HOA_civic_identity": true
+    }
   },
   "deployment": {
     "proxmox_host": "srv-b",
@@ -923,7 +947,7 @@
       "ms5_008_candidate_repository_acceptance": "accepted on CT102 at 5a35b607ef16b5c94bd732e7f2eb73fbffc17ad0; 12 focused tests passed; full MS5 suite 86 passed / 1 skipped; WireGuard retained=NO; decision state=defer",
       "ms5_008_decision": "defer accepted 2026-09-21; WireGuard remains unretained; physical panic retained as diagnostic backlog"
     },
-    "next_work_item": "Authority-continuity design is closed. Next implementation interrogation may select concrete cryptographic algorithm, key storage, Epoch Manifest encoding, signing-node provider/hardware, and recovery mechanics while preserving independent epoch-specific participant keys plus replicated authority state."
+    "next_work_item": "Begin baseline Civic Signing Node implementation interrogation. Treat Kane County CA, Kane-local email, and IPFS as documented future attachments, not initial dependencies. Select concrete signing-node and ESP32 cryptographic/storage mechanics that preserve the accepted authority-continuity architecture."
   },
   "priority_workstream": {
     "name": "MS5-009 Firmware Authenticity / Update / Rollback / Recovery",
@@ -931,10 +955,10 @@
     "implementation_contract": "ms5/firmware-lifecycle-contract.json",
     "firmware_lifecycle_document": "docs/MS5_009_FIRMWARE_LIFECYCLE.md",
     "firmware_authority_document": "docs/MS5_FIRMWARE_AUTHORITY_NODE.md",
-    "status": "HOA Civic authority-continuity architecture accepted; remaining cryptography/storage/provider choices are implementation",
+    "status": "baseline Civic Signing Node ready for implementation interrogation; CA/mail/IPFS attachment boundaries documented and deferred",
     "signing_status": "inert-not-activated",
     "management_transport_dependency": false,
     "target_environment": "repository/design and published affordance source; no signer or firmware mutation"
   },
-  "next_safe_action": "Begin implementation interrogation only: map the accepted authority-continuity invariants to ESP32-S3 and HOA-local signing-node capabilities, compare concrete algorithms/providers, and do not alter the civic authority model without a new architecture decision."
+  "next_safe_action": "Interrogate implementation choices for the baseline signing node only: algorithm/provider, operator-node key custody, Epoch Manifest representation, ESP32 key/state storage, and recovery flow. Do not add CA, mail, or IPFS dependencies yet."
 }
