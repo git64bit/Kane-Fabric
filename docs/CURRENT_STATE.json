@@ -962,7 +962,7 @@
       "ms5_008_candidate_repository_acceptance": "accepted on CT102 at 5a35b607ef16b5c94bd732e7f2eb73fbffc17ad0; 12 focused tests passed; full MS5 suite 86 passed / 1 skipped; WireGuard retained=NO; decision state=defer",
       "ms5_008_decision": "defer accepted 2026-09-21; WireGuard remains unretained; physical panic retained as diagnostic backlog"
     },
-    "next_work_item": "Implement the append-only Civic CBOR Sequence record/history stream and its deterministic record identity/verification boundary."
+    "next_work_item": "Define Civic history-head semantics and the minimal history-record linkage contract before binding Epoch Manifest history heads to append-only streams."
   },
   "priority_workstream": {
     "name": "MS5-009 Firmware Authenticity / Update / Rollback / Recovery",
@@ -970,7 +970,7 @@
     "implementation_contract": "ms5/firmware-lifecycle-contract.json",
     "firmware_lifecycle_document": "docs/MS5_009_FIRMWARE_LIFECYCLE.md",
     "firmware_authority_document": "docs/MS5_FIRMWARE_AUTHORITY_NODE.md",
-    "status": "Deterministic CBOR, Epoch Manifest v1 schema, COSE_Sign1/ESP256 contract, interoperability vector, fixture-only P-256 signing/verification, complete signed-manifest composition, generated diagnostic projection, and Civic COSE documentation reconciliation are accepted; next bounded repository work is the append-only CBOR Sequence history stream; production signing remains held.",
+    "status": "Deterministic CBOR, Epoch Manifest v1 schema, COSE_Sign1/ESP256 contract, interoperability vector, fixture-only P-256 signing/verification, complete signed-manifest composition, generated diagnostic projection, Civic COSE documentation reconciliation, and the append-only CBOR Sequence history primitive are accepted on CT102; history-head/linkage semantics remain intentionally unfrozen; production signing remains held.",
     "signing_status": "inert-not-activated",
     "management_transport_dependency": false,
     "target_environment": "repository/design and published affordance source; no signer or firmware mutation",
@@ -1153,7 +1153,28 @@
       "production_signing_enabled": false,
       "production_key_created": false,
       "annales_mutated": false
+    },
+    "civic_history_primitive_acceptance": {
+      "status": "accepted-ct102-2026-09-22",
+      "repository_head": "fa9390130f6b6063fe10cc53603c01023d3eea1e",
+      "focused_gate": "civic/run-tests.sh",
+      "tests": {
+        "ran": 37,
+        "passed": 37,
+        "failed": 0,
+        "skipped": 0,
+        "history_tests": 5
+      },
+      "append_only_prefix_preservation": "accepted",
+      "deterministic_record_identity": "accepted",
+      "record_offsets_and_lengths": "accepted",
+      "malformed_record_rejection": "accepted",
+      "non_deterministic_record_rejection": "accepted",
+      "history_head_semantics_frozen": false,
+      "production_signing_enabled": false,
+      "production_key_created": false,
+      "annales_mutated": false
     }
   },
-  "next_safe_action": "Repository-only: implement the smallest append-only CBOR Sequence record/history primitive and tests. Do not create production Civic keys or mutate annales."
+  "next_safe_action": "Repository-only architecture step: define the minimal Civic history-head and predecessor-link semantics before implementing them. Do not create production Civic keys or mutate annales."
 }
