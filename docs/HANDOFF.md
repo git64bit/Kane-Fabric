@@ -1059,10 +1059,10 @@ structured Civic data
     -> RFC 8949 deterministic CBOR
     -> SHA-256 payload identity
     -> COSE_Sign1
-    -> ES256 / Civic P-256 key
+    -> ESP256 (-9) / Civic P-256 key
 ~~~
 
-The v1 COSE unprotected header is empty; protected headers carry ES256, the 32-byte Civic key ID, and Civic content type. The Epoch Manifest payload is embedded, not detached.
+The v1 COSE unprotected header is empty; protected headers carry ESP256 (-9), the 32-byte Civic key ID, and Civic content type. The Epoch Manifest payload is embedded, not detached.
 
 The deterministic-CBOR profile uses text map keys, definite lengths, no duplicate keys, NFC-normalized UTF-8, no floating-point fields, native CBOR byte strings for binary content, and explicit deterministic ordering for set-semantic arrays.
 
