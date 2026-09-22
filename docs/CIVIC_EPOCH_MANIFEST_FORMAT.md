@@ -39,7 +39,7 @@ The signed container is **COSE_Sign1** using the already accepted Civic cryptogr
 ~~~text
 payload encoding      deterministic CBOR
 signature container   COSE_Sign1
-COSE algorithm        ES256 / -7
+COSE algorithm        ESP256 / -9
 curve                 P-256
 digest                SHA-256
 signature bytes       64-byte R || S
@@ -53,7 +53,7 @@ The unprotected COSE header map is empty in v1.
 The protected header contains:
 
 ~~~text
-alg           -7
+alg           -9
 kid           32-byte Civic key identifier
 content type  application/kane-civic-epoch+cbor
 ~~~
@@ -401,7 +401,7 @@ A conforming v1 verifier rejects:
 - incorrect fixed byte lengths;
 - unsorted set-semantic arrays;
 - unknown `format` or unsupported `version`;
-- a COSE algorithm other than ES256 for this profile;
+- a COSE algorithm other than ESP256 (-9) for this profile;
 - a `kid` that does not match the verification key;
 - malformed or invalid signatures;
 - content hashes that do not match referenced object bytes.
@@ -425,7 +425,7 @@ structured authority/evidence data
     -> deterministic CBOR
     -> SHA-256 content identity
     -> COSE_Sign1
-    -> ES256 / Civic P-256 key
+    -> ESP256 (-9) / Civic P-256 key
     -> append-only CBOR Sequence history
     -> optional human JSON projection
 ~~~
