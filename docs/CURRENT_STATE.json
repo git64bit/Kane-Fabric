@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "observed_date": "2026-09-21",
+  "observed_date": "2026-09-22",
   "project": {
     "repository": "git64bit/Kane-Fabric",
     "branch": "main",
@@ -962,7 +962,7 @@
       "ms5_008_candidate_repository_acceptance": "accepted on CT102 at 5a35b607ef16b5c94bd732e7f2eb73fbffc17ad0; 12 focused tests passed; full MS5 suite 86 passed / 1 skipped; WireGuard retained=NO; decision state=defer",
       "ms5_008_decision": "defer accepted 2026-09-21; WireGuard remains unretained; physical panic retained as diagnostic backlog"
     },
-    "next_work_item": "Implement the accepted Civic deterministic-CBOR/COSE codec and Epoch Manifest v1 schema in repository code with host-testable vectors, canonicality rejection tests, content-object descriptors, and JSON diagnostic projection. Do not generate a production Civic key or mutate hosts/devices."
+    "next_work_item": "Implement the COSE_Sign1 envelope and signing-input contract over the accepted deterministic-CBOR Epoch Manifest, using fixture/test material only. Do not create a production Civic key or mutate annales."
   },
   "priority_workstream": {
     "name": "MS5-009 Firmware Authenticity / Update / Rollback / Recovery",
@@ -970,7 +970,7 @@
     "implementation_contract": "ms5/firmware-lifecycle-contract.json",
     "firmware_lifecycle_document": "docs/MS5_009_FIRMWARE_LIFECYCLE.md",
     "firmware_authority_document": "docs/MS5_FIRMWARE_AUTHORITY_NODE.md",
-    "status": "Civic crypto and Epoch Manifest representation accepted; RAG/LLM diagnostics boundary accepted; next work is repository codec/schema implementation and tests; production signing remains held",
+    "status": "Deterministic CBOR codec and Epoch Manifest v1 schema accepted on CT102; next bounded repository work is COSE_Sign1 envelope/signing-input implementation; production signing remains held.",
     "signing_status": "inert-not-activated",
     "management_transport_dependency": false,
     "target_environment": "repository/design and published affordance source; no signer or firmware mutation",
@@ -1029,7 +1029,27 @@
       "llm_output_authoritative": false,
       "model_provider_required": false,
       "edge_executes_llm_required": false
+    },
+    "civic_epoch_codec_implementation": {
+      "status": "accepted-ct102-2026-09-22",
+      "repository_head": "10958d6c442e51905293126a08f372852a533d34",
+      "implementation_root": "civic",
+      "focused_gate": "civic/run-tests.sh",
+      "ct102_host": "kane-fabric",
+      "ct102_checkout": "/tmp/kane-fabric-ms2",
+      "tests": {
+        "ran": 11,
+        "passed": 11,
+        "failed": 0,
+        "skipped": 0,
+        "codec_tests": 7,
+        "epoch_manifest_tests": 4
+      },
+      "deterministic_cbor_codec": "accepted",
+      "epoch_manifest_v1_schema": "accepted",
+      "production_key_created": false,
+      "annales_mutated": false
     }
   },
-  "next_safe_action": "Repository-only implementation: add deterministic CBOR/COSE Epoch Manifest codec/schema and tests using non-production fixture keys/test vectors only. Preserve no-production-key and no-host/device-mutation boundary."
+  "next_safe_action": "Repository-only: add the minimal COSE_Sign1 envelope/signing-input implementation and focused tests using non-production fixture material. Do not create production Civic keys or mutate annales."
 }
