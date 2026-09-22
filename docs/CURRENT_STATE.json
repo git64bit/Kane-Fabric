@@ -962,7 +962,7 @@
       "ms5_008_candidate_repository_acceptance": "accepted on CT102 at 5a35b607ef16b5c94bd732e7f2eb73fbffc17ad0; 12 focused tests passed; full MS5 suite 86 passed / 1 skipped; WireGuard retained=NO; decision state=defer",
       "ms5_008_decision": "defer accepted 2026-09-21; WireGuard remains unretained; physical panic retained as diagnostic backlog"
     },
-    "next_work_item": "Define the next type-specific accepted-history authority record: operator selection, binding the manifest operator participant identity and exact selection_record_sha256 to authenticated accepted history while leaving the selection mechanism itself source-derived and owner-operator contextual."
+    "next_work_item": "Define the type-specific accepted participant issuance record that gives meaning to manifest participants[].issuance_record_sha256 while preserving participant standing as a separately evidenced source-derived fact."
   },
   "priority_workstream": {
     "name": "MS5-009 Firmware Authenticity / Update / Rollback / Recovery",
@@ -970,7 +970,7 @@
     "implementation_contract": "ms5/firmware-lifecycle-contract.json",
     "firmware_lifecycle_document": "docs/MS5_009_FIRMWARE_LIFECYCLE.md",
     "firmware_authority_document": "docs/MS5_FIRMWARE_AUTHORITY_NODE.md",
-    "status": "Deterministic CBOR, Epoch Manifest v1, COSE_Sign1/ESP256, fixture-only P-256 signing/verification, signed-manifest composition, diagnostic projection, linked Civic history, SHA-256 object storage, participant authority-state reconstruction, generic individually signed Civic history records, authenticated history reconstruction, and the type-specific Signing Node authorization contract/verifier are accepted on CT102; governance-proof semantic interpretation and production signing remain held.",
+    "status": "Deterministic CBOR, Epoch Manifest v1, COSE_Sign1/ESP256, fixture-only P-256 signing/verification, signed-manifest composition, diagnostic projection, linked Civic history, SHA-256 object storage, participant authority-state reconstruction, generic individually signed Civic history records, authenticated history reconstruction, Signing Node authorization, and operator-selection type-specific contracts/verifiers are accepted on CT102; governance-proof semantic interpretation and production signing remain held.",
     "signing_status": "inert-not-activated",
     "management_transport_dependency": false,
     "target_environment": "repository/design and published affordance source; no signer or firmware mutation",
@@ -1311,7 +1311,35 @@
       "production_signing_enabled": false,
       "production_key_created": false,
       "annales_mutated": false
+    },
+    "civic_operator_selection_acceptance": {
+      "status": "accepted-ct102-2026-09-22",
+      "repository_head": "29835f3cd18458e01ace86e2ac47c69632ea4b84",
+      "focused_gate": "civic/run-tests.sh",
+      "tests": {
+        "ran": 83,
+        "passed": 83,
+        "failed": 0,
+        "skipped": 0,
+        "operator_selection_tests": 8,
+        "signing_node_authorization_tests": 6,
+        "authority_state_tests": 8,
+        "signed_history_record_tests": 8,
+        "cose_tests": 7
+      },
+      "accepted_stream_required": "accepted",
+      "participant_signer_permitted": "accepted",
+      "signing_node_signer_permitted": "accepted",
+      "empty_selection_proof_subset_permitted": "accepted",
+      "manifest_operator_participant_binding": "accepted",
+      "exact_selection_record_identity_binding": "accepted",
+      "selection_proof_subset_of_ceremony_governance_proofs": "accepted",
+      "selection_proof_semantic_sufficiency": "deferred-to-source-derived-governance-layer",
+      "operator_selection_mechanism": "profile-specific-owner-operator-governing-context-choice",
+      "production_signing_enabled": false,
+      "production_key_created": false,
+      "annales_mutated": false
     }
   },
-  "next_safe_action": "Repository-only architecture step: define the accepted operator-selection record invariants above the generic signed history envelope, including exact manifest binding and permitted signer/evidence relationships, without prescribing the owner-operator selection ceremony or creating production Civic keys."
+  "next_safe_action": "Repository-only architecture step: define the accepted participant-issuance record invariants for manifest participants[].issuance_record_sha256, including exact participant/key binding and retained standing evidence, without prescribing the owner-operator issuance ceremony or creating production Civic keys."
 }
