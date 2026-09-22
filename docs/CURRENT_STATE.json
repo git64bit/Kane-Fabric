@@ -962,7 +962,7 @@
       "ms5_008_candidate_repository_acceptance": "accepted on CT102 at 5a35b607ef16b5c94bd732e7f2eb73fbffc17ad0; 12 focused tests passed; full MS5 suite 86 passed / 1 skipped; WireGuard retained=NO; decision state=defer",
       "ms5_008_decision": "defer accepted 2026-09-21; WireGuard remains unretained; physical panic retained as diagnostic backlog"
     },
-    "next_work_item": "Define the generic individually authenticated Civic history-record envelope and content-type contract so history predecessor links can be verified as authenticated content during full authority-state reconstruction."
+    "next_work_item": "Integrate generic signed Civic history-record verification into participant authority-state reconstruction so each retained history stream verifies every record signature and authenticated predecessor link against the accepted Epoch Manifest lineage."
   },
   "priority_workstream": {
     "name": "MS5-009 Firmware Authenticity / Update / Rollback / Recovery",
@@ -970,7 +970,7 @@
     "implementation_contract": "ms5/firmware-lifecycle-contract.json",
     "firmware_lifecycle_document": "docs/MS5_009_FIRMWARE_LIFECYCLE.md",
     "firmware_authority_document": "docs/MS5_FIRMWARE_AUTHORITY_NODE.md",
-    "status": "Deterministic CBOR, Epoch Manifest v1, COSE_Sign1/ESP256, fixture-only P-256 signing/verification, signed-manifest composition, diagnostic projection, linked Civic history, SHA-256 object storage, and participant authority-state replica reconstruction are accepted on CT102; generic signed history-record envelope semantics remain to be defined; production signing remains held.",
+    "status": "Deterministic CBOR, Epoch Manifest v1, COSE_Sign1/ESP256, fixture-only P-256 signing/verification, signed-manifest composition, diagnostic projection, linked Civic history, SHA-256 object storage, participant authority-state replica reconstruction, and the generic individually signed Civic history-record envelope are accepted on CT102; authority-state reconstruction still needs to invoke signed-history verification for every retained stream; production signing remains held.",
     "signing_status": "inert-not-activated",
     "management_transport_dependency": false,
     "target_environment": "repository/design and published affordance source; no signer or firmware mutation",
@@ -1240,7 +1240,32 @@
       "production_signing_enabled": false,
       "production_key_created": false,
       "annales_mutated": false
+    },
+    "civic_signed_history_record_acceptance": {
+      "status": "accepted-ct102-2026-09-22",
+      "repository_head": "ffe451082c3c45f3799e18ef22b8d7db3e724e35",
+      "focused_gate": "civic/run-tests.sh",
+      "tests": {
+        "ran": 68,
+        "passed": 68,
+        "failed": 0,
+        "skipped": 0,
+        "cose_tests": 7,
+        "signed_history_record_tests": 8
+      },
+      "cose_content_type_separation": "accepted",
+      "epoch_content_type_backward_compatibility": "accepted",
+      "history_record_content_type": "application/kane-civic-history-record+cbor",
+      "signing_node_history_signature_verification": "accepted",
+      "participant_history_signature_verification": "accepted",
+      "cose_kid_to_payload_signer_binding": "accepted",
+      "epoch_authority_context_binding": "accepted",
+      "signature_tamper_rejection": "accepted",
+      "authenticated_history_link_extraction": "accepted",
+      "production_signing_enabled": false,
+      "production_key_created": false,
+      "annales_mutated": false
     }
   },
-  "next_safe_action": "Repository-only architecture step: define the generic signed Civic history-record envelope/content-type and authenticated history_link extraction contract before extending authority-state verification. Do not create production Civic keys or mutate annales."
+  "next_safe_action": "Repository-only implementation step: extend authority-state verification to authenticate every retained Civic history record through the generic signed-history envelope before checking history_link continuity and final stream heads. Do not create production Civic keys or mutate annales."
 }
