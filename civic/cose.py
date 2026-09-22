@@ -7,7 +7,12 @@ from civic.codec import CborTag, CivicCodecError, decode_deterministic, encode_d
 
 COSE_SIGN1_TAG = 18
 COSE_ALG_ESP256 = -9
-CONTENT_TYPE = "application/kane-civic-epoch+cbor"
+
+EPOCH_CONTENT_TYPE = "application/kane-civic-epoch+cbor"
+HISTORY_RECORD_CONTENT_TYPE = "application/kane-civic-history-record+cbor"
+
+# Backward-compatible name for the original Epoch Manifest COSE contract.
+CONTENT_TYPE = EPOCH_CONTENT_TYPE
 
 KEY_ID_BYTES = 32
 SIGNATURE_BYTES = 64
@@ -23,6 +28,7 @@ class ParsedCoseSign1:
     payload: bytes
     signature: bytes
     key_id: bytes
+    content_type: str
 
 
 def _fixed_bytes(value: object, label: str, size: int) -> bytes:
@@ -33,22 +39,42 @@ def _fixed_bytes(value: object, label: str, size: int) -> bytes:
     return value
 
 
-def build_protected_header(key_id: bytes) -> bytes:
+def _content_type(value: object) -> str:
+    if not isinstance(value, str) or not value:
+        raise CivicCoseError("COSE content type must be nonempty text")
+    return value
+
+
+def build_protected_header(
+    key_id: bytes,
+    *,
+    content_type: str = EPOCH_CONTENT_TYPE,
+) -> bytes:
     key_id = _fixed_bytes(key_id, "key_id", KEY_ID_BYTES)
+    content_type = _content_type(content_type)
+
     return encode_deterministic(
         {
             1: COSE_ALG_ESP256,
-            3: CONTENT_TYPE,
+            3: content_type,
             4: key_id,
         }
     )
 
 
-def build_sig_structure(payload: bytes, key_id: bytes) -> bytes:
+def build_sig_structure(
+    payload: bytes,
+    key_id: bytes,
+    *,
+    content_type: str = EPOCH_CONTENT_TYPE,
+) -> bytes:
     if not isinstance(payload, bytes):
         raise CivicCoseError("payload must be bytes")
 
-    protected = build_protected_header(key_id)
+    protected = build_protected_header(
+        key_id,
+        content_type=content_type,
+    )
 
     return encode_deterministic(
         [
@@ -60,11 +86,20 @@ def build_sig_structure(payload: bytes, key_id: bytes) -> bytes:
     )
 
 
-def build_cose_sign1(payload: bytes, key_id: bytes, signature: bytes) -> bytes:
+def build_cose_sign1(
+    payload: bytes,
+    key_id: bytes,
+    signature: bytes,
+    *,
+    content_type: str = EPOCH_CONTENT_TYPE,
+) -> bytes:
     if not isinstance(payload, bytes):
         raise CivicCoseError("payload must be bytes")
 
-    protected = build_protected_header(key_id)
+    protected = build_protected_header(
+        key_id,
+        content_type=content_type,
+    )
     signature = _fixed_bytes(signature, "signature", SIGNATURE_BYTES)
 
     return encode_deterministic(
@@ -80,7 +115,13 @@ def build_cose_sign1(payload: bytes, key_id: bytes, signature: bytes) -> bytes:
     )
 
 
-def parse_cose_sign1(data: bytes) -> ParsedCoseSign1:
+def parse_cose_sign1(
+    data: bytes,
+    *,
+    expected_content_type: str = EPOCH_CONTENT_TYPE,
+) -> ParsedCoseSign1:
+    expected_content_type = _content_type(expected_content_type)
+
     try:
         decoded = decode_deterministic(data)
     except CivicCodecError as exc:
@@ -115,7 +156,8 @@ def parse_cose_sign1(data: bytes) -> ParsedCoseSign1:
     if header[1] != COSE_ALG_ESP256:
         raise CivicCoseError("COSE algorithm must be ESP256 (-9)")
 
-    if header[3] != CONTENT_TYPE:
+    actual_content_type = _content_type(header[3])
+    if actual_content_type != expected_content_type:
         raise CivicCoseError("COSE content type is invalid")
 
     key_id = _fixed_bytes(header[4], "COSE kid", KEY_ID_BYTES)
@@ -125,4 +167,5 @@ def parse_cose_sign1(data: bytes) -> ParsedCoseSign1:
         payload=payload,
         signature=signature,
         key_id=key_id,
+        content_type=actual_content_type,
     )
