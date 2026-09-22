@@ -28,11 +28,17 @@ The administrative layer may integrate many independently controlled publication
 
 A physical edge is a low-cost, replaceable local custodian and serving point for a **bounded participant publication**.
 
+The ESP32-S3 is the current reference implementation of that role, not the required Civic edge platform. The physical-edge contract must remain implementable on another user-owned platform without importing ESP32-specific identity, eFuse state, or secure-element assumptions.
+
+The participant edge is a user-owned custody point: user-owned data remains on user-owned storage unless the participant deliberately publishes or replicates it under another explicit contract.
+
+
 A condominium deployment is the reference example. One association edge may hold the association and unit information that the participating association or unit owners intentionally publish through the Fabric contracts. A 35-unit condominium therefore does not need a complete Kane County road/water/substrate package on its ESP32-S3 merely to participate in the county map.
 
 The edge may:
 
 - hold immutable generations of its bounded participant publication;
+- hold and serve user-owned, publicly readable public verification/key artifacts such as CA public material, OpenPGP public keys, and SSH public keys;
 - retain references to accepted county/building/partition identities instead of duplicating county-wide substrate bytes;
 - verify an inventory before activation/serving;
 - serve activated artifacts locally by the accepted bounded HTTP contract;

@@ -22,6 +22,16 @@ Do not use private chat history as a substitute for these records.
 
 The Signing Node architecture is ready for baseline implementation interrogation, and the new-Assistant resume process is now explicit.
 
+Hard implementation constraints accepted on 2026-09-22:
+
+- Civic Infrastructure implements functionality/provenance without requiring hardware-enforced key non-exportability;
+- ESP32-S3 is the reference implementation, not the required platform;
+- no ATECC608A-class Civic key custody and no irreversible ESP security-eFuse Civic key custody in Kane Fabric deployment/acceptance;
+- no proprietary SaaS/HaaS/vendor hardware signer may become a baseline dependency;
+- user-owned edges may hold openly readable user-owned public verification material such as CA public material, OpenPGP public keys, and SSH public keys;
+- edge-assisted IPFS CID pinning remains a deferred wish-list capability.
+
+
 Read first:
 
 1. `docs/DEVELOPMENT_PROCESS.md`

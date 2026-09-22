@@ -24,6 +24,24 @@ ESP-IDF and other third-party dependencies retain their own legal terms. Use of 
 
 The edge node is part of the civic infrastructure because it distributes public geographic state without becoming its authority. It must not become a proprietary or institutional gate through which a browser needs permission to obtain the public substrate.
 
+## Functionality, platform neutrality, and user custody
+
+Kane Fabric Civic Infrastructure implements **functionality**, not a hardware-security product. Cryptographic signatures, hashes, verification, provenance, replication, replacement, and recovery exist to make Civic records and interfaces work. Hardware tamper resistance or hardware-enforced non-exportability is not a prerequisite for Civic participation.
+
+The baseline must remain independently implementable without a captive SaaS control plane, Hardware-as-a-Service signer, vendor security cloud, or a specific proprietary security component. Reference implementations may run on vendor hardware and toolchains, but no vendor product becomes a required Civic platform, Civic authority source, or Fabric logical identity.
+
+The ESP32-S3 is therefore the current **reference edge design**, not the required edge platform. Another user-owned platform may implement the same published storage, verification, authority-state, and serving contracts without emulating ESP32 physical identity.
+
+Kane Fabric project deployments and acceptance procedures SHALL NOT:
+
+- provision or depend on Microchip ATECC608A or ATECC608A-class secure elements for Civic key custody;
+- burn, personalize, or depend on irreversible ESP security eFuses for Civic key custody or Civic acceptance;
+- make a proprietary hardware signer, HSM/token service, remote signer, vendor account, or other hardware/security tenancy a prerequisite for baseline Civic functionality.
+
+These prohibitions do not make private keys public. They mean specialized hardware is not required to enforce private-key secrecy. Software custody, rotation, replacement, and recovery remain implementation work and must remain portable.
+
+A user-owned edge is also an ordinary user-owned storage location. It may intentionally host and serve openly readable, non-secret public verification material in ordinary non-proprietary, uncompressed/source-form representations where applicable. Examples include CA certificates/public keys, OpenPGP public keys, SSH public keys, and similar user-owned public artifacts. Such material remains user-owned data on a user-owned device; it does not create central service tenancy and does not become Fabric logical identity.
+
 ## Public-domain software
 
 Kane Fabric is released under the repository `LICENSE`, which uses The Unlicense/public-domain dedication.

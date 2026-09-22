@@ -78,6 +78,22 @@ Read these from **current live `main`**, in this order.
    - stable infrastructure facts;
    - current priority.
 
+### Cross-cutting Civic constraints
+
+Before evaluating Signing Node providers or participant-device storage, also read:
+
+- `docs/CIVIC_INFRASTRUCTURE_PRINCIPLES.md`;
+- `docs/CIVIC_INFRASTRUCTURE_ANTI_CAPTURE.md`.
+
+Current mandatory boundary:
+
+- Civic Infrastructure implements functionality rather than requiring hardware-enforced key secrecy;
+- ESP32-S3 is a reference participant/edge implementation, not the required Civic platform;
+- no Kane Fabric deployment/acceptance may use ATECC608A-class Civic key custody or irreversible ESP security-eFuse Civic key custody;
+- baseline Civic functionality must not depend on proprietary SaaS, Hardware-as-a-Service, a vendor cloud, or a required proprietary hardware signer;
+- user-owned edges may store/serve openly readable user-owned public verification material such as CA public material, OpenPGP public keys, and SSH public keys;
+- edge-assisted IPFS pinning of user-owned CIDs is a deferred wish-list item only.
+
 ### Current Civic Signing Node architecture
 
 5. `docs/CIVIC_AUTHORITY_CONTINUITY_DECISION.md`
@@ -411,7 +427,8 @@ Never:
 - use an unknown remote path;
 - silently discard unexpected Git changes;
 - rerun expensive accepted tests just because the Assistant is new;
-- alter `wg-pk`, Firmware Authority activation, signer attachment, or ESP security fuses without the relevant accepted gate;
+- alter `wg-pk`, Firmware Authority activation, or signer attachment without the relevant accepted gate;
+- burn/provision ESP security eFuses or attach/provision an ATECC608A-class secure element for Civic key custody;
 - switch the fixed ESP32 PROGRAM and TERMINAL USB roles.
 
 If a script encounters an unexpected condition, it should stop and report it rather than “repair” unrelated state.
@@ -491,6 +508,9 @@ There is no required permanent HOA master/recovery private key.
 
 The Common Firmware Release Authority remains logically distinct from HOA-local Civic authority.
 
+The Civic baseline is platform-neutral. References to ESP32-S3 describe the current reference implementation only. Hardware-backed non-exportability is not an authority invariant, ATECC608A-class Civic key custody is prohibited, and security-eFuse Civic key custody is prohibited.
+
+
 ---
 
 ## 9. Governing-source rule
@@ -542,7 +562,7 @@ The implementation must now determine concrete choices for:
 - signing algorithm/provider;
 - operator-node key custody;
 - Epoch Manifest representation;
-- ESP32-S3 key storage;
+- participant-device key/state storage (ESP32-S3 is the reference implementation, not the required platform);
 - replicated authority-state storage;
 - verification behavior;
 - operator-node replacement/recovery mechanics;

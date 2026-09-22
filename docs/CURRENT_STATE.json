@@ -962,7 +962,7 @@
       "ms5_008_candidate_repository_acceptance": "accepted on CT102 at 5a35b607ef16b5c94bd732e7f2eb73fbffc17ad0; 12 focused tests passed; full MS5 suite 86 passed / 1 skipped; WireGuard retained=NO; decision state=defer",
       "ms5_008_decision": "defer accepted 2026-09-21; WireGuard remains unretained; physical panic retained as diagnostic backlog"
     },
-    "next_work_item": "Begin baseline Civic Signing Node implementation interrogation. Treat Kane County CA, Kane-local email, and IPFS as documented future attachments, not initial dependencies. Select concrete signing-node and ESP32 cryptographic/storage mechanics that preserve the accepted authority-continuity architecture."
+    "next_work_item": "Continue baseline Civic Signing Node implementation interrogation under the accepted functionality/platform-neutrality boundary: software-capable and independently reproducible baseline; ESP32-S3 reference only; no ATECC608A-class Civic key custody; no irreversible ESP security-eFuse Civic key custody; no proprietary SaaS/HaaS/hardware-signer dependency. Public user-owned verification material may reside on user-owned edges; IPFS CID pinning remains deferred wish-list work."
   },
   "priority_workstream": {
     "name": "MS5-009 Firmware Authenticity / Update / Rollback / Recovery",
@@ -970,10 +970,26 @@
     "implementation_contract": "ms5/firmware-lifecycle-contract.json",
     "firmware_lifecycle_document": "docs/MS5_009_FIRMWARE_LIFECYCLE.md",
     "firmware_authority_document": "docs/MS5_FIRMWARE_AUTHORITY_NODE.md",
-    "status": "baseline Civic Signing Node ready for implementation interrogation; CA/mail/IPFS attachment boundaries documented and deferred",
+    "status": "baseline Civic Signing Node ready for implementation interrogation under functionality/platform-neutrality constraint; prior hardware-backed-only Firmware Authority assumption invalidated pending repository reconciliation",
     "signing_status": "inert-not-activated",
     "management_transport_dependency": false,
-    "target_environment": "repository/design and published affordance source; no signer or firmware mutation"
+    "target_environment": "repository/design and published affordance source; no signer or firmware mutation",
+    "civic_functionality_platform_boundary": {
+      "status": "accepted-2026-09-22",
+      "functionality_not_hardware_security_prerequisite": true,
+      "esp32_s3_reference_only_not_required_platform": true,
+      "proprietary_saas_haas_or_required_hardware_signer_dependency": false,
+      "atecc608a_civic_key_custody_allowed_in_project_deployment": false,
+      "irreversible_esp_security_efuse_civic_key_custody_allowed_in_project_deployment": false,
+      "user_owned_edge_public_material": [
+        "CA certificates/public verification keys",
+        "OpenPGP public keys",
+        "SSH public keys",
+        "participant/epoch public verification material"
+      ],
+      "edge_assisted_ipfs_cid_pinning": "wishlist-deferred-no-mechanism-frozen",
+      "firmware_authority_hardware_backed_only_machine_assumption": "invalidated-pending-bounded-reconciliation"
+    }
   },
-  "next_safe_action": "New Assistant must first read docs/DEVELOPMENT_PROCESS.md, docs/SIGNING_NODE_ASSISTANT_HANDOFF.md, HANDOFF/CURRENT_STATE/SESSION_START, then the accepted Civic authority/signing-node documents. After that, begin baseline implementation interrogation only; use bounded script upload/log return when direct host execution is unavailable."
+  "next_safe_action": "Continue repository-only Signing Node implementation interrogation without creating keys or mutating hosts. Exclude ATECC608A-class and security-eFuse custody and any proprietary SaaS/HaaS/hardware-only dependency. Treat the existing Firmware Authority hardware-backed-only machine contract as invalidated candidate implementation until separately reconciled and retested."
 }

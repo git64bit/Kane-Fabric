@@ -28,13 +28,13 @@ physical device
 (public verification material only)
 ```
 
-Compromise of the build workstation alone must not authorize firmware. Compromise of distribution alone must not authorize firmware. Compromise of the authority container alone must not disclose an ordinary file-based signing private key because the private signing operation is held outside the container in hardware-backed custody.
+Compromise of the build workstation alone must not authorize firmware. Compromise of distribution alone must not authorize firmware. The authority role remains distinct, but the 2026-09-22 Civic functionality/platform-neutrality decision removes hardware-backed non-exportability as a baseline requirement. The Firmware Authority must remain implementable with portable software custody and may not depend on a proprietary hardware signer or Hardware-as-a-Service.
 
 ## Reference placement
 
 The reference Firmware Authority Node is an **unprivileged LXC/LXD container on a separate Dell Precision-class physical host** from the CPE Build and Hardware Workstation.
 
-The physical host may carry unrelated compute workloads, but the Firmware Authority container is not granted GPU access and must remain minimal. Containers share the host kernel, so the physical host remains inside the authority trust boundary. Hardware-backed key custody limits what compromise of the host/container filesystem can extract.
+The physical host may carry unrelated compute workloads, but the Firmware Authority container is not granted GPU access and must remain minimal. Containers share the host kernel, so the physical host remains inside the authority trust boundary. Optional deployment hardening may protect key custody, but such hardening is not part of Firmware Authority identity or baseline functionality.
 
 Reference logical name:
 
@@ -64,9 +64,13 @@ Do not allocate a scarce CPE address merely because the container exists. Indepe
 
 ## Key custody
 
-The release-signing private key must not be an ordinary PEM, OpenSSH, raw seed, or other reusable private-key file stored in the container, its snapshot, its backup, the CPE workstation, the firmware distribution system, or an edge device.
+Release-signing private-key custody must be operator-controlled, replaceable, and independently reproducible. The baseline SHALL NOT require hardware-enforced non-exportability or a proprietary signer.
 
-MS5-009 must select a hardware-backed signer/provider that keeps private key material non-exportable or otherwise materially outside ordinary container filesystem custody. The preferred operating model requires deliberate operator presence such as PIN and/or physical touch for a release-signing operation.
+A portable software-held key/keystore is therefore an admissible baseline provider class. Exact encryption-at-rest, passphrase, backup, rotation, loss, and successor-key procedures remain MS5-009 implementation work.
+
+ATECC608A/ATECC608A-class custody and irreversible ESP security-eFuse custody are prohibited project mechanisms. Optional operator-selected hardening may exist outside the baseline only if removing it does not change the public authorization format, authority identity, recovery semantics, or independent operability.
+
+Deliberate operator presence for release authorization remains a ceremony/process question and does not require a hardware touch token.
 
 The container may retain:
 
@@ -83,7 +87,7 @@ Container snapshots and backups must be sufficient to recover software state but
 
 The CPE Build and Hardware Workstation owns reproducible compilation and physical programming. It may produce a candidate artifact plus provenance, but it does not decide that the candidate is an authorized release.
 
-The Firmware Authority verifies the proposed artifact/provenance against accepted project policy and constructs or normalizes the canonical release manifest. When signing is later activated, it submits only the accepted manifest identity/content to the hardware-backed signer.
+The Firmware Authority verifies the proposed artifact/provenance against accepted project policy and constructs or normalizes the canonical release manifest. When signing is later activated, it signs only the accepted manifest identity/content through the selected replaceable provider.
 
 Firmware Distribution stores or transports already-authorized artifacts. It need not share a physical node with the authority, even if an early deployment temporarily co-locates non-secret distribution files. Distribution compromise must not become signing compromise.
 
@@ -142,8 +146,8 @@ The implementation is deliberately staged without changing the normative MS5 seq
 1. **Repository contract:** freeze role separation, inert authority state, device-family model, and canonical manifest structure.
 2. **Container scaffold:** create the unprivileged `firmware-authority` container with no private key, no signer passthrough, no GPU, and no CPE address unless later justified.
 3. **Verification workflow:** accept artifact/provenance input and reproduce manifest identity without signing.
-4. **Signer selection:** select hardware-backed signer/provider and freeze public-key, algorithm, key-id, and authorization-envelope representation.
-5. **MS5-009 activation:** generate/import the release key under accepted hardware-backed custody, prove operator-authorized signing, device-side verification, unauthorized-artifact rejection, update, rollback, recovery, key-transition/recovery procedure, and loss/rebuild of the container without loss of private-key custody.
+4. **Signer selection:** select a portable baseline signer/provider and freeze public-key, algorithm, key-id, and authorization-envelope representation; optional hardening must remain non-authoritative and removable.
+5. **MS5-009 activation:** generate/import the release key under the accepted provider, prove operator-authorized signing, device-side verification, unauthorized-artifact rejection, update, rollback, recovery, key-transition/recovery procedure, and loss/rebuild behavior without creating a proprietary hardware/service dependency.
 
 Steps 1–3 are non-secret and reversible. Step 5 is the first point at which real release-signing authority becomes operational.
 
@@ -157,11 +161,14 @@ Steps 1–3 are non-secret and reversible. Step 5 is the first point at which re
 - ESP32-S3 as the first enabled device family;
 - no private signing key created;
 - signing disabled;
-- hardware-backed signer required for activation;
+- portable software-capable signer/provider required for baseline activation; hardware-backed custody is not required;
 - operator presence required for release signing;
 - MS5-009 as the activation/acceptance gate.
 
 A repository change must not silently flip those placeholder booleans. Real activation requires explicit MS5-009 evidence and an accepted design change.
+
+The earlier `hardware_backed_signer_required_for_activation` machine-readable placeholder is now an invalidated implementation assumption and must be reconciled before activation. It is not authority for selecting a hardware signer.
+
 
 
 ## MS5-009 interrogation status — 2026-09-21

@@ -1005,3 +1005,22 @@ It consolidates:
 New sessions should read this handoff after `docs/DEVELOPMENT_PROCESS.md` and before implementation work.
 
 No code changed.
+
+## Civic functionality / platform-neutrality boundary — accepted 2026-09-22
+
+A material architecture clarification now constrains all Signing Node and participant-edge implementation work:
+
+- Kane Fabric Civic Infrastructure implements functionality and provenance; hardware-enforced private-key non-exportability is not a Civic prerequisite;
+- the ESP32-S3 is the current reference edge/participant implementation, not the required platform;
+- Kane Fabric project deployment/acceptance must not provision or depend on ATECC608A/ATECC608A-class Civic key custody;
+- Kane Fabric project deployment/acceptance must not burn, personalize, or depend on irreversible ESP security eFuses for Civic key custody/acceptance;
+- baseline Civic functionality must not require SaaS, Hardware-as-a-Service, a vendor security cloud, or a proprietary hardware signer;
+- user-owned edges may store and serve openly readable user-owned public verification material, including CA public material, OpenPGP public keys, SSH public keys, and epoch/participant public verification keys;
+- edge-assisted pinning of user-owned IPFS CIDs is retained only as a future wish-list capability; its mechanism is not designed and it is not a baseline dependency.
+
+This clarification supersedes earlier documentation that treated hardware-backed Firmware Authority custody or optional secure-element edge custody as an architectural requirement/accepted deployment path.
+
+The existing machine-readable Firmware Authority implementation still contains the prior `hardware_backed_signer_required_for_activation` assumption. That implementation is now **invalidated by architecture and must not be treated as activation authority** until it is reconciled in a bounded repository implementation change and the invalidated repository gates are rerun.
+
+No production Civic key was created. No host, signer, ESP32, eFuse, or secure-element state changed.
+

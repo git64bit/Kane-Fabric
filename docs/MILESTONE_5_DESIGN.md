@@ -195,22 +195,19 @@ Examples include one exploitable firmware defect across the fleet, a broken upda
 
 Systemic and outside the edge trust boundary.
 
-Private CA/issuing keys, release-signing keys, and geographic promotion authority require stronger protection on non-edge infrastructure. An edge device must never contain enough authority to manufacture a new accepted Fabric release.
+Private CA/issuing keys, release-signing keys, and geographic promotion authority remain outside the participant edge. Operators may harden their custody on non-edge infrastructure, but specialized hardware-security mechanisms are not a Fabric functional requirement. An edge device must never contain enough authority to manufacture a new accepted Fabric release.
 
-## No irreversible ESP32 security requirement
+## No security-eFuse or ATECC608A deployment
 
-The Kane Fabric reference edge SHALL NOT require burning irreversible security eFuses as an MS5 acceptance condition.
+Kane Fabric implements the physical-edge **function**, not a hardware-security appliance.
 
-In particular, MS5 does not require:
+Kane Fabric project provisioning, deployment, and acceptance SHALL NOT burn, personalize, or depend on irreversible ESP security eFuses for Civic key custody or acceptance. This includes secure-boot commitment, flash-encryption commitment, irreversible JTAG disablement, irreversible UART/download-mode disablement, and eFuse-held Civic signing material.
 
-- secure-boot eFuse commitment;
-- flash-encryption eFuse commitment;
-- irreversible JTAG disablement;
-- irreversible UART/download-mode disablement.
+Kane Fabric project provisioning, deployment, and acceptance SHALL NOT use an ATECC608A or ATECC608A-class secure element as a Civic key-custody dependency.
 
-A deployment may choose additional hardware protections for its own threat model, but those are deployment policy rather than Fabric identity or wire-format requirements.
+The ESP32-S3 remains a reference implementation. These rules prevent an ESP-specific security mechanism from becoming part of Civic identity or conformance and keep replacement, inspection, independent implementation, and migration ordinary operations.
 
-This keeps the reference platform recoverable, inspectable, replaceable, and suitable for civic infrastructure.
+A downstream operator may protect its surrounding computer/network environment, but optional hardening must not alter Civic identities, wire formats, authority semantics, or the ability to implement the same Civic function without that hardware.
 
 ## Cryptographic role separation
 
@@ -222,15 +219,15 @@ Fabric logical content identity
     ≠ physical ESP32 identity
     ≠ Wiregate hub / browser TLS identity
     ≠ management/WireGuard identity
-    ≠ optional secure-element identity
+    ≠ hardware/security-provider identity
     ≠ firmware/release-signing authority
 ```
 
 No private key is reused across unrelated roles.
 
-MS5 must define a key-provider boundary for device-local cryptographic operations. The default reference edge does not require a browser TLS private key. Device-local private keys are limited to roles that actually remain on the edge, such as an optional management transport if later retained. A deployment may use software-held replaceable keys or substitute an external secure element without changing MS3/MS4 identities, browser data semantics, participant publication identity, or logical placement intent.
+MS5 must define a replaceable key-provider boundary for device-local cryptographic operations. The default reference edge does not require a browser TLS private key. Device-local private keys are limited to roles that actually remain on the edge, such as an optional management transport if later retained.
 
-The secure element, when present, is a peripheral/service to the physical node. It does not define the node and does not define Fabric content.
+Any required device-local private-key role must have a portable software implementation. Provider abstraction may remain as an implementation seam, but it must not introduce an ATECC608A-class secure element, security-eFuse custody, or another proprietary hardware-security dependency into Kane Fabric reference/conforming deployment. A provider never defines the node and never defines Fabric content.
 
 ## Firmware authenticity versus physical resistance
 
@@ -402,7 +399,7 @@ Milestone 5 is complete when all of the following are demonstrated with the refe
 6. the edge remains useful for already activated local data when upstream management connectivity is unavailable;
 7. physical replacement/reprovisioning can change every device-local identity while retaining the same participant publication and Fabric logical content/placement references;
 8. management transport feasibility is measured rather than assumed, including operation from an ordinary independently administered participant network without DHCP reservation or inbound port forwarding; WireGuard is retained only if the runtime/resource proof justifies it, and rejection or deferral is a valid MS5-008 outcome;
-9. no irreversible ESP32 eFuse operation is required to satisfy the Kane Fabric reference-edge contract;
-10. optional external secure-element use remains substitutable and does not alter Fabric logical identities.
+9. no Kane Fabric provisioning, deployment, or acceptance step burns or depends on irreversible ESP security eFuses;
+10. no ATECC608A-class secure element or proprietary hardware-security component is required or provisioned as part of the Kane Fabric reference-edge contract.
 
 The output of MS5 becomes the physical-node foundation for bounded participant custody/contribution, while county-wide geography, web presentation, categories, contracts, and independent-operator interoperability remain administrative infrastructure.

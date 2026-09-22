@@ -40,7 +40,7 @@ The baseline authority core remains:
 2. operator-owned and operator-funded Civic Signing Node;
 3. governing-source binding to Illinois statute and valid condominium instruments;
 4. authority-epoch awareness;
-5. independent epoch-specific keys on current Same-and-Equal participant ESP32-S3 devices;
+5. independent epoch-specific keys on current Same-and-Equal participant devices (ESP32-S3 is the current reference implementation, not the required platform);
 6. replicated authenticated HOA authority state;
 7. Civic Issuance Records;
 8. operator and signing-node provenance;
@@ -66,6 +66,20 @@ service custody      != ownership of HOA Civic Identity
 ~~~
 
 If loss of an attached service would destroy the HOA Civic Identity, prevent reconstruction of the current authority epoch, or make another HOA/root authoritative by default, the proposed attachment violates the baseline architecture.
+
+## User-owned public verification material on participant edges
+
+Future CA, mail, and IPFS services are not prerequisites for storing public key material on a participant-owned edge.
+
+A participant edge may already hold and serve user-owned, openly readable public verification material such as:
+
+- CA certificates and CA/public verification keys;
+- OpenPGP public keys;
+- SSH public keys;
+- participant-device and authority-epoch public verification keys;
+- other explicitly public user-owned artifacts.
+
+These artifacts are data held by the participant. Their presence does not turn the edge into the CA, mail provider, or central authority, and it does not require secure-element or eFuse custody.
 
 ## Kane County CA node
 
@@ -170,6 +184,9 @@ CID
 Content-addressed storage therefore strengthens immutability/provenance without becoming an adjudicator.
 
 The signing/attestation provenance surrounding an IPFS object determines what the object means in Civic Infrastructure.
+
+A participant-owned edge assisting with **pinning user-owned CIDs** is a future wish-list capability. The mechanism is deliberately undefined. No current design assumes that an ESP32-S3 runs a full IPFS node, and no current authority or storage contract depends on edge-side pinning. Future work may define a bounded pin request/reference/cache role if it can remain platform-neutral, user-controlled, and optional.
+
 
 ## Failure isolation
 

@@ -217,6 +217,22 @@ Participant ESP32-S3 appliances later carry their issued context and may assembl
 
 Those witness records can then be anchored/accepted within the HOA-local authority domain without making the operator the author of the witnessed event.
 
+## Functional and platform-neutral implementation boundary
+
+The baseline Civic Signing Node must implement Civic authority functionality without turning a vendor security product into infrastructure.
+
+It must remain independently reproducible on owner-controlled, general-purpose hardware/software and must not require:
+
+- a central SaaS signing account;
+- Hardware-as-a-Service or a remote proprietary signer;
+- a proprietary hardware signer/HSM/token as a prerequisite for Civic operation;
+- ATECC608A/ATECC608A-class key custody;
+- irreversible ESP security-eFuse key custody.
+
+Optional operator hardening may protect a deployment, but it must remain removable without changing the HOA Civic root, Epoch Manifest semantics, public verification representation, or reconstruction procedure.
+
+Likewise, the ESP32-S3 is the current reference participant appliance, not the required participant platform. Other user-owned devices may implement the same published participant/epoch contracts.
+
 ## Remaining implementation interrogation
 
 The civic continuity design is closed sufficiently for implementation planning.

@@ -30,11 +30,17 @@ Base Kane Fabric operation must not require:
 - operator custody of user-created or application-created data;
 - mandatory activity reporting, tracking, or behavioral telemetry;
 - a proprietary cloud service in the normal local serving path;
+- a Hardware-as-a-Service or remote-signing tenancy to keep local Civic functions valid;
+- a proprietary secure element or irreversible security-eFuse state as a condition of Civic functionality;
+- one vendor-specific edge platform as the required implementation of published Civic contracts;
 - an operator-controlled portal as the only way to configure, inspect, export, or replace a device;
 - physical-device identity to become person identity, business identity, or Fabric logical identity;
 - continued availability of the original issuer after an appliance has been issued and accepted.
 
 A deployment or independent business may offer optional hosted services above Kane Fabric. Those services must remain distinguishable from the infrastructure itself and must not become prerequisites for the underlying civic interfaces.
+
+Civic functionality must survive removal of any optional security-hardening layer. An operator may harden its own machine, but Kane Fabric conformance and Civic identity cannot depend on an ATECC608A-class secure element, ESP security-eFuse personalization, a proprietary HSM/token, or a vendor security cloud. Kane Fabric project deployments specifically prohibit ATECC608A-class Civic key custody and security-eFuse Civic key custody.
+
 
 ## County-data boundary
 

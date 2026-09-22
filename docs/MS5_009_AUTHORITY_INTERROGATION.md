@@ -36,9 +36,11 @@ Physical final state remains factory=production, ota_0=production confirmed-vali
 
 The read-only preflight proved zero hardware signer candidates, no release-signing private key, signing disabled, no container signer passthrough, and no PIV/PKCS#11 tooling. It did not select or imply any token, HSM, TPM, smartcard, network signer, or provider class.
 
-### 5. Outside the container does not define physical placement
+### 5. Hardware-backed non-exportability is no longer a baseline requirement
 
-The requirement is that ordinary container-filesystem compromise cannot disclose a reusable release-signing private key. The repo has not decided whether signing is host-attached, separately hosted, network-reachable, removable/offline, or exposed through another bounded interface.
+The 2026-09-22 Civic functionality/platform-neutrality decision supersedes the earlier requirement that ordinary container-filesystem compromise must be prevented from exposing a reusable signing private key through hardware-backed custody.
+
+The Firmware Authority must remain implementable with a portable software signer/provider. Optional hardening may exist, but it cannot become Firmware Authority identity, a proprietary service dependency, or a prerequisite for independent operation. ATECC608A-class custody and irreversible ESP security-eFuse custody are prohibited project mechanisms.
 
 ### 6. Operator presence is required but not operationally defined
 
@@ -64,7 +66,7 @@ Kane Fabric must remain reconstructable and independently operable. Provider sel
 
 ## Accepted versus provisional state
 
-Accepted: canonical release-manifest structure; Firmware Authority role separation; inert annales container; hardware-backed custody requirement; operator-presence requirement; OTA/rollback mechanics; physical healthy-trial and failed-trial proofs; Fabric/provisioning preservation boundary.
+Accepted: canonical release-manifest structure; Firmware Authority role separation; inert annales container; platform-neutral/software-capable custody requirement; no proprietary hardware/service dependency; no ATECC608A-class or security-eFuse custody; operator-presence requirement; OTA/rollback mechanics; physical healthy-trial and failed-trial proofs; Fabric/provisioning preservation boundary.
 
 Provisional/not accepted: signer/provider class; signer placement; key origin/provisioning; signature algorithm; signature/public-key encoding; authorization payload format; device trust-anchor placement; key transition/revocation; authority transfer path; signing ceremony; authority recovery with signer loss.
 
@@ -74,7 +76,7 @@ The current P-256 implementation may survive unchanged, be adapted, or be replac
 
 1. Threat/operating model: failures and compromises, purpose of operator presence, expected release frequency, required signer availability.
 2. Custody/recovery model: key origin, backup policy, lost signer, suspected compromise, recovery.
-3. Provider/placement model: viable provider classes, physical placement, acceptable authority-to-signer interface.
+3. Provider/placement model: begin with a portable software-capable baseline; any optional hardening must be removable and must not introduce proprietary service/hardware dependency.
 4. Release ceremony: exact object approved, independently visible information, audit evidence, operator count.
 5. Device trust anchor/key transition: initial provisioning, successor authorization, revocation, replacement-edge reconstruction.
 6. Artifact transfer/distribution: build/provenance input path, signed output path, durable SSOT dependencies.

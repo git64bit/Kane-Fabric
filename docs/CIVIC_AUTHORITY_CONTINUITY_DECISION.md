@@ -64,6 +64,16 @@ A participant device does not need another participant's private key.
 
 No participant device needs to contain a permanent HOA signing private key.
 
+## Platform-neutral key implementation constraint
+
+The architecture requires independent epoch-specific **key semantics**; it does not require hardware-enforced key non-exportability.
+
+The ESP32-S3 identifies the current reference participant device, not the required Civic platform. Another user-owned device may implement the same epoch, replicated-state, signing/attestation, and verification contracts.
+
+Participant-device key custody must not depend on an ATECC608A/ATECC608A-class secure element or on irreversible ESP security-eFuse provisioning. Specialized proprietary key hardware is not part of the Civic continuity requirement.
+
+This does not make participant private keys public. Private-key representation and software custody remain implementation work. Separately, openly readable public verification material may be stored directly on the user-owned edge, including CA public material, OpenPGP public keys, SSH public keys, and participant/epoch public verification keys.
+
 ## Replicated authority state
 
 Each current device retains enough authenticated authority state to reconstruct and explain the current HOA Civic Identity.
