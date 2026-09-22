@@ -962,7 +962,7 @@
       "ms5_008_candidate_repository_acceptance": "accepted on CT102 at 5a35b607ef16b5c94bd732e7f2eb73fbffc17ad0; 12 focused tests passed; full MS5 suite 86 passed / 1 skipped; WireGuard retained=NO; decision state=defer",
       "ms5_008_decision": "defer accepted 2026-09-21; WireGuard remains unretained; physical panic retained as diagnostic backlog"
     },
-    "next_work_item": "Define the minimal participant-replicated Civic authority-state and reconstruction contract, including which authenticated epoch artifacts a current Same-and-Equal participant must retain to restore authority state without a permanent master private key."
+    "next_work_item": "Define the generic individually authenticated Civic history-record envelope and content-type contract so history predecessor links can be verified as authenticated content during full authority-state reconstruction."
   },
   "priority_workstream": {
     "name": "MS5-009 Firmware Authenticity / Update / Rollback / Recovery",
@@ -970,7 +970,7 @@
     "implementation_contract": "ms5/firmware-lifecycle-contract.json",
     "firmware_lifecycle_document": "docs/MS5_009_FIRMWARE_LIFECYCLE.md",
     "firmware_authority_document": "docs/MS5_FIRMWARE_AUTHORITY_NODE.md",
-    "status": "Deterministic CBOR, Epoch Manifest v1 schema, COSE_Sign1/ESP256 contract, interoperability vector, fixture-only P-256 signing/verification, complete signed-manifest composition, generated diagnostic projection, append-only linked Civic history, and SHA-256 content-addressed object storage are accepted on CT102; next bounded repository work is participant-replicated authority-state and reconstruction semantics; production signing remains held.",
+    "status": "Deterministic CBOR, Epoch Manifest v1, COSE_Sign1/ESP256, fixture-only P-256 signing/verification, signed-manifest composition, diagnostic projection, linked Civic history, SHA-256 object storage, and participant authority-state replica reconstruction are accepted on CT102; generic signed history-record envelope semantics remain to be defined; production signing remains held.",
     "signing_status": "inert-not-activated",
     "management_transport_dependency": false,
     "target_environment": "repository/design and published affordance source; no signer or firmware mutation",
@@ -1218,7 +1218,29 @@
       "production_signing_enabled": false,
       "production_key_created": false,
       "annales_mutated": false
+    },
+    "civic_authority_state_replica_acceptance": {
+      "status": "accepted-ct102-2026-09-22",
+      "repository_head": "b82cc7742d1f7e93a6a4e8a0df9c0cd4580df981",
+      "focused_gate": "civic/run-tests.sh",
+      "tests": {
+        "ran": 57,
+        "passed": 57,
+        "failed": 0,
+        "skipped": 0,
+        "authority_state_tests": 7
+      },
+      "deterministic_replica_encoding": "accepted",
+      "full_signed_epoch_lineage_verification": "accepted",
+      "required_authority_object_coverage": "accepted",
+      "retained_artifact_corruption_detection": "accepted",
+      "current_history_head_binding": "accepted",
+      "common_replica_private_key_material": "forbidden",
+      "one_surviving_participant_reconstruction_baseline": "accepted",
+      "production_signing_enabled": false,
+      "production_key_created": false,
+      "annales_mutated": false
     }
   },
-  "next_safe_action": "Repository-only architecture step: define the minimal participant-replicated Civic authority-state and reconstruction contract before implementation. Do not create production Civic keys or mutate annales."
+  "next_safe_action": "Repository-only architecture step: define the generic signed Civic history-record envelope/content-type and authenticated history_link extraction contract before extending authority-state verification. Do not create production Civic keys or mutate annales."
 }
