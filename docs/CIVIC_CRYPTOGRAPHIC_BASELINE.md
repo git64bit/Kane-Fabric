@@ -109,12 +109,12 @@ logical Civic record
     -> deterministic CBOR payload
     -> SHA-256 payload identity
     -> COSE_Sign1 protected headers + payload
-    -> ES256 signature
+    -> ESP256 (-9) signature
 ~~~
 
 The COSE protected header carries the algorithm, Civic key identifier, and content type. The v1 unprotected header is empty and external AAD is empty.
 
-The existing 64-byte P1363 `r || s` representation is directly the ES256 signature byte representation used by the Civic v1 profile.
+The existing 64-byte P1363 `r || s` representation is directly the ESP256 (-9) signature byte representation used by the Civic v1 profile.
 
 A verifier must know both:
 
