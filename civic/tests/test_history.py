@@ -9,7 +9,29 @@ from civic.history import (
     append_history_record,
     decode_history_sequence,
     history_record_sha256,
+    verify_linked_history_sequence,
 )
+
+
+def linked_record(
+    *,
+    stream: str,
+    predecessor_record_sha256: bytes | None,
+    sequence: int,
+) -> bytes:
+    return encode_deterministic(
+        {
+            "history_link": {
+                "stream": stream,
+                "predecessor_record_sha256": predecessor_record_sha256,
+            },
+            "sequence": sequence,
+        }
+    )
+
+
+def authenticated_link(record: object) -> object:
+    return record.value["history_link"]
 
 
 class CivicHistoryTests(unittest.TestCase):
@@ -83,6 +105,129 @@ class CivicHistoryTests(unittest.TestCase):
         good_prefix = encode_deterministic({"ok": True})
         with self.assertRaises(CivicHistoryError):
             decode_history_sequence(good_prefix + truncated)
+
+    def test_valid_linked_sequence_verifies_to_final_record_head(self) -> None:
+        first = linked_record(
+            stream="accepted",
+            predecessor_record_sha256=None,
+            sequence=1,
+        )
+        first_hash = hashlib.sha256(first).digest()
+        second = linked_record(
+            stream="accepted",
+            predecessor_record_sha256=first_hash,
+            sequence=2,
+        )
+        second_hash = hashlib.sha256(second).digest()
+
+        records = verify_linked_history_sequence(
+            first + second,
+            stream="accepted",
+            expected_head_sha256=second_hash,
+            authenticated_link_for_record=authenticated_link,
+        )
+
+        self.assertEqual(2, len(records))
+        self.assertEqual(first_hash, records[0].sha256)
+        self.assertEqual(second_hash, records[1].sha256)
+
+    def test_null_and_non_null_head_empty_stream_rules(self) -> None:
+        self.assertEqual(
+            (),
+            verify_linked_history_sequence(
+                b"",
+                stream="diagnostics",
+                expected_head_sha256=None,
+                authenticated_link_for_record=authenticated_link,
+            ),
+        )
+
+        first = linked_record(
+            stream="diagnostics",
+            predecessor_record_sha256=None,
+            sequence=1,
+        )
+
+        with self.assertRaises(CivicHistoryError):
+            verify_linked_history_sequence(
+                first,
+                stream="diagnostics",
+                expected_head_sha256=None,
+                authenticated_link_for_record=authenticated_link,
+            )
+
+        with self.assertRaises(CivicHistoryError):
+            verify_linked_history_sequence(
+                b"",
+                stream="diagnostics",
+                expected_head_sha256=b"\x01" * 32,
+                authenticated_link_for_record=authenticated_link,
+            )
+
+    def test_wrong_stream_is_rejected(self) -> None:
+        first = linked_record(
+            stream="witness",
+            predecessor_record_sha256=None,
+            sequence=1,
+        )
+
+        with self.assertRaises(CivicHistoryError):
+            verify_linked_history_sequence(
+                first,
+                stream="accepted",
+                expected_head_sha256=hashlib.sha256(first).digest(),
+                authenticated_link_for_record=authenticated_link,
+            )
+
+    def test_genesis_non_null_predecessor_is_rejected(self) -> None:
+        first = linked_record(
+            stream="accepted",
+            predecessor_record_sha256=b"\x02" * 32,
+            sequence=1,
+        )
+
+        with self.assertRaises(CivicHistoryError):
+            verify_linked_history_sequence(
+                first,
+                stream="accepted",
+                expected_head_sha256=hashlib.sha256(first).digest(),
+                authenticated_link_for_record=authenticated_link,
+            )
+
+    def test_successor_wrong_predecessor_is_rejected(self) -> None:
+        first = linked_record(
+            stream="accepted",
+            predecessor_record_sha256=None,
+            sequence=1,
+        )
+        second = linked_record(
+            stream="accepted",
+            predecessor_record_sha256=b"\x03" * 32,
+            sequence=2,
+        )
+
+        with self.assertRaises(CivicHistoryError):
+            verify_linked_history_sequence(
+                first + second,
+                stream="accepted",
+                expected_head_sha256=hashlib.sha256(second).digest(),
+                authenticated_link_for_record=authenticated_link,
+            )
+
+    def test_final_head_mismatch_is_rejected(self) -> None:
+        first = linked_record(
+            stream="knowledge",
+            predecessor_record_sha256=None,
+            sequence=1,
+        )
+
+        with self.assertRaises(CivicHistoryError):
+            verify_linked_history_sequence(
+                first,
+                stream="knowledge",
+                expected_head_sha256=b"\x04" * 32,
+                authenticated_link_for_record=authenticated_link,
+            )
 
 
 if __name__ == "__main__":
