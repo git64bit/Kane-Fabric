@@ -35,7 +35,21 @@ Civic cryptographic profile v1 is also accepted:
 
 `kane-civic-ecdsa-p256-sha256-v1` = ECDSA P-256/SHA-256 + 65-byte uncompressed public key + 64-byte P1363 signature + SHA-256 key identifier.
 
-Do not reopen that choice without Diagnostics evidence. The next unresolved Signing Node design question is the Epoch Manifest canonical byte representation.
+Do not reopen that choice without Diagnostics evidence.
+
+The Epoch Manifest representation is also accepted:
+
+- deterministic RFC 8949 CBOR payload;
+- SHA-256 payload identity;
+- COSE_Sign1 / ES256 envelope;
+- native UTF-8 text and CBOR binary;
+- append-only signed CBOR Sequence history;
+- generated JSON diagnostic projection;
+- no artificial small protocol-size limit.
+
+The RAG/LLM boundary is source-grounded and non-authoritative: source bytes remain evidence; extraction/chunks/embeddings/model outputs are derived provenance records.
+
+The next work is repository implementation of the accepted codec/schema and tests. Production Civic key generation remains held.
 
 
 Read first:

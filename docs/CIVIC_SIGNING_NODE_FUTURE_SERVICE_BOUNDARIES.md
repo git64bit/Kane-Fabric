@@ -188,6 +188,16 @@ The signing/attestation provenance surrounding an IPFS object determines what th
 A participant-owned edge assisting with **pinning user-owned CIDs** is a future wish-list capability. The mechanism is deliberately undefined. No current design assumes that an ESP32-S3 runs a full IPFS node, and no current authority or storage contract depends on edge-side pinning. Future work may define a bounded pin request/reference/cache role if it can remain platform-neutral, user-controlled, and optional.
 
 
+## RAG/LLM Diagnostics relationship
+
+RAG/LLM Diagnostics may later consume source/evidence objects, derived text, chunk manifests, embeddings, and Civic history.
+
+It is not a Signing Node authority attachment in the same sense as CA/mail/IPFS. It is a replaceable analytical consumer of the same content-addressed evidence substrate.
+
+No model vendor, embedding service, or RAG runtime becomes a prerequisite for interpreting an Epoch Manifest or reconstructing HOA Civic authority.
+
+See `docs/CIVIC_RAG_LLM_DIAGNOSTICS_BOUNDARY.md`.
+
 ## Failure isolation
 
 Each optional attachment must fail independently.

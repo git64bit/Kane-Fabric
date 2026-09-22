@@ -207,6 +207,16 @@ local custody + local continuity + local autonomy
 
 The infrastructure should therefore remain small enough, reproducible enough, and documented enough that a qualified participant can assume the operator role without dependence on a proprietary central platform.
 
+## Relationship to RAG/LLM Diagnostics
+
+A future RAG-based LLM is a replaceable diagnostics/education computation layer over source-grounded Civic evidence.
+
+It may analyze statutes, governing instruments, operational records, participant evidence, and responsibilities assigned to HOA actors, but its output is derived advisory/diagnostic material rather than governing authority.
+
+The durable substrate is the source/evidence object store plus deterministic provenance records. Model runtime, embedding provider, and physical execution host remain replaceable.
+
+See `docs/CIVIC_RAG_LLM_DIAGNOSTICS_BOUNDARY.md`.
+
 ## Relationship to future ESP32-S3 roles
 
 Participant ESP32-S3 appliances and the HOA-local Civic Signing Node have different roles.
@@ -242,7 +252,7 @@ Implementation work must still determine:
 1. minimum reproducible hardware/software boundary for one HOA-local node;
 2. implementation of the accepted Civic cryptographic profile and software key lifecycle;
 3. operator-node key custody and rotation mechanics;
-4. local record/evidence storage and backup;
+4. implementation of deterministic CBOR/COSE records, append-only history, and content-addressed local object storage;
 5. operator-election/vote record encoding;
 6. peer confirmation/challenge record encoding;
 7. exact participant ESP32-S3 storage and verification behavior;

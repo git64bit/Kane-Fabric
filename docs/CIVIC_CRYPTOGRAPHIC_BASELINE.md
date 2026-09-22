@@ -98,27 +98,30 @@ Provider-specific internal storage is allowed only as an implementation detail. 
 
 Hardware-enforced non-exportability is not required.
 
-## Signed bytes
+## Signed bytes and COSE envelope
 
-A Civic signature applies to the **exact canonical byte representation defined by the signed record's contract**.
+The Epoch Manifest representation is now frozen in `docs/CIVIC_EPOCH_MANIFEST_FORMAT.md`.
 
-The cryptographic profile does not silently invent a second serialization.
-
-Therefore:
+Civic v1 structured authority records use deterministic CBOR payload bytes and a standard COSE_Sign1 envelope.
 
 ~~~text
 logical Civic record
-    -> record-specific canonical bytes
-    -> SHA-256
-    -> ECDSA P-256 signature
+    -> deterministic CBOR payload
+    -> SHA-256 payload identity
+    -> COSE_Sign1 protected headers + payload
+    -> ES256 signature
 ~~~
+
+The COSE protected header carries the algorithm, Civic key identifier, and content type. The v1 unprotected header is empty and external AAD is empty.
+
+The existing 64-byte P1363 `r || s` representation is directly the ES256 signature byte representation used by the Civic v1 profile.
 
 A verifier must know both:
 
-1. the record format/version that defines canonical bytes; and
-2. the cryptographic profile identity.
+1. the record format/version that defines deterministic CBOR payload semantics; and
+2. the cryptographic profile identity declared by the record/envelope.
 
-The Epoch Manifest serialization remains a separate implementation decision and must be frozen before production signing.
+The SHA-256 of the exact deterministic payload remains the record content identity independently of the COSE signature.
 
 ## One profile per authority epoch
 
@@ -180,7 +183,7 @@ ECDSA P-256
 
 Remaining work includes:
 
-- Epoch Manifest canonical representation;
+- implementation of the accepted deterministic-CBOR/COSE Epoch Manifest representation;
 - software key generation/storage/recovery mechanics;
 - signing-node record store;
 - participant-device replicated authority-state representation;

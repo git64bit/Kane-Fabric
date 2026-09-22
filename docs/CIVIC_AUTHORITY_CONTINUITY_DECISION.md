@@ -91,7 +91,7 @@ The state must eventually include at least:
 - verification material needed to interpret the epoch;
 - source-governed transition record into the epoch.
 
-Exact representation remains an implementation decision.
+The canonical v1 representation is now accepted in `docs/CIVIC_EPOCH_MANIFEST_FORMAT.md`: deterministic CBOR payload, SHA-256 payload identity, and COSE_Sign1 authorization under the accepted Civic cryptographic profile.
 
 ## 1-of-N continuity
 

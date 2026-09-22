@@ -104,6 +104,27 @@ Current mandatory boundary:
    - SHA-256 key identity;
    - evidence-driven rather than speculative hardening.
 
+6. `docs/CIVIC_EPOCH_MANIFEST_FORMAT.md`
+   - deterministic CBOR canonical payload;
+   - COSE_Sign1 envelope;
+   - exact Epoch Manifest v1 fields;
+   - mixed text/binary object model;
+   - append-only CBOR Sequence history;
+   - human-readable JSON diagnostic projection.
+
+7. `docs/CIVIC_RAG_LLM_DIAGNOSTICS_BOUNDARY.md`
+   - source-grounded RAG/LLM role;
+   - derived text/chunk/embedding provenance;
+   - advisory output is Diagnostics, not governing authority;
+   - model/runtime/provider remains replaceable.
+
+   - accepted functionality-first Civic cryptographic profile v1;
+   - ECDSA P-256/SHA-256;
+   - uncompressed 65-byte public key;
+   - 64-byte P1363 signature;
+   - SHA-256 key identity;
+   - evidence-driven rather than speculative hardening.
+
 6. `docs/CIVIC_AUTHORITY_CONTINUITY_DECISION.md`
    - accepted HOA Civic Identity continuity model;
    - independent epoch-specific participant-device keys;
@@ -570,7 +591,7 @@ The implementation must now determine concrete choices for:
 - implementation/provider for the accepted Civic cryptographic profile (`kane-civic-ecdsa-p256-sha256-v1`);
 - operator-node key custody;
 - Epoch Manifest representation;
-- participant-device key/state storage (ESP32-S3 is the reference implementation, not the required platform);
+- participant-device key/state storage and append-only Civic record/object-store implementation (ESP32-S3 is the reference implementation, not the required platform);
 - replicated authority-state storage;
 - verification behavior;
 - operator-node replacement/recovery mechanics;
@@ -584,7 +605,7 @@ Do not add CA, email, or IPFS dependencies to the baseline.
 
 Do not activate the existing Firmware Authority merely because Signing Node implementation has begun.
 
-Do not reopen the Civic v1 algorithm/key-representation choice without Diagnostics evidence that invalidates it. The next unresolved representation question is the Epoch Manifest canonical byte format.
+Do not reopen the Civic v1 algorithm/key-representation or deterministic-CBOR/COSE Epoch Manifest choices without Diagnostics evidence that invalidates them. The next work is repository implementation of the accepted codec/schema plus tests; production key generation remains held.
 
 ---
 

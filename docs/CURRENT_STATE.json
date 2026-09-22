@@ -962,7 +962,7 @@
       "ms5_008_candidate_repository_acceptance": "accepted on CT102 at 5a35b607ef16b5c94bd732e7f2eb73fbffc17ad0; 12 focused tests passed; full MS5 suite 86 passed / 1 skipped; WireGuard retained=NO; decision state=defer",
       "ms5_008_decision": "defer accepted 2026-09-21; WireGuard remains unretained; physical panic retained as diagnostic backlog"
     },
-    "next_work_item": "Define the Epoch Manifest canonical byte representation and its exact v1 fields under the accepted Civic cryptographic profile. Preserve the functionality-first/platform-neutral boundary; no production key creation or host/device mutation."
+    "next_work_item": "Implement the accepted Civic deterministic-CBOR/COSE codec and Epoch Manifest v1 schema in repository code with host-testable vectors, canonicality rejection tests, content-object descriptors, and JSON diagnostic projection. Do not generate a production Civic key or mutate hosts/devices."
   },
   "priority_workstream": {
     "name": "MS5-009 Firmware Authenticity / Update / Rollback / Recovery",
@@ -970,7 +970,7 @@
     "implementation_contract": "ms5/firmware-lifecycle-contract.json",
     "firmware_lifecycle_document": "docs/MS5_009_FIRMWARE_LIFECYCLE.md",
     "firmware_authority_document": "docs/MS5_FIRMWARE_AUTHORITY_NODE.md",
-    "status": "Civic cryptographic baseline v1 accepted; next Signing Node interrogation is Epoch Manifest canonical representation; prior hardware-backed-only Firmware Authority machine assumption remains invalidated pending separate reconciliation",
+    "status": "Civic crypto and Epoch Manifest representation accepted; RAG/LLM diagnostics boundary accepted; next work is repository codec/schema implementation and tests; production signing remains held",
     "signing_status": "inert-not-activated",
     "management_transport_dependency": false,
     "target_environment": "repository/design and published affordance source; no signer or firmware mutation",
@@ -1003,7 +1003,33 @@
       "hardening_policy": "evidence-driven-diagnostics-first",
       "algorithm_fallback_within_epoch": false,
       "production_key_created": false
+    },
+    "civic_epoch_manifest": {
+      "status": "accepted-2026-09-22",
+      "document": "docs/CIVIC_EPOCH_MANIFEST_FORMAT.md",
+      "payload_encoding": "RFC8949-core-deterministic-CBOR-v1",
+      "signature_container": "COSE_Sign1",
+      "cose_algorithm": "ES256/-7",
+      "payload_identity": "SHA-256 of exact deterministic CBOR payload",
+      "text": "UTF-8 NFC",
+      "binary": "native CBOR byte strings",
+      "floats_allowed": false,
+      "duplicate_map_keys_allowed": false,
+      "indefinite_lengths_allowed": false,
+      "human_projection": "generated JSON diagnostics only; not authority bytes",
+      "long_term_history": "append-only individually signed CBOR Sequence records",
+      "object_store": "SHA-256 content-addressed; optional future CID",
+      "protocol_small_size_limit": false
+    },
+    "rag_llm_diagnostics": {
+      "status": "accepted-architecture-boundary-2026-09-22",
+      "document": "docs/CIVIC_RAG_LLM_DIAGNOSTICS_BOUNDARY.md",
+      "source_objects_are_authority_inputs_not_model_outputs": true,
+      "extracted_text_chunks_embeddings_are_derived": true,
+      "llm_output_authoritative": false,
+      "model_provider_required": false,
+      "edge_executes_llm_required": false
     }
   },
-  "next_safe_action": "Repository-only: define and compare viable canonical Epoch Manifest representations compatible with kane-civic-ecdsa-p256-sha256-v1; select one before implementing Civic signing. Do not create production keys or mutate hosts/devices."
+  "next_safe_action": "Repository-only implementation: add deterministic CBOR/COSE Epoch Manifest codec/schema and tests using non-production fixture keys/test vectors only. Preserve no-production-key and no-host/device-mutation boundary."
 }

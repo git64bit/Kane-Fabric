@@ -1048,3 +1048,36 @@ See `docs/CIVIC_CRYPTOGRAPHIC_BASELINE.md`.
 
 No production Civic key was created and no host/device state changed.
 
+## Epoch Manifest + RAG/LLM Diagnostics representation — accepted 2026-09-22
+
+The canonical Civic record representation is now selected.
+
+Epoch Manifest / authority stack:
+
+~~~text
+structured Civic data
+    -> RFC 8949 deterministic CBOR
+    -> SHA-256 payload identity
+    -> COSE_Sign1
+    -> ES256 / Civic P-256 key
+~~~
+
+The v1 COSE unprotected header is empty; protected headers carry ES256, the 32-byte Civic key ID, and Civic content type. The Epoch Manifest payload is embedded, not detached.
+
+The deterministic-CBOR profile uses text map keys, definite lengths, no duplicate keys, NFC-normalized UTF-8, no floating-point fields, native CBOR byte strings for binary content, and explicit deterministic ordering for set-semantic arrays.
+
+The manifest is a current authority snapshot. Long-lived witnessing/history is retained as individually canonicalized signed records in append-only CBOR Sequence form; large or reusable content is stored by SHA-256 object identity. A human JSON projection is generated for diagnostics and display but is not the signed authority object.
+
+The design deliberately does not impose an artificially small record limit merely because ESP32-S3 is the reference device. Real resource failures become Diagnostics evidence for later bounded limits.
+
+A RAG/LLM diagnostics boundary is also accepted. Source objects remain exact-byte evidence; extracted text, chunks, embeddings, retrieval results, and LLM answers are separately identified derived records. The LLM may advise about statutes, governing sources, and responsibilities of HOA actors, but its output remains source-grounded advisory/diagnostic material and never becomes governing authority merely by being stored or signed.
+
+The LLM runtime, embedding provider, and physical host are replaceable. The participant edge may retain selected corpus/diagnostic objects but is not required to execute the LLM.
+
+See:
+
+- `docs/CIVIC_EPOCH_MANIFEST_FORMAT.md`
+- `docs/CIVIC_RAG_LLM_DIAGNOSTICS_BOUNDARY.md`
+
+No production Civic key was created and no host/device state changed.
+
