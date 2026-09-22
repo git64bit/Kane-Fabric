@@ -6,7 +6,7 @@ Accepted architecture decision. Documentation only.
 
 This document closes the principal Civic authority-continuity design question for HOA Diagnostics.
 
-It does not freeze a cryptographic algorithm, serialized record format, ESP32 storage layout, signing-provider implementation, or hardware bill of materials.
+The continuity decision itself does not freeze serialized record format, participant storage layout, signing-provider implementation, or hardware bill of materials. The first portable cryptographic profile is now separately accepted in `docs/CIVIC_CRYPTOGRAPHIC_BASELINE.md`.
 
 ## Decision
 
@@ -329,7 +329,7 @@ The following are accepted design invariants:
 
 The following choices are intentionally **not** architecture blockers:
 
-- cryptographic algorithm;
+- cryptographic-profile migration behavior beyond the accepted v1 profile;
 - key encoding;
 - signature encoding;
 - canonical serialization;

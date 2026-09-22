@@ -153,7 +153,7 @@ The current operator owns/operates the node, but operator office and HOA-local r
 
 Otherwise replacing an operator would accidentally replace the HOA's Civic identity.
 
-Operator transition is constrained by the authority-epoch model: when the recognized authority/device set changes, a source-governed key-signing ceremony creates the new current epoch and independent current-device keys. Exact cryptographic algorithm, storage, and custody mechanics remain implementation work.
+Operator transition is constrained by the authority-epoch model: when the recognized authority/device set changes, a source-governed key-signing ceremony creates the new current epoch and independent current-device keys. Civic cryptographic profile v1 is accepted in `docs/CIVIC_CRYPTOGRAPHIC_BASELINE.md`; storage and custody mechanics remain implementation work.
 
 An operator change must preserve the HOA authority lineage and be authorized by the applicable source-derived Same-and-Equal governance procedure.
 
@@ -240,7 +240,7 @@ The civic continuity design is closed sufficiently for implementation planning.
 Implementation work must still determine:
 
 1. minimum reproducible hardware/software boundary for one HOA-local node;
-2. cryptographic algorithm and key representation;
+2. implementation of the accepted Civic cryptographic profile and software key lifecycle;
 3. operator-node key custody and rotation mechanics;
 4. local record/evidence storage and backup;
 5. operator-election/vote record encoding;

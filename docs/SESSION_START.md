@@ -31,6 +31,12 @@ Hard implementation constraints accepted on 2026-09-22:
 - user-owned edges may hold openly readable user-owned public verification material such as CA public material, OpenPGP public keys, and SSH public keys;
 - edge-assisted IPFS CID pinning remains a deferred wish-list capability.
 
+Civic cryptographic profile v1 is also accepted:
+
+`kane-civic-ecdsa-p256-sha256-v1` = ECDSA P-256/SHA-256 + 65-byte uncompressed public key + 64-byte P1363 signature + SHA-256 key identifier.
+
+Do not reopen that choice without Diagnostics evidence. The next unresolved Signing Node design question is the Epoch Manifest canonical byte representation.
+
 
 Read first:
 

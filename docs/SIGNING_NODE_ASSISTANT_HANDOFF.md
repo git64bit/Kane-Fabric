@@ -96,7 +96,15 @@ Current mandatory boundary:
 
 ### Current Civic Signing Node architecture
 
-5. `docs/CIVIC_AUTHORITY_CONTINUITY_DECISION.md`
+5. `docs/CIVIC_CRYPTOGRAPHIC_BASELINE.md`
+   - accepted functionality-first Civic cryptographic profile v1;
+   - ECDSA P-256/SHA-256;
+   - uncompressed 65-byte public key;
+   - 64-byte P1363 signature;
+   - SHA-256 key identity;
+   - evidence-driven rather than speculative hardening.
+
+6. `docs/CIVIC_AUTHORITY_CONTINUITY_DECISION.md`
    - accepted HOA Civic Identity continuity model;
    - independent epoch-specific participant-device keys;
    - replicated authenticated authority state;
@@ -559,7 +567,7 @@ The next phase is **implementation interrogation**, not broad architecture redes
 
 The implementation must now determine concrete choices for:
 
-- signing algorithm/provider;
+- implementation/provider for the accepted Civic cryptographic profile (`kane-civic-ecdsa-p256-sha256-v1`);
 - operator-node key custody;
 - Epoch Manifest representation;
 - participant-device key/state storage (ESP32-S3 is the reference implementation, not the required platform);
@@ -575,6 +583,8 @@ Before selecting any implementation, compare it against the accepted invariants 
 Do not add CA, email, or IPFS dependencies to the baseline.
 
 Do not activate the existing Firmware Authority merely because Signing Node implementation has begun.
+
+Do not reopen the Civic v1 algorithm/key-representation choice without Diagnostics evidence that invalidates it. The next unresolved representation question is the Epoch Manifest canonical byte format.
 
 ---
 

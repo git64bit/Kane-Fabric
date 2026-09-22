@@ -962,7 +962,7 @@
       "ms5_008_candidate_repository_acceptance": "accepted on CT102 at 5a35b607ef16b5c94bd732e7f2eb73fbffc17ad0; 12 focused tests passed; full MS5 suite 86 passed / 1 skipped; WireGuard retained=NO; decision state=defer",
       "ms5_008_decision": "defer accepted 2026-09-21; WireGuard remains unretained; physical panic retained as diagnostic backlog"
     },
-    "next_work_item": "Continue baseline Civic Signing Node implementation interrogation under the accepted functionality/platform-neutrality boundary: software-capable and independently reproducible baseline; ESP32-S3 reference only; no ATECC608A-class Civic key custody; no irreversible ESP security-eFuse Civic key custody; no proprietary SaaS/HaaS/hardware-signer dependency. Public user-owned verification material may reside on user-owned edges; IPFS CID pinning remains deferred wish-list work."
+    "next_work_item": "Define the Epoch Manifest canonical byte representation and its exact v1 fields under the accepted Civic cryptographic profile. Preserve the functionality-first/platform-neutral boundary; no production key creation or host/device mutation."
   },
   "priority_workstream": {
     "name": "MS5-009 Firmware Authenticity / Update / Rollback / Recovery",
@@ -970,7 +970,7 @@
     "implementation_contract": "ms5/firmware-lifecycle-contract.json",
     "firmware_lifecycle_document": "docs/MS5_009_FIRMWARE_LIFECYCLE.md",
     "firmware_authority_document": "docs/MS5_FIRMWARE_AUTHORITY_NODE.md",
-    "status": "baseline Civic Signing Node ready for implementation interrogation under functionality/platform-neutrality constraint; prior hardware-backed-only Firmware Authority assumption invalidated pending repository reconciliation",
+    "status": "Civic cryptographic baseline v1 accepted; next Signing Node interrogation is Epoch Manifest canonical representation; prior hardware-backed-only Firmware Authority machine assumption remains invalidated pending separate reconciliation",
     "signing_status": "inert-not-activated",
     "management_transport_dependency": false,
     "target_environment": "repository/design and published affordance source; no signer or firmware mutation",
@@ -989,7 +989,21 @@
       ],
       "edge_assisted_ipfs_cid_pinning": "wishlist-deferred-no-mechanism-frozen",
       "firmware_authority_hardware_backed_only_machine_assumption": "invalidated-pending-bounded-reconciliation"
+    },
+    "civic_cryptographic_baseline": {
+      "status": "accepted-2026-09-22",
+      "document": "docs/CIVIC_CRYPTOGRAPHIC_BASELINE.md",
+      "profile_identity": "kane-civic-ecdsa-p256-sha256-v1",
+      "signature_algorithm": "ECDSA",
+      "curve": "P-256",
+      "digest": "SHA-256",
+      "public_key_encoding": "SEC1-uncompressed-65",
+      "signature_encoding": "P1363-r-s-64",
+      "key_id": "SHA-256 of exact canonical public-key bytes",
+      "hardening_policy": "evidence-driven-diagnostics-first",
+      "algorithm_fallback_within_epoch": false,
+      "production_key_created": false
     }
   },
-  "next_safe_action": "Continue repository-only Signing Node implementation interrogation without creating keys or mutating hosts. Exclude ATECC608A-class and security-eFuse custody and any proprietary SaaS/HaaS/hardware-only dependency. Treat the existing Firmware Authority hardware-backed-only machine contract as invalidated candidate implementation until separately reconciled and retested."
+  "next_safe_action": "Repository-only: define and compare viable canonical Epoch Manifest representations compatible with kane-civic-ecdsa-p256-sha256-v1; select one before implementing Civic signing. Do not create production keys or mutate hosts/devices."
 }

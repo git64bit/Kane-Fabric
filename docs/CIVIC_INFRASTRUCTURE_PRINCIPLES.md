@@ -40,6 +40,11 @@ Kane Fabric project deployments and acceptance procedures SHALL NOT:
 
 These prohibitions do not make private keys public. They mean specialized hardware is not required to enforce private-key secrecy. Software custody, rotation, replacement, and recovery remain implementation work and must remain portable.
 
+Security hardening is evidence-driven. Kane Fabric does not add walls, proprietary custody, or central control merely because a hypothetical attack can be imagined. Demonstrated failures and attacks are Diagnostics signals: preserve attributable evidence, publish the reproducible diagnostic result where lawful and privacy-compatible, and redesign the smallest affected boundary when the evidence justifies it.
+
+A complete failure is still information. The architecture should prefer inspectable failure over opaque protection whose operation, ownership, or replacement depends on a privileged vendor or central operator.
+
+
 A user-owned edge is also an ordinary user-owned storage location. It may intentionally host and serve openly readable, non-secret public verification material in ordinary non-proprietary, uncompressed/source-form representations where applicable. Examples include CA certificates/public keys, OpenPGP public keys, SSH public keys, and similar user-owned public artifacts. Such material remains user-owned data on a user-owned device; it does not create central service tenancy and does not become Fabric logical identity.
 
 ## Public-domain software

@@ -1024,3 +1024,27 @@ The existing machine-readable Firmware Authority implementation still contains t
 
 No production Civic key was created. No host, signer, ESP32, eFuse, or secure-element state changed.
 
+## Civic cryptographic baseline — accepted 2026-09-22
+
+The first platform-neutral Civic signature profile is now selected:
+
+~~~text
+profile              kane-civic-ecdsa-p256-sha256-v1
+signature            ECDSA P-256 / SHA-256
+public key           65-byte uncompressed SEC1 point
+signature encoding   64-byte IEEE P1363 r || s
+key identifier       SHA-256 of exact public-key bytes
+~~~
+
+Selection was functionality-driven, not hardening-driven. The same primitive is directly compatible with browser WebCrypto, the current ESP-IDF/PSA reference path, and ordinary general-purpose software implementations without ATECC608A, security-eFuse custody, HSM/HaaS, remote signing, or vendor account dependency.
+
+The profile is explicitly versioned rather than treated as an eternal algorithm choice. One Civic authority epoch declares one profile; there is no silent fallback/algorithm negotiation. If later Diagnostics provides evidence that the profile should change, the change is explicit and historical epochs retain their original verification semantics.
+
+Security hardening is evidence-driven. Demonstrated attacks/failures are preserved as Diagnostics signals and used to justify the smallest necessary redesign. The project does not add speculative walls or centralized custody before evidence establishes the functional need.
+
+The cryptographic profile does not yet freeze the Epoch Manifest serialization. That canonical-byte representation is the next unresolved implementation decision.
+
+See `docs/CIVIC_CRYPTOGRAPHIC_BASELINE.md`.
+
+No production Civic key was created and no host/device state changed.
+
