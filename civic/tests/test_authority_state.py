@@ -11,8 +11,9 @@ from civic.authority_state import (
     encode_authority_state_replica,
     verify_authority_state_replica,
 )
-from civic.codec import encode_deterministic
-from civic.epoch_manifest import manifest_sha256
+from civic.codec import CborTag, decode_deterministic, encode_deterministic
+from civic.epoch_manifest import CRYPTO_PROFILE, manifest_sha256
+from civic.signed_history_record import sign_history_record_fixture
 from civic.signed_manifest import sign_epoch_manifest_fixture
 from civic.tests.test_epoch_manifest import fixture_manifest
 
@@ -21,19 +22,44 @@ def replica_fixture() -> tuple[dict[str, object], dict[bytes, bytes], dict[str, 
     source_bytes = b"authoritative governing source\n"
     source_sha256 = hashlib.sha256(source_bytes).digest()
 
-    accepted_record = encode_deterministic(
-        {
-            "history_link": {
-                "stream": "accepted",
-                "predecessor_record_sha256": None,
-            },
+    manifest = fixture_manifest()
+
+    signing_node = manifest["signing_node"]
+    ceremony = manifest["ceremony"]
+    assert isinstance(signing_node, dict)
+    assert isinstance(ceremony, dict)
+
+    accepted_payload = {
+        "format": "kane-civic-history-record",
+        "version": 1,
+        "crypto_profile": CRYPTO_PROFILE,
+        "hoa_root_id": manifest["hoa_root_id"],
+        "epoch_sequence": manifest["epoch_sequence"],
+        "ceremony_record_sha256": ceremony["ceremony_record_sha256"],
+        "record_type": "fixture-accepted-event",
+        "history_link": {
+            "stream": "accepted",
+            "predecessor_record_sha256": None,
+        },
+        "signer": {
+            "kind": "signing_node",
+            "key_id": signing_node["key_id"],
+            "participant_record_sha256": None,
+        },
+        "body": {
+            "fixture": "authority-state-reconstruction",
             "sequence": 1,
-        }
+        },
+    }
+    accepted_record = sign_history_record_fixture(
+        accepted_payload,
+        epoch_manifest=manifest,
+        private_scalar=2,
+        nonce_scalar=29,
     )
     accepted_head = hashlib.sha256(accepted_record).digest()
     accepted_sequence_sha256 = hashlib.sha256(accepted_record).digest()
 
-    manifest = fixture_manifest()
     manifest["history"]["accepted_history_head_sha256"] = accepted_head  # type: ignore[index]
     manifest["governing_sources"] = [
         {
@@ -210,6 +236,35 @@ class CivicAuthorityStateTests(unittest.TestCase):
             verify_authority_state_replica(
                 wrong_head,
                 load_object=object_loader(objects),
+            )
+
+    def test_tampered_history_signature_fails_reconstruction(self) -> None:
+        replica, objects, _ = replica_fixture()
+        tampered_replica = copy.deepcopy(replica)
+        tampered_objects = dict(objects)
+
+        original_sequence_id = replica["history_streams"]["accepted"]["sequence_sha256"]  # type: ignore[index]
+        assert isinstance(original_sequence_id, bytes)
+        original_record = objects[original_sequence_id]
+
+        decoded = decode_deterministic(original_record)
+        self.assertIsInstance(decoded, CborTag)
+
+        cose_body = list(decoded.value)
+        signature = bytearray(cose_body[3])
+        signature[-1] ^= 0x01
+        cose_body[3] = bytes(signature)
+        tampered_record = encode_deterministic(CborTag(decoded.tag, cose_body))
+        tampered_sequence_id = hashlib.sha256(tampered_record).digest()
+
+        tampered_replica["history_streams"]["accepted"]["sequence_sha256"] = tampered_sequence_id  # type: ignore[index]
+        tampered_replica["history_streams"]["accepted"]["byte_length"] = len(tampered_record)  # type: ignore[index]
+        tampered_objects[tampered_sequence_id] = tampered_record
+
+        with self.assertRaises(CivicAuthorityStateError):
+            verify_authority_state_replica(
+                tampered_replica,
+                load_object=object_loader(tampered_objects),
             )
 
     def test_replica_schema_rejects_private_key_material(self) -> None:
