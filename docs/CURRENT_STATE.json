@@ -1009,7 +1009,7 @@
       "document": "docs/CIVIC_EPOCH_MANIFEST_FORMAT.md",
       "payload_encoding": "RFC8949-core-deterministic-CBOR-v1",
       "signature_container": "COSE_Sign1",
-      "cose_algorithm": "ES256/-7",
+      "cose_algorithm": "ESP256/-9",
       "payload_identity": "SHA-256 of exact deterministic CBOR payload",
       "text": "UTF-8 NFC",
       "binary": "native CBOR byte strings",
@@ -1019,7 +1019,8 @@
       "human_projection": "generated JSON diagnostics only; not authority bytes",
       "long_term_history": "append-only individually signed CBOR Sequence records",
       "object_store": "SHA-256 content-addressed; optional future CID",
-      "protocol_small_size_limit": false
+      "protocol_small_size_limit": false,
+      "cose_algorithm_note": "RFC 9864 fully specified P-256/SHA-256 COSE algorithm; legacy ES256/-7 wording superseded."
     },
     "rag_llm_diagnostics": {
       "status": "accepted-architecture-boundary-2026-09-22",
@@ -1138,5 +1139,5 @@
       "annales_mutated": false
     }
   },
-  "next_safe_action": "Repository-only documentation reconciliation: replace stale Civic COSE ES256/-7 references with accepted ESP256/-9 where applicable, without altering the P-256/SHA-256 primitive profile or mutating annales."
+  "next_safe_action": "Repository-only: inspect remaining Civic documentation for stale ES256/-7 references and reconcile one file at a time. Do not create production Civic keys or mutate annales."
 }
