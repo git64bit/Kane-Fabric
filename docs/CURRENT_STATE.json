@@ -962,7 +962,7 @@
       "ms5_008_candidate_repository_acceptance": "accepted on CT102 at 5a35b607ef16b5c94bd732e7f2eb73fbffc17ad0; 12 focused tests passed; full MS5 suite 86 passed / 1 skipped; WireGuard retained=NO; decision state=defer",
       "ms5_008_decision": "defer accepted 2026-09-21; WireGuard remains unretained; physical panic retained as diagnostic backlog"
     },
-    "next_work_item": "Integrate generic signed Civic history-record verification into participant authority-state reconstruction so each retained history stream verifies every record signature and authenticated predecessor link against the accepted Epoch Manifest lineage."
+    "next_work_item": "Define and test type-specific Civic history-record semantics above the generic signed envelope, beginning with the accepted-history record types that can advance authoritative Civic state."
   },
   "priority_workstream": {
     "name": "MS5-009 Firmware Authenticity / Update / Rollback / Recovery",
@@ -970,7 +970,7 @@
     "implementation_contract": "ms5/firmware-lifecycle-contract.json",
     "firmware_lifecycle_document": "docs/MS5_009_FIRMWARE_LIFECYCLE.md",
     "firmware_authority_document": "docs/MS5_FIRMWARE_AUTHORITY_NODE.md",
-    "status": "Deterministic CBOR, Epoch Manifest v1, COSE_Sign1/ESP256, fixture-only P-256 signing/verification, signed-manifest composition, diagnostic projection, linked Civic history, SHA-256 object storage, participant authority-state replica reconstruction, and the generic individually signed Civic history-record envelope are accepted on CT102; authority-state reconstruction still needs to invoke signed-history verification for every retained stream; production signing remains held.",
+    "status": "Deterministic CBOR, Epoch Manifest v1, COSE_Sign1/ESP256, fixture-only P-256 signing/verification, signed-manifest composition, diagnostic projection, linked Civic history, SHA-256 object storage, participant authority-state reconstruction, generic individually signed Civic history records, and authenticated history verification during participant reconstruction are accepted on CT102; production signing remains held.",
     "signing_status": "inert-not-activated",
     "management_transport_dependency": false,
     "target_environment": "repository/design and published affordance source; no signer or firmware mutation",
@@ -1265,7 +1265,28 @@
       "production_signing_enabled": false,
       "production_key_created": false,
       "annales_mutated": false
+    },
+    "civic_authenticated_history_reconstruction_acceptance": {
+      "status": "accepted-ct102-2026-09-22",
+      "repository_head": "b06412fcac50f79764bb5cc0a1872bf7df64c95d",
+      "focused_gate": "civic/run-tests.sh",
+      "tests": {
+        "ran": 69,
+        "passed": 69,
+        "failed": 0,
+        "skipped": 0,
+        "authority_state_tests": 8,
+        "signed_history_record_tests": 8,
+        "cose_tests": 7
+      },
+      "signed_history_record_verification_during_reconstruction": "accepted",
+      "authenticated_predecessor_link_verification": "accepted",
+      "final_history_head_binding": "accepted",
+      "tampered_history_signature_rejected_during_reconstruction": "accepted",
+      "production_signing_enabled": false,
+      "production_key_created": false,
+      "annales_mutated": false
     }
   },
-  "next_safe_action": "Repository-only implementation step: extend authority-state verification to authenticate every retained Civic history record through the generic signed-history envelope before checking history_link continuity and final stream heads. Do not create production Civic keys or mutate annales."
+  "next_safe_action": "Repository-only architecture step: define the first type-specific accepted-history record contract above the generic signed history envelope, including which signer classes and governance evidence are permitted. Do not create production Civic keys or mutate annales."
 }
