@@ -41,7 +41,7 @@ The Epoch Manifest representation is also accepted:
 
 - deterministic RFC 8949 CBOR payload;
 - SHA-256 payload identity;
-- COSE_Sign1 / ES256 envelope;
+- COSE_Sign1 / ESP256 (-9) envelope;
 - native UTF-8 text and CBOR binary;
 - append-only signed CBOR Sequence history;
 - generated JSON diagnostic projection;
