@@ -962,7 +962,7 @@
       "ms5_008_candidate_repository_acceptance": "accepted on CT102 at 5a35b607ef16b5c94bd732e7f2eb73fbffc17ad0; 12 focused tests passed; full MS5 suite 86 passed / 1 skipped; WireGuard retained=NO; decision state=defer",
       "ms5_008_decision": "defer accepted 2026-09-21; WireGuard remains unretained; physical panic retained as diagnostic backlog"
     },
-    "next_work_item": "Add Civic signing and verification functions for P-256/SHA-256 over the accepted COSE Sig_structure using non-production fixture keys only; preserve P1363 r||s signatures and reject DER at the Civic boundary."
+    "next_work_item": "Bind the accepted Epoch Manifest payload, COSE Sig_structure, and fixture-only P-256 signer into one repository helper that produces and verifies a complete signed Civic Epoch Manifest using explicit non-production fixture scalar/nonce inputs only."
   },
   "priority_workstream": {
     "name": "MS5-009 Firmware Authenticity / Update / Rollback / Recovery",
@@ -970,7 +970,7 @@
     "implementation_contract": "ms5/firmware-lifecycle-contract.json",
     "firmware_lifecycle_document": "docs/MS5_009_FIRMWARE_LIFECYCLE.md",
     "firmware_authority_document": "docs/MS5_FIRMWARE_AUTHORITY_NODE.md",
-    "status": "Deterministic CBOR, Epoch Manifest v1 schema, COSE_Sign1 contract, and interoperability vector accepted on CT102; next bounded repository work is fixture-only Civic signing/verification; production signing remains held.",
+    "status": "Deterministic CBOR, Epoch Manifest v1 schema, COSE_Sign1 contract, interoperability vector, and fixture-only P-256 signing/verification accepted on CT102; next bounded repository work is complete signed-manifest composition using fixture inputs only; production signing remains held.",
     "signing_status": "inert-not-activated",
     "management_transport_dependency": false,
     "target_environment": "repository/design and published affordance source; no signer or firmware mutation",
@@ -1081,7 +1081,24 @@
       "vector_validation": "accepted",
       "production_key_created": false,
       "annales_mutated": false
+    },
+    "civic_fixture_ecdsa_acceptance": {
+      "status": "accepted-ct102-2026-09-22",
+      "repository_head": "123726d8af09c3b239e6f234155617ffa8801330",
+      "focused_gate": "civic/run-tests.sh",
+      "tests": {
+        "ran": 24,
+        "passed": 24,
+        "failed": 0,
+        "skipped": 0,
+        "fixture_ecdsa_tests": 5
+      },
+      "p256_fixture_signing": "accepted",
+      "p1363_verification": "accepted",
+      "production_signing_enabled": false,
+      "production_key_created": false,
+      "annales_mutated": false
     }
   },
-  "next_safe_action": "Repository-only: add minimal fixture-only P-256/SHA-256 signing and verification functions over the accepted Sig_structure, with P1363 r||s at the Civic boundary. Do not create production Civic keys or mutate annales."
+  "next_safe_action": "Repository-only: add one helper that composes and verifies a complete signed Civic Epoch Manifest from explicit fixture inputs using the already accepted codec, COSE, and ECDSA modules. Do not create production keys or mutate annales."
 }
