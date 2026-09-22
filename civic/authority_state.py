@@ -5,8 +5,12 @@ import hashlib
 
 from civic.codec import CivicCodecError, decode_deterministic, encode_deterministic
 from civic.epoch_manifest import manifest_sha256
-from civic.history import CivicHistoryError, decode_history_sequence
+from civic.history import CivicHistoryError, verify_linked_history_sequence
 from civic.object_store import CivicObjectStoreError, verify_object_bytes
+from civic.signed_history_record import (
+    CivicSignedHistoryRecordError,
+    verify_signed_history_record,
+)
 from civic.signed_manifest import (
     CivicSignedManifestError,
     verify_signed_epoch_manifest,
@@ -330,11 +334,10 @@ def verify_authority_state_replica(
     """Verify retained replica bytes and return the verified Epoch Manifest lineage.
 
     The loader resolves exact bytes by SHA-256. This verifier checks signed Epoch
-    Manifests, lineage continuity, externally retained required objects, and the
-    exact current history-sequence bytes through their declared final heads.
-
-    History-record authentication/link semantics remain the responsibility of
-    the history-record format layer; this function does not invent that format.
+    Manifests, lineage continuity, externally retained required objects, and each
+    retained history record as an authenticated Civic signed-history envelope.
+    Only an authenticated history_link is accepted for predecessor-chain and
+    final-head verification.
     """
 
     validate_authority_state_replica(value)
@@ -511,20 +514,42 @@ def verify_authority_state_replica(
             byte_length=byte_length,
             label=f"{stream} history sequence",
         )
+
+        def authenticated_link_for_record(record: object) -> object:
+            encoded = getattr(record, "encoded", None)
+            sha256 = getattr(record, "sha256", None)
+            if not isinstance(encoded, bytes) or not isinstance(sha256, bytes):
+                raise CivicHistoryError(
+                    "history sequence item does not expose exact record bytes"
+                )
+
+            try:
+                verified = verify_signed_history_record(
+                    encoded,
+                    epoch_manifests=verified_lineage,
+                )
+            except CivicSignedHistoryRecordError as exc:
+                raise CivicHistoryError(
+                    "history record signed-envelope verification failed"
+                ) from exc
+
+            if verified.record_sha256 != sha256:
+                raise CivicHistoryError(
+                    "verified signed history record identity mismatch"
+                )
+
+            return verified.payload["history_link"]
+
         try:
-            records = decode_history_sequence(sequence_bytes)
+            verify_linked_history_sequence(
+                sequence_bytes,
+                stream=stream,
+                expected_head_sha256=head,
+                authenticated_link_for_record=authenticated_link_for_record,
+            )
         except CivicHistoryError as exc:
             raise CivicAuthorityStateError(
-                f"{stream} history sequence is invalid"
+                f"{stream} signed history sequence verification failed"
             ) from exc
-
-        if not records:
-            raise CivicAuthorityStateError(
-                f"{stream} history sequence must not be empty"
-            )
-        if records[-1].sha256 != head:
-            raise CivicAuthorityStateError(
-                f"{stream} history sequence does not end at declared head"
-            )
 
     return tuple(verified_lineage)
