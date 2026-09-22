@@ -962,7 +962,7 @@
       "ms5_008_candidate_repository_acceptance": "accepted on CT102 at 5a35b607ef16b5c94bd732e7f2eb73fbffc17ad0; 12 focused tests passed; full MS5 suite 86 passed / 1 skipped; WireGuard retained=NO; decision state=defer",
       "ms5_008_decision": "defer accepted 2026-09-21; WireGuard remains unretained; physical panic retained as diagnostic backlog"
     },
-    "next_work_item": "Implement the smallest content-addressed Civic object-store primitive used by Epoch Manifest object_index descriptors, preserving SHA-256 exact-byte identity independently of storage location."
+    "next_work_item": "Define the minimal participant-replicated Civic authority-state and reconstruction contract, including which authenticated epoch artifacts a current Same-and-Equal participant must retain to restore authority state without a permanent master private key."
   },
   "priority_workstream": {
     "name": "MS5-009 Firmware Authenticity / Update / Rollback / Recovery",
@@ -970,7 +970,7 @@
     "implementation_contract": "ms5/firmware-lifecycle-contract.json",
     "firmware_lifecycle_document": "docs/MS5_009_FIRMWARE_LIFECYCLE.md",
     "firmware_authority_document": "docs/MS5_FIRMWARE_AUTHORITY_NODE.md",
-    "status": "Deterministic CBOR, Epoch Manifest v1 schema, COSE_Sign1/ESP256 contract, interoperability vector, fixture-only P-256 signing/verification, complete signed-manifest composition, generated diagnostic projection, Civic COSE documentation reconciliation, append-only CBOR Sequence history, and linked history-head verification are accepted on CT102; next bounded repository work is the content-addressed object-store primitive; production signing remains held.",
+    "status": "Deterministic CBOR, Epoch Manifest v1 schema, COSE_Sign1/ESP256 contract, interoperability vector, fixture-only P-256 signing/verification, complete signed-manifest composition, generated diagnostic projection, append-only linked Civic history, and SHA-256 content-addressed object storage are accepted on CT102; next bounded repository work is participant-replicated authority-state and reconstruction semantics; production signing remains held.",
     "signing_status": "inert-not-activated",
     "management_transport_dependency": false,
     "target_environment": "repository/design and published affordance source; no signer or firmware mutation",
@@ -1195,7 +1195,30 @@
       "production_signing_enabled": false,
       "production_key_created": false,
       "annales_mutated": false
+    },
+    "civic_object_store_acceptance": {
+      "status": "accepted-ct102-2026-09-22",
+      "repository_head": "cc46c881d8097834d91dde4f93b025d2c1bc65bb",
+      "focused_gate": "civic/run-tests.sh",
+      "tests": {
+        "ran": 50,
+        "passed": 50,
+        "failed": 0,
+        "skipped": 0,
+        "object_store_tests": 7
+      },
+      "sha256_exact_byte_identity": "accepted",
+      "deterministic_digest_path_projection": "accepted",
+      "descriptor_sha256_and_byte_length_verification": "accepted",
+      "verified_put_get_has": "accepted",
+      "idempotent_reput": "accepted",
+      "missing_object_detection": "accepted",
+      "corruption_detection": "accepted",
+      "optional_future_cid_dependency": false,
+      "production_signing_enabled": false,
+      "production_key_created": false,
+      "annales_mutated": false
     }
   },
-  "next_safe_action": "Repository-only: implement the smallest SHA-256 content-addressed object-store primitive for Civic objects referenced by object_index. Do not create production Civic keys or mutate annales."
+  "next_safe_action": "Repository-only architecture step: define the minimal participant-replicated Civic authority-state and reconstruction contract before implementation. Do not create production Civic keys or mutate annales."
 }
