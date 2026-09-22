@@ -608,6 +608,21 @@
       },
       "shared_services_must_preserve_per_HOA_root_separation": true,
       "service_failure_must_not_destroy_HOA_civic_identity": true
+    },
+    "signing_node_assistant_handoff_document": "docs/SIGNING_NODE_ASSISTANT_HANDOFF.md",
+    "manual_relay_workflow": {
+      "status": "documented",
+      "sequence": [
+        "Assistant prepares bounded target-specific script",
+        "user uploads script to exact target host",
+        "user executes exact bounded command",
+        "script writes durable log/evidence",
+        "user downloads log/evidence",
+        "user uploads evidence back to conversation",
+        "Assistant reviews before next state-changing action"
+      ],
+      "established_transfer_method_srv_b_ct102": "Webmin-first; tarball + SHA-256 for larger cross-machine artifacts",
+      "default_scp_ssh_transfer": false
     }
   },
   "deployment": {
@@ -960,5 +975,5 @@
     "management_transport_dependency": false,
     "target_environment": "repository/design and published affordance source; no signer or firmware mutation"
   },
-  "next_safe_action": "Interrogate implementation choices for the baseline signing node only: algorithm/provider, operator-node key custody, Epoch Manifest representation, ESP32 key/state storage, and recovery flow. Do not add CA, mail, or IPFS dependencies yet."
+  "next_safe_action": "New Assistant must first read docs/DEVELOPMENT_PROCESS.md, docs/SIGNING_NODE_ASSISTANT_HANDOFF.md, HANDOFF/CURRENT_STATE/SESSION_START, then the accepted Civic authority/signing-node documents. After that, begin baseline implementation interrogation only; use bounded script upload/log return when direct host execution is unavailable."
 }

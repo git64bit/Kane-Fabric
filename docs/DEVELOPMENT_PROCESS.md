@@ -398,3 +398,34 @@ The MS-2 branch/refspec incident and later handoff/access failures established t
 The 2026-09-16 CPE reconciliation added a third permanent lesson: **physical development infrastructure must be recorded in GitHub SSOT as soon as it becomes a stable project dependency.** The `fw` build/programming environment and fixed USB topology had been accepted operationally without being preserved in Kane-Fabric, which allowed a later command to incorrectly assume an `fw` filesystem path existed on `srv-b`. The CPE SSOT and cross-host anti-drift rule exist to prevent recurrence.
 
 The 2026-09-17 administrative/browser correction added a fourth permanent lesson: **Browser-First is a product/interface boundary, not a mandate to implement the offline form before the online form.** The full online interface may be developed first, provided the shared contracts remain portable and the later offline form is a reduction rather than a fork.
+
+
+## Manual script upload / log return workflow
+
+When a required host is not directly accessible to the Assistant, the bounded manual relay may use downloadable scripts and returned log files.
+
+The canonical handoff for this workflow is now:
+
+`docs/SIGNING_NODE_ASSISTANT_HANDOFF.md`
+
+In summary:
+
+~~~text
+Assistant prepares one bounded target-specific script
+        ↓
+user uploads script to the exact host (Webmin where established)
+        ↓
+user executes the exact bounded command
+        ↓
+script writes durable log/evidence
+        ↓
+user downloads the log/evidence
+        ↓
+user uploads it back to the conversation
+        ↓
+Assistant reviews the complete evidence before any next mutation
+~~~
+
+This workflow does not make the user's manual relay the source of technical judgment. The Assistant remains responsible for constructing the bounded operation, interpreting returned evidence, and recording the accepted checkpoint.
+
+For `srv-b`/CT102 transfers, retain the established Webmin-first rule. Do not silently substitute SCP/SSH as default.

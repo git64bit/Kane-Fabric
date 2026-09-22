@@ -20,24 +20,25 @@ Do not use private chat history as a substitute for these records.
 
 ## Current priority
 
-The baseline HOA-local Civic Signing Node architecture is accepted and future service boundaries are now documented.
+The Signing Node architecture is ready for baseline implementation interrogation, and the new-Assistant resume process is now explicit.
 
 Read first:
 
-- `docs/CIVIC_AUTHORITY_CONTINUITY_DECISION.md`
-- `docs/CIVIC_OWNER_OPERATED_SIGNING_NODE.md`
-- `docs/CIVIC_SIGNING_NODE_FUTURE_SERVICE_BOUNDARIES.md`
+1. `docs/DEVELOPMENT_PROCESS.md`
+2. `docs/SIGNING_NODE_ASSISTANT_HANDOFF.md`
+3. `docs/HANDOFF.md`
+4. `docs/CURRENT_STATE.json`
+5. `docs/SESSION_START.md`
+6. the Civic authority/signing-node documents listed in the handoff
+7. `docs/CIVICVS_PROJECT_ENVIRONMENT.md` before any host/ESP32/signer action.
 
-The initial implementation must not depend on the planned Kane County CA, Kane-local email service, or IPFS node.
+When direct host execution is unavailable, use the bounded manual relay:
 
-Future boundaries:
+`Assistant script -> user Webmin upload -> exact execution -> durable log/evidence -> user download/upload -> Assistant review -> next action`.
 
-- CA/TLS authenticates endpoints, not Civic authority;
-- email transports communication/evidence, not civic identity or standing;
-- IPFS provides content-addressed storage, not truth/currentness/authority;
-- shared Kane services must not merge HOA-local authority roots.
+Do not issue the next state-changing operation before reviewing the returned evidence.
 
-The architecture/design phase is sufficiently closed. Next work is baseline implementation interrogation: concrete algorithm/provider, operator-node key custody, Epoch Manifest representation, ESP32 key/state storage, and recovery mechanics.
+The implementation boundary remains: algorithm/provider, operator-node key custody, Epoch Manifest representation, ESP32 key/state storage, verification, and recovery mechanics. CA/email/IPFS remain future attachments.
 
 ## Stable facts are not discovery tasks
 

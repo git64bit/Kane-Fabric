@@ -982,3 +982,26 @@ The baseline Civic Signing Node proceeds without requiring any of them.
 See `docs/CIVIC_SIGNING_NODE_FUTURE_SERVICE_BOUNDARIES.md`.
 
 No code changed.
+
+
+## New-Assistant Signing Node handoff — 2026-09-22
+
+A dedicated resume document now exists:
+
+`docs/SIGNING_NODE_ASSISTANT_HANDOFF.md`
+
+It consolidates:
+
+- mandatory repository read order before development resumes;
+- repository section map;
+- physical host/control-plane boundaries;
+- the bounded upload-script -> execute -> download-log -> review workflow;
+- Webmin-first transfer rule where already established;
+- repository-source versus execution-evidence separation;
+- accepted HOA Civic Signing Node/authority-epoch baseline;
+- deferred CA/email/IPFS service boundaries;
+- exact implementation-interrogation boundary.
+
+New sessions should read this handoff after `docs/DEVELOPMENT_PROCESS.md` and before implementation work.
+
+No code changed.
