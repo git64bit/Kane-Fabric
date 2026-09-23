@@ -8,6 +8,11 @@ from civic.epoch_manifest import (
     derive_key_id,
     validate_epoch_manifest,
 )
+from civic.governing_profile import (
+    CivicGoverningProfileError,
+    validate_standing_against_profile,
+    verify_governing_profile,
+)
 from civic.object_store import CivicObjectStoreError, verify_object_bytes
 from civic.signed_history_record import VerifiedHistoryRecord
 
@@ -116,10 +121,6 @@ class StandingProfileRequest:
     qualification_supplementary_evidence: tuple[StandingEvidence, ...]
 
 
-ProfileSemanticsValidator = Callable[
-    [StandingProfileContext, StandingProfileRequest],
-    None,
-]
 ObjectLoader = Callable[[bytes], bytes]
 
 
@@ -127,9 +128,9 @@ ObjectLoader = Callable[[bytes], bytes]
 class VerifiedParticipantStanding:
     """Type-specific result after generic signed-history verification.
 
-    The caller supplies the exact retained profile/source objects and a
-    profile-specific semantic validator because the generic Civic layer does
-    not invent source-derived standing rules.
+    Exact retained profile/source objects are verified against the accepted
+    Epoch Manifest, and mandatory profile semantics are evaluated by the
+    canonical Civic governing-profile verifier.
     """
 
     record_sha256: bytes
@@ -539,7 +540,6 @@ def verify_accepted_participant_standing(
     epoch_manifest: Mapping[str, object],
     evaluation_time_ms: int,
     load_object: ObjectLoader,
-    validate_profile_semantics: ProfileSemanticsValidator,
 ) -> VerifiedParticipantStanding:
     """Verify the type-specific participant-standing invariants.
 
@@ -547,9 +547,9 @@ def verify_accepted_participant_standing(
     separately establish accepted-history chain inclusion.
 
     Exact governing-profile/source bytes and every authority-required standing
-    evidence object are loaded by SHA-256. Profile-specific interpretation is
-    delegated to an explicit validator because Civic must not invent
-    source-derived qualification, participation, or standing-class semantics.
+    evidence object are loaded by SHA-256. Mandatory standing-class,
+    qualification, participation, provenance, evidence-role, and temporal
+    semantics are then evaluated from the canonical governing-profile bytes.
     """
 
     try:
@@ -880,6 +880,16 @@ def verify_accepted_participant_standing(
         load_object=load_object,
     )
 
+    try:
+        verified_profile = verify_governing_profile(
+            profile_context.profile_bytes,
+            epoch_manifest=epoch_manifest,
+        )
+    except CivicGoverningProfileError as exc:
+        raise CivicParticipantStandingError(
+            "governing profile failed canonical verification"
+        ) from exc
+
     _require_authority_evidence(
         participation_authority_evidence,
         object_index=object_index,
@@ -911,13 +921,11 @@ def verify_accepted_participant_standing(
     )
 
     try:
-        validate_profile_semantics(
-            profile_context,
+        validate_standing_against_profile(
+            verified_profile,
             profile_request,
         )
-    except CivicParticipantStandingError:
-        raise
-    except Exception as exc:
+    except CivicGoverningProfileError as exc:
         raise CivicParticipantStandingError(
             "standing does not satisfy governing-profile semantics"
         ) from exc
