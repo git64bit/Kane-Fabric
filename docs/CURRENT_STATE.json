@@ -962,7 +962,7 @@
       "ms5_008_candidate_repository_acceptance": "accepted on CT102 at 5a35b607ef16b5c94bd732e7f2eb73fbffc17ad0; 12 focused tests passed; full MS5 suite 86 passed / 1 skipped; WireGuard retained=NO; decision state=defer",
       "ms5_008_decision": "defer accepted 2026-09-21; WireGuard remains unretained; physical panic retained as diagnostic backlog"
     },
-    "next_work_item": "Define the canonical machine-readable governing-profile contract required by accepted participant-standing verification. Architecture only: freeze profile bytes/schema, source-set binding, standing-class and qualification-path recognition, participation-policy semantics, and the validator boundary without enabling production Civic signing or mutating annales."
+    "next_work_item": "Integrate the accepted canonical governing-profile verifier with accepted participant-standing verification so profile semantics are data-driven rather than supplied by an arbitrary caller callback. One implementation step only; preserve the accepted standing record contract and do not enable production signing or mutate annales."
   },
   "priority_workstream": {
     "name": "MS5-009 Firmware Authenticity / Update / Rollback / Recovery",
@@ -970,7 +970,7 @@
     "implementation_contract": "ms5/firmware-lifecycle-contract.json",
     "firmware_lifecycle_document": "docs/MS5_009_FIRMWARE_LIFECYCLE.md",
     "firmware_authority_document": "docs/MS5_FIRMWARE_AUTHORITY_NODE.md",
-    "status": "Deterministic CBOR, Epoch Manifest v1, COSE_Sign1/ESP256, fixture-only P-256 signing/verification, signed-manifest composition, diagnostic projection, linked Civic history, SHA-256 object storage, participant authority-state reconstruction, generic individually signed Civic history records, authenticated history reconstruction, Signing Node authorization, operator selection, participant issuance, and participant standing are accepted on CT102; canonical machine-readable governing-profile semantics and production signing remain held.",
+    "status": "Deterministic CBOR, Epoch Manifest v1, COSE_Sign1/ESP256, fixture-only P-256 signing/verification, signed-manifest composition, diagnostic projection, linked Civic history, SHA-256 object storage, participant authority-state reconstruction, generic individually signed Civic history records, authenticated history reconstruction, Signing Node authorization, operator selection, participant issuance, participant standing, and canonical governing-profile verification are accepted on CT102; direct standing-verifier integration and production signing remain held.",
     "signing_status": "inert-not-activated",
     "management_transport_dependency": false,
     "target_environment": "repository/design and published affordance source; no signer or firmware mutation",
@@ -1372,10 +1372,10 @@
     "civic_assistant_handoff": {
       "document": "docs/CIVIC_ASSISTANT_HANDOFF.md",
       "status": "ready-2026-09-23",
-      "last_ct102_tested_code_head": "1956848dccee0630bc7c0f80fd91c0ca20d1a0ae",
+      "last_ct102_tested_code_head": "af17dc4a39cd4d32c07208a0dbcd65fa25490152",
       "accepted_civic_gate": {
-        "ran": 102,
-        "passed": 102,
+        "ran": 116,
+        "passed": 116,
         "failed": 0,
         "skipped": 0
       },
@@ -1437,12 +1437,51 @@
       "signing_node_signer_permitted": "accepted",
       "recording_operator_provenance_binding": "accepted",
       "claim_responsibility_separate_from_cryptographic_signer": "accepted",
-      "profile_semantic_interpretation": "explicit-required-source-derived-validator",
-      "canonical_machine_readable_profile_serialization": "not-yet-frozen",
+      "profile_semantic_interpretation": "canonical-governing-profile-module-accepted; direct standing-verifier integration pending",
+      "canonical_machine_readable_profile_serialization": "accepted-ct102-2026-09-23",
+      "production_signing_enabled": false,
+      "production_key_created": false,
+      "annales_mutated": false
+    },
+    "civic_governing_profile_acceptance": {
+      "status": "accepted-ct102-2026-09-23",
+      "repository_head": "af17dc4a39cd4d32c07208a0dbcd65fa25490152",
+      "architecture_document": "docs/CIVIC_GOVERNING_PROFILE_CONTRACT.md",
+      "architecture_head": "2d323d5bed30c900dc67c8ae47c7b098a4864fb5",
+      "implementation": "civic/governing_profile.py",
+      "implementation_head": "33d35104394cd3a0a9381dae5a1a29eae535e090",
+      "focused_test_file": "civic/tests/test_governing_profile.py",
+      "focused_test_head": "af17dc4a39cd4d32c07208a0dbcd65fa25490152",
+      "focused_tests": {
+        "ran": 14,
+        "passed": 14,
+        "failed": 0,
+        "skipped": 0
+      },
+      "complete_civic_gate": {
+        "ran": 116,
+        "passed": 116,
+        "failed": 0,
+        "skipped": 0
+      },
+      "canonical_profile_format": "kane-civic-governing-profile-v1",
+      "deterministic_cbor_profile_bytes": "accepted",
+      "profile_sha256_exact_byte_identity": "accepted",
+      "canonical_governing_source_set_derivation": "accepted",
+      "source_set_sha256_binding": "accepted",
+      "standing_class_table_validation": "accepted",
+      "qualification_path_table_validation": "accepted",
+      "participation_policy_table_validation": "accepted",
+      "provenance_source_binding": "accepted",
+      "evidence_role_count_media_type_validation": "accepted",
+      "deterministic_utc_calendar_month_semantics": "accepted",
+      "manifest_profile_object_index_binding": "accepted",
+      "data_driven_standing_semantic_validator": "accepted",
+      "standing_verifier_direct_integration": "pending",
       "production_signing_enabled": false,
       "production_key_created": false,
       "annales_mutated": false
     }
   },
-  "next_safe_action": "Read docs/CIVIC_ASSISTANT_HANDOFF.md and docs/CIVIC_ACCEPTED_PARTICIPANT_STANDING_RECORD.md, then define the canonical machine-readable governing-profile contract required by the accepted standing verifier as one architecture-only repository step. Do not enable production Civic signing, create a production Civic key, or mutate annales."
+  "next_safe_action": "Read docs/CIVIC_ASSISTANT_HANDOFF.md, docs/CIVIC_ACCEPTED_PARTICIPANT_STANDING_RECORD.md, and docs/CIVIC_GOVERNING_PROFILE_CONTRACT.md, then integrate civic/governing_profile.py with civic/accepted_participant_standing.py as one bounded implementation step so mandatory profile semantics no longer depend on an arbitrary caller callback. Do not add tests in the same step, enable production Civic signing, create a production Civic key, or mutate annales."
 }

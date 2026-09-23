@@ -21,19 +21,19 @@ git64bit/Kane-Fabric
 Last CT102-tested Civic code head:
 
 ~~~text
-1956848dccee0630bc7c0f80fd91c0ca20d1a0ae
+af17dc4a39cd4d32c07208a0dbcd65fa25490152
 ~~~
 
 Accepted Civic test result at that head:
 
 ~~~text
-102 tests run
-102 passed
+116 tests run
+116 passed
 0 failed
 0 skipped
 ~~~
 
-The CT102 acceptance covers the participant-standing verifier and all previously accepted Civic components.
+The CT102 acceptance covers canonical governing-profile verification and all previously accepted Civic components.
 
 Repository documentation commits may exist after the last CT102-tested code head.
 
@@ -586,7 +586,50 @@ A participant signer must be the current manifest operator. The Signing Node is 
 
 Manifest membership does not override standing expiration. A record may remain valid historical authority material while failing present standing evaluation.
 
-Profile-specific standing class, qualification path, participation policy, and source-derived sufficiency are intentionally delegated to an explicit required semantic validator. The canonical machine-readable governing-profile serialization and validator contract are not yet frozen.
+Profile-specific standing class, qualification path, participation policy, evidence-role, provenance, and temporal semantics now have a canonical data-driven verifier in civic/governing_profile.py. The accepted participant-standing verifier still exposes its earlier callback seam; direct integration of the accepted governing-profile module is the next bounded implementation step.
+
+## Accepted canonical governing profile
+
+Architecture:
+
+docs/CIVIC_GOVERNING_PROFILE_CONTRACT.md
+
+Implementation:
+
+civic/governing_profile.py
+
+Focused tests:
+
+civic/tests/test_governing_profile.py
+
+Accepted CT102 head:
+
+~~~text
+af17dc4a39cd4d32c07208a0dbcd65fa25490152
+~~~
+
+Accepted gate:
+
+~~~text
+14 focused governing-profile tests passed
+116 complete Civic tests passed
+0 failed
+0 skipped
+~~~
+
+The accepted module freezes and verifies deterministic-CBOR profile bytes, exact profile SHA-256 identity, deterministic governing-source-set derivation, source-set binding, standing-class/qualification-path/participation-policy tables, provenance, evidence rules, UTC calendar-month temporal semantics, profile referential integrity, and data-driven standing semantics.
+
+The governing profile is authority data, not executable policy code.
+
+The module provides a callback adapter for the previously accepted standing-verifier seam, but civic/accepted_participant_standing.py has not yet been changed to require this canonical module directly.
+
+Therefore:
+
+~~~text
+governing-profile semantics accepted
+    != yet
+standing-verifier direct integration accepted
+~~~
 
 ## Broader Civic Issuance Record
 
@@ -870,50 +913,48 @@ The retained manifest lineage, public keys, signed history, and required objects
 
 This should remain a consequence of the architecture, not a reason to introduce a central verification service.
 
-## Immediate next architecture problem
+## Immediate next implementation problem
 
-Participant standing is now accepted on CT102.
+Canonical governing-profile architecture, implementation, and focused tests are now accepted on CT102.
 
-The unresolved dependency exposed deliberately by the accepted verifier is the governing-profile semantic contract.
-
-The next Assistant should define the canonical machine-readable governing-profile representation needed to answer:
+The remaining seam is inside:
 
 ~~~text
-what exact bytes constitute a Civic governing profile?
-how is profile_sha256 computed from those bytes?
-how is source_set_sha256 deterministically bound to the applicable governing sources?
-which standing_class identifiers are recognized?
-which qualification.path_id values are recognized?
-which participation policy identifiers and temporal rules are recognized?
-which claim_responsibility modes are permitted for each path?
-which authority evidence roles are required, optional, or supplementary?
-what exact interface must the participant-standing verifier use for source-derived semantic validation?
+civic/accepted_participant_standing.py
 ~~~
 
-This remains an architecture step first.
+That verifier still requires the caller to supply:
 
-Do not hard-code one HOA's legal conclusions into the generic Civic verifier.
+~~~text
+validate_profile_semantics
+~~~
 
-Do not turn SASE into a universal condominium-law requirement.
+This was correct before canonical profile semantics were frozen. It should now become an implementation detail rather than caller authority.
 
-Do not make a profile interpreter a hidden network dependency.
+The next bounded implementation step should integrate the accepted governing-profile verifier so participant-standing verification is reproducible from the exact accepted standing record, Epoch Manifest, governing-profile bytes, governing-source bytes, and authority-evidence bytes without an arbitrary caller-defined semantic policy.
 
-Do not enable production signing or create a production Civic key while freezing this contract.
+Preserve these distinctions:
+
+~~~text
+profile verification
+    != legal truth oracle
+
+operator signature
+    != certification of every participant claim
+
+SASE participation
+    != universal condominium-law requirement
+~~~
+
+Do not add focused tests in the same implementation step.
+
+Do not enable production signing, create a production Civic key, or mutate annales.
 
 ## Recommended first bounded step for the new Assistant
 
-Create one governing-profile architecture contract before adding a concrete semantic interpreter.
+Modify only the participant-standing integration boundary needed to consume the accepted canonical governing-profile module.
 
-The exact document name may be chosen during that bounded step, but it must preserve the existing authority boundary:
-
-~~~text
-governing sources
-    -> canonical profile bytes
-    -> explicit source-derived semantic validator
-    -> participant-standing verification
-~~~
-
-The architecture should be reviewed before implementation because this contract determines how source-derived law/instrument/profile meaning enters otherwise generic cryptographic standing verification.
+Keep the change small enough that focused integration tests can be added and reviewed as a separate following step.
 
 ## Handoff invariant
 
