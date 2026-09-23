@@ -962,7 +962,7 @@
       "ms5_008_candidate_repository_acceptance": "accepted on CT102 at 5a35b607ef16b5c94bd732e7f2eb73fbffc17ad0; 12 focused tests passed; full MS5 suite 86 passed / 1 skipped; WireGuard retained=NO; decision state=defer",
       "ms5_008_decision": "defer accepted 2026-09-21; WireGuard remains unretained; physical panic retained as diagnostic backlog"
     },
-    "next_work_item": "Integrate the accepted canonical governing-profile verifier with accepted participant-standing verification so profile semantics are data-driven rather than supplied by an arbitrary caller callback. One implementation step only; preserve the accepted standing record contract and do not enable production signing or mutate annales."
+    "next_work_item": "Inventory the remaining work of the current Civic milestone before any further architecture, implementation, deployment, production signing, or annales mutation."
   },
   "priority_workstream": {
     "name": "MS5-009 Firmware Authenticity / Update / Rollback / Recovery",
@@ -970,7 +970,7 @@
     "implementation_contract": "ms5/firmware-lifecycle-contract.json",
     "firmware_lifecycle_document": "docs/MS5_009_FIRMWARE_LIFECYCLE.md",
     "firmware_authority_document": "docs/MS5_FIRMWARE_AUTHORITY_NODE.md",
-    "status": "Deterministic CBOR, Epoch Manifest v1, COSE_Sign1/ESP256, fixture-only P-256 signing/verification, signed-manifest composition, diagnostic projection, linked Civic history, SHA-256 object storage, participant authority-state reconstruction, generic individually signed Civic history records, authenticated history reconstruction, Signing Node authorization, operator selection, participant issuance, participant standing, and canonical governing-profile verification are accepted on CT102; direct standing-verifier integration and production signing remain held.",
+    "status": "Deterministic CBOR, Epoch Manifest v1, COSE_Sign1/ESP256, fixture-only P-256 signing/verification, signed-manifest composition, diagnostic projection, linked Civic history, SHA-256 object storage, participant authority-state reconstruction, generic individually signed Civic history records, authenticated history reconstruction, Signing Node authorization, operator selection, participant issuance, participant standing, canonical governing-profile verification, and direct canonical governing-profile integration into participant-standing verification are accepted on CT102; production signing remains held pending milestone inventory and later explicit deployment decisions.",
     "signing_status": "inert-not-activated",
     "management_transport_dependency": false,
     "target_environment": "repository/design and published affordance source; no signer or firmware mutation",
@@ -1372,7 +1372,7 @@
     "civic_assistant_handoff": {
       "document": "docs/CIVIC_ASSISTANT_HANDOFF.md",
       "status": "ready-2026-09-23",
-      "last_ct102_tested_code_head": "af17dc4a39cd4d32c07208a0dbcd65fa25490152",
+      "last_ct102_tested_code_head": "ac76abc4f44a6d38b128f2c6de661d4ec3de8dc3",
       "accepted_civic_gate": {
         "ran": 116,
         "passed": 116,
@@ -1406,13 +1406,13 @@
     },
     "civic_participant_standing_acceptance": {
       "status": "accepted-ct102-2026-09-23",
-      "repository_head": "1956848dccee0630bc7c0f80fd91c0ca20d1a0ae",
+      "repository_head": "ac76abc4f44a6d38b128f2c6de661d4ec3de8dc3",
       "architecture_document": "docs/CIVIC_ACCEPTED_PARTICIPANT_STANDING_RECORD.md",
       "architecture_head": "0eb65e13bf43c6c16880fee983ad033762a881ca",
       "implementation": "civic/accepted_participant_standing.py",
       "implementation_head": "99999da56157a13d018e48bf43a925257b5711a3",
       "focused_test_file": "civic/tests/test_accepted_participant_standing.py",
-      "focused_test_head": "1956848dccee0630bc7c0f80fd91c0ca20d1a0ae",
+      "focused_test_head": "ac76abc4f44a6d38b128f2c6de661d4ec3de8dc3",
       "focused_tests": {
         "ran": 11,
         "passed": 11,
@@ -1420,8 +1420,8 @@
         "skipped": 0
       },
       "complete_civic_gate": {
-        "ran": 102,
-        "passed": 102,
+        "ran": 116,
+        "passed": 116,
         "failed": 0,
         "skipped": 0
       },
@@ -1437,11 +1437,13 @@
       "signing_node_signer_permitted": "accepted",
       "recording_operator_provenance_binding": "accepted",
       "claim_responsibility_separate_from_cryptographic_signer": "accepted",
-      "profile_semantic_interpretation": "canonical-governing-profile-module-accepted; direct standing-verifier integration pending",
+      "profile_semantic_interpretation": "canonical-governing-profile-module-integrated-and-accepted",
       "canonical_machine_readable_profile_serialization": "accepted-ct102-2026-09-23",
       "production_signing_enabled": false,
       "production_key_created": false,
-      "annales_mutated": false
+      "annales_mutated": false,
+      "direct_governing_profile_integration": "accepted-ct102-2026-09-23",
+      "caller_supplied_profile_semantics_callback_required": false
     },
     "civic_governing_profile_acceptance": {
       "status": "accepted-ct102-2026-09-23",
@@ -1477,11 +1479,50 @@
       "deterministic_utc_calendar_month_semantics": "accepted",
       "manifest_profile_object_index_binding": "accepted",
       "data_driven_standing_semantic_validator": "accepted",
-      "standing_verifier_direct_integration": "pending",
+      "standing_verifier_direct_integration": "accepted-ct102-2026-09-23",
+      "production_signing_enabled": false,
+      "production_key_created": false,
+      "annales_mutated": false,
+      "standing_verifier_integration_head": "ac76abc4f44a6d38b128f2c6de661d4ec3de8dc3",
+      "integration_focused_tests": {
+        "ran": 11,
+        "passed": 11,
+        "failed": 0,
+        "skipped": 0
+      },
+      "integration_complete_civic_gate": {
+        "ran": 116,
+        "passed": 116,
+        "failed": 0,
+        "skipped": 0
+      }
+    },
+    "civic_standing_profile_integration_acceptance": {
+      "status": "accepted-ct102-2026-09-23",
+      "repository_head": "ac76abc4f44a6d38b128f2c6de661d4ec3de8dc3",
+      "implementation_file": "civic/accepted_participant_standing.py",
+      "implementation_commit": "ac39739afe8127e645d801b72a2da8aa8cdfca1c",
+      "focused_test_file": "civic/tests/test_accepted_participant_standing.py",
+      "focused_test_commit": "ac76abc4f44a6d38b128f2c6de661d4ec3de8dc3",
+      "focused_tests": {
+        "ran": 11,
+        "passed": 11,
+        "failed": 0,
+        "skipped": 0
+      },
+      "complete_civic_gate": {
+        "ran": 116,
+        "passed": 116,
+        "failed": 0,
+        "skipped": 0
+      },
+      "canonical_profile_verification_internal": "accepted",
+      "data_driven_profile_semantics_internal": "accepted",
+      "caller_supplied_profile_semantics_callback_required": false,
       "production_signing_enabled": false,
       "production_key_created": false,
       "annales_mutated": false
     }
   },
-  "next_safe_action": "Read docs/CIVIC_ASSISTANT_HANDOFF.md, docs/CIVIC_ACCEPTED_PARTICIPANT_STANDING_RECORD.md, and docs/CIVIC_GOVERNING_PROFILE_CONTRACT.md, then integrate civic/governing_profile.py with civic/accepted_participant_standing.py as one bounded implementation step so mandatory profile semantics no longer depend on an arbitrary caller callback. Do not add tests in the same step, enable production Civic signing, create a production Civic key, or mutate annales."
+  "next_safe_action": "Pause implementation and inventory the remaining work of the current Civic milestone from repository state. Classify remaining items as required to close the milestone, explicitly deferred to later milestones/deployment, or already accepted. Do not implement anything until that inventory is reviewed. Production signing remains disabled; no production Civic key exists; annales remains untouched."
 }

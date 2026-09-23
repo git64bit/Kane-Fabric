@@ -21,7 +21,7 @@ git64bit/Kane-Fabric
 Last CT102-tested Civic code head:
 
 ~~~text
-af17dc4a39cd4d32c07208a0dbcd65fa25490152
+ac76abc4f44a6d38b128f2c6de661d4ec3de8dc3
 ~~~
 
 Accepted Civic test result at that head:
@@ -33,7 +33,7 @@ Accepted Civic test result at that head:
 0 skipped
 ~~~
 
-The CT102 acceptance covers canonical governing-profile verification and all previously accepted Civic components.
+The CT102 acceptance covers direct canonical governing-profile integration into participant-standing verification and all previously accepted Civic components.
 
 Repository documentation commits may exist after the last CT102-tested code head.
 
@@ -621,14 +621,23 @@ The accepted module freezes and verifies deterministic-CBOR profile bytes, exact
 
 The governing profile is authority data, not executable policy code.
 
-The module provides a callback adapter for the previously accepted standing-verifier seam, but civic/accepted_participant_standing.py has not yet been changed to require this canonical module directly.
+The participant-standing verifier now consumes the canonical governing-profile module directly. It verifies exact profile bytes against the Epoch Manifest and applies mandatory data-driven standing semantics internally.
 
-Therefore:
+The former caller-supplied semantic callback is no longer part of accepted participant-standing verification.
+
+Accepted direct-integration head:
 
 ~~~text
-governing-profile semantics accepted
-    != yet
-standing-verifier direct integration accepted
+ac76abc4f44a6d38b128f2c6de661d4ec3de8dc3
+~~~
+
+Accepted integration gate:
+
+~~~text
+11 focused participant-standing integration tests passed
+116 complete Civic tests passed
+0 failed
+0 skipped
 ~~~
 
 ## Broader Civic Issuance Record
@@ -913,48 +922,44 @@ The retained manifest lineage, public keys, signed history, and required objects
 
 This should remain a consequence of the architecture, not a reason to introduce a central verification service.
 
-## Immediate next implementation problem
+## Immediate next task: milestone inventory
 
-Canonical governing-profile architecture, implementation, and focused tests are now accepted on CT102.
+Pause implementation.
 
-The remaining seam is inside:
+Canonical governing-profile semantics are now directly integrated into accepted participant-standing verification and accepted on CT102.
 
-~~~text
-civic/accepted_participant_standing.py
-~~~
+Before defining or implementing another Civic component, inventory the remaining work of the current milestone from repository state.
 
-That verifier still requires the caller to supply:
+The inventory should classify each remaining item as:
 
 ~~~text
-validate_profile_semantics
+required to close this milestone
+explicitly deferred to a later milestone or deployment
+already accepted / no further work required here
 ~~~
 
-This was correct before canonical profile semantics were frozen. It should now become an implementation detail rather than caller authority.
+The inventory must distinguish protocol/authority completeness from deployment work.
 
-The next bounded implementation step should integrate the accepted governing-profile verifier so participant-standing verification is reproducible from the exact accepted standing record, Epoch Manifest, governing-profile bytes, governing-source bytes, and authority-evidence bytes without an arbitrary caller-defined semantic policy.
+In particular, do not treat any of the following as automatically required merely because they are possible next steps:
 
-Preserve these distinctions:
+- production Civic signing;
+- creation of a production Civic private key;
+- deployment of the Civic Signing Node on annales;
+- firmware/appliance deployment;
+- broader Affordance Authority Contract serialization;
+- live HOA profile authoring;
+- Diagnostics/RAG implementation;
+- optional emergent-feature work.
+
+Production boundaries remain:
 
 ~~~text
-profile verification
-    != legal truth oracle
-
-operator signature
-    != certification of every participant claim
-
-SASE participation
-    != universal condominium-law requirement
+production_signing_enabled = false
+production_key_created = false
+annales_mutated = false
 ~~~
 
-Do not add focused tests in the same implementation step.
-
-Do not enable production signing, create a production Civic key, or mutate annales.
-
-## Recommended first bounded step for the new Assistant
-
-Modify only the participant-standing integration boundary needed to consume the accepted canonical governing-profile module.
-
-Keep the change small enough that focused integration tests can be added and reviewed as a separate following step.
+No further code or architecture should be committed until the milestone inventory is reviewed.
 
 ## Handoff invariant
 
