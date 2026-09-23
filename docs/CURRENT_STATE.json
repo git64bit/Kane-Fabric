@@ -962,7 +962,7 @@
       "ms5_008_candidate_repository_acceptance": "accepted on CT102 at 5a35b607ef16b5c94bd732e7f2eb73fbffc17ad0; 12 focused tests passed; full MS5 suite 86 passed / 1 skipped; WireGuard retained=NO; decision state=defer",
       "ms5_008_decision": "defer accepted 2026-09-21; WireGuard remains unretained; physical panic retained as diagnostic backlog"
     },
-    "next_work_item": "Define the type-specific accepted participant issuance record that gives meaning to manifest participants[].issuance_record_sha256 while preserving participant standing as a separately evidenced source-derived fact."
+    "next_work_item": "Prepare Civic Assistant handoff, then begin the type-specific participant-standing contract for manifest participants[].standing_record_sha256."
   },
   "priority_workstream": {
     "name": "MS5-009 Firmware Authenticity / Update / Rollback / Recovery",
@@ -970,7 +970,7 @@
     "implementation_contract": "ms5/firmware-lifecycle-contract.json",
     "firmware_lifecycle_document": "docs/MS5_009_FIRMWARE_LIFECYCLE.md",
     "firmware_authority_document": "docs/MS5_FIRMWARE_AUTHORITY_NODE.md",
-    "status": "Deterministic CBOR, Epoch Manifest v1, COSE_Sign1/ESP256, fixture-only P-256 signing/verification, signed-manifest composition, diagnostic projection, linked Civic history, SHA-256 object storage, participant authority-state reconstruction, generic individually signed Civic history records, authenticated history reconstruction, Signing Node authorization, and operator-selection type-specific contracts/verifiers are accepted on CT102; governance-proof semantic interpretation and production signing remain held.",
+    "status": "Deterministic CBOR, Epoch Manifest v1, COSE_Sign1/ESP256, fixture-only P-256 signing/verification, signed-manifest composition, diagnostic projection, linked Civic history, SHA-256 object storage, participant authority-state reconstruction, generic individually signed Civic history records, authenticated history reconstruction, Signing Node authorization, operator selection, and participant issuance are accepted on CT102; participant standing semantics and production signing remain held.",
     "signing_status": "inert-not-activated",
     "management_transport_dependency": false,
     "target_environment": "repository/design and published affordance source; no signer or firmware mutation",
@@ -1339,7 +1339,36 @@
       "production_signing_enabled": false,
       "production_key_created": false,
       "annales_mutated": false
+    },
+    "civic_participant_issuance_acceptance": {
+      "status": "accepted-ct102-2026-09-23",
+      "repository_head": "b6b69d78204228caa98e54c14cf4071640d2b9f7",
+      "focused_gate": "civic/run-tests.sh",
+      "tests": {
+        "ran": 91,
+        "passed": 91,
+        "failed": 0,
+        "skipped": 0,
+        "participant_issuance_tests": 8,
+        "operator_selection_tests": 8,
+        "signing_node_authorization_tests": 6,
+        "authority_state_tests": 8,
+        "signed_history_record_tests": 8,
+        "cose_tests": 7
+      },
+      "accepted_stream_required": "accepted",
+      "participant_signer_must_be_current_operator": "accepted",
+      "signing_node_signer_permitted": "accepted",
+      "participant_identity_binding": "accepted",
+      "participant_key_binding": "accepted",
+      "standing_record_binding": "accepted",
+      "issuing_operator_provenance_binding": "accepted",
+      "exact_issuance_record_identity_binding": "accepted",
+      "standing_semantic_verification": "deferred-to-standing-contract",
+      "production_signing_enabled": false,
+      "production_key_created": false,
+      "annales_mutated": false
     }
   },
-  "next_safe_action": "Repository-only architecture step: define the accepted participant-issuance record invariants for manifest participants[].issuance_record_sha256, including exact participant/key binding and retained standing evidence, without prescribing the owner-operator issuance ceremony or creating production Civic keys."
+  "next_safe_action": "Repository-only handoff preparation: create one authoritative Civic Assistant handoff document summarizing accepted state, invariants, boundaries, emergent features, strict development cadence, and the next standing-record problem. Do not create production Civic keys or mutate annales."
 }
