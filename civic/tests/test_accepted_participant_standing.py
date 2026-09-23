@@ -6,12 +6,16 @@ import unittest
 from civic.accepted_participant_standing import (
     RECORD_TYPE,
     CivicParticipantStandingError,
-    StandingProfileContext,
-    StandingProfileRequest,
     verify_accepted_participant_standing,
 )
 from civic.ecdsa import public_key_from_private_scalar
 from civic.epoch_manifest import CRYPTO_PROFILE, derive_key_id
+from civic.governing_profile import (
+    PROFILE_MEDIA_TYPE,
+    PROFILE_SEMANTIC_ROLE,
+    encode_governing_profile,
+    governing_source_set_sha256,
+)
 from civic.signed_history_record import (
     sign_history_record_fixture,
     verify_signed_history_record,
@@ -21,12 +25,98 @@ from civic.tests.test_epoch_manifest import P1, P2, fixture_manifest, h
 
 P3 = public_key_from_private_scalar(3)
 
-PROFILE_BYTES = b"kane standing profile fixture v1\n"
-PROFILE_SHA256 = hashlib.sha256(PROFILE_BYTES).digest()
+PROFILE_ID = "illinois-condominium-standing-v1"
+STANDING_CLASS = "current-unit-owner-participant"
+QUALIFICATION_PATH = "participant-claim-with-record-evidence"
+PARTICIPATION_POLICY = "kane-sase-six-month-v1"
 
 SOURCE_BYTES = b"fixture governing source for standing\n"
 SOURCE_SHA256 = hashlib.sha256(SOURCE_BYTES).digest()
-SOURCE_SET_SHA256 = hashlib.sha256(b"fixture source set v1\n").digest()
+
+GOVERNING_SOURCES = [
+    {
+        "source_id": "fixture-governing-source",
+        "role": "governing",
+        "sha256": SOURCE_SHA256,
+        "byte_length": len(SOURCE_BYTES),
+        "media_type": "text/plain",
+        "title": "Fixture governing source",
+        "source_uri": None,
+    }
+]
+
+SOURCE_SET_SHA256 = governing_source_set_sha256(GOVERNING_SOURCES)
+
+PROFILE_VALUE = {
+    "format": "kane-civic-governing-profile",
+    "version": 1,
+    "profile_id": PROFILE_ID,
+    "source_set_sha256": SOURCE_SET_SHA256,
+    "standing_classes": [
+        {
+            "standing_class": STANDING_CLASS,
+            "qualification_path_ids": [QUALIFICATION_PATH],
+            "participation_required": True,
+            "participation_policy_ids": [PARTICIPATION_POLICY],
+            "allow_open_ended_standing": False,
+            "maximum_standing_duration": None,
+            "provenance": {
+                "kind": "governing_source",
+                "source_ids": ["fixture-governing-source"],
+            },
+        }
+    ],
+    "qualification_paths": [
+        {
+            "path_id": QUALIFICATION_PATH,
+            "permitted_claim_responsibility": [
+                "participant_claimed",
+            ],
+            "authority_evidence": [
+                {
+                    "semantic_role": "standing-qualification-evidence",
+                    "min_count": 1,
+                    "max_count": 1,
+                    "media_types": ["text/plain"],
+                }
+            ],
+            "supplementary_evidence": [
+                {
+                    "semantic_role": "supplementary-corroboration",
+                    "min_count": 0,
+                    "max_count": 1,
+                    "media_types": ["application/octet-stream"],
+                }
+            ],
+            "provenance": {
+                "kind": "governing_source",
+                "source_ids": ["fixture-governing-source"],
+            },
+        }
+    ],
+    "participation_policies": [
+        {
+            "policy_id": PARTICIPATION_POLICY,
+            "attestation_mode": "recording_operator",
+            "interval_rule": {
+                "kind": "explicit_bounded",
+                "value": None,
+            },
+            "authority_evidence": [],
+            "supplementary_evidence": [],
+            "provenance": {
+                "kind": "civic_mechanism",
+                "source_ids": [],
+            },
+        }
+    ],
+}
+
+PROFILE_BYTES = encode_governing_profile(
+    PROFILE_VALUE,
+    governing_sources=GOVERNING_SOURCES,
+)
+PROFILE_SHA256 = hashlib.sha256(PROFILE_BYTES).digest()
 
 QUALIFICATION_BYTES = b"fixture qualification evidence\n"
 QUALIFICATION_SHA256 = hashlib.sha256(QUALIFICATION_BYTES).digest()
@@ -75,37 +165,6 @@ def _evidence_descriptor(
     }
 
 
-def _profile_validator(
-    context: StandingProfileContext,
-    request: StandingProfileRequest,
-) -> None:
-    if context.profile_id != "illinois-condominium-standing-v1":
-        raise ValueError("unexpected profile id")
-    if context.profile_bytes != PROFILE_BYTES:
-        raise ValueError("unexpected profile bytes")
-    if len(context.governing_sources) != 1:
-        raise ValueError("unexpected governing source count")
-    if context.governing_sources[0].exact_bytes != SOURCE_BYTES:
-        raise ValueError("unexpected governing source bytes")
-    if request.standing_class != "current-unit-owner-participant":
-        raise ValueError("unexpected standing class")
-    if request.qualification_path_id != "participant-claim-with-record-evidence":
-        raise ValueError("unexpected qualification path")
-    if request.claim_responsibility != "participant_claimed":
-        raise ValueError("unexpected claim responsibility")
-    if not request.participation_required:
-        raise ValueError("participation must be required")
-    if request.participation_policy_id != "kane-sase-six-month-v1":
-        raise ValueError("unexpected participation policy")
-
-
-def _rejecting_profile_validator(
-    context: StandingProfileContext,
-    request: StandingProfileRequest,
-) -> None:
-    del context, request
-    raise ValueError("profile semantics rejected fixture standing")
-
 
 def standing_fixture(
     *,
@@ -116,6 +175,7 @@ def standing_fixture(
     valid_until_ms: int | None = VALID_UNTIL_MS,
     participation_valid_from_ms: int = VALID_FROM_MS,
     participation_valid_until_ms: int | None = VALID_UNTIL_MS,
+    standing_class: str = STANDING_CLASS,
     governing_profile_override: dict[str, object] | None = None,
     add_second_participant: bool = False,
     signer_participant_record_sha256: bytes | None = None,
@@ -131,20 +191,13 @@ def standing_fixture(
     manifest = fixture_manifest()
 
     manifest["governing_profile"] = {
-        "profile_id": "illinois-condominium-standing-v1",
+        "profile_id": PROFILE_ID,
         "profile_sha256": PROFILE_SHA256,
         "source_set_sha256": SOURCE_SET_SHA256,
     }
     manifest["governing_sources"] = [
-        {
-            "source_id": "fixture-governing-source",
-            "role": "governing",
-            "sha256": SOURCE_SHA256,
-            "byte_length": len(SOURCE_BYTES),
-            "media_type": "text/plain",
-            "title": "Fixture governing source",
-            "source_uri": None,
-        }
+        dict(source)
+        for source in GOVERNING_SOURCES
     ]
 
     object_index = manifest["object_index"]
@@ -153,8 +206,8 @@ def standing_fixture(
         _object_descriptor(
             sha256=PROFILE_SHA256,
             byte_length=len(PROFILE_BYTES),
-            media_type="application/kane-civic-standing-profile",
-            semantic_role="governing-profile",
+            media_type=PROFILE_MEDIA_TYPE,
+            semantic_role=PROFILE_SEMANTIC_ROLE,
             inline=PROFILE_BYTES,
             name="standing-profile.fixture",
         )
@@ -248,19 +301,19 @@ def standing_fixture(
         "body": {
             "participant_record_sha256": h(16),
             "governing_profile": body_profile,
-            "standing_class": "current-unit-owner-participant",
+            "standing_class": standing_class,
             "valid_from_ms": valid_from_ms,
             "valid_until_ms": valid_until_ms,
             "participation": {
                 "required": True,
-                "policy_id": "kane-sase-six-month-v1",
+                "policy_id": PARTICIPATION_POLICY,
                 "valid_from_ms": participation_valid_from_ms,
                 "valid_until_ms": participation_valid_until_ms,
                 "authority_evidence": [],
                 "supplementary_evidence": [],
             },
             "qualification": {
-                "path_id": "participant-claim-with-record-evidence",
+                "path_id": QUALIFICATION_PATH,
                 "claim_responsibility": "participant_claimed",
                 "authority_evidence": [
                     _evidence_descriptor(
@@ -323,7 +376,6 @@ class CivicAcceptedParticipantStandingTests(unittest.TestCase):
             epoch_manifest=manifest,
             evaluation_time_ms=evaluation_time,
             load_object=_loader(objects),
-            validate_profile_semantics=_profile_validator,
         )
 
         self.assertEqual(verified.record_sha256, result.record_sha256)
@@ -357,7 +409,6 @@ class CivicAcceptedParticipantStandingTests(unittest.TestCase):
             epoch_manifest=manifest,
             evaluation_time_ms=evaluation_time,
             load_object=_loader(objects),
-            validate_profile_semantics=_profile_validator,
         )
 
         self.assertEqual("signing_node", result.signer_kind)
@@ -375,7 +426,6 @@ class CivicAcceptedParticipantStandingTests(unittest.TestCase):
                 epoch_manifest=manifest,
                 evaluation_time_ms=evaluation_time,
                 load_object=_loader(objects),
-                validate_profile_semantics=_profile_validator,
             )
 
     def test_expired_standing_is_rejected_even_when_manifest_still_lists_participant(self) -> None:
@@ -387,7 +437,6 @@ class CivicAcceptedParticipantStandingTests(unittest.TestCase):
                 epoch_manifest=manifest,
                 evaluation_time_ms=VALID_UNTIL_MS,
                 load_object=_loader(objects),
-                validate_profile_semantics=_profile_validator,
             )
 
     def test_standing_must_not_extend_beyond_required_participation(self) -> None:
@@ -402,7 +451,6 @@ class CivicAcceptedParticipantStandingTests(unittest.TestCase):
                 epoch_manifest=manifest,
                 evaluation_time_ms=evaluation_time,
                 load_object=_loader(objects),
-                validate_profile_semantics=_profile_validator,
             )
 
     def test_missing_or_corrupt_authority_evidence_is_rejected(self) -> None:
@@ -416,7 +464,6 @@ class CivicAcceptedParticipantStandingTests(unittest.TestCase):
                 epoch_manifest=missing_manifest,
                 evaluation_time_ms=evaluation_time,
                 load_object=_loader(missing_objects),
-                validate_profile_semantics=_profile_validator,
             )
 
         corrupt_manifest, corrupt_verified, corrupt_objects, evaluation_time = standing_fixture(
@@ -429,7 +476,6 @@ class CivicAcceptedParticipantStandingTests(unittest.TestCase):
                 epoch_manifest=corrupt_manifest,
                 evaluation_time_ms=evaluation_time,
                 load_object=_loader(corrupt_objects),
-                validate_profile_semantics=_profile_validator,
             )
 
     def test_authority_evidence_must_be_declared_in_manifest_object_index(self) -> None:
@@ -443,7 +489,6 @@ class CivicAcceptedParticipantStandingTests(unittest.TestCase):
                 epoch_manifest=manifest,
                 evaluation_time_ms=evaluation_time,
                 load_object=_loader(objects),
-                validate_profile_semantics=_profile_validator,
             )
 
     def test_supplementary_evidence_need_not_be_locally_available(self) -> None:
@@ -457,7 +502,6 @@ class CivicAcceptedParticipantStandingTests(unittest.TestCase):
             epoch_manifest=manifest,
             evaluation_time_ms=evaluation_time,
             load_object=_loader(objects),
-            validate_profile_semantics=_profile_validator,
         )
 
         self.assertEqual(
@@ -477,7 +521,6 @@ class CivicAcceptedParticipantStandingTests(unittest.TestCase):
                 epoch_manifest=manifest,
                 evaluation_time_ms=evaluation_time,
                 load_object=_loader(objects),
-                validate_profile_semantics=_profile_validator,
             )
 
     def test_governing_profile_mismatch_is_rejected(self) -> None:
@@ -495,11 +538,12 @@ class CivicAcceptedParticipantStandingTests(unittest.TestCase):
                 epoch_manifest=manifest,
                 evaluation_time_ms=evaluation_time,
                 load_object=_loader(objects),
-                validate_profile_semantics=_profile_validator,
             )
 
-    def test_profile_specific_semantic_rejection_fails_standing(self) -> None:
-        manifest, verified, objects, evaluation_time = standing_fixture()
+    def test_canonical_profile_semantic_rejection_fails_standing(self) -> None:
+        manifest, verified, objects, evaluation_time = standing_fixture(
+            standing_class="not-recognized-by-profile",
+        )
 
         with self.assertRaises(CivicParticipantStandingError):
             verify_accepted_participant_standing(
@@ -507,7 +551,6 @@ class CivicAcceptedParticipantStandingTests(unittest.TestCase):
                 epoch_manifest=manifest,
                 evaluation_time_ms=evaluation_time,
                 load_object=_loader(objects),
-                validate_profile_semantics=_rejecting_profile_validator,
             )
 
 
