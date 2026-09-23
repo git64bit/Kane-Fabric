@@ -807,17 +807,21 @@ def _validate_referential_integrity(
             "participation_policies contains an unused definition"
         )
 
+    policy_by_id = {
+        item.policy_id: item
+        for item in participation_policies
+    }
+
     for standing_class in standing_classes:
-        if not standing_class.allow_open_ended_standing:
-            continue
         for policy_id in standing_class.participation_policy_ids:
-            policy = next(
-                item
-                for item in participation_policies
-                if item.policy_id == policy_id
-            )
-            if policy.interval_rule.kind == "open_ended":
-                break
+            policy = policy_by_id[policy_id]
+            if (
+                policy.interval_rule.kind == "open_ended"
+                and not standing_class.allow_open_ended_standing
+            ):
+                raise CivicGoverningProfileError(
+                    "open-ended participation policy requires standing class to permit open-ended standing"
+                )
 
 
 def canonical_governing_source_set(
