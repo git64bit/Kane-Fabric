@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "observed_date": "2026-09-22",
+  "observed_date": "2026-09-23",
   "project": {
     "repository": "git64bit/Kane-Fabric",
     "branch": "main",
@@ -962,7 +962,7 @@
       "ms5_008_candidate_repository_acceptance": "accepted on CT102 at 5a35b607ef16b5c94bd732e7f2eb73fbffc17ad0; 12 focused tests passed; full MS5 suite 86 passed / 1 skipped; WireGuard retained=NO; decision state=defer",
       "ms5_008_decision": "defer accepted 2026-09-21; WireGuard remains unretained; physical panic retained as diagnostic backlog"
     },
-    "next_work_item": "Define the accepted participant-standing architecture for manifest participants[].standing_record_sha256. Architecture only: freeze the minimum standing assertion, governing/profile context, evidence identities, attestation boundaries, temporal/currentness semantics, Kane voluntary-participation relationship, and reconstruction obligations before implementation."
+    "next_work_item": "Define the canonical machine-readable governing-profile contract required by accepted participant-standing verification. Architecture only: freeze profile bytes/schema, source-set binding, standing-class and qualification-path recognition, participation-policy semantics, and the validator boundary without enabling production Civic signing or mutating annales."
   },
   "priority_workstream": {
     "name": "MS5-009 Firmware Authenticity / Update / Rollback / Recovery",
@@ -970,7 +970,7 @@
     "implementation_contract": "ms5/firmware-lifecycle-contract.json",
     "firmware_lifecycle_document": "docs/MS5_009_FIRMWARE_LIFECYCLE.md",
     "firmware_authority_document": "docs/MS5_FIRMWARE_AUTHORITY_NODE.md",
-    "status": "Deterministic CBOR, Epoch Manifest v1, COSE_Sign1/ESP256, fixture-only P-256 signing/verification, signed-manifest composition, diagnostic projection, linked Civic history, SHA-256 object storage, participant authority-state reconstruction, generic individually signed Civic history records, authenticated history reconstruction, Signing Node authorization, operator selection, and participant issuance are accepted on CT102; participant standing semantics and production signing remain held.",
+    "status": "Deterministic CBOR, Epoch Manifest v1, COSE_Sign1/ESP256, fixture-only P-256 signing/verification, signed-manifest composition, diagnostic projection, linked Civic history, SHA-256 object storage, participant authority-state reconstruction, generic individually signed Civic history records, authenticated history reconstruction, Signing Node authorization, operator selection, participant issuance, and participant standing are accepted on CT102; canonical machine-readable governing-profile semantics and production signing remain held.",
     "signing_status": "inert-not-activated",
     "management_transport_dependency": false,
     "target_environment": "repository/design and published affordance source; no signer or firmware mutation",
@@ -1372,10 +1372,10 @@
     "civic_assistant_handoff": {
       "document": "docs/CIVIC_ASSISTANT_HANDOFF.md",
       "status": "ready-2026-09-23",
-      "last_ct102_tested_code_head": "b6b69d78204228caa98e54c14cf4071640d2b9f7",
+      "last_ct102_tested_code_head": "1956848dccee0630bc7c0f80fd91c0ca20d1a0ae",
       "accepted_civic_gate": {
-        "ran": 91,
-        "passed": 91,
+        "ran": 102,
+        "passed": 102,
         "failed": 0,
         "skipped": 0
       },
@@ -1403,7 +1403,46 @@
         "multiple retrieval systems over one Civic SHA-256 identity",
         "offline verification surface"
       ]
+    },
+    "civic_participant_standing_acceptance": {
+      "status": "accepted-ct102-2026-09-23",
+      "repository_head": "1956848dccee0630bc7c0f80fd91c0ca20d1a0ae",
+      "architecture_document": "docs/CIVIC_ACCEPTED_PARTICIPANT_STANDING_RECORD.md",
+      "architecture_head": "0eb65e13bf43c6c16880fee983ad033762a881ca",
+      "implementation": "civic/accepted_participant_standing.py",
+      "implementation_head": "99999da56157a13d018e48bf43a925257b5711a3",
+      "focused_test_file": "civic/tests/test_accepted_participant_standing.py",
+      "focused_test_head": "1956848dccee0630bc7c0f80fd91c0ca20d1a0ae",
+      "focused_tests": {
+        "ran": 11,
+        "passed": 11,
+        "failed": 0,
+        "skipped": 0
+      },
+      "complete_civic_gate": {
+        "ran": 102,
+        "passed": 102,
+        "failed": 0,
+        "skipped": 0
+      },
+      "accepted_stream_required": "accepted",
+      "exact_manifest_standing_record_identity_binding": "accepted",
+      "manifest_membership_does_not_override_standing_expiration": "accepted",
+      "evaluation_time_parameterized_currentness": "accepted",
+      "governing_profile_descriptor_binding": "accepted",
+      "governing_profile_and_source_exact_bytes_required": "accepted",
+      "authority_evidence_exact_bytes_required": "accepted",
+      "supplementary_evidence_local_availability_required": false,
+      "participant_signer_must_be_current_operator": "accepted",
+      "signing_node_signer_permitted": "accepted",
+      "recording_operator_provenance_binding": "accepted",
+      "claim_responsibility_separate_from_cryptographic_signer": "accepted",
+      "profile_semantic_interpretation": "explicit-required-source-derived-validator",
+      "canonical_machine_readable_profile_serialization": "not-yet-frozen",
+      "production_signing_enabled": false,
+      "production_key_created": false,
+      "annales_mutated": false
     }
   },
-  "next_safe_action": "Read docs/CIVIC_ASSISTANT_HANDOFF.md, then create docs/CIVIC_ACCEPTED_PARTICIPANT_STANDING_RECORD.md as one repository-only architecture step. Do not implement the verifier in the same step, create production Civic keys, or mutate annales."
+  "next_safe_action": "Read docs/CIVIC_ASSISTANT_HANDOFF.md and docs/CIVIC_ACCEPTED_PARTICIPANT_STANDING_RECORD.md, then define the canonical machine-readable governing-profile contract required by the accepted standing verifier as one architecture-only repository step. Do not enable production Civic signing, create a production Civic key, or mutate annales."
 }

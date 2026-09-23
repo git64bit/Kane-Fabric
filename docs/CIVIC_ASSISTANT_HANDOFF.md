@@ -21,19 +21,19 @@ git64bit/Kane-Fabric
 Last CT102-tested Civic code head:
 
 ~~~text
-b6b69d78204228caa98e54c14cf4071640d2b9f7
+1956848dccee0630bc7c0f80fd91c0ca20d1a0ae
 ~~~
 
 Accepted Civic test result at that head:
 
 ~~~text
-91 tests run
-91 passed
+102 tests run
+102 passed
 0 failed
 0 skipped
 ~~~
 
-The CT102 acceptance covers the participant-issuance verifier and all previously accepted Civic components.
+The CT102 acceptance covers the participant-standing verifier and all previously accepted Civic components.
 
 Repository documentation commits may exist after the last CT102-tested code head.
 
@@ -280,13 +280,15 @@ Each current participant descriptor is:
 }
 ~~~
 
-The next architecture problem is the precise type-specific meaning of:
+The precise type-specific meaning of:
 
 ~~~text
 standing_record_sha256
 ~~~
 
-Do not infer that meaning merely from the field name.
+is now defined by docs/CIVIC_ACCEPTED_PARTICIPANT_STANDING_RECORD.md and enforced by civic/accepted_participant_standing.py.
+
+Do not infer standing merely from manifest membership: current standing remains time- and profile-dependent.
 
 ## Operator descriptor
 
@@ -526,6 +528,65 @@ In both cases, the body still preserves the current issuing operator.
 The issuance signature does not silently certify every participant-maintained claim.
 
 Standing remains a separately verified obligation.
+
+## Accepted participant standing
+
+Architecture:
+
+docs/CIVIC_ACCEPTED_PARTICIPANT_STANDING_RECORD.md
+
+Implementation:
+
+civic/accepted_participant_standing.py
+
+Focused tests:
+
+civic/tests/test_accepted_participant_standing.py
+
+Record type:
+
+~~~text
+kane-civic-accepted-participant-standing-v1
+~~~
+
+Accepted CT102 head:
+
+~~~text
+1956848dccee0630bc7c0f80fd91c0ca20d1a0ae
+~~~
+
+Accepted gate:
+
+~~~text
+11 focused participant-standing tests passed
+102 complete Civic tests passed
+0 failed
+0 skipped
+~~~
+
+Core distinction:
+
+~~~text
+standing
+    !=
+issuance
+    !=
+participant-maintained claims
+    !=
+operator certification of every fact
+    !=
+Epoch Manifest membership by itself
+~~~
+
+The standing verifier binds the exact manifest standing-record identity, participant subject, governing-profile descriptor, recording-operator provenance, permitted signer, authority evidence, participation interval, qualification responsibility, and evaluation-time currentness.
+
+Authority evidence must resolve to exact retained bytes through the manifest authority object model. Supplementary evidence may remain unavailable locally and must not become an implicit reconstruction dependency.
+
+A participant signer must be the current manifest operator. The Signing Node is also a permitted signer, while the body still preserves current operator provenance.
+
+Manifest membership does not override standing expiration. A record may remain valid historical authority material while failing present standing evaluation.
+
+Profile-specific standing class, qualification path, participation policy, and source-derived sufficiency are intentionally delegated to an explicit required semantic validator. The canonical machine-readable governing-profile serialization and validator contract are not yet frozen.
 
 ## Broader Civic Issuance Record
 
@@ -811,44 +872,48 @@ This should remain a consequence of the architecture, not a reason to introduce 
 
 ## Immediate next architecture problem
 
-The next Assistant should begin with:
+Participant standing is now accepted on CT102.
+
+The unresolved dependency exposed deliberately by the accepted verifier is the governing-profile semantic contract.
+
+The next Assistant should define the canonical machine-readable governing-profile representation needed to answer:
 
 ~~~text
-manifest.participants[].standing_record_sha256
+what exact bytes constitute a Civic governing profile?
+how is profile_sha256 computed from those bytes?
+how is source_set_sha256 deterministically bound to the applicable governing sources?
+which standing_class identifiers are recognized?
+which qualification.path_id values are recognized?
+which participation policy identifiers and temporal rules are recognized?
+which claim_responsibility modes are permitted for each path?
+which authority evidence roles are required, optional, or supplementary?
+what exact interface must the participant-standing verifier use for source-derived semantic validation?
 ~~~
 
-The first task is architecture, not code.
+This remains an architecture step first.
 
-Define the minimum type-specific participant-standing contract needed to answer:
+Do not hard-code one HOA's legal conclusions into the generic Civic verifier.
 
-~~~text
-what exact standing assertion is this?
-what exact governing/profile context gives that standing meaning?
-what evidence identities support it?
-who is permitted to attest which parts?
-what temporal/currentness information is required?
-how is voluntary Kane participation represented without turning SASE into a universal legal rule?
-how does standing verification remain separate from issuance verification?
-what bytes must be retained for 1-of-N reconstruction?
-~~~
+Do not turn SASE into a universal condominium-law requirement.
 
-Do not start by serializing every broader civic claim.
+Do not make a profile interpreter a hidden network dependency.
 
-Do not let the standing record become a universal identity document.
-
-Do not make operator signature mean that every underlying factual claim is true.
+Do not enable production signing or create a production Civic key while freezing this contract.
 
 ## Recommended first bounded step for the new Assistant
 
-Create one architecture document:
+Create one governing-profile architecture contract before adding a concrete semantic interpreter.
+
+The exact document name may be chosen during that bounded step, but it must preserve the existing authority boundary:
 
 ~~~text
-docs/CIVIC_ACCEPTED_PARTICIPANT_STANDING_RECORD.md
+governing sources
+    -> canonical profile bytes
+    -> explicit source-derived semantic validator
+    -> participant-standing verification
 ~~~
 
-Do not implement the verifier in the same step.
-
-The architecture should be reviewed first because standing is where source-derived facts, time, voluntary participation, and profile-specific qualification meet.
+The architecture should be reviewed before implementation because this contract determines how source-derived law/instrument/profile meaning enters otherwise generic cryptographic standing verification.
 
 ## Handoff invariant
 
