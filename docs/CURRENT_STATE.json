@@ -962,7 +962,7 @@
       "ms5_008_candidate_repository_acceptance": "accepted on CT102 at 5a35b607ef16b5c94bd732e7f2eb73fbffc17ad0; 12 focused tests passed; full MS5 suite 86 passed / 1 skipped; WireGuard retained=NO; decision state=defer",
       "ms5_008_decision": "defer accepted 2026-09-21; WireGuard remains unretained; physical panic retained as diagnostic backlog"
     },
-    "next_work_item": "Prepare Civic Assistant handoff, then begin the type-specific participant-standing contract for manifest participants[].standing_record_sha256."
+    "next_work_item": "Define the accepted participant-standing architecture for manifest participants[].standing_record_sha256. Architecture only: freeze the minimum standing assertion, governing/profile context, evidence identities, attestation boundaries, temporal/currentness semantics, Kane voluntary-participation relationship, and reconstruction obligations before implementation."
   },
   "priority_workstream": {
     "name": "MS5-009 Firmware Authenticity / Update / Rollback / Recovery",
@@ -1368,7 +1368,42 @@
       "production_signing_enabled": false,
       "production_key_created": false,
       "annales_mutated": false
+    },
+    "civic_assistant_handoff": {
+      "document": "docs/CIVIC_ASSISTANT_HANDOFF.md",
+      "status": "ready-2026-09-23",
+      "last_ct102_tested_code_head": "b6b69d78204228caa98e54c14cf4071640d2b9f7",
+      "accepted_civic_gate": {
+        "ran": 91,
+        "passed": 91,
+        "failed": 0,
+        "skipped": 0
+      },
+      "repository_documentation_may_be_ahead_of_ct102_code_acceptance": true,
+      "production_signing_enabled": false,
+      "production_key_created": false,
+      "annales_mutated": false
+    },
+    "civic_emergent_feature_watchlist": {
+      "source_document": "docs/CIVIC_ASSISTANT_HANDOFF.md",
+      "status": "tracked-not-protocol-requirements",
+      "core": [
+        "one-participant reconstruction",
+        "historical verification without historical private-key recovery",
+        "replaceable operator and Signing Node",
+        "operator accountability independent of signing path",
+        "resistance to useful forged-node insertion"
+      ],
+      "candidate_priority_after_live_hoa_deployment": [
+        "differential issuance auditing",
+        "standing-expiration diagnostics without historical deletion",
+        "missing-authority-object detection as an operational alarm"
+      ],
+      "nice_not_priority": [
+        "multiple retrieval systems over one Civic SHA-256 identity",
+        "offline verification surface"
+      ]
     }
   },
-  "next_safe_action": "Repository-only handoff preparation: create one authoritative Civic Assistant handoff document summarizing accepted state, invariants, boundaries, emergent features, strict development cadence, and the next standing-record problem. Do not create production Civic keys or mutate annales."
+  "next_safe_action": "Read docs/CIVIC_ASSISTANT_HANDOFF.md, then create docs/CIVIC_ACCEPTED_PARTICIPANT_STANDING_RECORD.md as one repository-only architecture step. Do not implement the verifier in the same step, create production Civic keys, or mutate annales."
 }
