@@ -21,19 +21,19 @@ git64bit/Kane-Fabric
 Last CT102-tested Civic code head:
 
 ~~~text
-ce3fac5fa1ca5678feed73d1fe6acedd8a64e6d1
+bd0bf8dae7e3060bbfba9daaa8523a3be3f3261d
 ~~~
 
 Accepted Civic test result at that head:
 
 ~~~text
-153 tests run
-153 passed
+161 tests run
+161 passed
 0 failed
 0 skipped
 ~~~
 
-The CT102 acceptance covers the production signer-provider/key-lifecycle implementation, the canonical ceremony record, governance-policy/proof primitives, the complete governance-transition evaluator, and all previously accepted Civic components.
+The CT102 acceptance covers the authority-state transaction/composition implementation, production signer-provider/key-lifecycle implementation, canonical ceremony record, governance-policy/proof primitives, complete governance-transition evaluator, and all previously accepted Civic components.
 
 Repository documentation commits may exist after the last CT102-tested code head.
 
@@ -842,6 +842,82 @@ annales_mutated = false
 
 Closure piece 4 is complete.
 
+### Piece 5 — authority-state transaction and composition
+
+Architecture:
+
+docs/CIVIC_AUTHORITY_STATE_TRANSACTION_COMPOSITION_CONTRACT.md
+
+Implementation:
+
+civic/authority_transaction.py
+
+Focused tests:
+
+civic/tests/test_authority_transaction.py
+
+Architecture head:
+
+~~~text
+dc4a41c3774f3247ba3e795d59c7f35efce4a7ba
+~~~
+
+Implementation head:
+
+~~~text
+0afaac6d0b1335332c5303f4b5f6268e171570df
+~~~
+
+Final piece-5 CT102 acceptance head:
+
+~~~text
+bd0bf8dae7e3060bbfba9daaa8523a3be3f3261d
+~~~
+
+Accepted gate:
+
+~~~text
+8 focused authority-transaction tests passed
+161 complete Civic tests passed
+0 failed
+0 skipped
+~~~
+
+Accepted transaction semantics include:
+
+- immutable candidate-object persistence before authority selection;
+- deterministic current-epoch accepted-history suffix composition;
+- canonical order: Signing Node authorization, operator selection, standing records, issuance records;
+- exact predecessor history/lineage preservation for successors;
+- complete transition verification from persisted exact bytes;
+- deterministic authority-state replica construction;
+- atomic local accepted-state selector;
+- compare-and-select protection against stale or competing successors;
+- exact-candidate idempotent retry;
+- race protection immediately before selector commit;
+- missing/corrupt dependency rejection;
+- candidate persistence and verification do not activate authority.
+
+The durable reference rule is:
+
+~~~text
+immutable candidate bytes
+    -> complete persisted verification
+    -> compare expected predecessor
+    -> atomic selector commit
+    -> current authority
+~~~
+
+Current operational boundary remains:
+
+~~~text
+production_signing_enabled = false
+production_key_created = false
+annales_mutated = false
+~~~
+
+Closure piece 5 is complete.
+
 ## Broader Civic Issuance Record
 
 Existing semantic architecture:
@@ -1124,42 +1200,33 @@ The retained manifest lineage, public keys, signed history, and required objects
 
 This should remain a consequence of the architecture, not a reason to introduce a central verification service.
 
-## Immediate next task: closure piece 5
+## Immediate next task: closure piece 6
 
 The next bounded task is architecture, not deployment.
 
-Define the platform-neutral **authority-state transaction and composition contract** before implementing transaction code.
+Define the platform-neutral **Civic Signing Node conformance and deployment boundary**.
 
 The contract must freeze at least:
 
-- candidate bundle construction;
-- exact dependency closure;
-- canonical signing order;
-- authority-object persistence order;
-- accepted-history head updates;
-- Epoch Manifest finalization;
-- bootstrap and successor composition boundaries;
-- crash and retry behavior;
-- duplicate/replayed candidate behavior;
-- atomic installation of the newly accepted current authority state;
-- failure behavior that leaves the previous accepted authority state unchanged.
+- minimum required Signing Node capabilities;
+- startup verification before current-authority signing is enabled;
+- authority-state replica/object-store/selector integration;
+- production signer-provider integration;
+- deterministic candidate-composition and verification interfaces;
+- participant authority-state replica export/import;
+- recovery from participant-held accepted state;
+- fail-closed behavior when selected state or current key custody cannot be verified;
+- implementation portability requirements;
+- the explicit boundary between Kane Fabric Civic reference conformance and a concrete production deployment.
 
-Piece 5 must preserve the piece-4 invariant:
+This is the final Kane Fabric reference-closure piece.
 
-~~~text
-key generation
-    != authority activation
-~~~
-
-A generated candidate key may exist locally while the previous accepted authority remains current.
-
-This is still Kane Fabric reference work.
-
-Do not specify Annales-specific:
+It must remain platform-neutral and must not specify Annales-specific:
 
 - LXD/container names;
-- systemd unit names;
+- systemd units;
 - filesystem paths;
+- Unix accounts;
 - networking;
 - concrete key locations;
 - deployment command sequences.
@@ -1174,7 +1241,7 @@ production_key_created = false
 annales_mutated = false
 ~~~
 
-Do not create a real HOA production key or mutate annales while defining piece 5.
+Do not create a real HOA production key or mutate annales while defining piece 6.
 
 ## Handoff invariant
 
