@@ -14,6 +14,7 @@ from civic.ceremony import (
     CivicCeremonyError,
     VerifiedCeremonyRecord,
     validate_ceremony_record,
+    verify_ceremony_record,
 )
 from civic.codec import CivicCodecError, decode_deterministic, encode_deterministic
 from civic.cose import (
@@ -2014,28 +2015,6 @@ def verify_governance_transition(
             "candidate Epoch Manifest is invalid"
         ) from exc
 
-    manifest_ceremony = candidate_manifest["ceremony"]
-    assert isinstance(manifest_ceremony, Mapping)
-
-    if (
-        manifest_ceremony["ceremony_record_sha256"]
-        != ceremony.ceremony_record_sha256
-    ):
-        raise CivicGovernanceError(
-            "verified ceremony does not match candidate Epoch Manifest"
-        )
-
-    ceremony_policy = ceremony.value["governance_policy"]
-    assert isinstance(ceremony_policy, Mapping)
-
-    if (
-        ceremony_policy["policy_id"] != policy.policy_id
-        or ceremony_policy["policy_sha256"] != policy.policy_sha256
-    ):
-        raise CivicGovernanceError(
-            "verified governance policy does not match ceremony"
-        )
-
     if ceremony.transition_kind == "bootstrap":
         if predecessor_manifest is not None:
             raise CivicGovernanceError(
@@ -2056,6 +2035,38 @@ def verify_governance_transition(
         raise CivicGovernanceError(
             "verified ceremony transition kind is unsupported"
         )
+
+    try:
+        reverified_ceremony = verify_ceremony_record(
+            ceremony.exact_bytes,
+            epoch_manifest=candidate_manifest,
+            predecessor_manifest=predecessor_manifest,
+        )
+    except CivicCeremonyError as exc:
+        raise CivicGovernanceError(
+            "ceremony failed verification against candidate transition context"
+        ) from exc
+
+    if (
+        reverified_ceremony.ceremony_record_sha256
+        != ceremony.ceremony_record_sha256
+    ):
+        raise CivicGovernanceError(
+            "verified ceremony identity changed during transition verification"
+        )
+
+    reverified_policy = verify_governance_policy(
+        policy.exact_bytes,
+        ceremony=reverified_ceremony,
+        epoch_manifest=candidate_manifest,
+    )
+    if reverified_policy.policy_sha256 != policy.policy_sha256:
+        raise CivicGovernanceError(
+            "verified governance policy identity changed during transition verification"
+        )
+
+    ceremony = reverified_ceremony
+    policy = reverified_policy
 
     electorate_members = _reconstruct_electorate(
         policy=policy,
