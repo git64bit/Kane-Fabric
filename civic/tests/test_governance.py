@@ -5,6 +5,7 @@ import hashlib
 import unittest
 
 from civic.ceremony import verify_ceremony_record
+from civic.cose import parse_cose_sign1
 from civic.ecdsa import public_key_from_private_scalar
 from civic.epoch_manifest import CRYPTO_PROFILE, derive_key_id, manifest_sha256
 from civic.governance import (
@@ -186,6 +187,8 @@ def bootstrap_governance_fixture(
     *,
     evidence_only: bool = False,
     decision: str | None = "approve",
+    proof_subject_sha256: bytes | None = None,
+    proof_policy_sha256: bytes | None = None,
 ) -> tuple[
     dict[str, object],
     dict[str, object],
@@ -238,8 +241,16 @@ def bootstrap_governance_fixture(
         ]
 
     payload = proof_payload(
-        subject_sha256=subject_digest,
-        policy_sha256=policy_digest,
+        subject_sha256=(
+            subject_digest
+            if proof_subject_sha256 is None
+            else proof_subject_sha256
+        ),
+        policy_sha256=(
+            policy_digest
+            if proof_policy_sha256 is None
+            else proof_policy_sha256
+        ),
         participant_key_id=derive_key_id(P1),
         decision=decision,
         authority_evidence=authority_evidence,
@@ -518,78 +529,45 @@ class CivicGovernancePrimitiveTests(unittest.TestCase):
             verified.subject_sha256,
         )
 
-        decoded_payload = decode_governance_proof_payload(
-            verified.payload
-            and verified.signed_bytes
-            and __import__("civic.cose", fromlist=["parse_cose_sign1"])
-            .parse_cose_sign1(
-                proof_bytes,
-                expected_content_type="application/kane-civic-governance-proof+cbor",
-            )
-            .payload
+        parsed = parse_cose_sign1(
+            proof_bytes,
+            expected_content_type="application/kane-civic-governance-proof+cbor",
         )
+        decoded_payload = decode_governance_proof_payload(parsed.payload)
         self.assertEqual(verified.payload, decoded_payload)
 
     def test_proof_subject_and_policy_mismatches_are_rejected(self) -> None:
-        (
-            manifest,
-            _,
-            ceremony_bytes,
-            policy_bytes,
-            _,
-        ) = bootstrap_governance_fixture()
-
-        ceremony = verify_ceremony_record(
-            ceremony_bytes,
-            epoch_manifest=manifest,
-        )
-        policy = verify_governance_policy(
-            policy_bytes,
-            ceremony=ceremony,
-            epoch_manifest=manifest,
-        )
-
-        for subject_digest, policy_digest in (
-            (h(91), policy.policy_sha256),
-            (governance_transition_subject_sha256(ceremony), h(92)),
+        for fixture_kwargs in (
+            {"proof_subject_sha256": h(91)},
+            {"proof_policy_sha256": h(92)},
         ):
-            payload = proof_payload(
-                subject_sha256=subject_digest,
-                policy_sha256=policy_digest,
-                participant_key_id=derive_key_id(P1),
-            )
-            proof_bytes = sign_governance_proof_fixture(
-                payload,
-                expected_public_key=P1,
-                private_scalar=1,
-                nonce_scalar=13,
-            )
-            proof_digest = hashlib.sha256(proof_bytes).digest()
+            (
+                manifest,
+                _,
+                ceremony_bytes,
+                policy_bytes,
+                proof_bytes,
+            ) = bootstrap_governance_fixture(**fixture_kwargs)
 
-            changed_manifest = copy.deepcopy(manifest)
-            changed_ceremony_value = copy.deepcopy(ceremony.value)
-            changed_ceremony_value["governance_proof_sha256"] = [proof_digest]
-
-            changed_manifest["object_index"] = [  # type: ignore[index]
-                item
-                for item in changed_manifest["object_index"]  # type: ignore[union-attr]
-                if item["semantic_role"] != PROOF_SEMANTIC_ROLE
-            ]
-            add_object(
-                changed_manifest,
-                data=proof_bytes,
-                media_type=PROOF_MEDIA_TYPE,
-                semantic_role=PROOF_SEMANTIC_ROLE,
-                name="wrong-governance-proof.cose",
+            ceremony = verify_ceremony_record(
+                ceremony_bytes,
+                epoch_manifest=manifest,
+            )
+            policy = verify_governance_policy(
+                policy_bytes,
+                ceremony=ceremony,
+                epoch_manifest=manifest,
             )
 
             with self.assertRaises(CivicGovernanceError):
                 verify_signed_governance_proof(
                     proof_bytes,
-                    expected_proof_sha256=proof_digest,
+                    expected_proof_sha256=hashlib.sha256(
+                        proof_bytes
+                    ).digest(),
                     ceremony=ceremony,
                     policy=policy,
-                    epoch_manifest=changed_manifest,
+                    epoch_manifest=manifest,
                 )
 
     def test_proof_object_descriptor_media_type_is_authority_binding(self) -> None:
