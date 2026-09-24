@@ -63,7 +63,8 @@ This document freezes that composition and acceptance boundary.
 This contract must preserve:
 
 - `docs/CIVIC_EPOCH_MANIFEST_FORMAT.md`;
-- `docs/CIVIC_HISTORY_RECORD_FORMAT.md` where applicable;
+- `docs/CIVIC_SIGNED_HISTORY_RECORD_ENVELOPE.md`;
+- `docs/CIVIC_HISTORY_HEAD_SEMANTICS.md`;
 - `docs/CIVIC_PARTICIPANT_AUTHORITY_STATE_RECONSTRUCTION.md`;
 - `docs/CIVIC_EPOCH1_BOOTSTRAP_CONTRACT.md`;
 - `docs/CIVIC_CEREMONY_RECORD_CONTRACT.md`;
