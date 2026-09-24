@@ -625,18 +625,21 @@
       "default_scp_ssh_transfer": false
     },
     "civic_assistant_handoff": {
-      "status": "ready-2026-09-24",
-      "last_ct102_tested_code_head": "bd0bf8dae7e3060bbfba9daaa8523a3be3f3261d",
+      "status": "reference-v1-closed-2026-09-24",
+      "last_ct102_tested_code_head": "0234b8e09fc0ce092d6b4f47a579d4253a19b812",
       "accepted_civic_gate": {
-        "ran": 161,
-        "passed": 161,
+        "ran": 171,
+        "passed": 171,
         "failed": 0,
         "skipped": 0
       },
       "repository_documentation_may_be_ahead_of_ct102_code_acceptance": true,
       "production_signing_enabled": false,
       "production_key_created": false,
-      "annales_mutated": false
+      "annales_mutated": false,
+      "reference_name": "Kane Fabric Civic Authority Reference",
+      "reference_version": "v1",
+      "reference_document": "docs/KANE_FABRIC_CIVIC_AUTHORITY_REFERENCE_V1.md"
     },
     "civic_ceremony_acceptance": {
       "status": "accepted-ct102-2026-09-24",
@@ -729,11 +732,11 @@
       "annales_mutated": false
     },
     "civic_reference_closure": {
-      "status": "piece-5-complete-ct102-2026-09-24",
-      "accepted_code_head": "bd0bf8dae7e3060bbfba9daaa8523a3be3f3261d",
+      "status": "closed-reference-v1-2026-09-24",
+      "accepted_code_head": "0234b8e09fc0ce092d6b4f47a579d4253a19b812",
       "accepted_civic_gate": {
-        "ran": 161,
-        "passed": 161,
+        "ran": 171,
+        "passed": 171,
         "failed": 0,
         "skipped": 0
       },
@@ -768,13 +771,21 @@
           "acceptance_head": "bd0bf8dae7e3060bbfba9daaa8523a3be3f3261d"
         },
         "6_platform_neutral_signing_node_conformance_boundary": {
-          "status": "next-architecture-task"
+          "status": "accepted-ct102",
+          "document": "docs/CIVIC_SIGNING_NODE_CONFORMANCE_DEPLOYMENT_BOUNDARY.md",
+          "architecture_head": "81cc6ee191f88a0b5c767cdbd7cc2bdb1468e0dc",
+          "implementation_head": "ddfde75e87c875765b157a7f4bf4a9294da5e32a",
+          "acceptance_head": "0234b8e09fc0ce092d6b4f47a579d4253a19b812"
         }
       },
       "annales_project_boundary": "Annales is a separate production implementation project after Kane Fabric Civic Authority Reference closure; do not encode Annales-specific deployment details into the platform-neutral reference.",
       "production_signing_enabled": false,
       "production_key_created": false,
-      "annales_mutated": false
+      "annales_mutated": false,
+      "reference_name": "Kane Fabric Civic Authority Reference",
+      "reference_version": "v1",
+      "reference_document": "docs/KANE_FABRIC_CIVIC_AUTHORITY_REFERENCE_V1.md",
+      "all_six_pieces_complete": true
     },
     "civic_production_signing_acceptance": {
       "status": "accepted-ct102-2026-09-24",
@@ -844,6 +855,68 @@
       "precommit_race_protection": "accepted",
       "key_generation_activates_authority": false,
       "real_hoa_production_key_created": false,
+      "production_signing_enabled": false,
+      "production_key_created": false,
+      "annales_mutated": false
+    },
+    "civic_signing_node_conformance_acceptance": {
+      "status": "accepted-ct102-2026-09-24",
+      "architecture_document": "docs/CIVIC_SIGNING_NODE_CONFORMANCE_DEPLOYMENT_BOUNDARY.md",
+      "architecture_head": "81cc6ee191f88a0b5c767cdbd7cc2bdb1468e0dc",
+      "implementation_file": "civic/signing_node.py",
+      "implementation_head": "ddfde75e87c875765b157a7f4bf4a9294da5e32a",
+      "focused_test_file": "civic/tests/test_signing_node.py",
+      "acceptance_head": "0234b8e09fc0ce092d6b4f47a579d4253a19b812",
+      "focused_tests": {
+        "ran": 10,
+        "passed": 10,
+        "failed": 0,
+        "skipped": 0
+      },
+      "complete_civic_gate": {
+        "ran": 171,
+        "passed": 171,
+        "failed": 0,
+        "skipped": 0
+      },
+      "startup_public_authority_before_private_custody": "accepted",
+      "ready_current_exact_key_binding": "accepted",
+      "recovery_required_semantics": "accepted",
+      "failed_closed_selected_state_failure": "accepted",
+      "exact_replica_export_import": "accepted",
+      "import_does_not_select_authority": "accepted",
+      "recovery_restore_empty_selector_and_root_binding": "accepted",
+      "same_key_provider_migration_without_transition": "accepted",
+      "postcommit_signer_failure_does_not_rollback": "accepted",
+      "generic_current_byte_signing_surface": false,
+      "node_level_key_generation_surface": false,
+      "real_hoa_production_key_created": false,
+      "production_signing_enabled": false,
+      "production_key_created": false,
+      "annales_mutated": false
+    },
+    "civic_authority_reference_v1": {
+      "status": "published-reference-2026-09-24",
+      "reference_name": "Kane Fabric Civic Authority Reference",
+      "version": "v1",
+      "accepted_code_head": "0234b8e09fc0ce092d6b4f47a579d4253a19b812",
+      "accepted_civic_gate": {
+        "ran": 171,
+        "passed": 171,
+        "failed": 0,
+        "skipped": 0
+      },
+      "focused_signing_node_gate": {
+        "ran": 10,
+        "passed": 10,
+        "failed": 0,
+        "skipped": 0
+      },
+      "immutable_reference_identity": "exact Git commit SHA",
+      "publication_document": "docs/KANE_FABRIC_CIVIC_AUTHORITY_REFERENCE_V1.md",
+      "all_six_closure_pieces_complete": true,
+      "production_deployment_is_separate_project": true,
+      "annales_implementation_declaration": "This Signing Node implements Kane Fabric Civic Authority Reference v1 at commit 0234b8e09fc0ce092d6b4f47a579d4253a19b812",
       "production_signing_enabled": false,
       "production_key_created": false,
       "annales_mutated": false
@@ -1748,5 +1821,5 @@
       "annales_mutated": false
     }
   },
-  "next_safe_action": "Define closure piece 6 architecture: the platform-neutral Civic Signing Node conformance and deployment boundary. Freeze the minimum required node capabilities, startup verification gate, authority-state/object-store/selector/signer-provider interfaces, participant replica import/export and recovery behavior, failure semantics, and the explicit boundary between Kane Fabric reference conformance and the later separate Annales production implementation. Do not create a real HOA production key, enable production signing, mutate annales, or add Annales-specific deployment details in this step."
+  "next_safe_action": "Kane Fabric Civic Authority Reference v1 is closed at accepted code head 0234b8e09fc0ce092d6b4f47a579d4253a19b812 with 171/171 Civic tests passing. Do not continue Civic authority redesign as part of the Annales deployment. Start Annales as a separate production implementation project and declare: \"This Signing Node implements Kane Fabric Civic Authority Reference v1 at commit 0234b8e09fc0ce092d6b4f47a579d4253a19b812\". Kane Fabric changes after this checkpoint are not part of v1 unless explicitly versioned as a later reference. No real HOA production key has been created, production signing remains disabled, and annales remains unmodified by this closure."
 }

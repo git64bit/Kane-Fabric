@@ -1,5 +1,46 @@
 # Signing Node — New Assistant Handoff
 
+## Current status — Civic Authority Reference v1 closed
+
+The earlier implementation-interrogation phase documented below has been completed.
+
+The frozen reference is:
+
+~~~text
+Kane Fabric Civic Authority Reference
+version: v1
+accepted code head: 0234b8e09fc0ce092d6b4f47a579d4253a19b812
+complete Civic gate: 171 / 171
+focused final Signing Node gate: 10 / 10
+~~~
+
+The permanent publication document is:
+
+`docs/KANE_FABRIC_CIVIC_AUTHORITY_REFERENCE_V1.md`
+
+The exact accepted Git commit SHA is the normative v1 implementation identity. Documentation on later `main` may record acceptance and handoff state without changing that identity.
+
+Production remains inactive in Kane Fabric:
+
+~~~text
+production_signing_enabled = false
+production_key_created = false
+annales_mutated = false
+~~~
+
+Annales is a separate production implementation project.
+
+Required Annales declaration:
+
+~~~text
+This Signing Node implements
+Kane Fabric Civic Authority Reference v1
+at commit 0234b8e09fc0ce092d6b4f47a579d4253a19b812
+~~~
+
+Do not redesign Civic authority semantics in the deployment project.
+
+
 ## Purpose
 
 This document is the fast handoff for a new Assistant resuming the Kane Fabric / Civic Signing Node work.
@@ -582,45 +623,55 @@ They do not independently establish Civic authority.
 
 ---
 
-## 11. Current implementation boundary
+## 11. Frozen reference boundary
 
-The next phase is **implementation interrogation**, not broad architecture redesign.
+The implementation interrogation described in earlier revisions is complete.
 
-The implementation must now determine concrete choices for:
+Kane Fabric v1 now contains accepted reference behavior for:
 
-- implementation/provider for the accepted Civic cryptographic profile (`kane-civic-ecdsa-p256-sha256-v1`);
-- operator-node key custody;
-- Epoch Manifest representation;
-- participant-device key/state storage and append-only Civic record/object-store implementation (ESP32-S3 is the reference implementation, not the required platform);
-- replicated authority-state storage;
-- verification behavior;
-- operator-node replacement/recovery mechanics;
-- baseline signing-node hardware/software boundary.
+- Civic cryptographic profile and exact public identity;
+- deterministic CBOR/COSE authority objects;
+- authority-state reconstruction;
+- bootstrap;
+- canonical ceremony;
+- source-bound governance policy/proof verification;
+- production signing/key lifecycle;
+- atomic authority-state transaction/composition;
+- platform-neutral Signing Node startup, recovery, import/export, and conformance orchestration.
 
-Before selecting any implementation, compare it against the accepted invariants in:
+Do not reopen those semantics merely to deploy them.
 
-`docs/CIVIC_AUTHORITY_CONTINUITY_DECISION.md`
+The exact implementation target is:
 
-Do not add CA, email, or IPFS dependencies to the baseline.
+~~~text
+0234b8e09fc0ce092d6b4f47a579d4253a19b812
+~~~
 
-Do not activate the existing Firmware Authority merely because Signing Node implementation has begun.
-
-Do not reopen the Civic v1 algorithm/key-representation or deterministic-CBOR/COSE Epoch Manifest choices without Diagnostics evidence that invalidates them. The next work is repository implementation of the accepted codec/schema plus tests; production key generation remains held.
+Any later Kane Fabric change is outside Civic Authority Reference v1 unless explicitly versioned as later reference work.
 
 ---
 
-## 12. First action for the new Assistant
+## 12. First action for an Annales production Assistant
 
-Do not write code immediately.
+Do not continue Kane Fabric architecture work as though piece 6 were unfinished.
 
 First:
 
-1. read the mandatory documents above from live `main`;
-2. confirm the current `docs/CURRENT_STATE.json` next safe action;
-3. inspect the relevant existing `ms5/` implementation and tests;
-4. identify the smallest concrete implementation question;
-5. present at least two viable alternatives where a material design/implementation choice remains;
-6. update repository design only if a real architecture decision changes;
-7. then implement one bounded slice.
+1. read `docs/KANE_FABRIC_CIVIC_AUTHORITY_REFERENCE_V1.md`;
+2. read `docs/CIVIC_SIGNING_NODE_CONFORMANCE_DEPLOYMENT_BOUNDARY.md`;
+3. verify the production project explicitly targets commit `0234b8e09fc0ce092d6b4f47a579d4253a19b812`;
+4. declare:
 
-A successor should be able to resume from the repository without private conversation history and without rediscovering stable infrastructure.
+~~~text
+This Signing Node implements
+Kane Fabric Civic Authority Reference v1
+at commit 0234b8e09fc0ce092d6b4f47a579d4253a19b812
+~~~
+
+5. choose Annales-specific deployment details without changing Civic v1 semantics;
+6. preserve the existing production hold until a deliberate production bootstrap/recovery step creates real HOA state.
+
+Kane Fabric remains the reference architecture and conformance source. Annales is one production implementation of it.
+
+A successor should not need private chat history to identify the frozen reference boundary.
+
