@@ -1,10 +1,15 @@
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 import hashlib
 import unicodedata
 
+from civic.accepted_participant_standing import (
+    CivicParticipantStandingError,
+    VerifiedParticipantStanding,
+    verify_accepted_participant_standing,
+)
 from civic.ceremony import (
     CivicCeremonyError,
     VerifiedCeremonyRecord,
@@ -33,6 +38,8 @@ from civic.governing_profile import (
     CivicGoverningProfileError,
     governing_source_set_sha256,
 )
+from civic.object_store import CivicObjectStoreError, verify_object_bytes
+from civic.signed_history_record import VerifiedHistoryRecord
 
 
 SUBJECT_FORMAT = "kane-civic-governance-transition-subject"
@@ -234,6 +241,32 @@ class VerifiedGovernanceProof:
     decision: str | None
     authority_evidence: tuple[GovernanceEvidenceDescriptor, ...]
     supplementary_evidence: tuple[GovernanceEvidenceDescriptor, ...]
+
+
+ObjectLoader = Callable[[bytes], bytes]
+
+
+@dataclass(frozen=True)
+class VerifiedGovernanceTransition:
+    """Complete successful deterministic governance-transition evaluation."""
+
+    policy_id: str
+    policy_sha256: bytes
+    subject_sha256: bytes
+    transition_kind: str
+    electorate_members: tuple[GovernanceElectorateMember, ...]
+    participating_participant_record_sha256: tuple[bytes, ...]
+    approving_participant_record_sha256: tuple[bytes, ...]
+    rejecting_participant_record_sha256: tuple[bytes, ...]
+    abstaining_participant_record_sha256: tuple[bytes, ...]
+    total_electorate_weight: int
+    participating_weight: int
+    approving_weight: int
+    quorum_result: bool | None
+    approval_result: bool | None
+    verified_authority_evidence: tuple[GovernanceEvidenceDescriptor, ...]
+    governance_proof_sha256: tuple[bytes, ...]
+    verified_proofs: tuple[VerifiedGovernanceProof, ...]
 
 
 def _map(
@@ -1523,4 +1556,684 @@ def verify_signed_governance_proof(
         decision=decision,
         authority_evidence=authority_evidence,
         supplementary_evidence=supplementary_evidence,
+    )
+
+
+def _standing_record_declared_valid_from(
+    record: VerifiedHistoryRecord,
+) -> int:
+    payload = _map(
+        record.payload,
+        "participant standing history payload",
+    )
+    body = _map(
+        payload.get("body"),
+        "participant standing body",
+    )
+    valid_from = _uint(
+        body.get("valid_from_ms"),
+        "participant standing valid_from_ms",
+    )
+    assert isinstance(valid_from, int)
+    return valid_from
+
+
+def _verify_basis_standing(
+    record: VerifiedHistoryRecord,
+    *,
+    basis_manifest: Mapping[str, object],
+    evaluation_time_ms: int,
+    load_object: ObjectLoader,
+) -> VerifiedParticipantStanding:
+    """Fully verify one standing record, then evaluate currentness deterministically.
+
+    The type-specific verifier is first run at the record's declared valid_from
+    time so expired/not-yet-current standing can still be fully validated as
+    historical authority data. Currentness for the governance transition is
+    evaluated separately against evaluation_time_ms.
+    """
+
+    validation_time = _standing_record_declared_valid_from(record)
+
+    try:
+        return verify_accepted_participant_standing(
+            record,
+            epoch_manifest=basis_manifest,
+            evaluation_time_ms=validation_time,
+            load_object=load_object,
+        )
+    except CivicParticipantStandingError as exc:
+        raise CivicGovernanceError(
+            "electorate participant standing failed canonical verification"
+        ) from exc
+
+
+def _standing_is_current(
+    standing: VerifiedParticipantStanding,
+    *,
+    evaluation_time_ms: int,
+) -> bool:
+    if evaluation_time_ms < standing.valid_from_ms:
+        return False
+    if (
+        standing.valid_until_ms is not None
+        and evaluation_time_ms >= standing.valid_until_ms
+    ):
+        return False
+
+    if standing.participation_required:
+        if standing.participation_valid_from_ms is None:
+            raise CivicGovernanceError(
+                "verified required participation lacks valid_from_ms"
+            )
+        if evaluation_time_ms < standing.participation_valid_from_ms:
+            return False
+        if (
+            standing.participation_valid_until_ms is not None
+            and evaluation_time_ms >= standing.participation_valid_until_ms
+        ):
+            return False
+
+    return True
+
+
+def _reconstruct_electorate(
+    *,
+    policy: VerifiedGovernancePolicy,
+    ceremony: VerifiedCeremonyRecord,
+    candidate_manifest: Mapping[str, object],
+    predecessor_manifest: Mapping[str, object] | None,
+    standing_records: Sequence[VerifiedHistoryRecord],
+    load_object: ObjectLoader,
+) -> tuple[GovernanceElectorateMember, ...]:
+    if policy.electorate_basis == "candidate_participants":
+        basis_manifest = candidate_manifest
+    elif policy.electorate_basis == "predecessor_participants":
+        if predecessor_manifest is None:
+            raise CivicGovernanceError(
+                "predecessor-participant electorate requires predecessor manifest"
+            )
+        basis_manifest = predecessor_manifest
+    else:
+        raise CivicGovernanceError(
+            "verified governance policy electorate basis is unsupported"
+        )
+
+    try:
+        validate_epoch_manifest(basis_manifest)
+    except CivicManifestError as exc:
+        raise CivicGovernanceError(
+            "electorate basis Epoch Manifest is invalid"
+        ) from exc
+
+    by_record_sha256: dict[bytes, VerifiedHistoryRecord] = {}
+    for index, record in enumerate(standing_records):
+        if not isinstance(record, VerifiedHistoryRecord):
+            raise CivicGovernanceError(
+                f"standing_records[{index}] must be a VerifiedHistoryRecord"
+            )
+        if record.record_sha256 in by_record_sha256:
+            raise CivicGovernanceError(
+                "standing_records contains a duplicate record identity"
+            )
+        by_record_sha256[record.record_sha256] = record
+
+    participants = basis_manifest["participants"]
+    assert isinstance(participants, list)
+
+    eligible_ids: list[bytes] = []
+
+    for index, raw in enumerate(participants):
+        if not isinstance(raw, Mapping):
+            raise CivicGovernanceError(
+                f"electorate basis participant[{index}] is invalid"
+            )
+
+        participant_id = raw.get("participant_record_sha256")
+        standing_record_sha256 = raw.get("standing_record_sha256")
+
+        if not isinstance(participant_id, bytes) or len(participant_id) != SHA256_BYTES:
+            raise CivicGovernanceError(
+                f"electorate basis participant[{index}] identity is invalid"
+            )
+        if (
+            not isinstance(standing_record_sha256, bytes)
+            or len(standing_record_sha256) != SHA256_BYTES
+        ):
+            raise CivicGovernanceError(
+                f"electorate basis participant[{index}] standing identity is invalid"
+            )
+
+        record = by_record_sha256.get(standing_record_sha256)
+        if record is None:
+            raise CivicGovernanceError(
+                "required electorate standing record is unavailable"
+            )
+
+        standing = _verify_basis_standing(
+            record,
+            basis_manifest=basis_manifest,
+            evaluation_time_ms=ceremony.effective_time_ms,
+            load_object=load_object,
+        )
+
+        if standing.participant_record_sha256 != participant_id:
+            raise CivicGovernanceError(
+                "verified standing subject does not match electorate basis participant"
+            )
+
+        if (
+            standing.standing_class == policy.electorate_standing_class
+            and _standing_is_current(
+                standing,
+                evaluation_time_ms=ceremony.effective_time_ms,
+            )
+        ):
+            eligible_ids.append(participant_id)
+
+    expected_ids = tuple(
+        member.participant_record_sha256
+        for member in policy.electorate_members
+    )
+    reconstructed_ids = tuple(eligible_ids)
+
+    if reconstructed_ids != expected_ids:
+        raise CivicGovernanceError(
+            "reconstructed electorate does not match governance policy members"
+        )
+
+    if policy.operator_must_be_elector:
+        operator_id = ceremony.value[
+            "operator_participant_record_sha256"
+        ]
+        if operator_id not in set(reconstructed_ids):
+            raise CivicGovernanceError(
+                "ceremony operator is required to be in reconstructed electorate"
+            )
+
+    return policy.electorate_members
+
+
+def _evidence_metadata_equal(
+    left: GovernanceEvidenceDescriptor,
+    right: GovernanceEvidenceDescriptor,
+) -> bool:
+    return (
+        left.byte_length == right.byte_length
+        and left.media_type == right.media_type
+        and left.semantic_role == right.semantic_role
+    )
+
+
+def _aggregate_proof_evidence(
+    proofs: Sequence[VerifiedGovernanceProof],
+) -> tuple[
+    dict[bytes, GovernanceEvidenceDescriptor],
+    dict[bytes, GovernanceEvidenceDescriptor],
+]:
+    authority: dict[bytes, GovernanceEvidenceDescriptor] = {}
+    supplementary: dict[bytes, GovernanceEvidenceDescriptor] = {}
+    all_metadata: dict[bytes, GovernanceEvidenceDescriptor] = {}
+
+    for proof in proofs:
+        for descriptor in (
+            *proof.authority_evidence,
+            *proof.supplementary_evidence,
+        ):
+            prior = all_metadata.get(descriptor.sha256)
+            if prior is not None and not _evidence_metadata_equal(
+                prior,
+                descriptor,
+            ):
+                raise CivicGovernanceError(
+                    "governance proofs describe one evidence SHA-256 with conflicting metadata"
+                )
+            all_metadata.setdefault(descriptor.sha256, descriptor)
+
+        for descriptor in proof.authority_evidence:
+            authority.setdefault(descriptor.sha256, descriptor)
+
+        for descriptor in proof.supplementary_evidence:
+            supplementary.setdefault(descriptor.sha256, descriptor)
+
+    return authority, supplementary
+
+
+def _require_evidence_object(
+    descriptor: GovernanceEvidenceDescriptor,
+    *,
+    epoch_manifest: Mapping[str, object],
+    load_object: ObjectLoader,
+) -> None:
+    object_index = epoch_manifest["object_index"]
+    assert isinstance(object_index, list)
+
+    matches = [
+        item
+        for item in object_index
+        if (
+            isinstance(item, Mapping)
+            and item.get("sha256") == descriptor.sha256
+        )
+    ]
+    if len(matches) != 1:
+        raise CivicGovernanceError(
+            "authority evidence must resolve to exactly one Epoch Manifest object descriptor"
+        )
+
+    object_descriptor = matches[0]
+
+    if object_descriptor.get("byte_length") != descriptor.byte_length:
+        raise CivicGovernanceError(
+            "authority evidence byte_length conflicts with Epoch Manifest object descriptor"
+        )
+    if object_descriptor.get("media_type") != descriptor.media_type:
+        raise CivicGovernanceError(
+            "authority evidence media_type conflicts with Epoch Manifest object descriptor"
+        )
+    if object_descriptor.get("semantic_role") != descriptor.semantic_role:
+        raise CivicGovernanceError(
+            "authority evidence semantic_role conflicts with Epoch Manifest object descriptor"
+        )
+
+    inline = object_descriptor.get("inline")
+    if inline is None:
+        try:
+            exact_bytes = load_object(descriptor.sha256)
+        except Exception as exc:
+            raise CivicGovernanceError(
+                "authority evidence exact bytes are unavailable"
+            ) from exc
+    else:
+        if not isinstance(inline, bytes):
+            raise CivicGovernanceError(
+                "authority evidence inline object must be bytes or null"
+            )
+        exact_bytes = inline
+
+    try:
+        verify_object_bytes(
+            exact_bytes,
+            expected_sha256=descriptor.sha256,
+            expected_byte_length=descriptor.byte_length,
+        )
+    except CivicObjectStoreError as exc:
+        raise CivicGovernanceError(
+            "authority evidence failed exact-byte verification"
+        ) from exc
+
+
+def _validate_evidence_aggregation(
+    evidence: Mapping[bytes, GovernanceEvidenceDescriptor],
+    requirements: Sequence[GovernanceEvidenceRequirement],
+    *,
+    label: str,
+    epoch_manifest: Mapping[str, object],
+    load_object: ObjectLoader,
+    require_exact_bytes: bool,
+) -> tuple[GovernanceEvidenceDescriptor, ...]:
+    by_role = {
+        requirement.semantic_role: requirement
+        for requirement in requirements
+    }
+
+    grouped: dict[str, list[GovernanceEvidenceDescriptor]] = {}
+
+    for descriptor in evidence.values():
+        requirement = by_role.get(descriptor.semantic_role)
+        if requirement is None:
+            raise CivicGovernanceError(
+                f"{label} contains an undeclared semantic_role"
+            )
+
+        if (
+            requirement.media_types
+            and descriptor.media_type not in set(requirement.media_types)
+        ):
+            raise CivicGovernanceError(
+                f"{label} contains a media_type not permitted for semantic_role"
+            )
+
+        grouped.setdefault(
+            descriptor.semantic_role,
+            [],
+        ).append(descriptor)
+
+        if require_exact_bytes:
+            _require_evidence_object(
+                descriptor,
+                epoch_manifest=epoch_manifest,
+                load_object=load_object,
+            )
+
+    for requirement in requirements:
+        matching = grouped.get(requirement.semantic_role, [])
+        count = len(matching)
+
+        if count < requirement.min_count:
+            raise CivicGovernanceError(
+                f"{label} does not satisfy minimum evidence count for semantic_role"
+            )
+        if (
+            requirement.max_count is not None
+            and count > requirement.max_count
+        ):
+            raise CivicGovernanceError(
+                f"{label} exceeds maximum evidence count for semantic_role"
+            )
+
+    return tuple(
+        sorted(
+            evidence.values(),
+            key=lambda item: item.sha256,
+        )
+    )
+
+
+def _threshold_satisfied(
+    threshold: GovernanceThreshold,
+    *,
+    selected_count: int,
+    selected_weight: int,
+    electorate_count: int,
+    electorate_weight: int,
+    participating_weight: int,
+    quorum: bool,
+) -> bool:
+    if threshold.kind == "all":
+        return selected_count == electorate_count
+
+    if threshold.kind == "count_at_least":
+        assert threshold.value is not None
+        return selected_count >= threshold.value
+
+    if threshold.kind == "weight_at_least":
+        assert threshold.value is not None
+        return selected_weight >= threshold.value
+
+    if threshold.kind == "fraction_at_least":
+        assert threshold.numerator is not None
+        assert threshold.denominator is not None
+        assert threshold.base is not None
+
+        if quorum:
+            denominator_weight = electorate_weight
+        elif threshold.base == "electorate":
+            denominator_weight = electorate_weight
+        elif threshold.base == "participating":
+            if participating_weight == 0:
+                return False
+            denominator_weight = participating_weight
+        else:
+            raise CivicGovernanceError(
+                "verified fraction threshold base is unsupported"
+            )
+
+        return (
+            selected_weight * threshold.denominator
+            >= denominator_weight * threshold.numerator
+        )
+
+    raise CivicGovernanceError(
+        "verified governance threshold kind is unsupported"
+    )
+
+
+def verify_governance_transition(
+    *,
+    policy: VerifiedGovernancePolicy,
+    ceremony: VerifiedCeremonyRecord,
+    governance_proof_bytes: Sequence[bytes],
+    candidate_manifest: Mapping[str, object],
+    standing_records: Sequence[VerifiedHistoryRecord],
+    load_object: ObjectLoader,
+    predecessor_manifest: Mapping[str, object] | None = None,
+) -> VerifiedGovernanceTransition:
+    """Verify one complete governance transition.
+
+    standing_records are generic-verified signed standing records obtained from
+    the already verified accepted-history stream. This function performs their
+    type-specific standing verification and electorate reconstruction. Accepted
+    history predecessor/head inclusion remains the independent history closure
+    invariant and is not replaced by this evaluator.
+    """
+
+    if not isinstance(policy, VerifiedGovernancePolicy):
+        raise CivicGovernanceError(
+            "policy must be a VerifiedGovernancePolicy"
+        )
+    if not isinstance(ceremony, VerifiedCeremonyRecord):
+        raise CivicGovernanceError(
+            "ceremony must be a VerifiedCeremonyRecord"
+        )
+
+    try:
+        validate_epoch_manifest(candidate_manifest)
+    except CivicManifestError as exc:
+        raise CivicGovernanceError(
+            "candidate Epoch Manifest is invalid"
+        ) from exc
+
+    manifest_ceremony = candidate_manifest["ceremony"]
+    assert isinstance(manifest_ceremony, Mapping)
+
+    if (
+        manifest_ceremony["ceremony_record_sha256"]
+        != ceremony.ceremony_record_sha256
+    ):
+        raise CivicGovernanceError(
+            "verified ceremony does not match candidate Epoch Manifest"
+        )
+
+    ceremony_policy = ceremony.value["governance_policy"]
+    assert isinstance(ceremony_policy, Mapping)
+
+    if (
+        ceremony_policy["policy_id"] != policy.policy_id
+        or ceremony_policy["policy_sha256"] != policy.policy_sha256
+    ):
+        raise CivicGovernanceError(
+            "verified governance policy does not match ceremony"
+        )
+
+    if ceremony.transition_kind == "bootstrap":
+        if predecessor_manifest is not None:
+            raise CivicGovernanceError(
+                "bootstrap governance transition must not receive predecessor manifest"
+            )
+    elif ceremony.transition_kind == "successor":
+        if predecessor_manifest is None:
+            raise CivicGovernanceError(
+                "successor governance transition requires predecessor manifest"
+            )
+        try:
+            validate_epoch_manifest(predecessor_manifest)
+        except CivicManifestError as exc:
+            raise CivicGovernanceError(
+                "predecessor Epoch Manifest is invalid"
+            ) from exc
+    else:
+        raise CivicGovernanceError(
+            "verified ceremony transition kind is unsupported"
+        )
+
+    electorate_members = _reconstruct_electorate(
+        policy=policy,
+        ceremony=ceremony,
+        candidate_manifest=candidate_manifest,
+        predecessor_manifest=predecessor_manifest,
+        standing_records=standing_records,
+        load_object=load_object,
+    )
+
+    if isinstance(governance_proof_bytes, (bytes, bytearray, str)):
+        raise CivicGovernanceError(
+            "governance_proof_bytes must be a sequence of exact proof byte strings"
+        )
+
+    proof_bytes_by_sha256: dict[bytes, bytes] = {}
+    for index, exact_bytes in enumerate(governance_proof_bytes):
+        if not isinstance(exact_bytes, bytes):
+            raise CivicGovernanceError(
+                f"governance_proof_bytes[{index}] must be bytes"
+            )
+        digest = hashlib.sha256(exact_bytes).digest()
+        if digest in proof_bytes_by_sha256:
+            raise CivicGovernanceError(
+                "governance_proof_bytes contains a duplicate proof identity"
+            )
+        proof_bytes_by_sha256[digest] = exact_bytes
+
+    provided_proof_ids = tuple(sorted(proof_bytes_by_sha256))
+    if provided_proof_ids != ceremony.governance_proof_sha256:
+        raise CivicGovernanceError(
+            "provided governance proof set does not exactly match ceremony"
+        )
+
+    verified_proofs: list[VerifiedGovernanceProof] = []
+
+    for proof_sha256 in ceremony.governance_proof_sha256:
+        proof_bytes = proof_bytes_by_sha256[proof_sha256]
+        verified_proofs.append(
+            verify_signed_governance_proof(
+                proof_bytes,
+                expected_proof_sha256=proof_sha256,
+                ceremony=ceremony,
+                policy=policy,
+                epoch_manifest=candidate_manifest,
+                predecessor_manifest=predecessor_manifest,
+            )
+        )
+
+    non_null_decision_by_participant: dict[bytes, str] = {}
+
+    approving: set[bytes] = set()
+    rejecting: set[bytes] = set()
+    abstaining: set[bytes] = set()
+
+    for proof in verified_proofs:
+        if proof.decision is None:
+            continue
+
+        participant_id = proof.participant_record_sha256
+
+        if participant_id in non_null_decision_by_participant:
+            raise CivicGovernanceError(
+                "one electorate participant supplied multiple non-null governance decisions"
+            )
+
+        non_null_decision_by_participant[participant_id] = proof.decision
+
+        if proof.decision == "approve":
+            approving.add(participant_id)
+        elif proof.decision == "reject":
+            rejecting.add(participant_id)
+        elif proof.decision == "abstain":
+            abstaining.add(participant_id)
+        else:
+            raise CivicGovernanceError(
+                "verified governance proof decision is unsupported"
+            )
+
+    participating = approving | rejecting | abstaining
+
+    weights = {
+        member.participant_record_sha256: member.weight
+        for member in electorate_members
+    }
+
+    total_electorate_weight = sum(weights.values())
+    participating_weight = sum(
+        weights[participant_id]
+        for participant_id in participating
+    )
+    approving_weight = sum(
+        weights[participant_id]
+        for participant_id in approving
+    )
+
+    authority_evidence, supplementary_evidence = _aggregate_proof_evidence(
+        verified_proofs
+    )
+
+    verified_authority_evidence = _validate_evidence_aggregation(
+        authority_evidence,
+        policy.authority_evidence,
+        label="authority evidence",
+        epoch_manifest=candidate_manifest,
+        load_object=load_object,
+        require_exact_bytes=True,
+    )
+
+    _validate_evidence_aggregation(
+        supplementary_evidence,
+        policy.supplementary_evidence,
+        label="supplementary evidence",
+        epoch_manifest=candidate_manifest,
+        load_object=load_object,
+        require_exact_bytes=False,
+    )
+
+    electorate_count = len(electorate_members)
+    participating_count = len(participating)
+    approving_count = len(approving)
+
+    quorum_result: bool | None = None
+    if policy.quorum is not None:
+        quorum_result = _threshold_satisfied(
+            policy.quorum,
+            selected_count=participating_count,
+            selected_weight=participating_weight,
+            electorate_count=electorate_count,
+            electorate_weight=total_electorate_weight,
+            participating_weight=participating_weight,
+            quorum=True,
+        )
+        if not quorum_result:
+            raise CivicGovernanceError(
+                "governance quorum is not satisfied"
+            )
+
+    approval_result: bool | None = None
+    if policy.approval is not None:
+        approval_result = _threshold_satisfied(
+            policy.approval,
+            selected_count=approving_count,
+            selected_weight=approving_weight,
+            electorate_count=electorate_count,
+            electorate_weight=total_electorate_weight,
+            participating_weight=participating_weight,
+            quorum=False,
+        )
+        if not approval_result:
+            raise CivicGovernanceError(
+                "governance approval threshold is not satisfied"
+            )
+
+    return VerifiedGovernanceTransition(
+        policy_id=policy.policy_id,
+        policy_sha256=policy.policy_sha256,
+        subject_sha256=governance_transition_subject_sha256(ceremony),
+        transition_kind=ceremony.transition_kind,
+        electorate_members=electorate_members,
+        participating_participant_record_sha256=tuple(
+            sorted(participating)
+        ),
+        approving_participant_record_sha256=tuple(
+            sorted(approving)
+        ),
+        rejecting_participant_record_sha256=tuple(
+            sorted(rejecting)
+        ),
+        abstaining_participant_record_sha256=tuple(
+            sorted(abstaining)
+        ),
+        total_electorate_weight=total_electorate_weight,
+        participating_weight=participating_weight,
+        approving_weight=approving_weight,
+        quorum_result=quorum_result,
+        approval_result=approval_result,
+        verified_authority_evidence=verified_authority_evidence,
+        governance_proof_sha256=ceremony.governance_proof_sha256,
+        verified_proofs=tuple(verified_proofs),
     )
