@@ -17,10 +17,12 @@ except ImportError:  # pragma: no cover - non-POSIX implementations use another 
 
 from civic.accepted_operator_selection import (
     CivicOperatorSelectionError,
+    RECORD_TYPE as OPERATOR_SELECTION_RECORD_TYPE,
     verify_accepted_operator_selection,
 )
 from civic.accepted_participant_issuance import (
     CivicParticipantIssuanceError,
+    RECORD_TYPE as PARTICIPANT_ISSUANCE_RECORD_TYPE,
     verify_accepted_participant_issuance,
 )
 from civic.accepted_participant_standing import (
@@ -30,6 +32,7 @@ from civic.accepted_participant_standing import (
 )
 from civic.accepted_signing_node_authorization import (
     CivicSigningNodeAuthorizationError,
+    RECORD_TYPE as SIGNING_NODE_AUTHORIZATION_RECORD_TYPE,
     verify_accepted_signing_node_authorization,
 )
 from civic.authority_state import (
@@ -40,11 +43,12 @@ from civic.authority_state import (
     verify_authority_state_replica,
 )
 from civic.ceremony import CivicCeremonyError, verify_ceremony_record
-from civic.cose import CivicCoseError, parse_cose_sign1
-from civic.epoch_manifest import (
-    CivicManifestError,
-    manifest_sha256,
+from civic.cose import (
+    HISTORY_RECORD_CONTENT_TYPE,
+    CivicCoseError,
+    parse_cose_sign1,
 )
+from civic.epoch_manifest import manifest_sha256
 from civic.governance import (
     CivicGovernanceError,
     VerifiedGovernanceTransition,
@@ -59,7 +63,6 @@ from civic.history import (
 from civic.object_store import (
     CivicObjectStoreError,
     get_object,
-    object_sha256,
     put_object,
     verify_object_bytes,
 )
@@ -90,10 +93,10 @@ SELECTOR_FIELDS = {
 }
 
 ACCEPTED_HISTORY_RECORD_ORDER = (
-    "kane-civic-accepted-signing-node-authorization-v1",
-    "kane-civic-accepted-operator-selection-v1",
-    "kane-civic-accepted-participant-standing-v1",
-    "kane-civic-accepted-participant-issuance-v1",
+    SIGNING_NODE_AUTHORIZATION_RECORD_TYPE,
+    OPERATOR_SELECTION_RECORD_TYPE,
+    PARTICIPANT_STANDING_RECORD_TYPE,
+    PARTICIPANT_ISSUANCE_RECORD_TYPE,
 )
 
 
@@ -319,7 +322,7 @@ def _decode_signed_history_payload(
     try:
         parsed = parse_cose_sign1(
             signed_record,
-            expected_content_type="application/kane-civic-history-record+cbor",
+            expected_content_type=HISTORY_RECORD_CONTENT_TYPE,
         )
         return decode_history_record_payload(parsed.payload)
     except (CivicCoseError, CivicSignedHistoryRecordError) as exc:
@@ -430,12 +433,12 @@ def compose_reference_accepted_history(
     ordered: list[tuple[bytes, str, bytes | None]] = [
         (
             signing_node_authorization,
-            "kane-civic-accepted-signing-node-authorization-v1",
+            SIGNING_NODE_AUTHORIZATION_RECORD_TYPE,
             None,
         ),
         (
             operator_selection,
-            "kane-civic-accepted-operator-selection-v1",
+            OPERATOR_SELECTION_RECORD_TYPE,
             None,
         ),
     ]
@@ -455,7 +458,7 @@ def compose_reference_accepted_history(
         ordered.append(
             (
                 participant_issuance[participant_id],
-                "kane-civic-accepted-participant-issuance-v1",
+                PARTICIPANT_ISSUANCE_RECORD_TYPE,
                 participant_id,
             )
         )
@@ -997,6 +1000,17 @@ def _verify_current_epoch_history_semantics(
     if actual_suffix != expected_suffix:
         raise CivicAuthorityTransactionError(
             "current epoch accepted-history suffix is not in canonical reference order"
+        )
+
+    current_epoch = manifest["epoch_sequence"]
+    current_epoch_records = tuple(
+        record.record_sha256
+        for record in records
+        if record.payload.get("epoch_sequence") == current_epoch
+    )
+    if current_epoch_records != expected_suffix:
+        raise CivicAuthorityTransactionError(
+            "current epoch accepted history contains non-canonical extra or reordered records"
         )
 
     signing_node = manifest["signing_node"]
