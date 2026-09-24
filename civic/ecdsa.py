@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import hmac
 
 
 # NIST P-256 / secp256r1 parameters.
@@ -115,17 +116,11 @@ def public_key_from_private_scalar(private_scalar: int) -> bytes:
     return b"\x04" + x.to_bytes(32, "big") + y.to_bytes(32, "big")
 
 
-def sign_sig_structure_fixture(
+def _sign_with_nonce(
     private_scalar: int,
     nonce_scalar: int,
     sig_structure: bytes,
 ) -> bytes:
-    """Create a fixture-only P1363 r||s signature over SHA-256(sig_structure).
-
-    The nonce is explicit by design. This function is for deterministic repository
-    fixtures and tests only; it is not a production key-generation or signing API.
-    """
-
     if (
         not isinstance(private_scalar, int)
         or isinstance(private_scalar, bool)
@@ -147,14 +142,108 @@ def sign_sig_structure_fixture(
 
     r = point[0] % N
     if r == 0:
-        raise CivicEcdsaError("fixture nonce produced r=0")
+        raise CivicEcdsaError("nonce produced r=0")
 
     z = int.from_bytes(hashlib.sha256(sig_structure).digest(), "big")
     s = (_inverse(nonce_scalar, N) * (z + r * private_scalar)) % N
     if s == 0:
-        raise CivicEcdsaError("fixture nonce produced s=0")
+        raise CivicEcdsaError("nonce produced s=0")
 
     return r.to_bytes(32, "big") + s.to_bytes(32, "big")
+
+
+def sign_sig_structure_fixture(
+    private_scalar: int,
+    nonce_scalar: int,
+    sig_structure: bytes,
+) -> bytes:
+    """Create a fixture-only P1363 r||s signature over SHA-256(sig_structure).
+
+    The nonce is explicit by design. This function is for deterministic repository
+    fixtures and tests only; it is not a production key-generation or signing API.
+    """
+
+    return _sign_with_nonce(
+        private_scalar,
+        nonce_scalar,
+        sig_structure,
+    )
+
+
+def _rfc6979_nonce_sha256(
+    private_scalar: int,
+    sig_structure: bytes,
+) -> int:
+    """Derive one RFC 6979 P-256/SHA-256 nonce for exact Sig_structure bytes."""
+
+    if (
+        not isinstance(private_scalar, int)
+        or isinstance(private_scalar, bool)
+        or not 1 <= private_scalar < N
+    ):
+        raise CivicEcdsaError("private_scalar must be in the P-256 scalar range")
+    if not isinstance(sig_structure, bytes):
+        raise CivicEcdsaError("sig_structure must be bytes")
+
+    h1 = hashlib.sha256(sig_structure).digest()
+    x = private_scalar.to_bytes(32, "big")
+
+    h1_int = int.from_bytes(h1, "big")
+    if h1_int >= N:
+        h1_int -= N
+    h1_octets = h1_int.to_bytes(32, "big")
+
+    v = b"\x01" * 32
+    k = b"\x00" * 32
+
+    k = hmac.new(
+        k,
+        v + b"\x00" + x + h1_octets,
+        hashlib.sha256,
+    ).digest()
+    v = hmac.new(k, v, hashlib.sha256).digest()
+
+    k = hmac.new(
+        k,
+        v + b"\x01" + x + h1_octets,
+        hashlib.sha256,
+    ).digest()
+    v = hmac.new(k, v, hashlib.sha256).digest()
+
+    while True:
+        v = hmac.new(k, v, hashlib.sha256).digest()
+        candidate = int.from_bytes(v, "big")
+        if 1 <= candidate < N:
+            return candidate
+
+        k = hmac.new(
+            k,
+            v + b"\x00",
+            hashlib.sha256,
+        ).digest()
+        v = hmac.new(k, v, hashlib.sha256).digest()
+
+
+def sign_sig_structure_rfc6979(
+    private_scalar: int,
+    sig_structure: bytes,
+) -> bytes:
+    """Create a production-capable RFC 6979 P-256/SHA-256 P1363 signature.
+
+    Unlike the repository fixture helper, this API does not accept an
+    application-supplied nonce.  The deterministic nonce is derived according
+    to RFC 6979 from the private scalar and SHA-256 message digest.
+    """
+
+    nonce_scalar = _rfc6979_nonce_sha256(
+        private_scalar,
+        sig_structure,
+    )
+    return _sign_with_nonce(
+        private_scalar,
+        nonce_scalar,
+        sig_structure,
+    )
 
 
 def verify_sig_structure(
