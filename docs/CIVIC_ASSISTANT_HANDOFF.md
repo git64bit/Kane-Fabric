@@ -21,19 +21,19 @@ git64bit/Kane-Fabric
 Last CT102-tested Civic code head:
 
 ~~~text
-0a79ca8cef3095c43dbf23eee0e3a54a68a6cfbf
+ce3fac5fa1ca5678feed73d1fe6acedd8a64e6d1
 ~~~
 
 Accepted Civic test result at that head:
 
 ~~~text
-143 tests run
-143 passed
+153 tests run
+153 passed
 0 failed
 0 skipped
 ~~~
 
-The CT102 acceptance covers the canonical ceremony record, governance-policy/proof primitives, the complete governance-transition evaluator, and all previously accepted Civic components.
+The CT102 acceptance covers the production signer-provider/key-lifecycle implementation, the canonical ceremony record, governance-policy/proof primitives, the complete governance-transition evaluator, and all previously accepted Civic components.
 
 Repository documentation commits may exist after the last CT102-tested code head.
 
@@ -769,6 +769,79 @@ The generic verifier does not invent a universal majority rule, electorate, weig
 
 Closure piece 3 is complete.
 
+### Piece 4 — production signing and key lifecycle
+
+Architecture:
+
+docs/CIVIC_PRODUCTION_SIGNING_KEY_LIFECYCLE_CONTRACT.md
+
+Implementation:
+
+~~~text
+civic/ecdsa.py
+civic/production_signing.py
+~~~
+
+Focused tests:
+
+civic/tests/test_production_signing.py
+
+Architecture head:
+
+~~~text
+6638b7262f58af1e099001241f12b15bba7c6fdf
+~~~
+
+Implementation head:
+
+~~~text
+5ed70c0c72c88e7a4122f2b2c7322964efb93afd
+~~~
+
+Final piece-4 CT102 acceptance head:
+
+~~~text
+ce3fac5fa1ca5678feed73d1fe6acedd8a64e6d1
+~~~
+
+Accepted gate:
+
+~~~text
+10 focused production-signing tests passed
+153 complete Civic tests passed
+0 failed
+0 skipped
+~~~
+
+Accepted production-signing semantics include:
+
+- OS-CSPRNG generation of independent P-256 key material;
+- RFC 6979 P-256/SHA-256 signing without application-supplied nonce scalars;
+- opaque local private-key references;
+- one owner-controlled software signer provider;
+- canonical SEC1 public-key and SHA-256 key-ID derivation;
+- provider admission self-test and mandatory post-sign public verification;
+- strict separation of local custody from Civic authority binding;
+- explicit candidate/current/retired authority states supplied from verified Civic context;
+- exact role/public-key/key-ID binding before signing;
+- unavailable and destroyed keys fail closed;
+- no automatic replacement or shadow-key activation;
+- no fixture-signing dependency on the production path;
+- no permanent HOA master/recovery private key;
+- no private key material in replicated Civic authority state.
+
+The accepted implementation provides production-capable signing mechanics, but it does **not** activate a real HOA signer or create real HOA production key material.
+
+Current operational boundary remains:
+
+~~~text
+production_signing_enabled = false
+production_key_created = false
+annales_mutated = false
+~~~
+
+Closure piece 4 is complete.
+
 ## Broader Civic Issuance Record
 
 Existing semantic architecture:
@@ -1051,23 +1124,34 @@ The retained manifest lineage, public keys, signed history, and required objects
 
 This should remain a consequence of the architecture, not a reason to introduce a central verification service.
 
-## Immediate next task: closure piece 4
+## Immediate next task: closure piece 5
 
 The next bounded task is architecture, not deployment.
 
-Define the platform-neutral **production signing and key-lifecycle contract** before adding production-signing code.
+Define the platform-neutral **authority-state transaction and composition contract** before implementing transaction code.
 
 The contract must freeze at least:
 
-- cryptographically secure key generation / randomness requirements;
-- production private-key custody and loading boundaries;
-- signing interface and failure behavior;
-- key replacement and epoch rotation semantics;
-- explicit separation of participant keys, Signing Node keys, and HOA Civic identity;
-- no permanent HOA master private key;
-- no mandatory HSM, ATECC608A, ESP eFuse, or vendor-specific custody mechanism;
-- portability between software-held and optionally hardened custody implementations;
-- the rule that loss of a Signing Node private key leads to governed replacement, not secret recovery.
+- candidate bundle construction;
+- exact dependency closure;
+- canonical signing order;
+- authority-object persistence order;
+- accepted-history head updates;
+- Epoch Manifest finalization;
+- bootstrap and successor composition boundaries;
+- crash and retry behavior;
+- duplicate/replayed candidate behavior;
+- atomic installation of the newly accepted current authority state;
+- failure behavior that leaves the previous accepted authority state unchanged.
+
+Piece 5 must preserve the piece-4 invariant:
+
+~~~text
+key generation
+    != authority activation
+~~~
+
+A generated candidate key may exist locally while the previous accepted authority remains current.
 
 This is still Kane Fabric reference work.
 
@@ -1077,7 +1161,8 @@ Do not specify Annales-specific:
 - systemd unit names;
 - filesystem paths;
 - networking;
-- concrete key locations.
+- concrete key locations;
+- deployment command sequences.
 
 Those belong to the later separate Annales production implementation project.
 
@@ -1089,7 +1174,7 @@ production_key_created = false
 annales_mutated = false
 ~~~
 
-Do not create a production Civic key or mutate annales while defining piece 4.
+Do not create a real HOA production key or mutate annales while defining piece 5.
 
 ## Handoff invariant
 

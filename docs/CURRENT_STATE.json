@@ -626,10 +626,10 @@
     },
     "civic_assistant_handoff": {
       "status": "ready-2026-09-24",
-      "last_ct102_tested_code_head": "0a79ca8cef3095c43dbf23eee0e3a54a68a6cfbf",
+      "last_ct102_tested_code_head": "ce3fac5fa1ca5678feed73d1fe6acedd8a64e6d1",
       "accepted_civic_gate": {
-        "ran": 143,
-        "passed": 143,
+        "ran": 153,
+        "passed": 153,
         "failed": 0,
         "skipped": 0
       },
@@ -729,11 +729,11 @@
       "annales_mutated": false
     },
     "civic_reference_closure": {
-      "status": "piece-3-complete-ct102-2026-09-24",
-      "accepted_code_head": "0a79ca8cef3095c43dbf23eee0e3a54a68a6cfbf",
+      "status": "piece-4-complete-ct102-2026-09-24",
+      "accepted_code_head": "ce3fac5fa1ca5678feed73d1fe6acedd8a64e6d1",
       "accepted_civic_gate": {
-        "ran": 143,
-        "passed": 143,
+        "ran": 153,
+        "passed": 153,
         "failed": 0,
         "skipped": 0
       },
@@ -754,16 +754,58 @@
           "acceptance_head": "0a79ca8cef3095c43dbf23eee0e3a54a68a6cfbf"
         },
         "4_production_signing_key_lifecycle_contract": {
-          "status": "next-architecture-task"
+          "status": "accepted-ct102",
+          "document": "docs/CIVIC_PRODUCTION_SIGNING_KEY_LIFECYCLE_CONTRACT.md",
+          "architecture_head": "6638b7262f58af1e099001241f12b15bba7c6fdf",
+          "implementation_head": "5ed70c0c72c88e7a4122f2b2c7322964efb93afd",
+          "acceptance_head": "ce3fac5fa1ca5678feed73d1fe6acedd8a64e6d1"
         },
         "5_authority_state_transaction_composition_contract": {
-          "status": "pending"
+          "status": "next-architecture-task"
         },
         "6_platform_neutral_signing_node_conformance_boundary": {
           "status": "pending"
         }
       },
       "annales_project_boundary": "Annales is a separate production implementation project after Kane Fabric Civic Authority Reference closure; do not encode Annales-specific deployment details into the platform-neutral reference.",
+      "production_signing_enabled": false,
+      "production_key_created": false,
+      "annales_mutated": false
+    },
+    "civic_production_signing_acceptance": {
+      "status": "accepted-ct102-2026-09-24",
+      "architecture_document": "docs/CIVIC_PRODUCTION_SIGNING_KEY_LIFECYCLE_CONTRACT.md",
+      "architecture_head": "6638b7262f58af1e099001241f12b15bba7c6fdf",
+      "implementation_files": [
+        "civic/ecdsa.py",
+        "civic/production_signing.py"
+      ],
+      "implementation_head": "5ed70c0c72c88e7a4122f2b2c7322964efb93afd",
+      "focused_test_file": "civic/tests/test_production_signing.py",
+      "acceptance_head": "ce3fac5fa1ca5678feed73d1fe6acedd8a64e6d1",
+      "focused_tests": {
+        "ran": 10,
+        "passed": 10,
+        "failed": 0,
+        "skipped": 0
+      },
+      "complete_civic_gate": {
+        "ran": 153,
+        "passed": 153,
+        "failed": 0,
+        "skipped": 0
+      },
+      "rfc6979_p256_sha256_signing": "accepted",
+      "os_csprng_key_generation": "accepted",
+      "opaque_local_key_reference": "accepted",
+      "software_signer_provider": "accepted",
+      "provider_authority_state_storage": false,
+      "candidate_current_retired_binding_separation": "accepted",
+      "exact_role_public_key_key_id_binding": "accepted",
+      "mandatory_post_sign_public_verification": "accepted",
+      "unavailable_destroyed_key_fail_closed": "accepted",
+      "fixture_signing_on_production_path": false,
+      "real_hoa_production_key_created": false,
       "production_signing_enabled": false,
       "production_key_created": false,
       "annales_mutated": false
@@ -1668,5 +1710,5 @@
       "annales_mutated": false
     }
   },
-  "next_safe_action": "Define closure piece 4 architecture: the platform-neutral production signing and key-lifecycle contract. Freeze CSPRNG/key generation, custody/load/sign interfaces, replacement/rotation, failure semantics, and the no-permanent-HOA-master-key boundary before implementation. Do not create a production Civic key, enable production signing, mutate annales, or add Annales-specific deployment details in this step."
+  "next_safe_action": "Define closure piece 5 architecture: the platform-neutral authority-state transaction and composition contract. Freeze candidate bundle construction, exact dependency closure, signing and persistence order, history-head updates, manifest finalization, crash/retry semantics, and atomic bootstrap/successor acceptance. Preserve the piece-4 rule that key generation never activates authority. Do not create a real HOA production key, enable production signing, mutate annales, or add Annales-specific deployment details in this step."
 }
