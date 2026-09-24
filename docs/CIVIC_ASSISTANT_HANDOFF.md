@@ -21,19 +21,19 @@ git64bit/Kane-Fabric
 Last CT102-tested Civic code head:
 
 ~~~text
-ac76abc4f44a6d38b128f2c6de661d4ec3de8dc3
+0a79ca8cef3095c43dbf23eee0e3a54a68a6cfbf
 ~~~
 
 Accepted Civic test result at that head:
 
 ~~~text
-116 tests run
-116 passed
+143 tests run
+143 passed
 0 failed
 0 skipped
 ~~~
 
-The CT102 acceptance covers direct canonical governing-profile integration into participant-standing verification and all previously accepted Civic components.
+The CT102 acceptance covers the canonical ceremony record, governance-policy/proof primitives, the complete governance-transition evaluator, and all previously accepted Civic components.
 
 Repository documentation commits may exist after the last CT102-tested code head.
 
@@ -100,7 +100,11 @@ No Civic Signing Node has been created on annales.
 
 No production Civic private key has been created.
 
-Do not mutate annales unless the user explicitly reaches that deployment step.
+Annales production implementation is outside the present Kane Fabric reference-closure work. It begins as a separate project only after the platform-neutral Kane Fabric Civic Authority Reference is closed.
+
+Do not encode Annales-specific LXD names, service units, filesystem paths, networking, or concrete key locations into the Kane Fabric reference contracts.
+
+Do not mutate annales unless the user explicitly reaches that separate deployment project.
 
 ### Wiregate
 
@@ -586,7 +590,7 @@ A participant signer must be the current manifest operator. The Signing Node is 
 
 Manifest membership does not override standing expiration. A record may remain valid historical authority material while failing present standing evaluation.
 
-Profile-specific standing class, qualification path, participation policy, evidence-role, provenance, and temporal semantics now have a canonical data-driven verifier in civic/governing_profile.py. The accepted participant-standing verifier still exposes its earlier callback seam; direct integration of the accepted governing-profile module is the next bounded implementation step.
+Profile-specific standing class, qualification path, participation policy, evidence-role, provenance, and temporal semantics have a canonical data-driven verifier in civic/governing_profile.py. The accepted participant-standing verifier consumes that canonical verifier directly; the earlier caller-supplied semantic callback is no longer part of accepted participant-standing verification.
 
 ## Accepted canonical governing profile
 
@@ -639,6 +643,131 @@ Accepted integration gate:
 0 failed
 0 skipped
 ~~~
+
+## Civic reference closure: pieces 1-3
+
+The current reference-closure sequence is:
+
+~~~text
+1. Epoch-1 / bootstrap contract
+2. canonical ceremony-record contract
+3. governance-policy / proof / verification contract
+4. production signing / key-lifecycle contract
+5. authority-state transaction / composition contract
+6. platform-neutral Signing Node conformance / deployment boundary
+~~~
+
+### Piece 1 — Epoch-1 / bootstrap contract
+
+Architecture:
+
+docs/CIVIC_EPOCH1_BOOTSTRAP_CONTRACT.md
+
+Architecture head:
+
+~~~text
+89c8695686c73747664e741f375170c58533691b
+~~~
+
+Status: architecture frozen.
+
+Core boundary:
+
+~~~text
+candidate cryptographic consistency
+    !=
+accepted bootstrap authority
+~~~
+
+Epoch 1 requires complete source-grounded bundle closure. There is no root private key and no self-authorization shortcut.
+
+### Piece 2 — canonical ceremony record
+
+Architecture:
+
+docs/CIVIC_CEREMONY_RECORD_CONTRACT.md
+
+Implementation:
+
+civic/ceremony.py
+
+Focused tests:
+
+civic/tests/test_ceremony.py
+
+Accepted CT102 head:
+
+~~~text
+8b3d06ac4f7cba0417dd7e4efdbae56dc102bab1
+~~~
+
+Accepted gate:
+
+~~~text
+9 focused ceremony tests passed
+125 complete Civic tests passed
+0 failed
+0 skipped
+~~~
+
+The canonical ceremony is a standalone deterministic-CBOR authority object. It binds the exact manifest transition projection, governance policy, governance-proof hash set, object-index descriptor, predecessor identity, and continuing-participant key rotation without introducing a ceremony/proof hash cycle.
+
+### Piece 3 — governance policy, proof, and transition verification
+
+Architecture:
+
+docs/CIVIC_GOVERNANCE_POLICY_PROOF_CONTRACT.md
+
+Implementation:
+
+civic/governance.py
+
+Focused primitive tests:
+
+civic/tests/test_governance.py
+
+Focused transition tests:
+
+civic/tests/test_governance_transition.py
+
+Primitive acceptance head:
+
+~~~text
+214d47c5927554de0e31b81568910a58250efd08
+~~~
+
+Final piece-3 CT102 acceptance head:
+
+~~~text
+0a79ca8cef3095c43dbf23eee0e3a54a68a6cfbf
+~~~
+
+Final accepted gate:
+
+~~~text
+9 focused governance-transition tests passed
+143 complete Civic tests passed
+0 failed
+0 skipped
+~~~
+
+Accepted semantics include:
+
+- canonical non-recursive governance-transition subject;
+- canonical source-bound governance-policy bytes and identity;
+- signed governance-proof COSE verification;
+- bootstrap signer resolution from candidate participant keys;
+- successor signer resolution from predecessor participant keys;
+- standing-based exact electorate reconstruction;
+- exact ceremony-listed proof-set verification;
+- duplicate non-null decision rejection;
+- authority-evidence deduplication and exact-byte verification;
+- evidence-only authorization where the policy requires it;
+- exact integer quorum and approval semantics.
+
+The generic verifier does not invent a universal majority rule, electorate, weight, or legal procedure. Those remain source-derived policy data.
+
+Closure piece 3 is complete.
 
 ## Broader Civic Issuance Record
 
@@ -922,34 +1051,35 @@ The retained manifest lineage, public keys, signed history, and required objects
 
 This should remain a consequence of the architecture, not a reason to introduce a central verification service.
 
-## Immediate next task: milestone inventory
+## Immediate next task: closure piece 4
 
-Pause implementation.
+The next bounded task is architecture, not deployment.
 
-Canonical governing-profile semantics are now directly integrated into accepted participant-standing verification and accepted on CT102.
+Define the platform-neutral **production signing and key-lifecycle contract** before adding production-signing code.
 
-Before defining or implementing another Civic component, inventory the remaining work of the current milestone from repository state.
+The contract must freeze at least:
 
-The inventory should classify each remaining item as:
+- cryptographically secure key generation / randomness requirements;
+- production private-key custody and loading boundaries;
+- signing interface and failure behavior;
+- key replacement and epoch rotation semantics;
+- explicit separation of participant keys, Signing Node keys, and HOA Civic identity;
+- no permanent HOA master private key;
+- no mandatory HSM, ATECC608A, ESP eFuse, or vendor-specific custody mechanism;
+- portability between software-held and optionally hardened custody implementations;
+- the rule that loss of a Signing Node private key leads to governed replacement, not secret recovery.
 
-~~~text
-required to close this milestone
-explicitly deferred to a later milestone or deployment
-already accepted / no further work required here
-~~~
+This is still Kane Fabric reference work.
 
-The inventory must distinguish protocol/authority completeness from deployment work.
+Do not specify Annales-specific:
 
-In particular, do not treat any of the following as automatically required merely because they are possible next steps:
+- LXD/container names;
+- systemd unit names;
+- filesystem paths;
+- networking;
+- concrete key locations.
 
-- production Civic signing;
-- creation of a production Civic private key;
-- deployment of the Civic Signing Node on annales;
-- firmware/appliance deployment;
-- broader Affordance Authority Contract serialization;
-- live HOA profile authoring;
-- Diagnostics/RAG implementation;
-- optional emergent-feature work.
+Those belong to the later separate Annales production implementation project.
 
 Production boundaries remain:
 
@@ -959,7 +1089,7 @@ production_key_created = false
 annales_mutated = false
 ~~~
 
-No further code or architecture should be committed until the milestone inventory is reviewed.
+Do not create a production Civic key or mutate annales while defining piece 4.
 
 ## Handoff invariant
 

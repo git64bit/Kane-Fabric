@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "observed_date": "2026-09-23",
+  "observed_date": "2026-09-24",
   "project": {
     "repository": "git64bit/Kane-Fabric",
     "branch": "main",
@@ -623,6 +623,150 @@
       ],
       "established_transfer_method_srv_b_ct102": "Webmin-first; tarball + SHA-256 for larger cross-machine artifacts",
       "default_scp_ssh_transfer": false
+    },
+    "civic_assistant_handoff": {
+      "status": "ready-2026-09-24",
+      "last_ct102_tested_code_head": "0a79ca8cef3095c43dbf23eee0e3a54a68a6cfbf",
+      "accepted_civic_gate": {
+        "ran": 143,
+        "passed": 143,
+        "failed": 0,
+        "skipped": 0
+      },
+      "repository_documentation_may_be_ahead_of_ct102_code_acceptance": true,
+      "production_signing_enabled": false,
+      "production_key_created": false,
+      "annales_mutated": false
+    },
+    "civic_ceremony_acceptance": {
+      "status": "accepted-ct102-2026-09-24",
+      "architecture_document": "docs/CIVIC_CEREMONY_RECORD_CONTRACT.md",
+      "architecture_head": "503cb6464ccc1bea8f9f96522a399efc1e205ba7",
+      "implementation": "civic/ceremony.py",
+      "implementation_head": "0a3fc73479ccb60086a84ef99dab7c91517437cd",
+      "focused_test_file": "civic/tests/test_ceremony.py",
+      "acceptance_head": "8b3d06ac4f7cba0417dd7e4efdbae56dc102bab1",
+      "focused_tests": {
+        "ran": 9,
+        "passed": 9,
+        "failed": 0,
+        "skipped": 0
+      },
+      "complete_civic_gate": {
+        "ran": 125,
+        "passed": 125,
+        "failed": 0,
+        "skipped": 0
+      },
+      "deterministic_cbor_exact_identity": "accepted",
+      "manifest_projection_binding": "accepted",
+      "governance_proof_set_binding": "accepted",
+      "object_index_authority_binding": "accepted",
+      "successor_predecessor_identity_binding": "accepted",
+      "continuing_participant_key_rotation": "accepted",
+      "production_signing_enabled": false,
+      "production_key_created": false,
+      "annales_mutated": false
+    },
+    "civic_governance_primitives_acceptance": {
+      "status": "accepted-ct102-2026-09-24",
+      "architecture_document": "docs/CIVIC_GOVERNANCE_POLICY_PROOF_CONTRACT.md",
+      "architecture_head": "6b8fe3431e785d70986f844618381b4de5cbea0b",
+      "implementation": "civic/governance.py",
+      "implementation_head": "866df97c5aecfdcf7c785ee874ec79ff92163b9d",
+      "focused_test_file": "civic/tests/test_governance.py",
+      "acceptance_head": "214d47c5927554de0e31b81568910a58250efd08",
+      "focused_tests": {
+        "ran": 9,
+        "passed": 9,
+        "failed": 0,
+        "skipped": 0
+      },
+      "complete_civic_gate": {
+        "ran": 134,
+        "passed": 134,
+        "failed": 0,
+        "skipped": 0
+      },
+      "governance_transition_subject": "accepted",
+      "governance_policy_canonicalization": "accepted",
+      "governance_proof_cose_verification": "accepted",
+      "bootstrap_signer_resolution": "candidate-participant-key",
+      "successor_signer_resolution": "predecessor-participant-key",
+      "exact_policy_and_proof_object_binding": "accepted",
+      "production_signing_enabled": false,
+      "production_key_created": false,
+      "annales_mutated": false
+    },
+    "civic_governance_transition_acceptance": {
+      "status": "accepted-ct102-2026-09-24",
+      "implementation": "civic/governance.py",
+      "implementation_head": "8bf35b911498765a10b9556ff868cbb9a61a8948",
+      "focused_test_file": "civic/tests/test_governance_transition.py",
+      "acceptance_head": "0a79ca8cef3095c43dbf23eee0e3a54a68a6cfbf",
+      "focused_tests": {
+        "ran": 9,
+        "passed": 9,
+        "failed": 0,
+        "skipped": 0
+      },
+      "complete_civic_gate": {
+        "ran": 143,
+        "passed": 143,
+        "failed": 0,
+        "skipped": 0
+      },
+      "standing_based_electorate_reconstruction": "accepted",
+      "exact_governance_proof_set_verification": "accepted",
+      "duplicate_non_null_decision_rejection": "accepted",
+      "authority_evidence_deduplication": "accepted",
+      "authority_evidence_exact_bytes_required": "accepted",
+      "quorum_and_approval_exact_integer_semantics": "accepted",
+      "evidence_only_authorization": "accepted",
+      "successor_predecessor_authority_semantics": "accepted",
+      "production_signing_enabled": false,
+      "production_key_created": false,
+      "annales_mutated": false
+    },
+    "civic_reference_closure": {
+      "status": "piece-3-complete-ct102-2026-09-24",
+      "accepted_code_head": "0a79ca8cef3095c43dbf23eee0e3a54a68a6cfbf",
+      "accepted_civic_gate": {
+        "ran": 143,
+        "passed": 143,
+        "failed": 0,
+        "skipped": 0
+      },
+      "pieces": {
+        "1_epoch1_bootstrap_contract": {
+          "status": "architecture-frozen",
+          "document": "docs/CIVIC_EPOCH1_BOOTSTRAP_CONTRACT.md",
+          "architecture_head": "89c8695686c73747664e741f375170c58533691b"
+        },
+        "2_canonical_ceremony_record": {
+          "status": "accepted-ct102",
+          "document": "docs/CIVIC_CEREMONY_RECORD_CONTRACT.md",
+          "acceptance_head": "8b3d06ac4f7cba0417dd7e4efdbae56dc102bab1"
+        },
+        "3_governance_policy_proof_verification": {
+          "status": "accepted-ct102",
+          "document": "docs/CIVIC_GOVERNANCE_POLICY_PROOF_CONTRACT.md",
+          "acceptance_head": "0a79ca8cef3095c43dbf23eee0e3a54a68a6cfbf"
+        },
+        "4_production_signing_key_lifecycle_contract": {
+          "status": "next-architecture-task"
+        },
+        "5_authority_state_transaction_composition_contract": {
+          "status": "pending"
+        },
+        "6_platform_neutral_signing_node_conformance_boundary": {
+          "status": "pending"
+        }
+      },
+      "annales_project_boundary": "Annales is a separate production implementation project after Kane Fabric Civic Authority Reference closure; do not encode Annales-specific deployment details into the platform-neutral reference.",
+      "production_signing_enabled": false,
+      "production_key_created": false,
+      "annales_mutated": false
     }
   },
   "deployment": {
@@ -1524,5 +1668,5 @@
       "annales_mutated": false
     }
   },
-  "next_safe_action": "Pause implementation and inventory the remaining work of the current Civic milestone from repository state. Classify remaining items as required to close the milestone, explicitly deferred to later milestones/deployment, or already accepted. Do not implement anything until that inventory is reviewed. Production signing remains disabled; no production Civic key exists; annales remains untouched."
+  "next_safe_action": "Define closure piece 4 architecture: the platform-neutral production signing and key-lifecycle contract. Freeze CSPRNG/key generation, custody/load/sign interfaces, replacement/rotation, failure semantics, and the no-permanent-HOA-master-key boundary before implementation. Do not create a production Civic key, enable production signing, mutate annales, or add Annales-specific deployment details in this step."
 }
