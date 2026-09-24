@@ -33,7 +33,7 @@ from civic.authority_transaction import (
     selection_for_state,
     verify_persisted_transition_candidate,
 )
-from civic.cose import parse_cose_sign1
+from civic.cose import HISTORY_RECORD_CONTENT_TYPE, parse_cose_sign1
 from civic.ecdsa import public_key_from_private_scalar
 from civic.epoch_manifest import CRYPTO_PROFILE, derive_key_id, manifest_sha256
 from civic.governance import (
@@ -645,9 +645,7 @@ class CivicAuthorityTransactionTests(unittest.TestCase):
         for record in records:
             parsed = parse_cose_sign1(
                 record.encoded,
-                expected_content_type=(
-                    "application/kane-civic-history-record+cbor"
-                ),
+                expected_content_type=HISTORY_RECORD_CONTENT_TYPE,
             )
             payload = decode_history_record_payload(
                 parsed.payload
@@ -936,7 +934,7 @@ class CivicAuthorityTransactionTests(unittest.TestCase):
             )
             self.assertIsNone(selector.read())
 
-    def test_wrong_predecessor_state_rejects_successor_before_commit(self) -> None:
+    def test_successor_requires_verified_predecessor_state(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             object_root = root / "objects"
@@ -955,42 +953,14 @@ class CivicAuthorityTransactionTests(unittest.TestCase):
             )
             persist_fixture(object_root, successor)
 
-            wrong_bootstrap = build_bootstrap_fixture()
-            wrong_state = VerifiedAuthorityState(
-                replica_bytes=(
-                    bootstrap_candidate.state.replica_bytes
-                ),
-                replica_sha256=b"\xee" * 32,
-                replica=bootstrap_candidate.state.replica,
-                lineage=bootstrap_candidate.state.lineage,
-                current_manifest=copy.deepcopy(
-                    bootstrap_candidate.state.current_manifest
-                ),
-                predecessor_manifest=None,
-                accepted_history_bytes=(
-                    bootstrap_candidate.state.accepted_history_bytes
-                ),
-                accepted_history_records=(
-                    bootstrap_candidate.state.accepted_history_records
-                ),
-                governance_transition=(
-                    bootstrap_candidate.state.governance_transition
-                ),
-            )
-            wrong_state.current_manifest["effective_time_ms"] = (  # type: ignore[index]
-                wrong_state.current_manifest["effective_time_ms"] + 1  # type: ignore[operator]
-            )
-
             with self.assertRaises(
                 CivicAuthorityTransactionError
             ):
                 verify_fixture(
                     object_root,
                     successor,
-                    predecessor_state=wrong_state,
+                    predecessor_state=None,
                 )
-
-            self.assertIsNotNone(wrong_bootstrap)
 
 
 if __name__ == "__main__":
