@@ -35,6 +35,7 @@ from civic.production_signing import (
     CivicAuthorityKeyBinding,
     CivicCustodyState,
     CivicKeyRole,
+    CivicLocalKeyMetadata,
     CivicProductionSigningError,
     CivicSignerProvider,
     make_current_binding,
@@ -589,6 +590,17 @@ class CivicSigningNode:
                 current_binding=binding,
                 current_key_ref=None,
                 failure_classification="current-key-custody-unavailable",
+            )
+
+        if not isinstance(metadata, CivicLocalKeyMetadata):
+            return CivicSigningNodeStartupResult(
+                operational_state=(
+                    CivicSigningNodeOperationalState.RECOVERY_REQUIRED
+                ),
+                verified_state=state,
+                current_binding=binding,
+                current_key_ref=None,
+                failure_classification="current-key-metadata-invalid",
             )
 
         if metadata.role != CivicKeyRole.SIGNING_NODE:
